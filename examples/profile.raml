@@ -1,0 +1,118 @@
+#%Validation Profile 1.0
+
+description: Validation profile implementing common validations
+
+profile: ACME
+
+warning:
+  - json-payloads
+
+violation:
+  - resource-camel-case-identifiers
+  - unique-identifiers
+  - mandatory-version
+  - version-format
+  - version-in-urls
+  - matching-version-in-urls
+  - allowed-payloads
+  - json-properties
+  - response-with-accepts
+
+validations:
+
+  mandatory-version:
+    message: All APIs must have a version
+    targetClass: schema-org.WebAPI
+    propertyConstraints:
+      schema.version:
+        minCount: 1
+
+  version-format:
+    message: The version must be formatted as v[Major].[Minor] or v[Major], for example v2.3
+    targetClass: schema-org.WebAPI
+    propertyConstraints:
+      schema.version:
+        pattern: "v[0-9]+(.[0-9]+)?"
+
+  version-in-urls:
+    message: The version must be before the resource name, for example v1.3/payments/
+    targetClass: http.EndPoint
+    propertyConstraints:
+      http.path:
+        pattern: "v[0-9]+(.[0-9]+)?\/.*"
+
+  matching-version-in-urls:
+    message: The version of the resource URLs must match the API version
+    targetClass: schema.WebAPI
+    functionConstraint:
+      code: |
+        function(api) {
+          var version = api['schema:version'][0];
+          var endpoints = api['http:endpoint'];
+          for (var i=0; i<endpoints.length; i++) {
+            var endpoint = endpoints[i];
+            var path = endpoint['http:path'][0];
+            if (path.indexOf('/'+version) !== 0) {
+              return false;
+            }
+          }
+          return true;
+        }
+
+  resource-camel-case-identifiers:
+    message: Identifiers must be camel-cased
+    targetClass: http.EndPoint
+    propertyConstraints:
+      schema.name:
+        pattern: "[a-zA-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
+
+  unique-identifiers:
+    message: Resource names must be unique
+    targetClass: http.EndPoint
+    functionConstraint:
+      code: |
+        function(resource) {
+          var name = (resource['schema:name'] || [])[0];
+          if(accumulators[name] == null) {
+            accumulators[name] = true;
+            return true;
+          } else {
+            return false;
+          }
+        }
+
+  json-payloads:
+    message: JSON should be used to format content passed in and out of an API in the message body
+    targetClass: http.Payload
+    propertyConstraints:
+      http.mediaType:
+        in: ["application/json"]
+
+  allowed-payloads:
+    message: JSON should be used to format content passed in and out of an API in the message body
+    targetClass: http.Payload
+    propertyConstraints:
+      http.mediaType:
+        in: ["application/json", "application/xml"]
+
+  json-properties:
+    message: Property keys must be camel cased
+    targetClass: sh.PropertyShape
+    propertyConstraints:
+      sh.name:
+        pattern: "[a-zA-Z]([A-Z0-9]*[a-z][a-z0-9]*[A-Z]|[a-z0-9]*[A-Z][A-Z0-9]*[a-z])[A-Za-z0-9]*"
+
+  response-with-accepts:
+    message: Resource format may be accepted in header
+    targetClass: http.Request
+    functionConstraint:
+      code: |
+        function(response) {
+          var headerNames = path(response, 'http:header / schema:name');
+          for (var i=0; i<headerNames.length; i++) {
+            if (headerNames[i] === "Accept") {
+              return true;
+            }
+          }
+          return false;
+        }

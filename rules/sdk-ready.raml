@@ -1,0 +1,25 @@
+#%Validation Profile 1.0
+
+profile: sdk-ready
+
+extends: RAML
+
+violation:
+  - mandatory-version
+  - version-format
+
+validations:
+
+  mandatory-version:
+    message: All APIs must have a version that is true
+    targetClass: schema-org.WebAPI
+    propertyConstraints:
+      schema.version:
+        minCount: 1
+
+  version-format:
+    message: The version must be formatted as v[Major], for example v2
+    targetClass: schema-org.WebAPI
+    propertyConstraints:
+      schema.version:
+        pattern: "v[0-9]+$"
