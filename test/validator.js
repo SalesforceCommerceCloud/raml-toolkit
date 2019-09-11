@@ -3,17 +3,25 @@
 const validator = require("../validator");
 const assert = require("assert");
 
-describe("generator-commerce-cloud:app", () => {
+describe("happy path raml tests", () => {
   it("valid", async () => {
     let filename = new URL(`file://${__dirname}/raml/valid.raml`);
     let result = await validator.parse(filename);
-    assert.equal(result.conforms, true, "Api expected to conform");
+    assert.equal(
+      result.conforms,
+      true,
+      "API does not conform:\n" + result.toString()
+    );
   });
+});
 
+describe("version checking tests", () => {
   it("missing version", async () => {
-    let filename = new URL(`file://${__dirname}/raml/missing-version.raml`);
+    let filename = new URL(
+      `file://${__dirname}/raml/version-checks/missing-version.raml`
+    );
     let result = await validator.parse(filename);
-    assert.equal(result.conforms, false, "Api expected to not conform");
+    assert.equal(result.conforms, false);
     assert.equal(result.results.length, 1);
     assert.equal(
       result.results[0].validationId,
@@ -22,9 +30,11 @@ describe("generator-commerce-cloud:app", () => {
   });
 
   it("bad version", async () => {
-    let filename = new URL(`file://${__dirname}/raml/bad-version.raml`);
+    let filename = new URL(
+      `file://${__dirname}/raml/version-checks/bad-version.raml`
+    );
     let result = await validator.parse(filename);
-    assert.equal(result.conforms, false, "Api expected to not conform");
+    assert.equal(result.conforms, false);
     assert.equal(result.results.length, 1);
     assert.equal(
       result.results[0].validationId,
