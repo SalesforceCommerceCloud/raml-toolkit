@@ -16,7 +16,7 @@ describe("happy path raml tests", () => {
 });
 
 describe("version checking tests", () => {
-  it("missing version", async () => {
+  it("does not conform when missing the version", async () => {
     let filename = new URL(
       `file://${__dirname}/raml/version-checks/missing-version.raml`
     );
@@ -29,9 +29,22 @@ describe("version checking tests", () => {
     );
   });
 
-  it("bad version", async () => {
+  it("does not conform when the version has a decimal in it", async () => {
     let filename = new URL(
       `file://${__dirname}/raml/version-checks/bad-version.raml`
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false);
+    assert.equal(result.results.length, 1);
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#version-format"
+    );
+  });
+
+  it("does not conform when the version is capitalized", async () => {
+    let filename = new URL(
+      `file://${__dirname}/raml/version-checks/capital-version.raml`
     );
     let result = await validator.parse(filename);
     assert.equal(result.conforms, false);
