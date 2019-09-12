@@ -4,22 +4,49 @@ profile: sdk-ready
 
 extends: RAML
 
+disabled:
+  - amf-parser.WebAPI-mediaType-datatype
+
 violation:
+  - json-payloads
+  - https-required
+  - mandatory-media
   - mandatory-version
   - version-format
 
 validations:
 
+  https-required:
+    message: Protocol MUST be HTTPS
+    targetClass: schema.WebAPI
+    propertyConstraints: 
+      http.scheme:
+        in: [https,HTTPS]
+
+  json-payloads:
+    message: JSON should be used to format content passed in and out of an API in the message body
+    targetClass: schema.WebAPI
+    propertyConstraints:
+      http.accepts:
+        in: ["application/json"]
+
+  mandatory-media:
+    message: JSON should be used to format content passed in and out of an API in the message body
+    targetClass: schema.WebAPI
+    propertyConstraints:
+      http.accepts:
+        minCount: 1
+
   mandatory-version:
     message: All APIs must have a version that is true
-    targetClass: schema-org.WebAPI
+    targetClass: schema.WebAPI
     propertyConstraints:
       schema.version:
         minCount: 1
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
-    targetClass: schema-org.WebAPI
+    targetClass: schema.WebAPI
     propertyConstraints:
       schema.version:
-        pattern: "v[0-9]+$"
+        pattern: "^v[0-9]+$"

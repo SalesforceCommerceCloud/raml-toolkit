@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amf-client-js": "^3.3.0",
+    "amf-client-js": "^3.5.0",
     "path": "^0.12.7",
     "promise": "^8.0.3",
     "webapi-parser": "^0.2.0"
