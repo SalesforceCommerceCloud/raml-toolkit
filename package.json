@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "amf-client-js": "^3.5.0",
+    "clone": "^2.1.2",
     "handlebars": "^4.2.0",
     "path": "^0.12.7",
     "promise": "^8.0.3",
