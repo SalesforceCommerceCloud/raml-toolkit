@@ -20,7 +20,7 @@ function renderTemplate(templateVars) {
   let compiledTemplate = Handlebars.compile(
     fs.readFileSync(`${__dirname}/template.raml`, "utf8")
   );
-  var tmpFile = tmp.fileSync({ postfix: ".raml" });
+  let tmpFile = tmp.fileSync({ postfix: ".raml" });
   fs.writeFileSync(tmpFile.name, compiledTemplate(templateVars));
   return new URL(`file://${tmpFile.name}`);
 }
