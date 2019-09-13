@@ -71,7 +71,7 @@ describe("version checking tests", () => {
     );
   });
 
-  it("does not conform when the version doesn't have a v", async () => {
+  it("does not conform when the version isn't prefixed by a 'v'", async () => {
     let filename = renderTemplate(
       _.merge(_.cloneDeep(defaultTemplateVars), { version: "1" })
     );

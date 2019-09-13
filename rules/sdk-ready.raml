@@ -31,7 +31,7 @@ validations:
         minCount: 1
 
   require-json:
-    message: JSON should be used to format content passed in and out of an API in the message body
+    message: Require the API Spec's default mediaType to be applicaiton/json
     targetClass: schema.WebAPI
     propertyConstraints:
       http.accepts:
