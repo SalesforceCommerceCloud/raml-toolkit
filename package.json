@@ -10,8 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "amf-client-js": "^3.5.0",
+    "handlebars": "^4.2.0",
     "path": "^0.12.7",
     "promise": "^8.0.3",
+    "tmp": "^0.1.0",
     "webapi-parser": "^0.2.0"
   },
   "lint-staged": {

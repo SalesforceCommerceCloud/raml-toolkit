@@ -8,10 +8,9 @@ disabled:
   - amf-parser.WebAPI-mediaType-datatype
 
 violation:
-  - json-payloads
   - https-required
-  - mandatory-media
-  - mandatory-version
+  - require-api-description
+  - require-json
   - version-format
 
 validations:
@@ -22,26 +21,21 @@ validations:
     propertyConstraints: 
       http.scheme:
         in: [https,HTTPS]
+        minCount: 1
 
-  json-payloads:
+  require-api-description:
+    message: The API Description must be set
+    targetClass: schema.WebAPI
+    propertyConstraints:
+      schema.description:
+        minCount: 1
+
+  require-json:
     message: JSON should be used to format content passed in and out of an API in the message body
     targetClass: schema.WebAPI
     propertyConstraints:
       http.accepts:
         in: ["application/json"]
-
-  mandatory-media:
-    message: JSON should be used to format content passed in and out of an API in the message body
-    targetClass: schema.WebAPI
-    propertyConstraints:
-      http.accepts:
-        minCount: 1
-
-  mandatory-version:
-    message: All APIs must have a version that is true
-    targetClass: schema.WebAPI
-    propertyConstraints:
-      schema.version:
         minCount: 1
 
   version-format:
@@ -50,3 +44,6 @@ validations:
     propertyConstraints:
       schema.version:
         pattern: "^v[0-9]+$"
+        minCount: 1
+
+  
