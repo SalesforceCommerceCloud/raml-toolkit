@@ -37,7 +37,6 @@
     "test": "nyc --reporter=text mocha"
   },
   "devDependencies": {
-    "clone": "^2.1.2",
     "eslint": "^5.9.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-xo": "^0.25.0",
@@ -47,6 +46,7 @@
     "lodash": "^4.17.15",
     "mocha": "^6.2.0",
     "nyc": "^14.1.1",
-    "prettier": "^1.15.2"
+    "prettier": "^1.15.2",
+    "tmp": "^0.1.0"
   }
 }

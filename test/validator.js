@@ -6,7 +6,6 @@ const Handlebars = require("handlebars");
 const tmp = require("tmp");
 const fs = require("fs");
 const _ = require("lodash");
-const clone = require("clone");
 
 const defaultTemplateVars = {
   title: "Test Raml File",
@@ -35,7 +34,7 @@ describe("happy path raml tests", () => {
 
 describe("version checking tests", () => {
   it("does not conform when missing the version", async () => {
-    let noVersionTemplateVars = clone(defaultTemplateVars);
+    let noVersionTemplateVars = _.cloneDeep(defaultTemplateVars);
     delete noVersionTemplateVars.version;
     let result = await validator.parse(renderTemplate(noVersionTemplateVars));
     assert.equal(result.conforms, false, result.toString());
@@ -48,7 +47,7 @@ describe("version checking tests", () => {
 
   it("does not conform when the version has a decimal in it", async () => {
     let filename = renderTemplate(
-      _.merge(clone(defaultTemplateVars), { version: "v1.1" })
+      _.merge(_.cloneDeep(defaultTemplateVars), { version: "v1.1" })
     );
     let result = await validator.parse(filename);
     assert.equal(result.conforms, false, result.toString());
@@ -61,7 +60,7 @@ describe("version checking tests", () => {
 
   it("does not conform when the version is capitalized", async () => {
     let filename = renderTemplate(
-      _.merge(clone(defaultTemplateVars), { version: "V1.1" })
+      _.merge(_.cloneDeep(defaultTemplateVars), { version: "V1.1" })
     );
     let result = await validator.parse(filename);
     assert.equal(result.conforms, false, result.toString());
@@ -74,7 +73,7 @@ describe("version checking tests", () => {
 
   it("does not conform when the version doesn't have a v", async () => {
     let filename = renderTemplate(
-      _.merge(clone(defaultTemplateVars), { version: "1" })
+      _.merge(_.cloneDeep(defaultTemplateVars), { version: "1" })
     );
     let result = await validator.parse(filename);
     assert.equal(result.conforms, false, result.toString());
@@ -88,7 +87,7 @@ describe("version checking tests", () => {
 
 describe("mediaType checking tests", () => {
   it("does not conform when mediaType is missing", async () => {
-    let testTemplateVars = clone(defaultTemplateVars);
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
     delete testTemplateVars.mediaType;
     let result = await validator.parse(renderTemplate(testTemplateVars));
     assert.equal(result.conforms, false, result.toString());
@@ -101,7 +100,7 @@ describe("mediaType checking tests", () => {
 
   it("does not conform when the mediaType is xml", async () => {
     let filename = renderTemplate(
-      _.merge(clone(defaultTemplateVars), {
+      _.merge(_.cloneDeep(defaultTemplateVars), {
         mediaType: "application/xml"
       })
     );
@@ -118,7 +117,7 @@ describe("mediaType checking tests", () => {
 
 describe("protocol checking tests", () => {
   it("does not conform when protocol is missing", async () => {
-    let testTemplateVars = clone(defaultTemplateVars);
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
     delete testTemplateVars.protocols;
     let result = await validator.parse(renderTemplate(testTemplateVars));
     assert.equal(result.conforms, false, result.toString());
@@ -132,7 +131,7 @@ describe("protocol checking tests", () => {
 
   it("does not conform when the protocol is http", async () => {
     let filename = renderTemplate(
-      _.merge(clone(defaultTemplateVars), {
+      _.merge(_.cloneDeep(defaultTemplateVars), {
         protocols: "http"
       })
     );
@@ -149,7 +148,7 @@ describe("protocol checking tests", () => {
 
 describe("title checking tests", () => {
   it("does not conform when title is missing", async () => {
-    let testTemplateVars = clone(defaultTemplateVars);
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
     delete testTemplateVars.title;
     let result = await validator.parse(renderTemplate(testTemplateVars));
     assert.equal(result.conforms, false, result.toString());
@@ -164,7 +163,7 @@ describe("title checking tests", () => {
 
 describe("description checking tests", () => {
   it("does not conform when description is missing", async () => {
-    let testTemplateVars = clone(defaultTemplateVars);
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
     delete testTemplateVars.description;
     let result = await validator.parse(renderTemplate(testTemplateVars));
     assert.equal(result.conforms, false, result.toString());
