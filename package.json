@@ -1,8 +1,11 @@
 {
-  "name": "raml-validator",
+  "name": "sfcc-raml-linter",
   "version": "1.0.0",
   "description": "",
-  "main": "validator/index.js",
+  "bin": {
+    "ramlint": "./bin/run"
+  },
+  "main": "./main.js",
   "files": [
     "validator"
   ],
