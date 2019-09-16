@@ -25,7 +25,7 @@ async function parseRaml(filename) {
 
   return amf.Core.init()
     .then(async () => {
-      var parser = new amf.Raml10Parser();
+      let parser = amf.Core.parser("RAML 1.0", "application/yaml");
 
       return parser
         .parseFileAsync(filename)

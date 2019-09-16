@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amf-client-js": "^3.3.0",
+    "amf-client-js": "^3.5.0",
     "path": "^0.12.7",
     "promise": "^8.0.3",
     "webapi-parser": "^0.2.0"
@@ -41,9 +41,12 @@
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-xo": "^0.25.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "handlebars": "^4.2.0",
     "lint-staged": "^8.1.0",
+    "lodash": "^4.17.15",
     "mocha": "^6.2.0",
     "nyc": "^14.1.1",
-    "prettier": "^1.15.2"
+    "prettier": "^1.15.2",
+    "tmp": "^0.1.0"
   }
 }
