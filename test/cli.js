@@ -24,7 +24,7 @@ describe("sfcc-raml-linter", () => {
     .stdout()
     .do(() => cmd.run(["--version"]))
     .exit(0)
-    .it("version starts with app name", ctx => {
+    .it("checks that the version string starts with the app name", ctx => {
       expect(ctx.stdout).to.contain("sfcc-raml-linter");
     });
 
@@ -33,8 +33,8 @@ describe("sfcc-raml-linter", () => {
     .do(async () => {
       await cmd.run([getSingleValidFile()]);
     })
-    .it("runs one good file", ctx => {
-      expect(ctx.stdout).to.contain("RAML is valid");
+    .it("validates a single valid file", ctx => {
+      expect(ctx.stdout).to.contain("Conforms? true");
     });
 
   test
@@ -44,33 +44,44 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([getSingleInvalidFile()]);
     })
     .exit(1)
-    .it("runs one bad file");
+    .it("validates a single invalid file");
 
-  // TODO
-  // Make folder with 1 file
-  // Make folder with 2 file
-  // Make folder with 1 file and 1 subfolder with file nonrecursive
-  // Make folder with 1 file and 1 subfolder with file recursive
+  test
+    .stdout()
+    .do(async () => {
+      await cmd.run([getSingleValidFile(), getSingleValidFile()]);
+    })
+    .it("validates two valid files", ctx => {
+      expect(ctx.stdout).to.contain("Conforms? true");
+    });
+
+  test
+    .stdout()
+    .stderr()
+    .do(async () => {
+      await cmd.run([getSingleValidFile(), getSingleInvalidFile()]);
+    })
+    .exit(1)
+    .it("validates one valid and one invalid file");
+
+  test
+    .stdout()
+    .stderr()
+    .do(async () => {
+      await cmd.run([]);
+    })
+    .exit(1)
+    .it("does not accept an empty file list");
 });
 
-function getSingleValidFile(path) {
-  let tmpFile;
-  if (path) {
-    tmpFile = tmp.tmpNameSync({ dir: path, postfix: ".raml" });
-  } else {
-    tmpFile = tmp.fileSync({ postfix: ".raml" }).name;
-  }
+function getSingleValidFile() {
+  let tmpFile = tmp.fileSync({ postfix: ".raml" }).name;
   fs.writeFileSync(tmpFile, template(defaultTemplateVars));
   return tmpFile;
 }
 
-function getSingleInvalidFile(path) {
-  let tmpFile;
-  if (path) {
-    tmpFile = tmp.tmpNameSync({ dir: path, postfix: ".raml" });
-  } else {
-    tmpFile = tmp.fileSync({ postfix: ".raml" }).name;
-  }
+function getSingleInvalidFile() {
+  let tmpFile = tmp.fileSync({ postfix: ".raml" }).name;
   fs.writeFileSync(tmpFile, "");
   return tmpFile;
 }

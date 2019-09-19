@@ -3,32 +3,41 @@ const validator = require("./validator");
 
 class SfccRamlintCommand extends Command {
   async run() {
-    const { args } = this.parse(SfccRamlintCommand);
+    const { argv } = this.parse(SfccRamlintCommand);
 
-    let results = await validator.parse(new URL(`file://${args.filename}`));
+    if (argv.length === 0) {
+      this.error("Requires at least one file to validate", { exit: 1 });
+    }
 
-    if (results && results.conforms === true) {
-      this.log("RAML is valid");
-    } else {
-      this.error("RAML is invalid", { exit: 1 });
+    await Promise.all(argv.map(this.validateFile)).catch(e => {
+      this.error(e.message, { exit: 1 });
+    });
+  }
+
+  async validateFile(filename) {
+    let results = await validator.parse(new URL(`file://${filename}`));
+    console.log(results.toString());
+
+    if (!(results && results.conforms === true)) {
+      throw new Error(`${filename} is invalid`);
     }
   }
 }
 
 SfccRamlintCommand.description = `A linting tool for raml for commerce cloud and beyond
 
-FILENAME is a single RAML file to lint or a directory to scan for RAML files.
-Files must end with a .raml extension.
+FILENAME is one or more RAML files to lint.
 `;
 
 SfccRamlintCommand.flags = {
   // Add --version flag to show CLI version
   version: flags.version({ char: "v" }),
   // Add --help flag to show CLI version
-  help: flags.help({ char: "h" }),
-  name: flags.string({ char: "n", description: "name to print" })
+  help: flags.help({ char: "h" })
 };
 
 SfccRamlintCommand.args = [{ name: "filename" }];
+// This allows a variable length list of files
+SfccRamlintCommand.strict = false;
 
 module.exports = SfccRamlintCommand;
