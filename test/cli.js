@@ -19,6 +19,8 @@ const template = Handlebars.compile(
   fs.readFileSync(`${__dirname}/template.raml`, "utf8")
 );
 
+const successString = "Conforms? true";
+
 describe("sfcc-raml-linter", () => {
   test
     .stdout()
@@ -34,7 +36,7 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([getSingleValidFile()]);
     })
     .it("validates a single valid file and reports that it conforms", ctx => {
-      expect(ctx.stdout).to.contain("Conforms? true");
+      expect(ctx.stdout).to.contain(successString);
     });
 
   test
@@ -52,7 +54,7 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([getSingleValidFile(), getSingleValidFile()]);
     })
     .it("validates two valid files and reports that it conforms", ctx => {
-      expect(ctx.stdout).to.contain("Conforms? true");
+      expect(ctx.stdout).to.contain(successString);
     });
 
   test
