@@ -1,14 +1,20 @@
 {
-  "name": "raml-validator",
+  "name": "sfcc-raml-linter",
   "version": "1.0.0",
   "description": "",
-  "main": "validator/index.js",
+  "bin": {
+    "ramlint": "./bin/run"
+  },
+  "main": "./main.js",
   "files": [
     "validator"
   ],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@oclif/command": "^1.5.19",
+    "@oclif/config": "^1.13.3",
+    "@oclif/plugin-help": "^2.2.1",
     "amf-client-js": "^3.5.0",
     "path": "^0.12.7",
     "promise": "^8.0.3",
@@ -37,7 +43,10 @@
     "test": "nyc --reporter=text mocha"
   },
   "devDependencies": {
-    "eslint": "^5.9.0",
+    "@oclif/test": "^1.2.5",
+    "chai": "^4.2.0",
+    "eslint": "^5.16.0",
+    "eslint-config-oclif": "^3.1.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-xo": "^0.25.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -48,5 +57,13 @@
     "nyc": "^14.1.1",
     "prettier": "^1.15.2",
     "tmp": "^0.1.0"
+  },
+  "nyc": {
+    "all": true,
+    "check-coverage": true,
+    "branches": 80,
+    "functions": 80,
+    "lines": 80,
+    "statements": -10
   }
 }
