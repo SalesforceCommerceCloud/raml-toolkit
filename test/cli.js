@@ -33,7 +33,7 @@ describe("sfcc-raml-linter", () => {
     .do(async () => {
       await cmd.run([getSingleValidFile()]);
     })
-    .it("validates a single valid file", ctx => {
+    .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain("Conforms? true");
     });
 
@@ -44,14 +44,14 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([getSingleInvalidFile()]);
     })
     .exit(1)
-    .it("validates a single invalid file");
+    .it("validates a single invalid file and exits non-zero");
 
   test
     .stdout()
     .do(async () => {
       await cmd.run([getSingleValidFile(), getSingleValidFile()]);
     })
-    .it("validates two valid files", ctx => {
+    .it("validates two valid files and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain("Conforms? true");
     });
 
@@ -62,7 +62,7 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([getSingleValidFile(), getSingleInvalidFile()]);
     })
     .exit(1)
-    .it("validates one valid and one invalid file");
+    .it("validates one valid and one invalid file and exits non-zero");
 
   test
     .stdout()
@@ -71,7 +71,7 @@ describe("sfcc-raml-linter", () => {
       await cmd.run([]);
     })
     .exit(1)
-    .it("does not accept an empty file list");
+    .it("does not accept an empty file list and exits non-zero");
 });
 
 function getSingleValidFile() {
