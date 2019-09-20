@@ -54,7 +54,7 @@ Level: Violation
 
 Let us look more closely at each of these errors.
 
-The first error is saying that the API description is not set, but we need to have it set according to our standards.  There is a "Position:" field in the response but it is saying 2-1885. This happens to be the entire RAML document, ranges like this will be common for "Missing" components, since the parser doesn't know where you want to put it but knows you need to put it somewhere.
+The first error is saying that the API description is not set, but we need to have it set according to our standards.  There is a "Position:" field in the response, but it is saying 2-1885. This happens to be the entire RAML document. Ranges like this will be common for "Missing" components since the parser doesn't know where you want to put it, but knows you need to put it somewhere.
 
 The second error, however, is because it exists, but doesn't match our standard.  There you can see that the position leads you to the exact line number and column of the non-conforming component. 
 
