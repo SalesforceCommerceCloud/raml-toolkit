@@ -11,6 +11,7 @@ violation:
   - https-required
   - require-api-description
   - require-json
+  - resource-name-validation
   - version-format
 
 validations:
@@ -37,6 +38,13 @@ validations:
       http.accepts:
         in: ["application/json"]
         minCount: 1
+
+  resource-name-validation:
+    message: Resource endpoints must be lowercase (Mercury only) 
+    targetClass: http.EndPoint
+    propertyConstraints:
+      http.path:
+        pattern: "(\/[a-z]([a-z0-9_-])*[a-z0-9]+$)|(\/{[a-zA-Z0-9_-]+}$)"
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
