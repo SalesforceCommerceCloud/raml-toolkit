@@ -1,9 +1,10 @@
 /* eslint-disable no-undef */
 "use strict";
+const fs = require("fs");
+const path = require("path");
+const tmp = require("tmp");
 const { expect, test } = require("@oclif/test");
 const Handlebars = require("handlebars");
-const tmp = require("tmp");
-const fs = require("fs");
 
 const cmd = require("..");
 
@@ -38,6 +39,27 @@ describe("sfcc-raml-linter", () => {
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
+
+  test
+    .stdout()
+    .do(async () => {
+      const tempRamlFile = getSingleValidFile();
+      const ramlFileWithSpace = path.join(
+        path.dirname(tempRamlFile),
+        "test with spaces.raml"
+      );
+      await fs.rename(tempRamlFile, ramlFileWithSpace, err => {
+        if (err) throw err;
+      });
+      await cmd.run([ramlFileWithSpace]);
+    })
+    .it(
+      "validates a single valid file with a space in the name" +
+        " and reports that it conforms",
+      ctx => {
+        expect(ctx.stdout).to.contain(successString);
+      }
+    );
 
   test
     .stdout()
