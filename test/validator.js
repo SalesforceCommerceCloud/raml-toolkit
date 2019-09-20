@@ -12,7 +12,12 @@ const defaultTemplateVars = {
   version: "v1",
   mediaType: "application/json",
   protocols: "https",
-  description: "This is a description of the API spec"
+  description: "This is a description of the API spec",
+  resource: "/resource",
+  templateId: "/{resourceId}",
+  method: "get",
+  methodDescription: "Get this resource",
+  methodDisplayName: "getResource"
 };
 
 function renderTemplate(templateVars) {
@@ -172,6 +177,36 @@ describe("description checking tests", () => {
       result.results[0].validationId,
       "http://a.ml/vocabularies/data#require-api-description",
       result.toString()
+    );
+  });
+});
+
+describe("method checking tests", () => {
+  it("does not conform when description is missing from method", async () => {
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
+    delete testTemplateVars.methodDescription;
+    let result = await validator.parse(renderTemplate(testTemplateVars));
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#require-method-description",
+      result.toString()
+    );
+  });
+
+  it("does not conform when method display name is not camelcase", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), {
+        methodDisplayName: "not-camel-case"
+      })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#camelcase-method-displayname"
     );
   });
 });
