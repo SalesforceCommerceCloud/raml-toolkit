@@ -16,9 +16,7 @@ class SfccRamlintCommand extends Command {
   }
 
   async validateFile(filename) {
-    let results = await validator.parse(
-      new URL(`file://${path.resolve(filename)}`)
-    );
+    let results = await validator.parse(`file://${path.resolve(filename)}`);
     console.log(results.toString());
 
     if (!(results && results.conforms === true)) {
