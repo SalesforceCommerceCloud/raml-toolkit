@@ -40,11 +40,11 @@ validations:
         minCount: 1
 
   resource-must-be-lowercase:
-    message: Resource endpoints must be lowercase (Mercury only)
+    message: Resource endpoints must be lowercase (Mercury only) 
     targetClass: http.EndPoint
     propertyConstraints:
       http.path:
-        pattern: "^\/[a-z]([a-z0-9_-])*[a-z0-9]+$"
+        pattern: "(\/[a-z]([a-z0-9_-])*[a-z0-9]+$)|(\/{[a-zA-Z0-9_-]+}$)"
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
