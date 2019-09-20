@@ -8,17 +8,27 @@ disabled:
   - amf-parser.WebAPI-mediaType-datatype
 
 violation:
+  - camelcase-method-displayname
   - https-required
   - require-api-description
+  - require-method-description
   - require-json
   - version-format
 
 validations:
 
+  camelcase-method-displayname:
+    message: The API Method must have displayName and be in camelcase
+    targetClass: hydra.Operation
+    propertyConstraints:
+      schema.name:
+        minCount: 1
+        pattern: ^[a-z]+[A-Za-z0-9]*$
+
   https-required:
     message: Protocol MUST be HTTPS
     targetClass: schema.WebAPI
-    propertyConstraints: 
+    propertyConstraints:
       http.scheme:
         in: [https,HTTPS]
         minCount: 1
@@ -26,6 +36,13 @@ validations:
   require-api-description:
     message: The API Description must be set
     targetClass: schema.WebAPI
+    propertyConstraints:
+      schema.description:
+        minCount: 1
+
+  require-method-description:
+    message: The API Method description must be set
+    targetClass: hydra.Operation
     propertyConstraints:
       schema.description:
         minCount: 1
@@ -46,4 +63,4 @@ validations:
         pattern: "^v[0-9]+$"
         minCount: 1
 
-  
+
