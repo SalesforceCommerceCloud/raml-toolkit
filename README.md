@@ -58,7 +58,7 @@ The first error is saying that the API description is not set, but we need to ha
 
 The second error, however, is because it exists, but doesn't match our standard.  There you can see that the position leads you to the exact line number and column of the non-conforming component. 
 
-When there are no more violations the output will say it conforms, but also provide you with some warnings you might want to fix as well.
+When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
 
 ## Known issues and limitations
 
