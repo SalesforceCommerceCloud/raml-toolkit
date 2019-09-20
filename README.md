@@ -68,9 +68,9 @@ When there are no more violations, the output will say it conforms, but also pro
 
 Here is an AMF validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
 
-https://github.com/mulesoft-labs/amf-validation-example
-https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml
-https://github.com/aml-org/amf/tree/develop/documentation/validations
+* https://github.com/mulesoft-labs/amf-validation-example
+* https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml
+* https://github.com/aml-org/amf/tree/develop/documentation/validations
 
 
 
