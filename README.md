@@ -17,7 +17,7 @@ Right now this isn't published to any npm repository.  The best way of installin
 To check your RAML currently the CLI just takes a list of files
 
 ```bash
-$ ramlint ./file.raml
+$ ramlint file.raml
 # or
 $ ramlint ./file1.raml ./file2.raml ./etc.raml
 
