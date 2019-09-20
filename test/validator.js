@@ -188,7 +188,7 @@ describe("resource checking tests", () => {
     assert.equal(result.results.length, 1, result.toString());
     assert.equal(
       result.results[0].validationId,
-      "http://a.ml/vocabularies/data#resource-must-be-lowercase"
+      "http://a.ml/vocabularies/data#resource-name-validation"
     );
   });
 
@@ -201,7 +201,7 @@ describe("resource checking tests", () => {
     assert.equal(result.results.length, 1, result.toString());
     assert.equal(
       result.results[0].validationId,
-      "http://a.ml/vocabularies/data#resource-must-be-lowercase"
+      "http://a.ml/vocabularies/data#resource-name-validation"
     );
   });
 
@@ -214,7 +214,7 @@ describe("resource checking tests", () => {
     assert.equal(result.results.length, 1, result.toString());
     assert.equal(
       result.results[0].validationId,
-      "http://a.ml/vocabularies/data#resource-must-be-lowercase"
+      "http://a.ml/vocabularies/data#resource-name-validation"
     );
   });
 

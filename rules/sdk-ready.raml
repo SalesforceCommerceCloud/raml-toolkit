@@ -11,7 +11,7 @@ violation:
   - https-required
   - require-api-description
   - require-json
-  - resource-must-be-lowercase
+  - resource-name-validation
   - version-format
 
 validations:
@@ -39,7 +39,7 @@ validations:
         in: ["application/json"]
         minCount: 1
 
-  resource-must-be-lowercase:
+  resource-name-validation:
     message: Resource endpoints must be lowercase (Mercury only) 
     targetClass: http.EndPoint
     propertyConstraints:
