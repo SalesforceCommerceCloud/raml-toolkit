@@ -4,7 +4,7 @@ A linting tool for raml for commerce cloud and beyond
 
 ## Installation
 
-Right now this isn't published to any npm repository.  The best way of installing this is to clone this repo right now.
+Right now, this isn't published to any npm repository.  Currently, the best way of installing this is to clone this repo.
 
 1. Clone this repository
 2. Install ramlint!
