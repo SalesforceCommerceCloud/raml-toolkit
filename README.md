@@ -66,7 +66,7 @@ When there are no more violations the output will say it conforms, but also prov
 
 ## Development Resources
 
-Here is a amf validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
+Here is an AMF validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
 
 https://github.com/mulesoft-labs/amf-validation-example
 https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml
