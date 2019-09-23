@@ -24,7 +24,7 @@ validations:
     propertyConstraints:
       schema.name:
         minCount: 1
-        pattern: ^[a-z]+[A-Za-z0-9]*$
+        pattern: ^[a-z]+([A-Z][a-z0-9]*)*$
 
   https-required:
     message: Protocol MUST be HTTPS
@@ -57,7 +57,7 @@ validations:
         minCount: 1
 
   resource-name-validation:
-    message: Resource endpoints must be lowercase (Mercury only) 
+    message: Resource endpoints must be lowercase (Mercury only)
     targetClass: http.EndPoint
     propertyConstraints:
       http.path:
