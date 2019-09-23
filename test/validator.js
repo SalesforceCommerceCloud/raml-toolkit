@@ -210,3 +210,92 @@ describe("method checking tests", () => {
     );
   });
 });
+
+describe("resource checking tests", () => {
+  it("does not conform when resource is in capitals", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/RESOURCE" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#resource-name-validation"
+    );
+  });
+
+  it("does not conform when resource starts with underscore", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/_resource" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#resource-name-validation"
+    );
+  });
+
+  it("does not conform when resource ends with dash", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/resource-" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#resource-name-validation"
+    );
+  });
+
+  it("conforms when resource contains numbers", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/resource2" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+
+  it("conforms when resource contains numbers", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/res0urce" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+
+  it("conforms when resource contains underscore", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/this_resource" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+
+  it("conforms when resource contains hyphens", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/this-resource" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+
+  it("conforms when template is in caps", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/{ID}" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+
+  it("conforms when template has underscores", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), { resource: "/{resource_id}" })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, true, result.toString());
+  });
+});
