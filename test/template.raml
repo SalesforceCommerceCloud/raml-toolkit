@@ -17,9 +17,14 @@ description: {{description}}
 {{/if}}
 {{#if resource}}
 {{resource}}:
-{{/if}}
 {{#if templateId}}
     {{templateId}}:
+        {{method}}:
+{{#if methodDisplayName}}
+            displayName: {{methodDisplayName}}
 {{/if}}
-
-
+{{#if methodDescription}}
+            description: {{methodDescription}}
+{{/if}}
+{{/if}}
+{{/if}}
