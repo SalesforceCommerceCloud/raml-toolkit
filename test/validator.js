@@ -195,6 +195,18 @@ describe("method checking tests", () => {
     );
   });
 
+  it("does not conform when method display name is missing from method", async () => {
+    let testTemplateVars = _.cloneDeep(defaultTemplateVars);
+    delete testTemplateVars.methodDisplayName;
+    let result = await validator.parse(renderTemplate(testTemplateVars));
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#camelcase-method-displayname"
+    );
+  });
+
   it("does not conform when method display name is kebab-case and not camelcase", async () => {
     let filename = renderTemplate(
       _.merge(_.cloneDeep(defaultTemplateVars), {
