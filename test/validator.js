@@ -195,10 +195,40 @@ describe("method checking tests", () => {
     );
   });
 
-  it("does not conform when method display name is not camelcase", async () => {
+  it("does not conform when method display name is kebab-case and not camelcase", async () => {
     let filename = renderTemplate(
       _.merge(_.cloneDeep(defaultTemplateVars), {
         methodDisplayName: "not-camel-case"
+      })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#camelcase-method-displayname"
+    );
+  });
+
+  it("does not conform when method display name is snake_case and not camelcase", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), {
+        methodDisplayName: "not_camel_case"
+      })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#camelcase-method-displayname"
+    );
+  });
+
+  it("does not conform when method display name is PascalCase and not camelcase", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), {
+        methodDisplayName: "NotCamelCase"
       })
     );
     let result = await validator.parse(filename);
