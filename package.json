@@ -69,6 +69,6 @@
     "statements": -10
   },
   "publishConfig": {
-    "registry":"https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
+    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }
