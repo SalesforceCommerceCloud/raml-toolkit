@@ -39,14 +39,12 @@ executePipeline(envDef) {
 
      
         // Configure the proxies
-        sh 'npm config set proxy http://public0-proxy1-0-prd.data.sfdc.net:8080'
-        sh 'npm config set https-proxy http://public0-proxy1-0-prd.data.sfdc.net:8080'
 //        sh 'npm config set cafile /etc/certs.d/npm-sfdc-certs.pem'
 
 
         sh '''
             npm version patch
-            npm publish --registry=https://${registry} || (cat /home/jenkins/.npm/_logs/* && exit 1)"
+            npm publish --registry=https://${registry} || (cat /home/jenkins/.npm/_logs/* && exit 1)
             git push --tags && git push origin master
         '''
     }

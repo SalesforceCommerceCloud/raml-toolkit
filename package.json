@@ -7,7 +7,9 @@
   },
   "main": "./main.js",
   "files": [
-    "validator"
+    "validator",
+    "bin",
+    "main.js"
   ],
   "author": "",
   "license": "ISC",
@@ -65,5 +67,6 @@
     "functions": 80,
     "lines": 80,
     "statements": -10
-  }
+  },
+
 }
