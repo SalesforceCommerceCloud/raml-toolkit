@@ -23,29 +23,8 @@ executePipeline(envDef) {
     stage('Publish') {
         sh 'hostname -I'
         npmInit()
-        final String registry = 'nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'
-
-        withCredentials([usernamePassword(
-            credentialsId: 'sfci-nexus',
-            usernameVariable: 'NEXUS_USERNAME',
-            passwordVariable: 'NEXUS_PASSWORD'
-        )]) {
-            // Get the auth token and configure npm (securely)
-            String authToken = sh([script: "echo -n ${NEXUS_USERNAME}:${NEXUS_PASSWORD} | base64", returnStdout: true]).trim()
-            wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: authToken, var: 'SECRET']]]) {
-                sh "npm config set //${registry}:_authToken ${authToken}"
-            }
-        }
-
-     
-        // Configure the proxies
-//        sh 'npm config set cafile /etc/certs.d/npm-sfdc-certs.pem'
-
-
-        sh '''
-            npm version patch
-            npm publish --registry=https://${registry} || (cat /home/jenkins/.npm/_logs/* && exit 1)
-            git push --tags && git push origin master
-        '''
+        sh "npm version patch"
+        sh "npm publish"
+        sh "git push --tags && git push origin master"
     }
 }

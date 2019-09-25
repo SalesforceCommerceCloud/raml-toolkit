@@ -67,5 +67,8 @@
     "functions": 80,
     "lines": 80,
     "statements": -10
+  },
+  "publishConfig": {
+    "registry":"https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }
