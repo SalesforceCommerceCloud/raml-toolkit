@@ -14,6 +14,10 @@ def envDef = [ buildImage: 'ops0-artifactrepo1-0-prd.data.sfdc.net/dx-runtime/ce
 env.RELEASE_BRANCHES = ['master']
 
 executePipeline(envDef) {
+    stage('Init') {
+        buildInit()
+    }
+    
     stage('Test') {
         sh "node --version"
         sh "npm --version"
@@ -37,8 +41,9 @@ executePipeline(envDef) {
             }
         }
 
-        sh "npm version patch"
+        sh "npm version patch -m '@skip-ci@ updated version from Jenkins'"
         sh "npm publish"
         sh "git push --tags"
+        sh "git push origin HEAD:master"
     }
 }
