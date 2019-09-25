@@ -1,0 +1,53 @@
+/* Before using this example, check if the below release tag(v0.3.0) is the latest.
+ * You can find the latest release tag at https://git.soma.salesforce.com/dci/sfci-pipeline-sharedlib/releases
+ */
+@Library('sfci-pipeline-sharedlib@master') _
+
+/* Specify the build image you want to use.
+ * Not specifying a build image will use the default build image specified here:
+ * https://git.soma.salesforce.com/dci/sfci-pipeline-sharedlib/blob/master/vars/executePipeline.groovy#L4
+ * (If you are fine with the default image, ignore this line)
+ */
+def envDef = [ buildImage: 'ops0-artifactrepo1-0-prd.data.sfdc.net/dx-runtime/centos-sfci-cc-runtime' ]
+
+// define any release branches here
+env.RELEASE_BRANCHES = ['master']
+
+executePipeline(envDef) {
+    stage('Test') {
+        sh "node --version"
+        sh "npm --version"
+        sh "npm install && npm test"
+    }
+
+    stage('Publish') {
+        sh 'hostname -I'
+        npmInit()
+        final String registry = 'nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/'
+
+        withCredentials([usernamePassword(
+            credentialsId: 'sfci-nexus',
+            usernameVariable: 'NEXUS_USERNAME',
+            passwordVariable: 'NEXUS_PASSWORD'
+        )]) {
+            // Get the auth token and configure npm (securely)
+            String authToken = sh([script: "echo -n ${NEXUS_USERNAME}:${NEXUS_PASSWORD} | base64", returnStdout: true]).trim()
+            wrap([$class: 'MaskPasswordsBuildWrapper', varPasswordPairs: [[password: authToken, var: 'SECRET']]]) {
+                sh "npm config set //${registry}:_authToken ${authToken}"
+            }
+        }
+
+     
+        // Configure the proxies
+        sh 'npm config set proxy http://public0-proxy1-0-prd.data.sfdc.net:8080'
+        sh 'npm config set https-proxy http://public0-proxy1-0-prd.data.sfdc.net:8080'
+//        sh 'npm config set cafile /etc/certs.d/npm-sfdc-certs.pem'
+
+
+        sh '''
+            npm version patch
+            npm publish --registry=https://${registry} || (cat /home/jenkins/.npm/_logs/* && exit 1)"
+            git push --tags && git push origin master
+        '''
+    }
+}
