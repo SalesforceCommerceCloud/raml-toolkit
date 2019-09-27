@@ -122,7 +122,7 @@ describe("title checking tests", () => {
   });
 });
 
-describe("description checking tests", () => {
+describe("API description checking tests", () => {
   it("does not conform when description is missing", async () => {
     let doc = getHappySpec();
     delete doc.description;
@@ -133,19 +133,30 @@ describe("description checking tests", () => {
     );
   });
 
-  it("does not conform when description contains text 'TODO' (case insensitive)", async () => {
-    let filename = renderTemplate(
-      _.merge(_.cloneDeep(defaultTemplateVars), {
-        description: "1TODO "
-      })
+  it("does not conform when description contains text 'TODO'", async () => {
+    let doc = getHappySpec();
+    doc.description = "API description contains TODO in uppercase";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#validate-api-description"
     );
-    let result = await validator.parse(filename);
-    assert.equal(result.conforms, false, result.toString());
-    assert.equal(result.results.length, 1, result.toString());
-    assert.equal(
-      result.results[0].validationId,
-      "http://a.ml/vocabularies/data#validate-api-description",
-      result.toString()
+  });
+
+  it("does conform when description contains text 'todo' as part of a word", async () => {
+    let doc = getHappySpec();
+    doc.description = "This API returns list of panTODOnta";
+    let result = await validator.parse(renderSpec(doc));
+    conforms(result);
+  });
+
+  it("does not conform when description contains text 'todo' mixed case", async () => {
+    let doc = getHappySpec();
+    doc.description = "API description contains TodO in uppercase";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#validate-api-description"
     );
   });
 });

@@ -61,11 +61,11 @@ validations:
         minCount: 1
 
   validate-api-description:
-    message: The API Description must not contain text 'TODO' (case insensitive)
+    message: The API Description must not contain word 'TODO' (case insensitive)
     targetClass: schema.WebAPI
     propertyConstraints:
       schema.description:
-        pattern: "^TODO"
+        pattern: ^((?!\b([T|t][O|o][D|d][O|o])\b).)*$
 
   require-method-description:
     message: The API Method description must be set
