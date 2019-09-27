@@ -8,19 +8,37 @@ disabled:
   - amf-parser.WebAPI-mediaType-datatype
 
 violation:
+  - at-least-one-2xx-or-3xx-response
   - camelcase-method-displayname
   - https-required
   - require-api-description
   - validate-api-description
   - require-method-description
+  - require-response-description
   - require-json
   - resource-name-validation
   - version-format
 
 validations:
 
+  at-least-one-2xx-or-3xx-response:
+    message: Methods must have at least one 2xx or 3xx response
+    targetClass: hydra.Operation
+    functionConstraint:
+      code: |
+        function(method) {
+          const re = /[23][0-9][0-9]/;
+          let returns = (method["hydra:returns"] || []);
+          for (let i = 0; i < returns.length; i++) {
+            if (re.test(returns[i]["hydra:statusCode"])) {
+              return true;
+            }
+          }
+          return false;
+        }
+
   camelcase-method-displayname:
-    message: The API Method must have displayName and be in camelcase
+    message: The API Method must have displayName and the value must be in camelcase
     targetClass: hydra.Operation
     propertyConstraints:
       schema.name:
@@ -52,6 +70,13 @@ validations:
   require-method-description:
     message: The API Method description must be set
     targetClass: hydra.Operation
+    propertyConstraints:
+      schema.description:
+        minCount: 1
+
+  require-response-description:
+    message: The description for API responses must be set
+    targetClass: http.Response
     propertyConstraints:
       schema.description:
         minCount: 1
