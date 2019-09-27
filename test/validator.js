@@ -179,6 +179,22 @@ describe("description checking tests", () => {
       result.toString()
     );
   });
+
+  it("does not conform when description contains text 'TODO' (case insensitive)", async () => {
+    let filename = renderTemplate(
+      _.merge(_.cloneDeep(defaultTemplateVars), {
+        description: "1TODO "
+      })
+    );
+    let result = await validator.parse(filename);
+    assert.equal(result.conforms, false, result.toString());
+    assert.equal(result.results.length, 1, result.toString());
+    assert.equal(
+      result.results[0].validationId,
+      "http://a.ml/vocabularies/data#validate-api-description",
+      result.toString()
+    );
+  });
 });
 
 describe("method checking tests", () => {

@@ -11,6 +11,7 @@ violation:
   - camelcase-method-displayname
   - https-required
   - require-api-description
+  - validate-api-description
   - require-method-description
   - require-json
   - resource-name-validation
@@ -40,6 +41,13 @@ validations:
     propertyConstraints:
       schema.description:
         minCount: 1
+
+  validate-api-description:
+    message: The API Description must not contain text 'TODO' (case insensitive)
+    targetClass: schema.WebAPI
+    propertyConstraints:
+      schema.description:
+        pattern: "^TODO"
 
   require-method-description:
     message: The API Method description must be set
