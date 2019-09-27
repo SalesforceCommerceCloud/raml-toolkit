@@ -1,30 +1,25 @@
 #%RAML 1.0
 ---
-{{#if title}}
-title: {{title}}
-{{/if}}
-{{#if version}}
-version: {{version}}
-{{/if}}
-{{#if mediaType}}
-mediaType: {{mediaType}}
-{{/if}}
-{{#if protocols}}
-protocols: {{protocols}}
-{{/if}}
-{{#if description}}
-description: {{description}}
-{{/if}}
-{{#if resource}}
-{{resource}}:
-{{#if templateId}}
-    {{templateId}}:
-        {{method}}:
-{{#if methodDisplayName}}
-            displayName: {{methodDisplayName}}
-{{/if}}
-{{#if methodDescription}}
-            description: {{methodDescription}}
-{{/if}}
-{{/if}}
-{{/if}}
+title: Test Raml File
+version: v1
+mediaType: application/json
+protocols: https
+description: This is a description of the API spec
+/resource:
+    /{resourceId}:
+        get:
+            displayName: getResource
+            description: Get this resource
+            responses:
+                200:
+                    description: OK
+                404:
+                    description: Resource not found
+        post:
+            displayName: createResource
+            description: Create this resource
+            responses:
+                201:
+                    description: Created
+                404:
+                    description: Resource not found
