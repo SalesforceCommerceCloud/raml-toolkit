@@ -12,7 +12,7 @@ violation:
   - camelcase-method-displayname
   - https-required
   - require-api-description
-  - validate-api-description
+  - no-todo-text-in-description-fields
   - require-method-description
   - require-response-description
   - require-json
@@ -60,12 +60,19 @@ validations:
       schema.description:
         minCount: 1
 
-  validate-api-description:
+  no-todo-text-in-description-fields:
     message: The API Description must not contain word 'TODO' (case insensitive)
-    targetClass: schema.WebAPI
-    propertyConstraints:
-      schema.description:
-        pattern: ^((?!\b([T|t][O|o][D|d][O|o])\b).)*$
+    targetClass: doc.DomainElement
+    functionConstraint:
+      code: |
+        function(resource) {
+          const todoRegex = /^((?!\b([T|t][O|o][D|d][O|o])\b).)*$/;
+          var description = (resource['schema:description'] || []);
+          if (description.length == 0 || todoRegex.test(description[0])) {
+            return true;
+          }
+          return false;
+        }
 
   require-method-description:
     message: The API Method description must be set

@@ -132,31 +132,49 @@ describe("API description checking tests", () => {
       "http://a.ml/vocabularies/data#require-api-description"
     );
   });
+});
 
-  it("does not conform when description contains text 'TODO'", async () => {
+describe("description checking tests", () => {
+  it("does not conform when API description contains text 'todo'", async () => {
     let doc = getHappySpec();
     doc.description = "API description contains TODO in uppercase";
     let result = await validator.parse(renderSpec(doc));
     breaksOnlyOneRule(
       result,
-      "http://a.ml/vocabularies/data#validate-api-description"
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
     );
   });
 
-  it("does conform when description contains text 'todo' as part of a word", async () => {
+  it("does not conform when GET method description contains text 'todo'", async () => {
     let doc = getHappySpec();
-    doc.description = "This API returns list of panTODOnta";
-    let result = await validator.parse(renderSpec(doc));
-    conforms(result);
-  });
-
-  it("does not conform when description contains text 'todo' mixed case", async () => {
-    let doc = getHappySpec();
-    doc.description = "API description contains TodO in uppercase";
+    doc["/resource"]["/{resourceId}"].get.description =
+      "This GET method is a TODO operation";
     let result = await validator.parse(renderSpec(doc));
     breaksOnlyOneRule(
       result,
-      "http://a.ml/vocabularies/data#validate-api-description"
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when POST method description contains text 'todo'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].post.description =
+      "This POST method is a TODO operation";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when POST method's 201 response code's description contains text 'todo'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].post.responses["201"].description =
+      "201 status TODO";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
     );
   });
 });
