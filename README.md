@@ -1,7 +1,8 @@
 # sfcc-raml-linter
 A linting tool for raml for commerce cloud and beyond
 
-
+[![Build Status][jenkins-image]][jenkins-url]
+[![Slack](https://img.shields.io/badge/slack-sfcc--raml--linter-e01563.svg?logo=slack)](https://commercecloud.slack.com/messages/CNDPCJQG3)
 ## Installation
 
 Right now, this isn't published to any npm repository.  Currently, the best way of installing this is to clone this repo.
@@ -60,6 +61,8 @@ The second error, however, is because it exists, but doesn't match our standard.
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
 
+https://confluence.internal.salesforce.com/display/NEXUS/Nexus+NPM+Repositories
+
 ## Known issues and limitations
 
 * Currently works only with local files
@@ -73,4 +76,6 @@ Here is an AMF validation example from Mulesoft.  This includes some custom rule
 * https://github.com/aml-org/amf/tree/develop/documentation/validations
 
 
-
+<!-- Markdown link & img dfn's -->
+[jenkins-image]: https://cc-dx-runtimeci.dop.sfdc.net/buildStatus/icon?job=cc-dx-runtime-org%2Fsfcc-raml-linter%2Fmaster
+[jenkins-url]: https://cc-dx-runtimeci.dop.sfdc.net/job/cc-dx-runtime-org/job/sfcc-raml-linter/job/master/
