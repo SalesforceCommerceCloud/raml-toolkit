@@ -5,13 +5,23 @@ A linting tool for raml for commerce cloud and beyond
 ## Installation
 
 ### Git Enterprise (git.soma)
-Right now, this isn't published to any npm repository.  Currently, the best way of installing this is to clone this repo.
+
+#### Release Download
 
 1. Download latest release from [here](https://git.soma.salesforce.com/cc-dx-runtime/sfcc-raml-linter/releases)
 2. Install ramlint!
 
 ```bash    
 $ npm install sfcc-raml-linter-x.x.x.tar.gz
+```
+
+#### Repository clone
+
+1. Clone this repo
+2. Install dependencies and link from the cloned repo
+
+```bash    
+~/sfcc-raml-linter $ npm install && npm link
 ```
 
 ### Sonatype Nexus (nexus.soma)

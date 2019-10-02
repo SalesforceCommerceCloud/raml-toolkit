@@ -23,3 +23,35 @@ description: This is a description of the API spec
                     description: Created
                 404:
                     description: Resource not found
+        put:
+            displayName: updateResource
+            description: Update this resource
+            responses:
+                202:
+                    description: Accepted
+                404:
+                    description: Resource not found
+        patch:
+            displayName: patchResource
+            description: Patch this resource
+            responses:
+                202:
+                    description: Accepted
+                404:
+                    description: Resource not found
+        head:
+            displayName: checkResource
+            description: Check presene of this resource
+            responses:
+                200:
+                    description: Ok
+                404:
+                    description: Resource not found
+        delete:
+            displayName: patchResource
+            description: Patch this resource
+            responses:
+                202:
+                    description: Accepted
+                404:
+                    description: Resource not found
