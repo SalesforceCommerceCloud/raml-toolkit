@@ -61,14 +61,15 @@ validations:
         minCount: 1
 
   no-todo-text-in-description-fields:
-    message: The API Description must not contain word 'TODO' (case insensitive)
+    message: Empty string or The word 'TODO' (case insensitive) is not allowed in any description field.
     targetClass: doc.DomainElement
     functionConstraint:
       code: |
         function(resource) {
-          const todoRegex = /^((?!\b([T|t][O|o][D|d][O|o])\b).)*$/;
-          var description = (resource['schema:description'] || []);
-          if (description.length == 0 || todoRegex.test(description[0])) {
+          const todoRegex = /^((?!\b([T|t][O|o][D|d][O|o]([_])*)\b).)*$/;
+          //doc.DomainElement may not have a description field, return true
+          if ( !resource['schema:description'] || ( resource['schema:description'][0].trim().length > 0
+            && todoRegex.test(resource['schema:description'][0]) ) ) {
             return true;
           }
           return false;

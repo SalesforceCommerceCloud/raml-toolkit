@@ -135,9 +135,59 @@ describe("API description checking tests", () => {
 });
 
 describe("description checking tests", () => {
-  it("does not conform when API description contains text 'todo'", async () => {
+  it("does not conform when API description contains text 'todo' preceded by whitespace", async () => {
     let doc = getHappySpec();
-    doc.description = "API description contains TODO in uppercase";
+    doc.description = "     TODO";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when API description contains empty string", async () => {
+    let doc = getHappySpec();
+    doc.description = "";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when API description contains only whitespace", async () => {
+    let doc = getHappySpec();
+    doc.description = "     ";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains text 'todo' preceded by whitespace", async () => {
+    let doc = getHappySpec();
+    doc.description = "     TODO";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description is empty string", async () => {
+    let doc = getHappySpec();
+    doc.description = "";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains only whitespace", async () => {
+    let doc = getHappySpec();
+    doc.description = "   ";
     let result = await validator.parse(renderSpec(doc));
     breaksOnlyOneRule(
       result,
@@ -147,8 +197,47 @@ describe("description checking tests", () => {
 
   it("does not conform when GET method description contains text 'todo'", async () => {
     let doc = getHappySpec();
-    doc["/resource"]["/{resourceId}"].get.description =
-      "This GET method is a TODO operation";
+    doc["/resource"]["/{resourceId}"].get.description = "This method is TODo";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains text 'todo' followed by ':'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].get.description = "TODO:";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains text 'todo' followed by ';'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].get.description = "TODO;";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains text 'todo' followed by '-'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].get.description = "TODO-";
+    let result = await validator.parse(renderSpec(doc));
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+
+  it("does not conform when GET method description contains text 'todo' followed by '_'", async () => {
+    let doc = getHappySpec();
+    doc["/resource"]["/{resourceId}"].get.description = "todo_";
     let result = await validator.parse(renderSpec(doc));
     breaksOnlyOneRule(
       result,
