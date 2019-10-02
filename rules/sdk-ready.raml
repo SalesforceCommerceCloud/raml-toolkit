@@ -66,13 +66,13 @@ validations:
     functionConstraint:
       code: |
         function(resource) {
-          const todoRegex = /^((?!\b([T|t][O|o][D|d][O|o]([_])*)\b).)*$/;
+          const todoRegex = /\b(todo(_)*)\b|^\s*$/i;
           //doc.DomainElement may not have a description field, return true
-          if ( !resource['schema:description'] || ( resource['schema:description'][0].trim().length > 0
-            && todoRegex.test(resource['schema:description'][0]) ) ) {
-            return true;
+          if ( resource['schema:description']
+            && todoRegex.test(resource['schema:description'][0])  ) {
+            return false;
           }
-          return false;
+          return true;
         }
 
   require-method-description:

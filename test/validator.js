@@ -145,6 +145,27 @@ describe("description checking tests", () => {
     );
   });
 
+  it("does conform when API description contains text 'todo' at the end of the word", async () => {
+    let doc = getHappySpec();
+    doc.description = "COTODO";
+    let result = await validator.parse(renderSpec(doc));
+    conforms(result);
+  });
+
+  it("does conform when API description contains text 'todo' at start of the word", async () => {
+    let doc = getHappySpec();
+    doc.description = "TODOsomestuff";
+    let result = await validator.parse(renderSpec(doc));
+    conforms(result);
+  });
+
+  it("does conform when API description contains text 'todo' as part of the word", async () => {
+    let doc = getHappySpec();
+    doc.description = "sometodostuff";
+    let result = await validator.parse(renderSpec(doc));
+    conforms(result);
+  });
+
   it("does not conform when API description contains empty string", async () => {
     let doc = getHappySpec();
     doc.description = "";
