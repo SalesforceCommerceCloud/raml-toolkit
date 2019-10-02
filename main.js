@@ -47,7 +47,7 @@ class SfccRamlintCommand extends Command {
 
 function getProfiles() {
   let files = fs.readdirSync(path.join(__dirname, "profiles"));
-  return files.map(name => name.replace(/\.[^/.]+$/, ""));
+  return files.map(name => name.replace(/\.raml$/i, ""));
 }
 
 SfccRamlintCommand.description = `A linting tool for raml for commerce cloud and beyond
