@@ -10,9 +10,9 @@ Right now, this isn't published to any npm repository.  Currently, the best way 
 1. Download latest release from [here](https://git.soma.salesforce.com/cc-dx-runtime/sfcc-raml-linter/releases)
 2. Install ramlint!
 
-    ```bash    
-    $ npm install sfcc-raml-linter-x.x.x.tar.gz
-    ```
+```bash    
+$ npm install sfcc-raml-linter-x.x.x.tar.gz
+```
 
 ### Sonatype Nexus (nexus.soma)
 
@@ -20,9 +20,9 @@ In order to configure your laptop to read from our internal nexus server you nee
 
 Once this is completed you should just be able to do an npm install
 
-    ```bash
-    $ npm install sfcc-raml-linter
-    ```
+```bash
+$ npm install sfcc-raml-linter
+```
 
 ## SFCI Usage
 
