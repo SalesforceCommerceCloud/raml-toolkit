@@ -15,9 +15,9 @@ class SfccRamlintCommand extends Command {
 
     let promises = [];
 
-    for (var i = 0; i < argv.length; i++) {
+    for (let arg of argv) {
       // eslint-disable-next-line no-await-in-loop
-      promises.push(this.validateFile(argv[i], flags.profile));
+      promises.push(this.validateFile(arg, flags.profile));
     }
 
     await Promise.all(promises).catch(e => {
