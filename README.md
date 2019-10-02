@@ -1,18 +1,48 @@
 # sfcc-raml-linter
 A linting tool for raml for commerce cloud and beyond
 
-
+[![Build Status][jenkins-image]][jenkins-url]  [![Slack][slack-image]][slack-url]
 ## Installation
 
+### Git Enterprise (git.soma)
 Right now, this isn't published to any npm repository.  Currently, the best way of installing this is to clone this repo.
 
-1. Clone this repository
+1. Download latest release from [here](https://git.soma.salesforce.com/cc-dx-runtime/sfcc-raml-linter/releases)
 2. Install ramlint!
 
-    ```bash    
-    $ npm install && npm link
-    ```
-## Usage
+```bash    
+$ npm install sfcc-raml-linter-x.x.x.tar.gz
+```
+
+### Sonatype Nexus (nexus.soma)
+
+In order to configure your laptop to read from our internal nexus server you need to do some setup first.  These instructions can be found [here](https://confluence.internal.salesforce.com/display/NEXUS/Nexus+NPM+Repositories).
+
+Once this is completed you should just be able to do an npm install
+
+```bash
+$ npm install sfcc-raml-linter
+```
+
+## SFCI Usage
+
+If using or basing you SFCI image of of the [centos-sfci-nodejs](https://git.soma.salesforce.com/dci/centos-sfci-nodejs) docker image, then running this becomes very easy.
+
+In your Jenkinsfile just make sure you init npm and then its a very simple one line command
+
+  ```groovy
+    stage('Init') {
+        npmInit()
+    }
+
+    stage('Whatever') {
+        sh "npx sfcc-raml-linter file1.raml file2.raml etc.raml"
+    }
+  ```
+
+NOTE: Violations will return a non-zero exit code and fail the build, which warnings will still return a 0 exit code so the build will not fail with warnings
+
+## Local Usage
 
 To check your RAML currently the CLI just takes a list of files
 
@@ -60,6 +90,7 @@ The second error, however, is because it exists, but doesn't match our standard.
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
 
+
 ## Known issues and limitations
 
 * Currently works only with local files
@@ -73,4 +104,8 @@ Here is an AMF validation example from Mulesoft.  This includes some custom rule
 * https://github.com/aml-org/amf/tree/develop/documentation/validations
 
 
-
+<!-- Markdown link & img dfn's -->
+[jenkins-image]: https://cc-dx-runtimeci.dop.sfdc.net/buildStatus/icon?job=cc-dx-runtime-org%2Fsfcc-raml-linter%2Fmaster
+[jenkins-url]: https://cc-dx-runtimeci.dop.sfdc.net/job/cc-dx-runtime-org/job/sfcc-raml-linter/job/master/
+[slack-image]: https://img.shields.io/badge/slack-sfcc--raml--linter-e01563.svg?logo=slack
+[slack-url]: https://commercecloud.slack.com/messages/CNDPCJQG3
