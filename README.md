@@ -34,9 +34,9 @@ Once this is completed you should just be able to do an npm install
 $ npm install sfcc-raml-linter
 ```
 
-## SFCI Usage
+## SFCI Usage (Jenkins)
 
-If using or basing you SFCI image of of the [centos-sfci-nodejs](https://git.soma.salesforce.com/dci/centos-sfci-nodejs) docker image, then running this becomes very easy.
+If using or basing you SFCI image off the [centos-sfci-nodejs](https://git.soma.salesforce.com/dci/centos-sfci-nodejs) docker image, then running this becomes very easy.
 
 In your Jenkinsfile just make sure you init npm and then its a very simple one line command
 
