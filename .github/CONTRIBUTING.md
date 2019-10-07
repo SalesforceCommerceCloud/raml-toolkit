@@ -82,7 +82,7 @@ it("does not conform when missing the version", async () => {
 
 #### Don't reinvent the wheel
 
-Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to AMF with a test bed.  Utilize that and lets keep api fragmentation down.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible
+Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to AMF with a test bed.  Utilize that and let's keep API fragmentation down.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
 
 #### Profile Metadata
 
