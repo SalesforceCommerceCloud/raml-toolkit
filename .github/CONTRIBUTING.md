@@ -23,7 +23,7 @@ Most of the time, you are probably looking to update or change a profile instead
 
 ### Creating a New Profile
 
-If you want to create a new profile there are a few items that you need to follow or at least consider when contributing a new profile:
+When creating a new profile, here are a few items that you need to follow or at least consider:
 
   - Profile naming 
   - Testing 
@@ -44,13 +44,13 @@ We have provided a test bed for ensuring your custom validations work as expecte
 
 ##### Testing Examples<!-- omit in toc -->
 
-Please of course refer to the sdk-ready [tests](../test/sdk-ready.js) if you want to get a more complete idea of how tests are written.  But here are some examples broken down for a better understanding
+Please of course refer to the sdk-ready [tests](../test/sdk-ready.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
 
 ```javascript
 
 # Always include a set of happy path of the overall raml.  
 # This ensures that the raml you are testing is valid
-it("valid", async () => {
+it("returns the RAML is valid when passed valid RAML", async () => {
      # Load in the happy spec
     let doc = utils.getHappySpec(`${PROFILE}.raml`);
     
@@ -82,11 +82,11 @@ it("does not conform when missing the version", async () => {
 
 #### Don't Reinvent the Wheel
 
-Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to AMF with a test bed.  Utilize that and let's keep API fragmentation down.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
+Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to [AMF](https://github.com/aml-org/amf) with a test bed.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
 
 #### Profile Metadata
 
-At the beginning of your profile you should have some metadata detailing whose profile it is and who to contact with questions about the profile.  Adding rules to a profile can cause existing valid RAML to break so communication is critical.  Here is an example of that metadata
+At the beginning of your profile you should have some metadata detailing whose profile it is and who to contact with questions about the profile.  It is critical to provide a path for communication, as adding rules to a profile will likely cause existing, valid RAML, to break.  Here is an example of that metadata
 
 ```yaml
 #%Validation Profile 1.0
@@ -97,7 +97,7 @@ At the beginning of your profile you should have some metadata detailing whose p
 
 ## Adding Core Functionality
 
-When Core F is changes or added (changes to any non-test javascript files) All existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against Core F must include someone from the CC Steel Arc team.
+When core functionality is changed or added (i.e. changes to any non-test javascript files) all existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against core functionality must include review and approval by someone from the CC Steel Arc team in order to be merged
 
 ## Review Process
 
@@ -107,9 +107,9 @@ All of salesforce has read access to this repo, but not write.  We ask that when
 
 ### Profile Reviews
 
-While we appreciate being informed about added profiles we are not going to require it.  Currently CC SteelArc is the only team with the ability to merge profiles, but we won't stand in your way.  If you team has written a profile and want it added we will merge it on request as long as you have at least two people from your team that approve it and all of its tests pass.
+While we appreciate being informed about added profiles we are not going to require it.  At this time only CC SteelArc may merge profiles to this repo officially, but don't let that stand in the way of creating and contributing your own!  If your team has written a profile and want it added we will merge it upon request, so long as you have at least two people from your team approve the PR and all of the tests pass.
 
-If you are updating an existing profile the team owner of that profile needs to approve these changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request
+If you are updating an existing profile the team owner of that profile needs to approve those changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request.
 
 ## Release Process and Cadence
 
