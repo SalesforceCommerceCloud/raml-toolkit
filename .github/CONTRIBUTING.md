@@ -19,7 +19,7 @@
 
 ## Adding Profiles
 
-Most of the time you are probably looking to update or change a profile instead of code itself.  These Profiles are the actual rule sets applied to the RAML specs when running this tool.  Profiles are between you and your team.  
+Most of the time, you are probably looking to update or change a profile instead of code itself.  These profiles are the actual rule sets applied to the RAML specs when running this tool.  Profiles are between you and your team.  
 
 ### Creating a new profile
 
