@@ -1,16 +1,16 @@
 
 # Contributing to SFCC-RAML-LINTER  <!-- omit in toc -->
 
-**First, Thank you!!!**  We want to thank anyone reading this for contributing or even considering contributing back to this project.  We want to make sure that teams feel empowered to add their own rules and profiles to expand upon this tool.
+**First, thank you!!!**  We want to thank anyone reading this for contributing or even considering contributing back to this project.  We want to make sure that teams feel empowered to add their own rules and profiles to expand upon this tool.
 
 - [Adding Profiles](#adding-profiles)
-  - [Creating a new profile](#creating-a-new-profile)
-    - [Profile naming](#profile-naming)
+  - [Creating a New Profile](#creating-a-new-profile)
+    - [Profile Naming](#profile-naming)
     - [Testing](#testing)
-    - [Don't reinvent the wheel](#dont-reinvent-the-wheel)
+    - [Don't Reinvent the Wheel](#dont-reinvent-the-wheel)
     - [Profile Metadata](#profile-metadata)
-- [Adding core functionality](#adding-core-functionality)
-- [Review process](#review-process)
+- [Adding Core Functionality](#adding-core-functionality)
+- [Review Process](#review-process)
   - [Repository Branching and Pull Requests](#repository-branching-and-pull-requests)
   - [Profile Reviews](#profile-reviews)
 - [Release Process and Cadence](#release-process-and-cadence)
@@ -21,18 +21,18 @@
 
 Most of the time, you are probably looking to update or change a profile instead of code itself.  These profiles are the actual rule sets applied to the RAML specs when running this tool.  Profiles are between you and your team.  
 
-### Creating a new profile
+### Creating a New Profile
 
-If you want to create a new profile there are a few items that you need to follow or at least consider when contributing a new profile.
+If you want to create a new profile there are a few items that you need to follow or at least consider when contributing a new profile:
 
   - Profile naming 
   - Testing 
   - Don't reinvent the wheel
-  - Add meta data to your profile in the form of comments
+  - Add metadata to your profile in the form of comments
 
-#### Profile naming
+#### Profile Naming
 
-Profiles should be named with clarity to be descriptive of the purpose of that profile. The following files should be names for your profile
+Profiles should be named with clarity to be descriptive of the purpose of that profile. The following files should be names for your profile:
 
 - test/{profile-name}.js        -> Where the tests for your profile live
 - test/{profile-name}.raml      -> Where a valid RAML definition for your profile lives
@@ -80,7 +80,7 @@ it("does not conform when missing the version", async () => {
 });
 ```
 
-#### Don't reinvent the wheel
+#### Don't Reinvent the Wheel
 
 Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to AMF with a test bed.  Utilize that and let's keep API fragmentation down.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
 
@@ -95,11 +95,11 @@ At the beginning of your profile you should have some metadata detailing whose p
 # slack: {slack channel your team can be contacted at (optional)}
 ```
 
-## Adding core functionality
+## Adding Core Functionality
 
-When core functionality changes or is added (changes to any non-test javascript files), all existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against core functionality must include someone from the CC Steel Arc team.
+When Core F is changes or added (changes to any non-test javascript files) All existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against Core F must include someone from the CC Steel Arc team.
 
-## Review process
+## Review Process
 
 ### Repository Branching and Pull Requests
 
@@ -109,7 +109,7 @@ All of salesforce has read access to this repo, but not write.  We ask that when
 
 While we appreciate being informed about added profiles we are not going to require it.  Currently CC SteelArc is the only team with the ability to merge profiles, but we won't stand in your way.  If you team has written a profile and want it added we will merge it on request as long as you have at least two people from your team that approve it and all of its tests pass.
 
-If you are updating an existing profile the team owner of that profile needs to approve of those changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request
+If you are updating an existing profile the team owner of that profile needs to approve these changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request
 
 ## Release Process and Cadence
 
