@@ -18,7 +18,7 @@ function validateCustom(profileName, profile, model) {
   });
 }
 
-async function parseRaml(filename) {
+async function parseRaml(filename, profile) {
   // We initialize AMF first
   amf.plugins.document.WebApi.register();
   amf.plugins.features.AMFValidation.register();
@@ -31,8 +31,13 @@ async function parseRaml(filename) {
         .parseFileAsync(filename)
         .then(function(model) {
           return validateCustom(
-            "sdk-ready",
-            `file://${path.join(__dirname, "..", "rules", "sdk-ready.raml")}`,
+            profile,
+            `file://${path.join(
+              __dirname,
+              "..",
+              "profiles",
+              `${profile}.raml`
+            )}`,
             model
           );
         }) // Validating using a custom profile
