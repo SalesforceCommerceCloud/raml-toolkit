@@ -12,8 +12,8 @@ const _ = require("lodash");
  * tests pass.
  */
 
-function getHappySpec() {
-  return yaml.safeLoad(fs.readFileSync(`${__dirname}/valid.raml`, "utf8"));
+function getHappySpec(filename = `${__dirname}/sdk-ready.raml`) {
+  return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
 }
 
 function renderSpecAsFile(doc) {
