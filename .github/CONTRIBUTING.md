@@ -97,7 +97,7 @@ At the beginning of your profile you should have some metadata detailing whose p
 
 ## Adding core functionality
 
-When core functionality is changes or added (changes to any non-test javascript files) All existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against core functionality must include someone from the CC Steel Arc team.
+When core functionality changes or is added (changes to any non-test javascript files), all existing tests must pass and new tests must be added to maintain the minimum 80% tests coverage we have configured.  PRs against core functionality must include someone from the CC Steel Arc team.
 
 ## Review process
 
