@@ -86,7 +86,7 @@ Look at the profiles that exist, discuss if you really need a new profile or if 
 
 #### Profile Metadata
 
-At the beginning of your profile you should have some metadata detailing whose profile it is an who to contact with questions about the profile.  This is critical as generally adding rules to a profile will cause existing valid RAML to break so communication is critical.  Here is an example of that metadata
+At the beginning of your profile you should have some metadata detailing whose profile it is and who to contact with questions about the profile.  Adding rules to a profile can cause existing valid RAML to break so communication is critical.  Here is an example of that metadata
 
 ```yaml
 #%Validation Profile 1.0
