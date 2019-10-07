@@ -107,7 +107,7 @@ All of salesforce has read access to this repo, but not write.  We ask that when
 
 ### Profile Reviews
 
-While we appreciate being informed about added profiles we are not going to require it.  Currently CC SteelArc is the only team with the ability to merge profiles, but we won't let stand in your way.  If you team has written a profile and want it added we will merge it on request as long as you have at least two people from your team that approve it and all of its tests pass.
+While we appreciate being informed about added profiles we are not going to require it.  Currently CC SteelArc is the only team with the ability to merge profiles, but we won't stand in your way.  If you team has written a profile and want it added we will merge it on request as long as you have at least two people from your team that approve it and all of its tests pass.
 
 If you are updating an existing profile the team owner of that profile needs to approve of those changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request
 
