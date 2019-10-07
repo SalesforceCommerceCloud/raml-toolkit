@@ -9,7 +9,7 @@
   "files": [
     "validator",
     "bin",
-    "rules",
+    "profiles",
     "main.js"
   ],
   "author": "",
