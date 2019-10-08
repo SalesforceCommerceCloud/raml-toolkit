@@ -17,10 +17,15 @@
 - [Release Process and Cadence](#release-process-and-cadence)
 - [FAQ](#faq)
 
-
 ## Profiles
 
-Most of the time, you are probably looking to update or change a profile instead of code itself.  These profiles are the actual rule sets applied to the RAML specs when running this tool.  Profiles are between you and your team.  
+A profile is a custom set of validation rules.  Taken from the AML documentation [here](https://a.ml/docbook/documentation/validation_model.html):
+
+> * Validations can be customised
+> AMF introduces the notion of a validation profile. Profiles group validations into sets of related constraints following certain semantics or standard requirements. RAML 1.0,RAML 0.8, OAS 2.0 are valid profiles that will ensure compatibility between the parsed model and these specifications. Furthermore, clients can create a custom validation profile, selecting the validations that are important for their use case, setting the right severity level for each validation or modifying one of the standard profiles, turning on and off individual validations in that profile.
+
+> * Validations can be extended
+> AMF validation profiles can be extended with custom validations defined by clients. A declarative approach using AMF validation profile dialect can be used to define new validations or a programmatic mechanism based on JavaScript functions can be followed. Advanced users can always define standard SHACL constraints to have complete control over the validation mechanism.
 
 ### What is a profile?
 
