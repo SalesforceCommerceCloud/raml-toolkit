@@ -3,9 +3,10 @@
 
 **First, thank you!!!**  We want to thank anyone reading this for contributing or even considering contributing back to this project.  We want to make sure that teams feel empowered to add their own rules and profiles to expand upon this tool.
 
-- [Adding Profiles](#adding-profiles)
+- [Profiles](#profiles)
+  - [What is a profile?](#what-is-a-profile)
   - [Creating a New Profile](#creating-a-new-profile)
-    - [Profile Naming](#profile-naming)
+    - [Naming](#naming)
     - [Testing](#testing)
     - [Don't Reinvent the Wheel](#dont-reinvent-the-wheel)
     - [Profile Metadata](#profile-metadata)
@@ -14,29 +15,35 @@
   - [Repository Branching and Pull Requests](#repository-branching-and-pull-requests)
   - [Profile Reviews](#profile-reviews)
 - [Release Process and Cadence](#release-process-and-cadence)
-- [Questions](#questions)
+- [FAQ](#faq)
 
 
-## Adding Profiles
+## Profiles
 
 Most of the time, you are probably looking to update or change a profile instead of code itself.  These profiles are the actual rule sets applied to the RAML specs when running this tool.  Profiles are between you and your team.  
+
+### What is a profile?
+
+First you might be asking yourself what a profile is.  Basically a profile is a custom set of webapi validation rules that can be applied to RAML or Swagger to assert that a document conforms your rule set.  These profiles can be used in conjunction if you want to ensure your API meets multiple standards simultaneous.  Though be careful that these standards don't have mutually exclusive rules.
 
 ### Creating a New Profile
 
 When creating a new profile, here are a few items that you need to follow or at least consider:
 
-  - Profile naming 
+  - Naming 
   - Testing 
   - Don't reinvent the wheel
   - Add metadata to your profile in the form of comments
 
-#### Profile Naming
+#### Naming
 
-Profiles should be named with clarity to be descriptive of the purpose of that profile. The following files should be names for your profile:
+Profiles should be named with clarity to be descriptive of the purpose of that profile. The following files should be share the name of the profile:
 
-- test/{profile-name}.js        -> Where the tests for your profile live
-- test/{profile-name}.raml      -> Where a valid RAML definition for your profile lives
-- profiles/{profile-name}.raml  -> Where your raml validation profile itself lives.
+| File                           |  Description          |
+|--------------------------------|-----------------------|
+| test/{profile-name}.js         | Where the tests for your profile live |
+| test/{profile-name}.raml       | Where a valid RAML API Spec for your profile lives |
+| profiles/{profile-name}.raml   | Where your raml validation profile itself lives. |
 
 #### Testing 
 
@@ -48,10 +55,10 @@ Please of course refer to the sdk-ready [tests](../test/sdk-ready.js) if you wan
 
 ```javascript
 
-# Always include a set of happy path of the overall raml.  
+# Always include a RAML that is valid for your profile.  
 # This ensures that the raml you are testing is valid
 it("returns the RAML is valid when passed valid RAML", async () => {
-     # Load in the happy spec
+    # Load the valid raml for your profile 
     let doc = utils.getHappySpec(`${PROFILE}.raml`);
     
     # Run the parser with your profile
@@ -63,7 +70,7 @@ it("returns the RAML is valid when passed valid RAML", async () => {
 
 # Specific negative tests
 it("does not conform when missing the version", async () => {
-    # Always load in the happy spec for your tests  
+    # Load the valid raml for your profile 
     let doc = utils.getHappySpec(`${PROFILE}.raml`);
 
     # Make some breaking change to the document
@@ -82,7 +89,9 @@ it("does not conform when missing the version", async () => {
 
 #### Don't Reinvent the Wheel
 
-Look at the profiles that exist, discuss if you really need a new profile or if you can use an existing one.  This entire project is just a thin wrapper to [AMF](https://github.com/aml-org/amf) with a test bed.  Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
+This entire project is just a thin wrapper to [AMF](https://github.com/aml-org/amf) with a test bed. Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
+
+Only your team/cloud/organization can truly know if you need a new profile of if and existing one will suffice. Definition discuss it among your key stakeholders if you really need a new profile or if you can use an existing one.  If you want guidance on this we (SteelArc) are happy to discuss it with you.  
 
 #### Profile Metadata
 
@@ -107,7 +116,7 @@ All of salesforce has read access to this repo, but not write.  We ask that when
 
 ### Profile Reviews
 
-While we appreciate being informed about added profiles we are not going to require it.  At this time only CC SteelArc may merge profiles to this repo officially, but don't let that stand in the way of creating and contributing your own!  If your team has written a profile and want it added we will merge it upon request, so long as you have at least two people from your team approve the PR and all of the tests pass.
+While we appreciate being informed about added profiles we are not going to require it.  At this time only CC SteelArc may merge profiles to this repo officially, but don't let that stand in the way of creating and contributing your own!  If your team has written a profile and want it added we will merge it upon request, so long as you have at least two people from your team approve the pull request and all of the tests pass.
 
 If you are updating an existing profile the team owner of that profile needs to approve those changes before it is merged.  Once that approval is given (via pull request approvals from that team) we will gladly merge that pull request.
 
@@ -115,7 +124,7 @@ If you are updating an existing profile the team owner of that profile needs to 
 
 Now that your code is merged how will it get into to the wild? We are currently working on this process, to be updated soon.
 
-## Questions
+## FAQ
 
 **Why are the profiles in code instead of being loaded from a config outside the code?**
 

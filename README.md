@@ -54,9 +54,9 @@ The npm installs the binaries as both `sfcc-raml-linter` and `ramlint` and they 
 
 ```bash
 OPTIONS
-  -h, --help                 show CLI help
-  -p, --profile=(sdk-ready)  [default: sdk-ready] profile you want to apply
-  -v, --version              show CLI version
+  -h, --help                                show CLI help
+  -p, --profile=(sdk-ready, other-profile)  [default: sdk-ready] profile you want to apply
+  -v, --version                             show CLI version
 ```
 
 ### SFCI / Jenkins
@@ -85,7 +85,6 @@ To check your RAML currently the CLI just takes a list of files
 $ ramlint file.raml
 # or
 $ ramlint file1.raml file2.raml etc.raml
-
 ```
 
 The response will look something like
