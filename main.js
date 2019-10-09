@@ -61,7 +61,7 @@ SfccRamlintCommand.flags = {
     char: "p",
     options: getProfiles(),
     default: "sdk-ready",
-    description: "profile you want to apply (Can be used multiple times)"
+    description: "profile you want to apply"
   }),
   // Add --version flag to show CLI version
   version: flags.version({ char: "v" }),

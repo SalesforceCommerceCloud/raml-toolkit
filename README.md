@@ -1,7 +1,21 @@
-# sfcc-raml-linter
+# sfcc-raml-linter  <!-- omit in toc -->
 A linting tool for raml for commerce cloud and beyond
 
 [![Build Status][jenkins-image]][jenkins-url]  [![Slack][slack-image]][slack-url]
+
+- [Installation](#installation)
+  - [Git Enterprise (git.soma)](#git-enterprise-gitsoma)
+    - [Release Download](#release-download)
+    - [Repository clone](#repository-clone)
+  - [Sonatype Nexus (nexus.soma)](#sonatype-nexus-nexussoma)
+- [Usage](#usage)
+  - [SFCI / Jenkins](#sfci--jenkins)
+  - [From your local machine](#from-your-local-machine)
+- [Contributing](#contributing)
+- [Known issues and limitations](#known-issues-and-limitations)
+- [Development Resources](#development-resources)
+
+
 ## Installation
 
 ### Git Enterprise (git.soma)
@@ -34,7 +48,18 @@ Once this is completed you should just be able to do an npm install
 $ npm install sfcc-raml-linter
 ```
 
-## SFCI Usage (Jenkins)
+## Usage
+
+The npm installs the binaries as both `sfcc-raml-linter` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
+
+```bash
+OPTIONS
+  -h, --help                                show CLI help
+  -p, --profile=(sdk-ready, other-profile)  [default: sdk-ready] profile you want to apply
+  -v, --version                             show CLI version
+```
+
+### SFCI / Jenkins
 
 If using or basing you SFCI image off the [centos-sfci-nodejs](https://git.soma.salesforce.com/dci/centos-sfci-nodejs) docker image, then running this becomes very easy.
 
@@ -52,7 +77,7 @@ In your Jenkinsfile just make sure you init npm and then its a very simple one l
 
 NOTE: Violations will return a non-zero exit code and fail the build, which warnings will still return a 0 exit code so the build will not fail with warnings
 
-## Local Usage
+### From your local machine
 
 To check your RAML currently the CLI just takes a list of files
 
@@ -60,7 +85,6 @@ To check your RAML currently the CLI just takes a list of files
 $ ramlint file.raml
 # or
 $ ramlint file1.raml file2.raml etc.raml
-
 ```
 
 The response will look something like
@@ -100,6 +124,9 @@ The second error, however, is because it exists, but doesn't match our standard.
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
 
+## Contributing
+
+You can read all about our contribution model [here!](./.github/CONTRIBUTING.md)
 
 ## Known issues and limitations
 
