@@ -17,7 +17,7 @@ class SfccRamlintCommand extends Command {
 
     for (let arg of argv) {
       // eslint-disable-next-line no-await-in-loop
-      promises.push(this.validateFile(arg, flags.profile));
+      promises.push(validateFile(arg, flags.profile, flags.warnings));
     }
 
     await Promise.all(promises).catch(e => {
@@ -31,17 +31,29 @@ class SfccRamlintCommand extends Command {
       });
     }
   }
+}
 
-  async validateFile(filename, profile) {
-    let results = await validator.parse(
-      `file://${path.resolve(filename)}`,
-      profile
-    );
-    console.log(results.toString());
+async function validateFile(filename, profile, warnings) {
+  let results = await validator.parse(
+    `file://${path.resolve(filename)}`,
+    profile
+  );
 
-    if (!(results && results.conforms === true)) {
-      throw new Error(`${filename} is invalid`);
+  if (results) {
+    if (warnings && results.conforms) {
+      console.log(`Model: ${results.model}
+  Profile: ${results.profile}
+  Conforms? ${results.conforms}
+  Number of results: 0
+  Number of hidden warnings: ${results.results.length}
+      `);
+    } else {
+      console.log(results.toString());
     }
+  }
+
+  if (!results || results.conforms === false) {
+    throw new Error(`${filename} is invalid`);
   }
 }
 
@@ -63,6 +75,12 @@ SfccRamlintCommand.flags = {
     default: "sdk-ready",
     description: "profile you want to apply"
   }),
+  // Add --warnings flag to set the custom profile
+  warnings: flags.boolean({
+    char: "w",
+    default: false,
+    description: "Show all the warnings"
+  }),
   // Add --version flag to show CLI version
   version: flags.version({ char: "v" }),
   // Add --help flag to show CLI version
@@ -73,4 +91,4 @@ SfccRamlintCommand.args = [{ name: "filename" }];
 // This allows a variable length list of files
 SfccRamlintCommand.strict = false;
 
-module.exports = SfccRamlintCommand;
+module.exports = { SfccRamlintCommand, parseFile: validator.parse };
