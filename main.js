@@ -49,7 +49,7 @@ Number of hidden warnings: ${results.results.length}
   } else {
     console.log(results.toString());
   }
-  if (!(results && results.conforms === true)) {
+  if (!results || results.conforms === false) {
     throw new Error(`${filename} is invalid`);
   }
 }
