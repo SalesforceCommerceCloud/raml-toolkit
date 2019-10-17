@@ -39,16 +39,19 @@ async function validateFile(filename, profile, warnings) {
     profile
   );
 
-  if (warnings && results.conforms) {
-    console.log(`Model: ${results.model}
-Profile: ${results.profile}
-Conforms? ${results.conforms}
-Number of results: 0
-Number of hidden warnings: ${results.results.length}
-    `);
-  } else {
-    console.log(results.toString());
+  if (results) {
+    if (warnings && results.conforms) {
+      console.log(`Model: ${results.model}
+  Profile: ${results.profile}
+  Conforms? ${results.conforms}
+  Number of results: 0
+  Number of hidden warnings: ${results.results.length}
+      `);
+    } else {
+      console.log(results.toString());
+    }
   }
+
   if (!results || results.conforms === false) {
     throw new Error(`${filename} is invalid`);
   }
