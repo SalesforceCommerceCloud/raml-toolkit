@@ -5,7 +5,7 @@ const path = require("path");
 const { expect, test } = require("@oclif/test");
 const utils = require("./utils");
 
-const cmd = require("..");
+const cmd = require("..").SfccRamlintCommand;
 
 const successString = "Conforms? true";
 
@@ -25,6 +25,16 @@ describe("sfcc-raml-linter cli", () => {
     })
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
+    });
+
+  test
+    .stdout()
+    .do(async () => {
+      await cmd.run([utils.getSingleValidFile(), "--warnings"]);
+    })
+    .it("validates a single valid file and reports that it conforms", ctx => {
+      expect(ctx.stdout).to.contain(successString);
+      expect(ctx.stdout).to.contain("Number of hidden warnings:");
     });
 
   test
