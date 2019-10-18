@@ -15,6 +15,8 @@ violation:
   - camelcase-method-displayname
   - https-required
   - require-api-description
+  - no-literal-question-marks-in-property-names
+  - no-literal-question-marks-in-query-parameters
   - no-todo-text-in-description-fields
   - require-method-description
   - require-response-description
@@ -62,6 +64,20 @@ validations:
     propertyConstraints:
       schema.description:
         minCount: 1
+
+  no-literal-question-marks-in-property-names:
+    message: Property names must not contain question marks when 'required' is present. Using both results in property names that include literal question marks.
+    targetClass: sh.PropertyShape
+    propertyConstraints:
+      sh.name:
+        pattern: ^[^?]*$
+
+  no-literal-question-marks-in-query-parameters:
+    message: Query parameters must not contain question marks when 'required' is present. Using both results in query parameters that include literal question marks.
+    targetClass: http.Parameter
+    propertyConstraints:
+      schema.name:
+        pattern: ^[^?]*$
 
   no-todo-text-in-description-fields:
     message: Empty string or The word 'TODO' (case insensitive) is not allowed in any description field.
