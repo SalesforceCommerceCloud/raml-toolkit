@@ -5,14 +5,46 @@ version: v1
 mediaType: application/json
 protocols: https
 description: This is a description of the API spec
+
+types:
+    ClassA:
+        type: object
+        description: Class A type
+        properties:
+            property1:
+                type: string
+                description: String type property.
+            property2?:
+                type: integer
+                description: Number data type property.
+
 /resource:
     /{resourceId}:
         get:
             displayName: getResource
             description: Get this resource
+            queryParameters:
+                expand:
+                    description: The expand parameter. A comma separated list with the allowed values (availability, links, promotions, options, images, prices, variations)
+                    type: array
+                    items:
+                        type: string
+                    example: [availability,links,promotions,options,images,prices,variations]
+                    required: false
             responses:
                 200:
                     description: OK
+                    body:
+                        application/json:
+                            description: Document representing a site.
+                            additionalProperties: true
+                            properties:
+                                allowed_currencies:
+                                    description: The list of allowed currencies.
+                                    type: array
+                                    items:
+                                        type: string
+                                    required: false
                 404:
                     description: Resource not found
         post:
@@ -55,3 +87,14 @@ description: This is a description of the API spec
                     description: Accepted
                 404:
                     description: Resource not found
+/resource2:
+    /{id}:
+        get:
+            displayName: getResource2
+            description: Get the resource?
+            responses:
+                200:
+                    description: Successfully retrieved products
+                    body:
+                        application/json:
+                            type: ClassA
