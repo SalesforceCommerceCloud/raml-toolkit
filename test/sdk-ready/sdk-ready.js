@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 "use strict";
-const validator = require("../validator");
-const utils = require("./utils");
+const validator = require("../../validator");
+const utils = require("../utils");
 
 const PROFILE = "sdk-ready";
 

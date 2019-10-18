@@ -66,14 +66,14 @@ validations:
         minCount: 1
 
   no-literal-question-marks-in-property-names:
-    message: Property names must not contain question marks when 'required' is present. Using both results in property names that include literal question marks.
+    message: Property names must not contain question marks when 'required' is present. Using both results in property names that include literal question marks. More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: sh.PropertyShape
     propertyConstraints:
       sh.name:
         pattern: ^[^?]*$
 
   no-literal-question-marks-in-query-parameters:
-    message: Query parameters must not contain question marks when 'required' is present. Using both results in query parameters that include literal question marks.
+    message: Query parameters must not contain question marks when 'required' is present. Using both results in query parameters that include literal question marks. More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: http.Parameter
     propertyConstraints:
       schema.name:

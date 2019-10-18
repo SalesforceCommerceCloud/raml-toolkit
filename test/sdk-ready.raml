@@ -14,7 +14,7 @@ types:
             property1:
                 type: string
                 description: String type property.
-            property2:
+            property2?:
                 type: integer
                 description: Number data type property.
 
@@ -87,3 +87,14 @@ types:
                     description: Accepted
                 404:
                     description: Resource not found
+/resource2:
+    /{id}:
+        get:
+            displayName: getResource2
+            description: Get the resource?
+            responses:
+                200:
+                    description: Successfully retrieved products
+                    body:
+                        application/json:
+                            type: ClassA
