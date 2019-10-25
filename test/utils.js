@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 "use strict";
-const assert = require("assert");
+const assert = require("chai").assert;
 const tmp = require("tmp");
 const fs = require("fs");
 const yaml = require("js-yaml");
@@ -34,7 +34,16 @@ function conforms(result) {
 function breaksOnlyOneRule(result, rule) {
   assert.equal(result.conforms, false, result.toString());
   assert.equal(result.results.length, 1, result.toString());
-  assert.equal(result.results[0].validationId, rule);
+  assert.equal(result.results[0].validationId, rule, result.toString());
+}
+
+function breaksTheseRules(result, rules) {
+  assert.equal(result.conforms, false, result.toString());
+  assert.sameMembers(
+    result.results.map(r => r.validationId),
+    rules,
+    result.toString()
+  );
 }
 
 function renameKey(obj, oldKey, newKey) {
@@ -60,6 +69,7 @@ module.exports = {
   renderSpecAsUrl,
   conforms,
   breaksOnlyOneRule,
+  breaksTheseRules,
   renameKey,
   getSingleValidFile,
   getSingleInvalidFile

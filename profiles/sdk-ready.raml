@@ -13,6 +13,7 @@ disabled:
 violation:
   - at-least-one-2xx-or-3xx-response
   - camelcase-method-displayname
+  - camelcase-query-parameters
   - https-required
   - require-api-description
   - no-literal-question-marks-in-property-names
@@ -48,7 +49,25 @@ validations:
     propertyConstraints:
       schema.name:
         minCount: 1
-        pattern: ^[a-z]+([A-Z][a-z0-9]*)*$
+        pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
+
+  camelcase-query-parameters:
+    message: Query parameters names must be in camelcase
+    targetClass: http.Parameter
+    functionConstraint:
+      code: |
+        function(parameter) {
+          const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
+
+          // Parameters include query, path and headers so we need to check binding to filter
+          if (parameter['http:binding'] &&
+              parameter['http:binding'] == 'query' &&
+              !re.test(parameter['schema:name'])
+          ) {
+            return false;
+          }
+          return true;
+        }
 
   https-required:
     message: Protocol MUST be HTTPS
@@ -81,9 +100,20 @@ validations:
 
       More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: http.Parameter
-    propertyConstraints:
-      schema.name:
-        pattern: ^[^?]*$
+    functionConstraint:
+      code: |
+        function(parameter) {
+          const re = /^[^?]*$/;
+
+          // Parameters include query, path and headers so we need to check binding to filter
+          if (parameter['http:binding'] &&
+              parameter['http:binding'] == 'query' &&
+              !re.test(parameter['schema:name'])
+          ) {
+            return false;
+          }
+          return true;
+        }
 
   no-todo-text-in-description-fields:
     message: Empty string or The word 'TODO' (case insensitive) is not allowed in any description field.

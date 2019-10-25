@@ -188,14 +188,14 @@ describe("resource checking tests", () => {
     utils.conforms(result);
   });
 
-  it("conforms when template is in caps", async () => {
+  it("fails when template is in caps", async () => {
     let doc = utils.getHappySpec();
     utils.renameKey(doc["/resource"], "/{resourceId}", "/{ID}");
     let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
     utils.conforms(result);
   });
 
-  it("conforms when template has underscores", async () => {
+  it("fails when template has underscores", async () => {
     let doc = utils.getHappySpec();
     utils.renameKey(doc["/resource"], "/{resourceId}", "/{resource_id}");
     let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
