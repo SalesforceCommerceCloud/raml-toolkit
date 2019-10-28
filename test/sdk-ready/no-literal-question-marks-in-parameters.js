@@ -7,8 +7,10 @@ const PROFILE = "sdk-ready";
 
 describe("no literal question marks in query parameters tests", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
+  const ENDPOINT_RULE =
+    "http://a.ml/vocabularies/data#resource-name-validation";
   const QUERY_RULE =
-    "http://a.ml/vocabularies/data#no-literal-question-marks-in-query-parameters";
+    "http://a.ml/vocabularies/data#no-literal-question-marks-in-parameters";
   let doc;
   let parameters;
 
@@ -57,5 +59,11 @@ describe("no literal question marks in query parameters tests", () => {
     parameters["expand??"].required = true;
     let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
     utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+  });
+
+  it("fails when path parameter has a question mark", async () => {
+    utils.renameKey(doc["/resource"], "/{resourceId}", "/{resourceId?}");
+    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    utils.breaksTheseRules(result, [ENDPOINT_RULE, QUERY_RULE]);
   });
 });
