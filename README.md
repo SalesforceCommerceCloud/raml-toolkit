@@ -11,6 +11,7 @@ A linting tool for raml for commerce cloud and beyond
 - [Usage](#usage)
   - [SFCI / Jenkins](#sfci--jenkins)
   - [From your local machine](#from-your-local-machine)
+- [SDK Ready for Mercury](#sdk-ready-for-mercury)
 - [Contributing](#contributing)
 - [Known issues and limitations](#known-issues-and-limitations)
 - [Development Resources](#development-resources)
@@ -123,6 +124,26 @@ The first error is saying that the API description is not set, but we need to ha
 The second error, however, is because it exists, but doesn't match our standard.  There you can see that the position leads you to the exact line number and column of the non-conforming component. 
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
+
+## SDK Ready for Mercury
+
+The default profile validates the following rules from the [Mercury API Definition of Done](https://salesforce.quip.com/lHK7ADgscANI)
+
+* `title` MUST be set and not be empty
+* `protocols` MUST be HTTPS
+* `version` MUST be set and follow the pattern /v[0-9]+/
+* API must have a `mediaType` default of application/json
+* `description` MUST be set and not be empty
+* `description` MUST not include the word TODO
+* All resource paths MUST be lowercase (except path parameters)
+* Resource paths MUST not start with symbols
+* Methods MUST have a `displayName` set
+* Method `displayName` MUST be in camelCase
+* Methods MUST have a `description` field set
+* Method `description` MUST NOT contain the word TODO
+* `queryParameters` MUST be camelCase
+* Response codes MUST have a `description`
+* Response codes `description` MUST NOT contain the word TODO
 
 ## Contributing
 

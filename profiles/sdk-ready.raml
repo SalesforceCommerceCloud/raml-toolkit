@@ -13,10 +13,11 @@ disabled:
 violation:
   - at-least-one-2xx-or-3xx-response
   - camelcase-method-displayname
+  - camelcase-query-parameters
   - https-required
   - require-api-description
   - no-literal-question-marks-in-property-names
-  - no-literal-question-marks-in-query-parameters
+  - no-literal-question-marks-in-parameters
   - no-todo-text-in-description-fields
   - require-method-description
   - require-response-description
@@ -48,7 +49,25 @@ validations:
     propertyConstraints:
       schema.name:
         minCount: 1
-        pattern: ^[a-z]+([A-Z][a-z0-9]*)*$
+        pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
+
+  camelcase-query-parameters:
+    message: Query parameters names must be in camelcase
+    targetClass: http.Parameter
+    functionConstraint:
+      code: |
+        function(parameter) {
+          const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
+
+          // Parameters include query, path and headers so we need to check binding to filter
+          if (parameter['http:binding'] &&
+              parameter['http:binding'] == 'query' &&
+              !re.test(parameter['schema:name'])
+          ) {
+            return false;
+          }
+          return true;
+        }
 
   https-required:
     message: Protocol MUST be HTTPS
@@ -75,9 +94,9 @@ validations:
       sh.name:
         pattern: ^[^?]*$
 
-  no-literal-question-marks-in-query-parameters:
+  no-literal-question-marks-in-parameters:
     message: >
-      Query parameters must not contain question marks when 'required' is present. Using both results in query parameters that include literal question marks.
+      Query parameter, path parameter and header names must not contain question marks when 'required' is present. Using both results in names that include literal question marks.
 
       More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: http.Parameter
