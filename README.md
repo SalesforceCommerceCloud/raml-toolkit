@@ -129,21 +129,21 @@ When there are no more violations, the output will say it conforms, but also pro
 
 The default profile validates the following rules from the [Mercury API Definition of Done](https://salesforce.quip.com/lHK7ADgscANI)
 
-* title MUST be set
-* protocol MUST be HTTPS
-* version MUST be set and follow the pattern /v[0-9]+/
-* mediaType MUST be application/json
-* description MUST be set
-* description MUST not include the word TODO
-* All resource paths MUST be lowercase (except template parameters)
+* `title` MUST be set and not be empty
+* `protocols` MUST be HTTPS
+* `version` MUST be set and follow the pattern /v[0-9]+/
+* API must have a `mediaType` default of application/json
+* `description` MUST be set and not be empty
+* `description` MUST not include the word TODO
+* All resource paths MUST be lowercase (except path parameters)
 * Resource paths MUST not start with symbols
-* Methods MUST have a displayName set
-* Methods displayName MUST be in camelCase
-* Methods MUST have a description field set
-* Methods MUST NOT contain the word TODO
-* queryParameters MUST be camelCase
-* Response codes MUST have a description
-* Response codes description MUST NOT contain the word TODO
+* Methods MUST have a `displayName` set
+* Method `displayName` MUST be in camelCase
+* Methods MUST have a `description` field set
+* Method `description` MUST NOT contain the word TODO
+* `queryParameters` MUST be camelCase
+* Response codes MUST have a `description`
+* Response codes `description` MUST NOT contain the word TODO
 
 ## Contributing
 
