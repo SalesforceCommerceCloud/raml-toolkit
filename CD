@@ -41,9 +41,6 @@ executePipeline(envDef) {
             }
         }
 
-        sh "npm version patch -m '@skip-ci@ updated version from Jenkins'"
         sh "npm publish"
-        sh "git push --tags"
-        sh "git push origin HEAD:master"
     }
 }
