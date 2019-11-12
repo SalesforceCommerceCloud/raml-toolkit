@@ -20,18 +20,14 @@ describe("sfcc-raml-linter cli", () => {
 
   test
     .stdout()
-    .do(async () => {
-      await cmd.run([utils.getSingleValidFile()]);
-    })
+    .do(() => cmd.run([utils.getSingleValidFile()]))
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
 
   test
     .stdout()
-    .do(async () => {
-      await cmd.run([utils.getSingleValidFile(), "--warnings"]);
-    })
+    .do(() => cmd.run([utils.getSingleValidFile(), "--warnings"]))
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
       expect(ctx.stdout).to.contain("Number of hidden warnings:");
@@ -61,17 +57,13 @@ describe("sfcc-raml-linter cli", () => {
   test
     .stdout()
     .stderr()
-    .do(async () => {
-      await cmd.run([utils.getSingleInvalidFile()]);
-    })
+    .do(() => cmd.run([utils.getSingleInvalidFile()]))
     .exit(1)
     .it("validates a single invalid file and exits non-zero");
 
   test
     .stdout()
-    .do(async () => {
-      await cmd.run([utils.getSingleValidFile(), utils.getSingleValidFile()]);
-    })
+    .do(() => cmd.run([utils.getSingleValidFile(), utils.getSingleValidFile()]))
     .it("validates two valid files and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
@@ -79,18 +71,16 @@ describe("sfcc-raml-linter cli", () => {
   test
     .stdout()
     .stderr()
-    .do(async () => {
-      await cmd.run([utils.getSingleValidFile(), utils.getSingleInvalidFile()]);
-    })
+    .do(() =>
+      cmd.run([utils.getSingleValidFile(), utils.getSingleInvalidFile()])
+    )
     .exit(1)
     .it("validates one valid and one invalid file and exits non-zero");
 
   test
     .stdout()
     .stderr()
-    .do(async () => {
-      await cmd.run([]);
-    })
+    .do(() => cmd.run([]))
     .exit(1)
     .it("does not accept an empty file list and exits non-zero");
 });
