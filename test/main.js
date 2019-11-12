@@ -7,6 +7,8 @@ const utils = require("./utils");
 
 const cmd = require("..").SfccRamlintCommand;
 
+const MERCURY_PROFILE = "mercury-profile";
+
 const successString = "Conforms? true";
 
 describe("sfcc-raml-linter cli", () => {
@@ -20,14 +22,32 @@ describe("sfcc-raml-linter cli", () => {
 
   test
     .stdout()
+    .stderr()
     .do(() => cmd.run([utils.getSingleValidFile()]))
+    .exit(1)
+    .it("does not accept a file with no profile and exits non-zero", ctx => {
+      expect(ctx.stderr).to.contain("A valid profile must be specified");
+    });
+
+  test
+    .stdout()
+    .do(() =>
+      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleValidFile()])
+    )
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
 
   test
     .stdout()
-    .do(() => cmd.run([utils.getSingleValidFile(), "--warnings"]))
+    .do(() =>
+      cmd.run([
+        "--profile",
+        MERCURY_PROFILE,
+        utils.getSingleValidFile(),
+        "--warnings"
+      ])
+    )
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
       expect(ctx.stdout).to.contain("Number of hidden warnings:");
@@ -44,7 +64,7 @@ describe("sfcc-raml-linter cli", () => {
       await fs.rename(tempRamlFile, ramlFileWithSpace, err => {
         if (err) throw err;
       });
-      await cmd.run([ramlFileWithSpace]);
+      await cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace]);
     })
     .it(
       "validates a single valid file with a space in the name" +
@@ -57,13 +77,22 @@ describe("sfcc-raml-linter cli", () => {
   test
     .stdout()
     .stderr()
-    .do(() => cmd.run([utils.getSingleInvalidFile()]))
+    .do(() =>
+      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleInvalidFile()])
+    )
     .exit(1)
     .it("validates a single invalid file and exits non-zero");
 
   test
     .stdout()
-    .do(() => cmd.run([utils.getSingleValidFile(), utils.getSingleValidFile()]))
+    .do(() =>
+      cmd.run([
+        "--profile",
+        MERCURY_PROFILE,
+        utils.getSingleValidFile(),
+        utils.getSingleValidFile()
+      ])
+    )
     .it("validates two valid files and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
@@ -72,7 +101,12 @@ describe("sfcc-raml-linter cli", () => {
     .stdout()
     .stderr()
     .do(() =>
-      cmd.run([utils.getSingleValidFile(), utils.getSingleInvalidFile()])
+      cmd.run([
+        "--profile",
+        MERCURY_PROFILE,
+        utils.getSingleValidFile(),
+        utils.getSingleInvalidFile()
+      ])
     )
     .exit(1)
     .it("validates one valid and one invalid file and exits non-zero");
