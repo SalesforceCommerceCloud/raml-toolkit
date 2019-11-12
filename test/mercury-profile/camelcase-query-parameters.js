@@ -3,7 +3,7 @@
 const validator = require("../../validator");
 const utils = require("../utils");
 
-const PROFILE = "sdk-ready";
+const PROFILE = "mercury-profile";
 
 describe("camelcase query parameters test", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";

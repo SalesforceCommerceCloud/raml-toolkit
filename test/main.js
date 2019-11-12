@@ -23,11 +23,11 @@ describe("sfcc-raml-linter cli", () => {
   test
     .stdout()
     .stderr()
-    .do(() => cmd.run([utils.getSingleValidFile()]))
-    .exit(1)
-    .it("does not accept a file with no profile and exits non-zero", ctx => {
-      expect(ctx.stderr).to.contain("A valid profile must be specified");
-    });
+    .do(function() {
+      return cmd.run([utils.getSingleValidFile()]);
+    })
+    .exit(2)
+    .it("does not accept a file with no profile and exits non-zero");
 
   test
     .stdout()
@@ -115,6 +115,6 @@ describe("sfcc-raml-linter cli", () => {
     .stdout()
     .stderr()
     .do(() => cmd.run([]))
-    .exit(1)
+    .exit(2)
     .it("does not accept an empty file list and exits non-zero");
 });

@@ -72,10 +72,10 @@ SfccRamlintCommand.flags = {
   profile: flags.enum({
     char: "p",
     options: getProfiles(),
-    default: "sdk-ready",
-    description: "profile you want to apply"
+    description: "profile to apply",
+    required: true
   }),
-  // Add --warnings flag to set the custom profile
+  // Add --warnings flag to show warnings
   warnings: flags.boolean({
     char: "w",
     default: false,

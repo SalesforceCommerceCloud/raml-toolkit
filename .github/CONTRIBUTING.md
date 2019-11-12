@@ -56,7 +56,7 @@ We have provided a test bed for ensuring your custom validations work as expecte
 
 ##### Testing Examples<!-- omit in toc -->
 
-Please of course refer to the sdk-ready [tests](../test/sdk-ready.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
+Refer to the mercury-profile [tests](../test/mercury-profile/mercury-profile.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
 
 ```javascript
 

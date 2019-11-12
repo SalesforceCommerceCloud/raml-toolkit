@@ -3,7 +3,7 @@
 const validator = require("../../validator");
 const utils = require("../utils");
 
-const PROFILE = "sdk-ready";
+const PROFILE = "mercury-profile";
 
 describe("happy path raml tests", () => {
   it("valid", async () => {
