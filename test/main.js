@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 "use strict";
-const fs = require("fs");
 const path = require("path");
+const rename = require("util").promisify(require("fs").rename);
 const { expect, test } = require("@oclif/test");
 const utils = require("./utils");
 
@@ -55,16 +55,15 @@ describe("sfcc-raml-linter cli", () => {
 
   test
     .stdout()
-    .do(async () => {
+    .do(() => {
       const tempRamlFile = utils.getSingleValidFile();
       const ramlFileWithSpace = path.join(
         path.dirname(tempRamlFile),
         "test with spaces.raml"
       );
-      await fs.rename(tempRamlFile, ramlFileWithSpace, err => {
-        if (err) throw err;
-      });
-      await cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace]);
+      return rename(tempRamlFile, ramlFileWithSpace).then(() =>
+        cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace])
+      );
     })
     .it(
       "validates a single valid file with a space in the name" +
