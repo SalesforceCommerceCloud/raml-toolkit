@@ -12,7 +12,7 @@ const _ = require("lodash");
  * tests pass.
  */
 
-function getHappySpec(filename = `${__dirname}/sdk-ready.raml`) {
+function getHappySpec(filename = `${__dirname}/mercury-profile.raml`) {
   return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
 }
 

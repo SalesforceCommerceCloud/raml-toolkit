@@ -3,7 +3,7 @@
 const validator = require("../../validator");
 const utils = require("../utils");
 
-const PROFILE = "sdk-ready";
+const PROFILE = "mercury-profile";
 
 describe("no literal question marks in property name tests", () => {
   const PROPERTY_RULE =

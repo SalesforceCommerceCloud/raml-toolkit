@@ -56,8 +56,9 @@ The npm installs the binaries as both `sfcc-raml-linter` and `ramlint` and they 
 ```bash
 OPTIONS
   -h, --help                                show CLI help
-  -p, --profile=(sdk-ready, other-profile)  [default: sdk-ready] profile you want to apply
+  -p, --profile=(mercury-profile, other-profile) profile to apply
   -v, --version                             show CLI version
+  -w, --warnings                   Show all the warnings
 ```
 
 ### SFCI / Jenkins
@@ -72,7 +73,7 @@ In your Jenkinsfile just make sure you init npm and then its a very simple one l
     }
 
     stage('Whatever') {
-        sh "npx sfcc-raml-linter file1.raml file2.raml etc.raml"
+        sh "npx sfcc-raml-linter --profile mercury-profile file1.raml file2.raml etc.raml"
     }
   ```
 
@@ -83,16 +84,16 @@ NOTE: Violations will return a non-zero exit code and fail the build, which warn
 To check your RAML currently the CLI just takes a list of files
 
 ```bash
-$ ramlint file.raml
+$ ramlint --profile mercury-profile file.raml
 # or
-$ ramlint file1.raml file2.raml etc.raml
+$ ramlint --profile mercury-profile file1.raml file2.raml etc.raml
 ```
 
 The response will look something like
 
 ```
 Model: file://data-products-api-v1.raml
-Profile: sdk-ready
+Profile: mercury-profile
 Conforms? false
 Number of results: 2
 
