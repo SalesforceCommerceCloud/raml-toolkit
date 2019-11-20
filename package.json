@@ -36,10 +36,26 @@
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": "error"
+      "prettier/prettier": "error",
+      "header/header": [
+        2,
+        "block",
+        [
+          "",
+          {
+            "pattern": "^ \\* Copyright \\(c\\) \\d{4}, salesforce.com, inc\\.$",
+            "template": " * Copyright (c) 2019, salesforce.com, inc."
+          },
+          " * All rights reserved.",
+          " * SPDX-License-Identifier: BSD-3-Clause",
+          " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause",
+          " "
+        ]
+      ]
     },
     "plugins": [
-      "prettier"
+      "prettier",
+      "header"
     ]
   },
   "scripts": {
@@ -53,6 +69,7 @@
     "eslint-config-oclif": "^3.1.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-config-xo": "^0.25.0",
+    "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-prettier": "^3.1.0",
     "lint-staged": "^8.1.0",
     "lodash": "^4.17.15",
