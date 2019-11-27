@@ -180,11 +180,14 @@ describe("resource checking tests", () => {
     utils.conforms(result);
   });
 
-  it("conforms when resource contains underscore", async () => {
+  it("does not conform when resource contains underscore", async () => {
     let doc = utils.getHappySpec();
     utils.renameKey(doc, "/resource", "/this_resource");
     let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
-    utils.conforms(result);
+    utils.breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#resource-name-validation"
+    );
   });
 
   it("conforms when resource contains hyphens", async () => {
@@ -205,7 +208,10 @@ describe("resource checking tests", () => {
     let doc = utils.getHappySpec();
     utils.renameKey(doc["/resource"], "/{resourceId}", "/{resource_id}");
     let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
-    utils.conforms(result);
+    utils.breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#resource-name-validation"
+    );
   });
 });
 
