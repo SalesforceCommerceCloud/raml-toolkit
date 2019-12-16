@@ -30,102 +30,147 @@ describe("no literal question marks in property name tests", () => {
   it("conforms when property has a question mark and required field is not present", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies?");
     delete properties["allowed_currencies?"].required;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.conforms(result);
   });
 
   it("fails when property has a question mark and required field is false", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies?");
     properties["allowed_currencies?"].required = false;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has a question mark and required field is true", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies?");
     properties["allowed_currencies?"].required = true;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is not present", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies??");
     delete properties["allowed_currencies??"].required;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is false", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies??");
     properties["allowed_currencies??"].required = false;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is true", async () => {
     utils.renameKey(properties, "allowed_currencies", "allowed_currencies??");
     properties["allowed_currencies??"].required = true;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("conforms when property has no question mark and required field is not present", async () => {
     delete properties.allowed_currencies.required;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.conforms(result);
   });
 
   it("conforms when property has no question mark and required field is false", async () => {
     properties.allowed_currencies.required = false;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.conforms(result);
   });
 
   it("conforms when property has no question mark and required field is true", async () => {
     properties.allowed_currencies.required = true;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.conforms(result);
   });
 
   it("conforms when datatype property has a question mark and required field is not present", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1?");
     delete datatypeProperties["property1?"].required;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.conforms(result);
   });
 
   it("fails when datatype property has a question mark and required field is false", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1?");
     datatypeProperties["property1?"].required = false;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has a question mark and required field is true", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1?");
     datatypeProperties["property1?"].required = true;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is not present", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1??");
     delete datatypeProperties["property1??"].required;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is false", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1??");
     datatypeProperties["property1??"].required = false;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is true", async () => {
     utils.renameKey(datatypeProperties, "property1", "property1??");
     datatypeProperties["property1??"].required = true;
-    let result = await validator.parse(utils.renderSpecAsUrl(doc), PROFILE);
+    let result = await validator.validateFile(
+      utils.renderSpecAsUrl(doc),
+      PROFILE
+    );
     utils.breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 });

@@ -90,6 +90,13 @@ describe("sfcc-raml-linter cli", () => {
 
   test
     .stdout()
+    .stderr()
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE]))
+    .exit(1)
+    .it("Requires at least one file to validate");
+
+  test
+    .stdout()
     .do(() =>
       cmd.run([
         "--profile",
