@@ -40,7 +40,7 @@ class SfccRamlintCommand extends Command {
 }
 
 async function validateFile(filename, profile, warnings) {
-  let results = await validator.parse(
+  let results = await validator.validateFile(
     `file://${path.resolve(filename)}`,
     profile
   );
