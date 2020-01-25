@@ -3,7 +3,8 @@
   "version": "0.2.7",
   "description": "",
   "bin": {
-    "ramlint": "./bin/run"
+    "ramlint": "./bin/run",
+    "raml-toolkit": "./bin/run"
   },
   "main": "./main.js",
   "files": [

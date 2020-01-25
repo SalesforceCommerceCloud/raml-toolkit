@@ -1,15 +1,13 @@
-# sfcc-raml-linter  <!-- omit in toc -->
+# Raml Toolkit  <!-- omit in toc -->
 A linting tool for raml for commerce cloud and beyond
 
   [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
 
 - [Installation](#installation)
   - [Git Enterprise (git.soma)](#git-enterprise-gitsoma)
-    - [Release Download](#release-download)
-    - [Repository clone](#repository-clone)
-  - [Sonatype Nexus (nexus.soma)](#sonatype-nexus-nexussoma)
+    - [Installation](#installation-1)
 - [Usage](#usage)
-  - [SFCI / Jenkins](#sfci--jenkins)
+  - [Jenkins](#jenkins)
   - [From your local machine](#from-your-local-machine)
 - [SDK Ready for Mercury](#sdk-ready-for-mercury)
 - [Contributing](#contributing)
@@ -21,37 +19,16 @@ A linting tool for raml for commerce cloud and beyond
 
 ### Git Enterprise (git.soma)
 
-#### Release Download
+#### Installation
 
-1. Download latest release from [here](https://git.soma.salesforce.com/cc-dx-runtime/sfcc-raml-linter/releases)
-2. Install ramlint!
-
-```bash    
-$ npm install sfcc-raml-linter-x.x.x.tar.gz
-```
-
-#### Repository clone
-
-1. Clone this repo
-2. Install dependencies and link from the cloned repo
-
-```bash    
-~/sfcc-raml-linter $ npm install && npm link
-```
-
-### Sonatype Nexus (nexus.soma)
-
-In order to configure your laptop to read from our internal nexus server you need to do some setup first.  These instructions can be found [here](https://confluence.internal.salesforce.com/display/NEXUS/Nexus+NPM+Repositories).
-
-Once this is completed you should just be able to do an npm install
 
 ```bash
-$ npm install sfcc-raml-linter
+$ npm install @commerce-apps/raml-toolkit
 ```
 
 ## Usage
 
-The npm installs the binaries as both `sfcc-raml-linter` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
+The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
 
 ```bash
 OPTIONS
@@ -61,19 +38,18 @@ OPTIONS
   -w, --warnings                   Show all the warnings
 ```
 
-### SFCI / Jenkins
-
-If using or basing you SFCI image off the [centos-sfci-nodejs](https://git.soma.salesforce.com/dci/centos-sfci-nodejs) docker image, then running this becomes very easy.
+### Jenkins
 
 In your Jenkinsfile just make sure you init npm and then its a very simple one line command
 
   ```groovy
     stage('Init') {
+        // Needed only for SFCI instances to add npm to the instance
         npmInit()
     }
 
     stage('Whatever') {
-        sh "npx sfcc-raml-linter --profile mercury-profile file1.raml file2.raml etc.raml"
+        sh "npx raml-toolkit --profile mercury-profile file1.raml file2.raml etc.raml"
     }
   ```
 

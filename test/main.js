@@ -17,7 +17,7 @@ const MERCURY_PROFILE = "mercury-profile";
 
 const successString = "Conforms? true";
 
-describe("sfcc-raml-linter cli", () => {
+describe("raml-toolkit cli", () => {
   test
     .stdout()
     .do(() => cmd.run(["--version"]))

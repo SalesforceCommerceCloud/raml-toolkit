@@ -1,5 +1,5 @@
 
-# Contributing to SFCC-RAML-LINTER  <!-- omit in toc -->
+# Contributing to RAML-TOOLKIT <!-- omit in toc -->
 
 **First, thank you!!!**  We want to thank anyone reading this for contributing or even considering contributing back to this project.  We want to make sure that teams feel empowered to add their own rules and profiles to expand upon this tool.
 
