@@ -164,7 +164,7 @@ Here is an AMF validation example from Mulesoft.  This includes some custom rule
 
 
 <!-- Markdown link & img dfn's -->
-[circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=c68cee5cb20ee75f00cbda1b0eec5b5484c58b2a
+[circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=f0e669168c5d1538fc0b76ad71e13b2e2251ebd4
 [circleci-url]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit
 [slack-image]: https://img.shields.io/badge/slack-sfcc--raml--linter-e01563.svg?logo=slack
 [slack-url]: https://commercecloud.slack.com/messages/CNDPCJQG3
