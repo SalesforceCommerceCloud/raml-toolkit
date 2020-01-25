@@ -1,7 +1,7 @@
 # sfcc-raml-linter  <!-- omit in toc -->
 A linting tool for raml for commerce cloud and beyond
 
-[![Build Status][jenkins-image]][jenkins-url]  [![Slack][slack-image]][slack-url]
+  [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
 
 - [Installation](#installation)
   - [Git Enterprise (git.soma)](#git-enterprise-gitsoma)
@@ -164,7 +164,7 @@ Here is an AMF validation example from Mulesoft.  This includes some custom rule
 
 
 <!-- Markdown link & img dfn's -->
-[jenkins-image]: https://cc-dx-runtimeci.dop.sfdc.net/buildStatus/icon?job=cc-dx-runtime-org%2Fsfcc-raml-linter%2Fmaster
-[jenkins-url]: https://cc-dx-runtimeci.dop.sfdc.net/job/cc-dx-runtime-org/job/sfcc-raml-linter/job/master/
+[circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=c68cee5cb20ee75f00cbda1b0eec5b5484c58b2a
+[circleci-url]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit
 [slack-image]: https://img.shields.io/badge/slack-sfcc--raml--linter-e01563.svg?logo=slack
 [slack-url]: https://commercecloud.slack.com/messages/CNDPCJQG3
