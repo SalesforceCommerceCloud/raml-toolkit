@@ -1,5 +1,5 @@
 {
-  "name": "@commerce-apps/raml-toolkit",
+  "name": "sfcc-raml-linter",
   "version": "0.2.7",
   "description": "",
   "bin": {
