@@ -96,7 +96,7 @@ it("does not conform when missing the version", async () => {
 
 This entire project is just a thin wrapper to [AMF](https://github.com/aml-org/amf) with a test bed. Profiles are relatively easy to read through and we encourage everyone to use an existing profile when possible.
 
-Only your team/cloud/organization can truly know if you need a new profile of if and existing one will suffice. Definition discuss it among your key stakeholders if you really need a new profile or if you can use an existing one.  If you want guidance on this we (SteelArc) are happy to discuss it with you.  
+Only your team/cloud/organization can truly know if you need a new profile of if and existing one will suffice. Definition discuss it among your key stakeholders if you really need a new profile or if you can use an existing one.  If you want guidance on this we are happy to discuss it with you.  
 
 #### Profile Metadata
 
