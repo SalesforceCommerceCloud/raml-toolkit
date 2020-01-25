@@ -23,7 +23,7 @@ describe("sfcc-raml-linter cli", () => {
     .do(() => cmd.run(["--version"]))
     .exit(0)
     .it("checks that the version string starts with the app name", ctx => {
-      expect(ctx.stdout).to.contain("sfcc-raml-linter");
+      expect(ctx.stdout).to.contain("@commerce-apps/raml-toolkit");
     });
 
   test
