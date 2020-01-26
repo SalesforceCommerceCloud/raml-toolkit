@@ -4,8 +4,6 @@ A linting tool for raml for commerce cloud and beyond
   [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
 
 - [Installation](#installation)
-  - [Git Enterprise (git.soma)](#git-enterprise-gitsoma)
-    - [Installation](#installation-1)
 - [Usage](#usage)
   - [Jenkins](#jenkins)
   - [From your local machine](#from-your-local-machine)
@@ -16,11 +14,6 @@ A linting tool for raml for commerce cloud and beyond
 
 
 ## Installation
-
-### Git Enterprise (git.soma)
-
-#### Installation
-
 
 ```bash
 $ npm install @commerce-apps/raml-toolkit
