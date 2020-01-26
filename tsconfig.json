@@ -17,7 +17,8 @@
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "preserveConstEnums": true,
-        "outDir": "./lib",
+        "outDir": "lib",
+        "rootDir": "src",
         "composite": true
     },
     "types": [

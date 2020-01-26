@@ -129,5 +129,6 @@
       "**/*.test.ts",
       "app.js"
     ]
-  }
+  },
+  "types": "lib/index.d.ts"
 }
