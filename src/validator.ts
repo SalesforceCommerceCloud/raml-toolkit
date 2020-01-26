@@ -59,7 +59,7 @@ export async function printResults(
   warnings = false
 ): Promise<void> {
   if (results) {
-    if (warnings && results.conforms) {
+    if (!warnings && results.conforms) {
       console.log(`Model: ${results.model}
   Profile: ${results.profile}
   Conforms? ${results.conforms}
