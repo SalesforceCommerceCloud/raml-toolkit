@@ -31,6 +31,6 @@
         "gulpfile.ts"
     ],
     "include": [
-        "src"
+        "src/**/*"
     ]
 }
