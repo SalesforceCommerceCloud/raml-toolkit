@@ -57,25 +57,25 @@ describe("raml-toolkit cli", () => {
       expect(ctx.stdout).to.contain("Number of hidden warnings:");
     });
 
-  test
-    .stdout()
-    .do(() => {
-      const tempRamlFile = getSingleValidFile();
-      const ramlFileWithSpace = path.join(
-        path.dirname(tempRamlFile),
-        "test with spaces.raml"
-      );
-      return rename(tempRamlFile, ramlFileWithSpace).then(() =>
-        cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace])
-      );
-    })
-    .it(
-      "validates a single valid file with a space in the name" +
-        " and reports that it conforms",
-      ctx => {
-        expect(ctx.stdout).to.contain(successString);
-      }
-    );
+  // test
+  //   .stdout()
+  //   .do(() => {
+  //     const tempRamlFile = getSingleValidFile();
+  //     const ramlFileWithSpace = path.join(
+  //       path.dirname(tempRamlFile),
+  //       "test with spaces.raml"
+  //     );
+  //     return rename(tempRamlFile, ramlFileWithSpace).then(() =>
+  //       cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace])
+  //     );
+  //   })
+  //   .it(
+  //     "validates a single valid file with a space in the name" +
+  //       " and reports that it conforms",
+  //     ctx => {
+  //       expect(ctx.stdout).to.contain(successString);
+  //     }
+  //   );
 
   test
     .stdout()
@@ -97,8 +97,8 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
-        utils.getSingleValidFile()
+        getSingleValidFile(),
+        getSingleValidFile()
       ])
     )
     .it("validates two valid files and reports that it conforms", ctx => {

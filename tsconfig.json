@@ -19,7 +19,7 @@
         "noImplicitThis": true,
         "preserveConstEnums": true,
         "outDir": "./lib",
-        
+        "composite": true
     },
     "types": [
         "mocha"

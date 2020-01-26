@@ -10,8 +10,7 @@
   "files": [
     "validator",
     "bin",
-    "profiles",
-    "main.ts"
+    "profiles"
   ],
   "author": "",
   "license": "ISC",
@@ -75,13 +74,14 @@
       ]
     }
   },
+
   "scripts": {
-    "pretest": "npm run lint && tsc",
-    "start": "node app.js",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "pretest": "npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test": "nyc mocha test/**/*.test.ts",
-    "coverage": "nyc report",
-    "compile": "tsc"
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --recursive --timeout 5000",
+    "version": "oclif-dev readme && git add README.md"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.5",
@@ -98,8 +98,8 @@
     "eslint-plugin-prettier": "^3.1.0",
     "lint-staged": "^8.1.0",
     "lodash": "^4.17.15",
-    "mocha": "^6.2.0",
-    "nyc": "^14.1.1",
+    "mocha": "^7.0.1",
+    "nyc": "^15.0.0",
     "prettier": "^1.15.2"
   },
   "nyc": {
@@ -108,7 +108,20 @@
     "branches": 80,
     "functions": 80,
     "lines": 80,
-    "statements": -10
+    "statements": -10,
+    "exclude": [
+      "coverage/**",
+      "node_modules/**",
+      "**/*.d.ts",
+      "**/*.test.ts",
+      "app.js"
+    ],
+    "sourceMap": true,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ]
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
