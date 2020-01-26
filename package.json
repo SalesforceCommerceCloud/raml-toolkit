@@ -12,13 +12,13 @@
   "keywords": [
     "oclif"
   ],
+  "bin": {
+    "raml-toolkit": "./bin/run",
+    "ramlint": "./bin/run"
+  },
   "main": "lib/index.js",
   "oclif": {
-    "commands": "./lib/commands",
-    "bin": "raml-toolkit",
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
+    "bin": "raml-toolkit"
   },
   "author": "",
   "license": "ISC",
@@ -111,6 +111,9 @@
     "mocha": "^7.0.1",
     "nyc": "^15.0.0",
     "prettier": "^1.15.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "nyc": {
     "all": true,
