@@ -1,0 +1,56 @@
+#%RAML 1.0 Library
+
+usage: |
+  REST and HTTP enforce a bunch of rules around Resources and Methods along with prescriptions around responding to requests with appropriate responses. What they don't do, and rightfully so, is attempt to standardize on the commonality for disparate services. In a particular Services ecosystem, example: Commerce Platform, having services obey a set of constraints around the way they are exposed helps achieve a level of commonality via convention that will enable them to interplay easily.
+
+  These RAML componenets will define those constraints that RESTful Services developed at Commerce Cloud will adhere to. This API implements the version **[1.0 of the REST standard](https://salesforce.quip.com/G0isA2Ck506s)**, please make sure this is the version you are meaning to use before leveraging these RAML components.
+
+  ### Datatype
+
+  This project provides the following common datatypes, refer to the `usage` section in each of them for more information:
+  - **`dataTypes/error-response.raml`**, represents a generic error response in the form of "problem detail" [rfc7807](https://tools.ietf.org/html/rfc7807).
+
+  ### SecuritySchemes
+
+  This project provides the following reusable securitySchemes, refer to the `usage` section in each of them for more information:
+  - **`dataTypes/gdot.raml`**, a securityScheme for endpoints authenticated against GDoT.
+  - **`dataTypes/am-oauth-2.raml`**, a securityScheme for endpoints authenticated against AccountManager OAuth 2.0.
+  - **`dataTypes/shopper-token.raml`**, a securityScheme for endpoints authenticated via Shopper JWTs.
+
+  ### Traits
+
+  This project provide a number of traits that implement our REST standard, refer to the `usage`  section in each of them for more information
+  - **`docs/traits/async-created.md`** and **`docs/traits/sync-created.md`**, to define endpoints that create resources.
+  - **`docs/traits/date-conditional-request.md`** and **`docs/traits/etag-conditional-request.md`**, endpoints that can be conditinally requested based on date and etags respectively.
+  - **`docs/traits/etag-response.md`**, for responses that include an `etag`.
+  - **`docs/traits/expandable.md`**, for endpoints that support the `expand` parameter of the standard.
+  - **`docs/traits/offset-paginated.md`**, for endpoints that are paginated using offsets.
+  - **`docs/traits/rate-limited.md`**, for endpoints that are rate-limited.
+  - **`docs/traits/selectable.md`**, for endpoints that support the `field` paratemer of the standard..
+
+  ### Embeddable documentation
+
+  The project also provides some _user facing_ **embeddable documents** for certain topics covered in the standard. They can be found in `docs/embeddable`:
+  - **`docs/embeddable/expansion.md`**, the mechanism to expand links.
+  - **`docs/embeddable/field-selection.md`**, field filtering method.
+  - **`docs/embeddable/gdot-authentication.md`**, covers the basics around how to get authentication to access this service.
+
+  ### Example
+
+  An explample RAML is provided in `/example.raml`.
+
+securitySchemes: 
+  gdot: !include securitySchemes/gdot.raml
+
+types:
+  error-response: !include dataTypes/error-response.raml
+
+traits: 
+  rate-limited: !include traits/rate-limited.raml
+  sync-created: !include traits/sync-created.raml
+  async-created: !include traits/async-created.raml
+  date-conditional-request: !include traits/date-conditional-request.raml
+  etag-conditional-request: !include traits/etag-conditional-request.raml
+  etag-response: !include traits/etag-response.raml
+  offset-paginated: !include traits/offset-paginated.raml
+

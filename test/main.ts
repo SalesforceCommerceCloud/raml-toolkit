@@ -6,12 +6,12 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-const path = require("path");
-const rename = require("util").promisify(require("fs").rename);
-const { expect, test } = require("@oclif/test");
-const utils = require("./utils");
 
-const cmd = require("..").SfccRamlintCommand;
+import path from "path";
+import { expect, test } from "@oclif/test";
+import utils from "./utils";
+
+import cmd from "../src";
 
 const MERCURY_PROFILE = "mercury-profile";
 

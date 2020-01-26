@@ -6,10 +6,10 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-const validator = require("../../validator");
-const utils = require("../utils");
+import * as validator from "../../src/validator";
+import * as utils from "../utils";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("camelcase method displayname tests", () => {
   const QUERY_RULE =
@@ -22,8 +22,8 @@ describe("camelcase method displayname tests", () => {
 
   it("does not conform when method display name is missing from method", async () => {
     delete doc["/resource"]["/{resourceId}"].get.displayName;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
+    const result = await validator.validateFile(
+      utils.renderSpecAsFile(doc),
       PROFILE
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
@@ -31,8 +31,8 @@ describe("camelcase method displayname tests", () => {
 
   it("does not conform when method display name is kebab-case and not camelcase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not-camel-case";
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
+    const result = await validator.validateFile(
+      utils.renderSpecAsFile(doc),
       PROFILE
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
@@ -40,8 +40,8 @@ describe("camelcase method displayname tests", () => {
 
   it("does not conform when method display name is snake_case and not camelcase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not_camel_case";
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
+    const result = await validator.validateFile(
+      utils.renderSpecAsFile(doc),
       PROFILE
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
@@ -49,8 +49,8 @@ describe("camelcase method displayname tests", () => {
 
   it("does not conform when method display name is PascalCase and not camelcase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "PascalCase";
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
+    const result = await validator.validateFile(
+      utils.renderSpecAsFile(doc),
       PROFILE
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);

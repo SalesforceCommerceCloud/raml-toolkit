@@ -1,5 +1,22 @@
 #!/usr/bin/env node
+/*
+ * Copyright (c) 2019, salesforce.com, inc.
+ * All rights reserved.
+ * SPDX-License-Identifier: BSD-3-Clause
+ * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
 
-require("..")
-  .SfccRamlintCommand.run()
+const fs = require("fs");
+const path = require("path");
+const project = path.join(__dirname, "../tsconfig.json");
+const dev = fs.existsSync(project);
+
+if (dev) {
+  require("ts-node").register({ project });
+}
+
+// require(`../${dev ? "src" : "lib"}`)
+require(`../${dev ? "src" : "lib"}`)
+  .run()
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   .catch(require("@oclif/errors/handle"));
