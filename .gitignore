@@ -7,3 +7,4 @@ lib
 .DS_Store
 .vscode
 .env
+reports
