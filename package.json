@@ -28,7 +28,7 @@
     "tmp": "^0.1.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5",
-    "webapi-parser": "^0.4.1"
+    "webapi-parser": "^0.2.0"
   },
   "lint-staged": {
     "*.ts": [
@@ -76,9 +76,12 @@
     }
   },
   "scripts": {
-    "pretest": "eslint .",
+    "pretest": "npm run lint && tsc",
     "start": "node app.js",
-    "test": "nyc cross-env TS_NODE_FILES=true mocha --exit --require ts-node/register --colors test/**/*.ts"
+    "lint": "eslint \"**/*.ts\" --quiet --fix",
+    "test": "nyc mocha test/**/*.test.ts",
+    "coverage": "nyc report",
+    "compile": "tsc"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.5",
@@ -105,10 +108,7 @@
     "branches": 80,
     "functions": 80,
     "lines": 80,
-    "statements": -10,
-    "exclude": [
-      "app.js"
-    ]
+    "statements": -10
   },
   "publishConfig": {
     "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"

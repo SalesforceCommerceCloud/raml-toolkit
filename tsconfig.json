@@ -3,6 +3,7 @@
         "module": "commonjs",
         "allowSyntheticDefaultImports": true,
         "alwaysStrict": true,
+        "removeComments": false,
         "declaration": true,
         "sourceMap": true,
         "target": "ES6",
@@ -18,7 +19,11 @@
         "noImplicitThis": true,
         "preserveConstEnums": true,
         "outDir": "./lib",
+        
     },
+    "types": [
+        "mocha"
+      ],
     // NOTE: Everything except what you want compiled into JS should be in the exclusions.
     "exclude": [
         "node_modules",

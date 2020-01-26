@@ -1,3 +1,5 @@
+# test/mocha.opts
+--require ./node_modules/ts-node/register
+--require ./node_modules/source-map-support/register
 --recursive
---reporter spec
---timeout 5000
+--exit

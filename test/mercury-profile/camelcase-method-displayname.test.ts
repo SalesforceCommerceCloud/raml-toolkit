@@ -7,7 +7,7 @@
 /* eslint-disable no-undef */
 "use strict";
 import * as validator from "../../src/validator";
-import * as utils from "../utils";
+import * as utils from "../utils.test";
 
 const PROFILE = "mercury";
 

@@ -9,7 +9,7 @@
 
 import path from "path";
 import { expect, test } from "@oclif/test";
-import utils from "./utils";
+import { getSingleValidFile, getSingleInvalidFile } from "./utils.test";
 
 import cmd from "../src";
 
@@ -30,16 +30,14 @@ describe("raml-toolkit cli", () => {
     .stdout()
     .stderr()
     .do(function() {
-      return cmd.run([utils.getSingleValidFile()]);
+      return cmd.run([getSingleValidFile()]);
     })
     .exit(2)
     .it("does not accept a file with no profile and exits non-zero");
 
   test
     .stdout()
-    .do(() =>
-      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleValidFile()])
-    )
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
     });
@@ -50,7 +48,7 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
+        getSingleValidFile(),
         "--warnings"
       ])
     )
@@ -62,7 +60,7 @@ describe("raml-toolkit cli", () => {
   test
     .stdout()
     .do(() => {
-      const tempRamlFile = utils.getSingleValidFile();
+      const tempRamlFile = getSingleValidFile();
       const ramlFileWithSpace = path.join(
         path.dirname(tempRamlFile),
         "test with spaces.raml"
@@ -82,9 +80,7 @@ describe("raml-toolkit cli", () => {
   test
     .stdout()
     .stderr()
-    .do(() =>
-      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleInvalidFile()])
-    )
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleInvalidFile()]))
     .exit(1)
     .it("validates a single invalid file and exits non-zero");
 
@@ -116,8 +112,8 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
-        utils.getSingleInvalidFile()
+        getSingleValidFile(),
+        getSingleInvalidFile()
       ])
     )
     .exit(1)

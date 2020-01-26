@@ -5,22 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
-import amf, { ProfileName, Raml10Parser } from "amf-client-js";
-
-function validateCustom2(dialect, profile, model) {
-  return new Promise(function(resolve, reject) {
-    amf.Core.loadValidationProfile(profile)
-      .then(function() {
-        amf.Core.validate(model, dialect, dialect)
-          .then(function(report) {
-            // printReport(dialect, report);
-            resolve(report);
-          })
-          .catch(reject);
-      })
-      .catch(reject);
-  });
-}
+import amf, { Raml10Parser } from "amf-client-js";
 
 function validateCustom(
   profile: string,
@@ -28,7 +13,8 @@ function validateCustom(
 ): Promise<amf.client.validate.ValidationReport> {
   return new Promise(async (resolve, reject) => {
     try {
-      const profileName = await amf.Core.loadValidationProfile(profile);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const profileName: any = await amf.Core.loadValidationProfile(profile);
       const report = await amf.Core.validate(
         model,
         profileName,
@@ -45,9 +31,6 @@ export async function validateModel(
   model: amf.model.document.BaseUnit,
   profile: string
 ): Promise<amf.client.validate.ValidationReport> {
-  console.log(
-    `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`
-  );
   const results = await validateCustom(
     `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`,
     model
@@ -102,11 +85,7 @@ export async function validateFile(
   amf.plugins.document.Vocabularies.register();
   amf.plugins.features.AMFValidation.register();
 
-  try {
-    await amf.Core.init();
-  } catch (error) {
-    console.error(error);
-  }
+  await amf.Core.init();
 
   const model = await parseRaml(`file://${path.resolve(filename)}`);
 
