@@ -19,7 +19,7 @@
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
-    "amf-client-js": "^4.0.4",
+    "amf-client-js": "^3.5.4",
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
