@@ -1,5 +1,6 @@
 {
     "compilerOptions": {   
+        "allowJs": false,
         "module": "commonjs",
         "allowSyntheticDefaultImports": true,
         "alwaysStrict": true,
@@ -32,6 +33,6 @@
         "gulpfile.ts"
     ],
     "include": [
-        "src/**/*"
+        "src"
     ]
 }

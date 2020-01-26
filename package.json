@@ -82,11 +82,13 @@
     }
   },
   "scripts": {
+    "clean": "rm -rf lib",
+    "compile": "tsc -b && echo Compiled",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "tsc && oclif-dev manifest && oclif-dev readme",
+    "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --reporter=xunit --reporter-options output=reports/generator.xml",
     "version": "oclif-dev readme && git add README.md"
   },
   "devDependencies": {
@@ -129,6 +131,5 @@
       "**/*.test.ts",
       "app.js"
     ]
-  },
-  "types": "lib/index.d.ts"
+  }
 }
