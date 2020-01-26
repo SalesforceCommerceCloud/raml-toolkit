@@ -79,7 +79,7 @@
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --recursive --timeout 5000",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts",
     "version": "oclif-dev readme && git add README.md"
   },
   "devDependencies": {
@@ -115,12 +115,6 @@
       "**/*.d.ts",
       "**/*.test.ts",
       "app.js"
-    ],
-    "sourceMap": true,
-    "reporter": [
-      "lcov",
-      "text",
-      "text-summary"
     ]
   },
   "publishConfig": {
