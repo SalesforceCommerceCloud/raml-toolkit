@@ -11,7 +11,6 @@
         "declarationMap": true,
         "forceConsistentCasingInFileNames":true,
         "importHelpers": true,
-        "incremental": false,
         "moduleResolution": "Node",
         "noEmitOnError": true,
         "noErrorTruncation": true,

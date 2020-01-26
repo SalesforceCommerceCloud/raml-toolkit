@@ -15,7 +15,7 @@ import {
   renderSpecAsFile
 } from "../utils.test";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("no literal question marks in query parameters tests", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";

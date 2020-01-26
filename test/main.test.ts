@@ -10,10 +10,11 @@
 import path from "path";
 import { expect, test } from "@oclif/test";
 import { getSingleValidFile, getSingleInvalidFile } from "./utils.test";
+import { rename } from "fs-extra";
 
 import cmd from "../src";
 
-const MERCURY_PROFILE = "mercury-profile";
+const MERCURY_PROFILE = "mercury";
 
 const successString = "Conforms? true";
 
@@ -44,6 +45,14 @@ describe("raml-toolkit cli", () => {
 
   test
     .stdout()
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
+    .it("validates a single valid file and reports that it conforms", ctx => {
+      expect(ctx.stdout).to.contain(successString);
+      expect(ctx.stdout).to.contain("Number of hidden warnings:");
+    });
+
+  test
+    .stdout()
     .do(() =>
       cmd.run([
         "--profile",
@@ -52,30 +61,33 @@ describe("raml-toolkit cli", () => {
         "--warnings"
       ])
     )
-    .it("validates a single valid file and reports that it conforms", ctx => {
-      expect(ctx.stdout).to.contain(successString);
-      expect(ctx.stdout).to.contain("Number of hidden warnings:");
-    });
+    .it(
+      "validates a single valid file and reports that it conforms, without hidden warnings",
+      ctx => {
+        expect(ctx.stdout).to.contain(successString);
+        expect(ctx.stdout).to.not.contain("Number of hidden warnings:");
+      }
+    );
 
-  // test
-  //   .stdout()
-  //   .do(() => {
-  //     const tempRamlFile = getSingleValidFile();
-  //     const ramlFileWithSpace = path.join(
-  //       path.dirname(tempRamlFile),
-  //       "test with spaces.raml"
-  //     );
-  //     return rename(tempRamlFile, ramlFileWithSpace).then(() =>
-  //       cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace])
-  //     );
-  //   })
-  //   .it(
-  //     "validates a single valid file with a space in the name" +
-  //       " and reports that it conforms",
-  //     ctx => {
-  //       expect(ctx.stdout).to.contain(successString);
-  //     }
-  //   );
+  test
+    .stdout()
+    .do(() => {
+      const tempRamlFile = getSingleValidFile();
+      const ramlFileWithSpace = path.join(
+        path.dirname(tempRamlFile),
+        "test with spaces.raml"
+      );
+      return rename(tempRamlFile, ramlFileWithSpace).then(() =>
+        cmd.run(["--profile", MERCURY_PROFILE, ramlFileWithSpace])
+      );
+    })
+    .it(
+      "validates a single valid file with a space in the name" +
+        " and reports that it conforms",
+      ctx => {
+        expect(ctx.stdout).to.contain(successString);
+      }
+    );
 
   test
     .stdout()

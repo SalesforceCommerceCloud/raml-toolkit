@@ -15,7 +15,7 @@ import {
   renderSpecAsFile
 } from "../utils.test";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("happy path raml tests", () => {
   it("valid", async () => {

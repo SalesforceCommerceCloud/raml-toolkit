@@ -12,18 +12,14 @@ function validateCustom(
   model: amf.model.document.BaseUnit
 ): Promise<amf.client.validate.ValidationReport> {
   return new Promise(async (resolve, reject) => {
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const profileName: any = await amf.Core.loadValidationProfile(profile);
-      const report = await amf.Core.validate(
-        model,
-        profileName,
-        amf.MessageStyles.RAML
-      );
-      resolve(report);
-    } catch (reason) {
-      return reject(reason);
-    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const profileName: any = await amf.Core.loadValidationProfile(profile);
+    const report = await amf.Core.validate(
+      model,
+      profileName,
+      amf.MessageStyles.RAML
+    );
+    resolve(report);
   });
 }
 
@@ -69,10 +65,6 @@ export async function printResults(
     } else {
       console.log(results.toString());
     }
-  }
-
-  if (!results || results.conforms === false) {
-    throw new Error(`${results.model} is invalid`);
   }
 }
 

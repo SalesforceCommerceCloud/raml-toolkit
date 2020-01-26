@@ -15,7 +15,7 @@ import {
   renderSpecAsFile
 } from "../utils.test";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("no literal question marks in property name tests", () => {
   const PROPERTY_RULE =

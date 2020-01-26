@@ -15,7 +15,7 @@ import {
   renderSpecAsFile
 } from "../utils.test";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("camelcase query parameters test", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
