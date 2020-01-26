@@ -126,8 +126,5 @@
       "**/*.test.ts",
       "app.js"
     ]
-  },
-  "publishConfig": {
-    "registry": "https://nexus.soma.salesforce.com/nexus/content/repositories/npmjs-internal/"
   }
 }
