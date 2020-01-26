@@ -5,3 +5,5 @@ package-lock.json
 coverage
 lib
 .DS_Store
+.vscode
+.env
