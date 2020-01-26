@@ -83,7 +83,7 @@
   },
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "tsc && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --reporter=xunit --reporter-options output=reports/generator.xml",
