@@ -8,12 +8,12 @@ import path from "path";
 import amf, { Raml10Parser } from "amf-client-js";
 
 function validateCustom(
-  profile: string,
-  model: amf.model.document.BaseUnit
+  model: amf.model.document.BaseUnit,
+  profileFile: string
 ): Promise<amf.client.validate.ValidationReport> {
-  return new Promise(async (resolve, reject) => {
+  return new Promise(async resolve => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const profileName: any = await amf.Core.loadValidationProfile(profile);
+    const profileName: any = await amf.Core.loadValidationProfile(profileFile);
     const report = await amf.Core.validate(
       model,
       profileName,
@@ -28,8 +28,8 @@ export async function validateModel(
   profile: string
 ): Promise<amf.client.validate.ValidationReport> {
   const results = await validateCustom(
-    `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`,
-    model
+    model,
+    `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`
   );
 
   return results as amf.client.validate.ValidationReport;
@@ -80,16 +80,6 @@ export async function validateFile(
   await amf.Core.init();
 
   const model = await parseRaml(`file://${path.resolve(filename)}`);
-
   if (!model) throw new Error("Error validating file");
-
-  let results: amf.client.validate.ValidationReport;
-
-  try {
-    results = await validateModel(model, profile);
-  } catch (err) {
-    console.error("Error validating file: " + err);
-  }
-
-  return results;
+  return await validateModel(model, profile);
 }
