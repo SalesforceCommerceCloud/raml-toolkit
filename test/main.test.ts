@@ -6,14 +6,15 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-const path = require("path");
-const rename = require("util").promisify(require("fs").rename);
-const { expect, test } = require("@oclif/test");
-const utils = require("./utils");
 
-const cmd = require("..").SfccRamlintCommand;
+import path from "path";
+import { expect, test } from "@oclif/test";
+import { getSingleValidFile, getSingleInvalidFile } from "./utils.test";
+import { rename } from "fs-extra";
 
-const MERCURY_PROFILE = "mercury-profile";
+import cmd from "../src";
+
+const MERCURY_PROFILE = "mercury";
 
 const successString = "Conforms? true";
 
@@ -30,18 +31,24 @@ describe("raml-toolkit cli", () => {
     .stdout()
     .stderr()
     .do(function() {
-      return cmd.run([utils.getSingleValidFile()]);
+      return cmd.run([getSingleValidFile()]);
     })
     .exit(2)
     .it("does not accept a file with no profile and exits non-zero");
 
   test
     .stdout()
-    .do(() =>
-      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleValidFile()])
-    )
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
     .it("validates a single valid file and reports that it conforms", ctx => {
       expect(ctx.stdout).to.contain(successString);
+    });
+
+  test
+    .stdout()
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
+    .it("validates a single valid file and reports that it conforms", ctx => {
+      expect(ctx.stdout).to.contain(successString);
+      expect(ctx.stdout).to.contain("Number of hidden warnings:");
     });
 
   test
@@ -50,19 +57,22 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
+        getSingleValidFile(),
         "--warnings"
       ])
     )
-    .it("validates a single valid file and reports that it conforms", ctx => {
-      expect(ctx.stdout).to.contain(successString);
-      expect(ctx.stdout).to.contain("Number of hidden warnings:");
-    });
+    .it(
+      "validates a single valid file and reports that it conforms, without hidden warnings",
+      ctx => {
+        expect(ctx.stdout).to.contain(successString);
+        expect(ctx.stdout).to.not.contain("Number of hidden warnings:");
+      }
+    );
 
   test
     .stdout()
     .do(() => {
-      const tempRamlFile = utils.getSingleValidFile();
+      const tempRamlFile = getSingleValidFile();
       const ramlFileWithSpace = path.join(
         path.dirname(tempRamlFile),
         "test with spaces.raml"
@@ -82,9 +92,7 @@ describe("raml-toolkit cli", () => {
   test
     .stdout()
     .stderr()
-    .do(() =>
-      cmd.run(["--profile", MERCURY_PROFILE, utils.getSingleInvalidFile()])
-    )
+    .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleInvalidFile()]))
     .exit(1)
     .it("validates a single invalid file and exits non-zero");
 
@@ -101,8 +109,8 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
-        utils.getSingleValidFile()
+        getSingleValidFile(),
+        getSingleValidFile()
       ])
     )
     .it("validates two valid files and reports that it conforms", ctx => {
@@ -116,8 +124,8 @@ describe("raml-toolkit cli", () => {
       cmd.run([
         "--profile",
         MERCURY_PROFILE,
-        utils.getSingleValidFile(),
-        utils.getSingleInvalidFile()
+        getSingleValidFile(),
+        getSingleInvalidFile()
       ])
     )
     .exit(1)

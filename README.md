@@ -4,8 +4,6 @@ A linting tool for raml for commerce cloud and beyond
   [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
 
 - [Installation](#installation)
-  - [Git Enterprise (git.soma)](#git-enterprise-gitsoma)
-    - [Installation](#installation-1)
 - [Usage](#usage)
   - [Jenkins](#jenkins)
   - [From your local machine](#from-your-local-machine)
@@ -16,11 +14,6 @@ A linting tool for raml for commerce cloud and beyond
 
 
 ## Installation
-
-### Git Enterprise (git.soma)
-
-#### Installation
-
 
 ```bash
 $ npm install @commerce-apps/raml-toolkit
@@ -33,7 +26,7 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 ```bash
 OPTIONS
   -h, --help                                show CLI help
-  -p, --profile=(mercury-profile, other-profile) profile to apply
+  -p, --profile=(mercury, other-profile) profile to apply
   -v, --version                             show CLI version
   -w, --warnings                   Show all the warnings
 ```
@@ -49,7 +42,7 @@ In your Jenkinsfile just make sure you init npm and then its a very simple one l
     }
 
     stage('Whatever') {
-        sh "npx raml-toolkit --profile mercury-profile file1.raml file2.raml etc.raml"
+        sh "npx raml-toolkit --profile mercury file1.raml file2.raml etc.raml"
     }
   ```
 
@@ -60,16 +53,16 @@ NOTE: Violations will return a non-zero exit code and fail the build, which warn
 To check your RAML currently the CLI just takes a list of files
 
 ```bash
-$ ramlint --profile mercury-profile file.raml
+$ ramlint --profile mercury file.raml
 # or
-$ ramlint --profile mercury-profile file1.raml file2.raml etc.raml
+$ ramlint --profile mercury file1.raml file2.raml etc.raml
 ```
 
 The response will look something like
 
 ```
 Model: file://data-products-api-v1.raml
-Profile: mercury-profile
+Profile: mercury
 Conforms? false
 Number of results: 2
 

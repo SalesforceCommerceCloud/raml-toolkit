@@ -6,10 +6,16 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-const validator = require("../../validator");
-const utils = require("../utils");
+import { validateFile } from "../../src/validator";
+import {
+  getHappySpec,
+  renameKey,
+  conforms,
+  breaksTheseRules,
+  renderSpecAsFile
+} from "../utils.test";
 
-const PROFILE = "mercury-profile";
+const PROFILE = "mercury";
 
 describe("no literal question marks in query parameters tests", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
@@ -21,76 +27,55 @@ describe("no literal question marks in query parameters tests", () => {
   let parameters;
 
   beforeEach(function() {
-    doc = utils.getHappySpec();
+    doc = getHappySpec();
     parameters = doc["/resource"]["/{resourceId}"].get.queryParameters;
   });
 
   it("conforms when parameter has a question mark and required field is not present", async () => {
-    utils.renameKey(parameters, "expand", "expand?");
+    renameKey(parameters, "expand", "expand?");
     delete parameters["expand?"].required;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.conforms(result);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    conforms(result);
   });
 
   it("fails when parameter has a question mark and required field is false", async () => {
-    utils.renameKey(parameters, "expand", "expand?");
+    renameKey(parameters, "expand", "expand?");
     parameters["expand?"].required = false;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
   });
 
   it("fails when parameter has a question mark and required field is true", async () => {
-    utils.renameKey(parameters, "expand", "expand?");
+    renameKey(parameters, "expand", "expand?");
     parameters["expand?"].required = true;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
   });
 
   it("fails when parameter has 2 question mark and required field is not present", async () => {
-    utils.renameKey(parameters, "expand", "expand??");
+    renameKey(parameters, "expand", "expand??");
     delete parameters["expand??"].required;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
   });
 
   it("fails when parameter has 2 question mark and required field is false", async () => {
-    utils.renameKey(parameters, "expand", "expand??");
+    renameKey(parameters, "expand", "expand??");
     parameters["expand??"].required = false;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
   });
 
   it("fails when parameter has 2 question mark and required field is true", async () => {
-    utils.renameKey(parameters, "expand", "expand??");
+    renameKey(parameters, "expand", "expand??");
     parameters["expand??"].required = true;
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [CC_RULE, QUERY_RULE]);
   });
 
   it("fails when path parameter has a question mark", async () => {
-    utils.renameKey(doc["/resource"], "/{resourceId}", "/{resourceId?}");
-    let result = await validator.validateFile(
-      utils.renderSpecAsUrl(doc),
-      PROFILE
-    );
-    utils.breaksTheseRules(result, [ENDPOINT_RULE, QUERY_RULE]);
+    renameKey(doc["/resource"], "/{resourceId}", "/{resourceId?}");
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksTheseRules(result, [ENDPOINT_RULE, QUERY_RULE]);
   });
 });

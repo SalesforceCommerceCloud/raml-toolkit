@@ -1,3 +1,10 @@
 node_modules
 package-lock.json
 .nyc_output
+
+coverage
+lib
+.DS_Store
+.vscode
+.env
+reports

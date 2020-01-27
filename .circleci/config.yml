@@ -9,6 +9,8 @@ jobs:
           steps:
             - run: npm install
       - run: npm run test
+      - store_test_results:
+          path: reports
 
 workflows:
   version: 2
