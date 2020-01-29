@@ -25,7 +25,7 @@
   "dependencies": {
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
-    "amf-client-js": "^3.5.4",
+    "amf-client-js": "^4.0.4",
     "express": "^4.17.1",
     "fs-extra": "^8.1.0",
     "js-yaml": "^3.13.1",
@@ -88,7 +88,7 @@
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\" --require ts-node/register --watch-extensions ts",
     "version": "oclif-dev readme && git add README.md"
   },
   "devDependencies": {
