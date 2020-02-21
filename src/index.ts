@@ -25,6 +25,9 @@ export default class RamlToolkitCommand extends Command {
       // eslint-disable-next-line no-await-in-loop
       promises.push(
         validateFile(arg, flags.profile).then(results => {
+          if (results.conforms === false) {
+            exitCode += 1;
+          }
           return printResults(results, flags.warnings);
         })
       );
