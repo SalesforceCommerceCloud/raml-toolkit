@@ -80,4 +80,17 @@ RamlToolkitCommand.args = [{ name: "filename" }];
 // This allows a variable length list of files
 RamlToolkitCommand.strict = false;
 
-module.exports = RamlToolkitCommand;
+// module.exports = RamlToolkitCommand;
+export { getBearer } from "./exchange-connector/bearerToken";
+export {
+  searchExchange,
+  downloadRestApi,
+  downloadRestApis,
+  getVersionByDeployment,
+  getSpecificApi,
+  getAsset
+} from "./exchange-connector/exchangeDownloader";
+export { groupByCategory } from "./exchange-connector/exchangeTools";
+export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
+
+export { RestApi } from "./exchange-connector/exchangeTypes";
