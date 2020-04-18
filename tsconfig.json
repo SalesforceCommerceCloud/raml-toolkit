@@ -18,8 +18,7 @@
         "noImplicitReturns": true,
         "noImplicitThis": true,
         "preserveConstEnums": true,
-        "outDir": "./lib",
-        "rootDir": "./src"
+        "outDir": "./lib"
     },
     "types": [
         "mocha"

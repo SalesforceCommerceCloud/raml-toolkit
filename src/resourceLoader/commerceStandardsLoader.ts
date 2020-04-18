@@ -13,10 +13,10 @@ import { CommerceFileSystemAdapter } from "./commerceFileSystemAdapter";
 const EXCHANGE_MODULES = "exchange_modules/";
 
 export class CommerceStandardsLoader implements amf.resource.ResourceLoader {
-  public workingDir;
-  public fsAdapter;
+  public workingDir: string;
+  public fsAdapter: CommerceFileSystemAdapter;
 
-  constructor(rootFolder) {
+  constructor(rootFolder: string) {
     this.workingDir = rootFolder.split("file://")[1];
     if (!this.workingDir) {
       throw new Error("rootFolder does not contain 'file://' prefix");
@@ -24,11 +24,14 @@ export class CommerceStandardsLoader implements amf.resource.ResourceLoader {
     this.fsAdapter = new CommerceFileSystemAdapter();
   }
 
-  accepts(resource): boolean {
-    return resource && resource.indexOf(EXCHANGE_MODULES) >= 0;
+  accepts(resource: string): boolean {
+    if (resource) {
+      return resource.indexOf(EXCHANGE_MODULES) >= 0;
+    }
+    return false;
   }
 
-  fetch(resource): Promise<amf.client.remote.Content> {
+  fetch(resource: string): Promise<amf.client.remote.Content> {
     return new Promise((resolve, reject) => {
       if (resource.indexOf(EXCHANGE_MODULES) >= 0) {
         const resourceUriPath = resource.split(EXCHANGE_MODULES);
