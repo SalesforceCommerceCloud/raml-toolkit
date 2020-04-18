@@ -8,7 +8,6 @@
 import { readFileSync } from "fs-extra";
 
 export class CommerceFileSystemAdapter {
-
   readFileSync(resourceAbsolutePath: string): string {
     return readFileSync(resourceAbsolutePath, "utf8");
   }

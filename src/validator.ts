@@ -6,7 +6,7 @@
  */
 import path from "path";
 import amf, { Raml10Parser } from "amf-client-js";
-import {CommerceStandardsLoader} from "./resourceLoader";
+import { CommerceStandardsLoader } from "./resourceLoader";
 
 function validateCustom(
   model: amf.model.document.BaseUnit,
@@ -39,8 +39,9 @@ export async function validateModel(
 export async function parseRaml(
   filename: string
 ): Promise<amf.model.document.BaseUnit> {
-
-  const ccStandardResourceLoader = new CommerceStandardsLoader(path.dirname(filename));
+  const ccStandardResourceLoader = new CommerceStandardsLoader(
+    path.dirname(filename)
+  );
   const ccEnvironment = amf.client.DefaultEnvironment.apply().addClientLoader(
     ccStandardResourceLoader
   );

@@ -49,7 +49,9 @@ export class CommerceStandardsLoader implements amf.resource.ResourceLoader {
           );
         } catch (err) {
           reject(
-            new amf.ResourceNotFound(`Resource failed to load: ${resource}. ${err.toString()}`)
+            new amf.ResourceNotFound(
+              `Resource failed to load: ${resource}. ${err.toString()}`
+            )
           );
         }
       } else {

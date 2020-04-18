@@ -18,24 +18,23 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-
 describe("Commerce standards resource loader create tests", () => {
   it("Throws error on undefined root path", () => {
-    return expect(() =>
-      new CommerceStandardsLoader(undefined)
-    ).to.throw("Cannot read property 'split' of undefined");
+    return expect(() => new CommerceStandardsLoader(undefined)).to.throw(
+      "Cannot read property 'split' of undefined"
+    );
   });
 
   it("Throws error on null root path", () => {
-    return expect(() =>
-      new CommerceStandardsLoader(null)
-    ).to.throw("Cannot read property 'split' of null");
+    return expect(() => new CommerceStandardsLoader(null)).to.throw(
+      "Cannot read property 'split' of null"
+    );
   });
 
   it("Throws error on root path without 'file://' prefix", () => {
-    return expect(() =>
-      new CommerceStandardsLoader("root")
-    ).to.throw("rootFolder does not contain 'file://' prefix");
+    return expect(() => new CommerceStandardsLoader("root")).to.throw(
+      "rootFolder does not contain 'file://' prefix"
+    );
   });
 });
 
@@ -73,7 +72,8 @@ describe("Commerce standards resource loader fetch tests", () => {
   before(() => {
     standardsLoader = new CommerceStandardsLoader("file:///rootFolder/");
     standardsLoader.fsAdapter = sinon.stub({
-      readFileSync: (resourcePath: String) => {}
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      readFileSync: (resourcePath: string) => {}
     });
   });
 
@@ -91,17 +91,25 @@ describe("Commerce standards resource loader fetch tests", () => {
     return standardsLoader
       .fetch("error/exchange_modules/resource.json")
       .then(function(s) {
-        sinon.assert.calledWith(standardsLoader.fsAdapter.readFileSync, "/rootFolder/exchange_modules/resource.json");
+        sinon.assert.calledWith(
+          standardsLoader.fsAdapter.readFileSync,
+          "/rootFolder/exchange_modules/resource.json"
+        );
         return expect(s).to.eql(content);
       });
   });
 
   it("Rejected for resource paths with 'exchange_modules/' and failed to load", () => {
-    standardsLoader.fsAdapter.readFileSync.throws(new Error("Failed to load standard resource"));
+    standardsLoader.fsAdapter.readFileSync.throws(
+      new Error("Failed to load standard resource")
+    );
     return standardsLoader
       .fetch("error/exchange_modules/resource.json")
       .catch(function(err) {
-        sinon.assert.calledWith(standardsLoader.fsAdapter.readFileSync, sinon.match.string);
+        sinon.assert.calledWith(
+          standardsLoader.fsAdapter.readFileSync,
+          sinon.match.string
+        );
         return expect(err.toString()).to.eql(
           "amf.client.resource.ResourceNotFound: Resource failed to load: error/exchange_modules/resource.json. Error: Failed to load standard resource"
         );
@@ -117,5 +125,3 @@ describe("Commerce standards resource loader fetch tests", () => {
     });
   });
 });
-
-
