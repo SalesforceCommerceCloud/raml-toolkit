@@ -6,7 +6,7 @@
  */
 "use strict";
 
-import { CommerceStandardsLoader } from "../../src";
+import { CommerceFileSystemAdapter, CommerceStandardsLoader } from "../../src";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -16,6 +16,16 @@ import amf from "amf-client-js";
 before(() => {
   chai.should();
   chai.use(chaiAsPromised);
+});
+
+describe("Commerce standards resource loader fsAdapter tests", () => {
+  it("Throws error on undefined resource absolute path", () => {
+    const ccStandardsLoader = new CommerceStandardsLoader("file:///rootFolder");
+
+    return expect(() =>
+      ccStandardsLoader.fsAdapter.readFileSync(undefined)
+    ).to.throw();
+  });
 });
 
 describe("Commerce standards resource loader create tests", () => {

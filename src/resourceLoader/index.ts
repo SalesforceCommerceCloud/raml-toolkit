@@ -7,4 +7,3 @@
 "use strict";
 
 export { CommerceStandardsLoader } from "./commerceStandardsLoader";
-export { CommerceFileSystemAdapter } from "./commerceFileSystemAdapter";
