@@ -18,8 +18,6 @@ describe("File system adapter tests", () => {
   it("Throws error on undefined resource absolute path", () => {
     const fsAdapter = new CommerceFileSystemAdapter();
 
-    return expect(() => fsAdapter.readFileSync(undefined)).to.throw(
-      'The "path" argument must be of type string or an instance of Buffer or URL. Received undefined'
-    );
+    return expect(() => fsAdapter.readFileSync(undefined)).to.throw();
   });
 });
