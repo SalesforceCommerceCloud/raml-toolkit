@@ -10,54 +10,53 @@ import path from "path";
 import { FileSystemAdapter } from "./fileSystemAdapter";
 
 const EXCHANGE_MODULES = "exchange_modules/";
+const FILE_PROTOCOL_REGEX = /^file:\/\//i;
 
 export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
-  public workingDir: string;
   public fsAdapter: FileSystemAdapter;
 
-  constructor(rootFolder: string) {
-    this.workingDir = rootFolder.split("file://")[1];
-    if (!this.workingDir) {
-      throw new Error("rootFolder does not contain 'file://' prefix");
-    }
+  constructor(public workingDir: string) {
+    this.workingDir = this.normalizeWorkingDir(this.workingDir);
     this.fsAdapter = new FileSystemAdapter();
+  }
+
+  normalizeWorkingDir(workingDir: string): string {
+    let absoluteWorkingDir = this.workingDir?.split(FILE_PROTOCOL_REGEX)[1];
+    if (!absoluteWorkingDir) {
+      throw new Error("workingDir does not begin with 'file://' protocol");
+    }
+    absoluteWorkingDir = path.normalize(absoluteWorkingDir);
+    if(!path.isAbsolute(absoluteWorkingDir)) {
+      throw new Error(`workingDir '${workingDir}' must be an absolute path`);
+    }
+    return absoluteWorkingDir;
   }
 
   accepts(resource: string): boolean {
     return resource?.indexOf(EXCHANGE_MODULES) >= 0;
   }
 
-  fetch(resource: string): Promise<amf.client.remote.Content> {
-    return new Promise((resolve, reject) => {
-      if (resource.indexOf(EXCHANGE_MODULES) >= 0) {
-        const resourceUriPath = resource.split(EXCHANGE_MODULES);
-        const resourceAbsolutePath = path.join(
-          this.workingDir,
-          EXCHANGE_MODULES,
-          resourceUriPath[1]
-        );
+  async fetch(resource: string): Promise<amf.client.remote.Content> {
+    if (resource?.indexOf(EXCHANGE_MODULES) < 0) {
+      throw new amf.ResourceNotFound(`Resource cannot be found: ${resource}`);
+    }
 
-        try {
-          const data = this.fsAdapter.readFileSync(resourceAbsolutePath);
-          resolve(
-            new amf.client.remote.Content(
-              data,
-              `file://${resourceAbsolutePath}`,
-              "application/yaml"
-            )
-          );
-        } catch (err) {
-          reject(
-            new amf.ResourceNotFound(
-              `Resource failed to load: ${resource}. ${err.toString()}`
-            )
-          );
-        }
-      } else {
-        reject(
-          new amf.ResourceNotFound(`Resource cannot be found: ${resource}`)
-        );
-      }
-    });
+    const resourceUriParts = resource.split(EXCHANGE_MODULES);
+    const resourceAbsolutePath = path.join(
+      this.workingDir,
+      EXCHANGE_MODULES,
+      resourceUriParts[1]
+    );
+
+    try {
+      const data = this.fsAdapter.readFileSync(resourceAbsolutePath);
+      return new amf.client.remote.Content(
+        data,
+        `file://${resourceAbsolutePath}`,
+        "application/yaml"
+      );
+    } catch (err) {
+      throw new amf.ResourceNotFound(`Resource failed to load: ${resource}. ${err.toString()}`);
+    }
   }
 }

@@ -18,70 +18,104 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Commerce standards resource loader fsAdapter tests", () => {
+describe("Fat raml resource loader fsAdapter tests", () => {
   it("Throws error on undefined resource absolute path", () => {
-    const ccStandardsLoader = new FatRamlResourceLoader("file:///rootFolder");
+    const fatRamlResourceLoader = new FatRamlResourceLoader("FiLe://////workingDir");
 
     return expect(() =>
-      ccStandardsLoader.fsAdapter.readFileSync(undefined)
+      fatRamlResourceLoader.fsAdapter.readFileSync(undefined)
     ).to.throw();
   });
 });
 
-describe("Commerce standards resource loader create tests", () => {
-  it("Throws error on undefined root path", () => {
+describe("Fat raml resource loader create tests", () => {
+  it("Throws error on undefined workingDir path", () => {
     return expect(() => new FatRamlResourceLoader(undefined)).to.throw(
-      "Cannot read property 'split' of undefined"
+      "workingDir does not begin with 'file://' protocol"
     );
   });
 
-  it("Throws error on null root path", () => {
+  it("Throws error on null workingDir path", () => {
     return expect(() => new FatRamlResourceLoader(null)).to.throw(
-      "Cannot read property 'split' of null"
+      "workingDir does not begin with 'file://' protocol"
     );
   });
 
-  it("Throws error on root path without 'file://' prefix", () => {
-    return expect(() => new FatRamlResourceLoader("root")).to.throw(
-      "rootFolder does not contain 'file://' prefix"
+  it("Throws error on workingDir path that has 'file://' protocol at wrong index", () => {
+    return expect(() => new FatRamlResourceLoader("/somedirectory/file://workingDir")).to.throw(
+      "workingDir does not begin with 'file://' protocol"
     );
+  });
+
+  it("Throws error on workingDir path 'file://first/./second/..///still-second' that can be normalized ", () => {
+    return expect(() => new FatRamlResourceLoader("file://first/./second/..///still-second")).to.throw(
+      "workingDir 'file://first/./second/..///still-second' must be an absolute path"
+    );
+  });
+
+  it("Throws error on workingDir path that is not absolute", () => {
+    return expect(() => new FatRamlResourceLoader("file://workingDir")).to.throw(
+      "workingDir 'file://workingDir' must be an absolute path"
+    );
+  });
+
+  it("Creates FatRamlResourceLoader on workingDir that is absolute", () => {
+    return expect(new FatRamlResourceLoader("file:///workingDir").workingDir).to.eq("/workingDir");
+  });
+
+  it("Creates FatRamlResourceLoader on workingDir with case insensitive 'FiLE://' protocol", () => {
+    return expect(new FatRamlResourceLoader("FiLE:///workingDir").workingDir).to.eq("/workingDir");
+  });
+
+  it("Creates FatRamlResourceLoader on 'file://////workingDir' that is absolute", () => {
+    return expect(new FatRamlResourceLoader("file://////workingDir").workingDir).to.eq("/workingDir");
   });
 });
 
-describe("Commerce standards resource loader accepts tests", () => {
-  let standardsLoader;
+describe("Fat raml resource loader accepts tests", () => {
+  let fatRamlResourceLoader;
 
   before(() => {
-    standardsLoader = new FatRamlResourceLoader("file:///rootFolder");
+    fatRamlResourceLoader = new FatRamlResourceLoader("file:///workingDir");
   });
 
   it("Returns true (accepted) for resource path containing 'exchange_modules/'", () => {
-    const accepted = standardsLoader.accepts("exchange_modules/");
+    const accepted = fatRamlResourceLoader.accepts("exchange_modules/");
+    return expect(accepted).to.be.true;
+  });
+
+  it("Returns true (accepted) for resource path containing 'exchange_modules/test.raml'", () => {
+    const accepted = fatRamlResourceLoader.accepts("exchange_modules/test.raml");
+    return expect(accepted).to.be.true;
+  });
+
+  it("Returns true (accepted) for resource path containing 'exchange_modules/' anywhere in the resource path", () => {
+    const accepted = fatRamlResourceLoader.accepts("test/exchange_modules/test.raml");
     return expect(accepted).to.be.true;
   });
 
   it("Returns false (not accepted) for undefined resource path", () => {
-    const accepted = standardsLoader.accepts(undefined);
+    const accepted = fatRamlResourceLoader.accepts(undefined);
     return expect(accepted).to.be.false;
   });
 
   it("Returns false (not accepted) for null resource path", () => {
-    const accepted = standardsLoader.accepts(null);
+    const accepted = fatRamlResourceLoader.accepts(null);
     return expect(accepted).to.be.false;
   });
 
   it("Returns false (not accepted) for resource path without 'exchange_modules/'", () => {
-    const accepted = standardsLoader.accepts("invalid");
+    const accepted = fatRamlResourceLoader.accepts("invalid");
     return expect(accepted).to.be.false;
   });
 });
 
-describe("Commerce standards resource loader fetch tests", () => {
-  let standardsLoader;
+describe("Fat raml resource loader fetch tests", () => {
+  let fatRamlResourceLoader;
 
   before(() => {
-    standardsLoader = new FatRamlResourceLoader("file:///rootFolder/");
-    standardsLoader.fsAdapter = sinon.stub({
+    fatRamlResourceLoader = new FatRamlResourceLoader("file:///workingDir");
+    fatRamlResourceLoader.fsAdapter = sinon.stub({
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       readFileSync: (resourcePath: string) => {}
     });
@@ -94,41 +128,41 @@ describe("Commerce standards resource loader fetch tests", () => {
   it("Resolved for resources that are successfully read", () => {
     const content = new amf.client.remote.Content(
       "content",
-      "file:///rootFolder/exchange_modules/resource.json",
+      "file:///workingDir/exchange_modules/resource.json",
       "application/yaml"
     );
-    standardsLoader.fsAdapter.readFileSync.returns("content");
-    return standardsLoader
-      .fetch("error/exchange_modules/resource.json")
+    fatRamlResourceLoader.fsAdapter.readFileSync.returns("content");
+    return fatRamlResourceLoader
+      .fetch("test/exchange_modules/resource.json")
       .then(function(s) {
         sinon.assert.calledWith(
-          standardsLoader.fsAdapter.readFileSync,
-          "/rootFolder/exchange_modules/resource.json"
+          fatRamlResourceLoader.fsAdapter.readFileSync,
+          "/workingDir/exchange_modules/resource.json"
         );
         return expect(s).to.eql(content);
       });
   });
 
   it("Rejected for resource paths with 'exchange_modules/' and failed to load", () => {
-    standardsLoader.fsAdapter.readFileSync.throws(
-      new Error("Failed to load standard resource")
+    fatRamlResourceLoader.fsAdapter.readFileSync.throws(
+      new Error("Failed to load fat raml resource")
     );
-    return standardsLoader
-      .fetch("error/exchange_modules/resource.json")
+    return fatRamlResourceLoader
+      .fetch("exchange_modules/resource.json")
       .catch(function(err) {
         sinon.assert.calledWith(
-          standardsLoader.fsAdapter.readFileSync,
+          fatRamlResourceLoader.fsAdapter.readFileSync,
           sinon.match.string
         );
         return expect(err.toString()).to.eql(
-          "amf.client.resource.ResourceNotFound: Resource failed to load: error/exchange_modules/resource.json. Error: Failed to load standard resource"
+          "amf.client.resource.ResourceNotFound: Resource failed to load: exchange_modules/resource.json. Error: Failed to load fat raml resource"
         );
       });
   });
 
-  it("Rejected for resource paths without 'exchange_modules/'", () => {
-    return standardsLoader.fetch("test").catch(function(err) {
-      sinon.assert.notCalled(standardsLoader.fsAdapter.readFileSync);
+  it("Rejected for resource paths not starting with 'exchange_modules/'", () => {
+    return fatRamlResourceLoader.fetch("test").catch(function(err) {
+      sinon.assert.notCalled(fatRamlResourceLoader.fsAdapter.readFileSync);
       return expect(err.toString()).to.eql(
         "amf.client.resource.ResourceNotFound: Resource cannot be found: test"
       );
