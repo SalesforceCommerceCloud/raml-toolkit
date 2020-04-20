@@ -6,7 +6,7 @@
  */
 "use strict";
 
-import { CommerceFileSystemAdapter, CommerceStandardsLoader } from "../../src";
+import { CommerceStandardsLoader } from "../../src";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
