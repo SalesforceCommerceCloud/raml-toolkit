@@ -6,7 +6,7 @@
  */
 import path from "path";
 import amf, { Raml10Parser } from "amf-client-js";
-import { CommerceStandardsLoader } from "./resourceLoader";
+import { CommerceStandardsLoader } from "./exchange-connector";
 
 function validateCustom(
   model: amf.model.document.BaseUnit,
