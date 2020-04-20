@@ -26,7 +26,7 @@ export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
       throw new Error("workingDir does not begin with 'file://' protocol");
     }
     absoluteWorkingDir = path.normalize(absoluteWorkingDir);
-    if(!path.isAbsolute(absoluteWorkingDir)) {
+    if (!path.isAbsolute(absoluteWorkingDir)) {
       throw new Error(`workingDir '${workingDir}' must be an absolute path`);
     }
     return absoluteWorkingDir;
@@ -37,7 +37,7 @@ export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
   }
 
   async fetch(resource: string): Promise<amf.client.remote.Content> {
-    if (resource?.indexOf(EXCHANGE_MODULES) < 0) {
+    if (!resource || resource.indexOf(EXCHANGE_MODULES) < 0) {
       throw new amf.ResourceNotFound(`Resource cannot be found: ${resource}`);
     }
 
@@ -56,7 +56,9 @@ export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
         "application/yaml"
       );
     } catch (err) {
-      throw new amf.ResourceNotFound(`Resource failed to load: ${resource}. ${err.toString()}`);
+      throw new amf.ResourceNotFound(
+        `Resource failed to load: ${resource}. ${err.toString()}`
+      );
     }
   }
 }
