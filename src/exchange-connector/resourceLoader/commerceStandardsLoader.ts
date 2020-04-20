@@ -5,30 +5,26 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import Promise from "promise";
 import amf from "amf-client-js";
 import path from "path";
-import { CommerceFileSystemAdapter } from "./commerceFileSystemAdapter";
+import { FileSystemAdapter } from "./fileSystemAdapter";
 
 const EXCHANGE_MODULES = "exchange_modules/";
 
 export class CommerceStandardsLoader implements amf.resource.ResourceLoader {
   public workingDir: string;
-  public fsAdapter: CommerceFileSystemAdapter;
+  public fsAdapter: FileSystemAdapter;
 
   constructor(rootFolder: string) {
     this.workingDir = rootFolder.split("file://")[1];
     if (!this.workingDir) {
       throw new Error("rootFolder does not contain 'file://' prefix");
     }
-    this.fsAdapter = new CommerceFileSystemAdapter();
+    this.fsAdapter = new FileSystemAdapter();
   }
 
   accepts(resource: string): boolean {
-    if (resource) {
-      return resource.indexOf(EXCHANGE_MODULES) >= 0;
-    }
-    return false;
+    return resource?.indexOf(EXCHANGE_MODULES) >= 0;
   }
 
   fetch(resource: string): Promise<amf.client.remote.Content> {

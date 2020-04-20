@@ -7,7 +7,7 @@
 
 import { readFileSync } from "fs-extra";
 
-export class CommerceFileSystemAdapter {
+export class FileSystemAdapter {
   readFileSync(resourceAbsolutePath: string): string {
     return readFileSync(resourceAbsolutePath, "utf8");
   }
