@@ -81,7 +81,7 @@ RamlToolkitCommand.args = [{ name: "filename" }];
 RamlToolkitCommand.strict = false;
 
 // module.exports = RamlToolkitCommand;
-export { CommerceStandardsLoader } from "./exchange-connector";
+export { FatRamlResourceLoader } from "./exchange-connector";
 
 export { getBearer } from "./exchange-connector/bearerToken";
 export {

@@ -6,7 +6,7 @@
  */
 "use strict";
 
-import { CommerceStandardsLoader } from "../../../src";
+import { FatRamlResourceLoader } from "../../../src";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -20,7 +20,7 @@ before(() => {
 
 describe("Commerce standards resource loader fsAdapter tests", () => {
   it("Throws error on undefined resource absolute path", () => {
-    const ccStandardsLoader = new CommerceStandardsLoader("file:///rootFolder");
+    const ccStandardsLoader = new FatRamlResourceLoader("file:///rootFolder");
 
     return expect(() =>
       ccStandardsLoader.fsAdapter.readFileSync(undefined)
@@ -30,19 +30,19 @@ describe("Commerce standards resource loader fsAdapter tests", () => {
 
 describe("Commerce standards resource loader create tests", () => {
   it("Throws error on undefined root path", () => {
-    return expect(() => new CommerceStandardsLoader(undefined)).to.throw(
+    return expect(() => new FatRamlResourceLoader(undefined)).to.throw(
       "Cannot read property 'split' of undefined"
     );
   });
 
   it("Throws error on null root path", () => {
-    return expect(() => new CommerceStandardsLoader(null)).to.throw(
+    return expect(() => new FatRamlResourceLoader(null)).to.throw(
       "Cannot read property 'split' of null"
     );
   });
 
   it("Throws error on root path without 'file://' prefix", () => {
-    return expect(() => new CommerceStandardsLoader("root")).to.throw(
+    return expect(() => new FatRamlResourceLoader("root")).to.throw(
       "rootFolder does not contain 'file://' prefix"
     );
   });
@@ -52,7 +52,7 @@ describe("Commerce standards resource loader accepts tests", () => {
   let standardsLoader;
 
   before(() => {
-    standardsLoader = new CommerceStandardsLoader("file:///rootFolder");
+    standardsLoader = new FatRamlResourceLoader("file:///rootFolder");
   });
 
   it("Returns true (accepted) for resource path containing 'exchange_modules/'", () => {
@@ -80,7 +80,7 @@ describe("Commerce standards resource loader fetch tests", () => {
   let standardsLoader;
 
   before(() => {
-    standardsLoader = new CommerceStandardsLoader("file:///rootFolder/");
+    standardsLoader = new FatRamlResourceLoader("file:///rootFolder/");
     standardsLoader.fsAdapter = sinon.stub({
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       readFileSync: (resourcePath: string) => {}

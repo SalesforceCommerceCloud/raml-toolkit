@@ -6,4 +6,4 @@
  */
 "use strict";
 
-export { CommerceStandardsLoader } from "./commerceStandardsLoader";
+export { FatRamlResourceLoader } from "./fatRamlResourceLoader";

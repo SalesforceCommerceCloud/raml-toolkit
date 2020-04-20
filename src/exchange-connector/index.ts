@@ -18,5 +18,5 @@ export {
 export { groupByCategory } from "./exchangeTools";
 export { extractFiles } from "./exchangeDirectoryParser";
 
-export { CommerceStandardsLoader } from "./resourceLoader";
+export { FatRamlResourceLoader } from "./resourceLoader";
 export { RestApi } from "./exchangeTypes";

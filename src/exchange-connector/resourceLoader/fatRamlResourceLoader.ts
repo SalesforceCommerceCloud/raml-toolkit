@@ -11,7 +11,7 @@ import { FileSystemAdapter } from "./fileSystemAdapter";
 
 const EXCHANGE_MODULES = "exchange_modules/";
 
-export class CommerceStandardsLoader implements amf.resource.ResourceLoader {
+export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
   public workingDir: string;
   public fsAdapter: FileSystemAdapter;
 
