@@ -83,8 +83,8 @@
     "all": true,
     "check-coverage": true,
     "branches": 75,
-    "functions": 80,
-    "lines": 80,
+    "functions": 85,
+    "lines": 85,
     "statements": -10,
     "per-file": true,
     "include": [

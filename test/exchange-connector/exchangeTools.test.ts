@@ -221,8 +221,29 @@ describe("removeRamlLinks", () => {
     }
   ];
 
-  it("removes fat raml external links for all the apis", () => {
+  it("should remove fat RAML external links for all the apis", () => {
     const apis = _.cloneDeep(REST_APIS);
     expect(removeRamlLinks(apis)).to.not.contain("externalLink");
+  });
+
+  it("should not fail if the RAML does not have externalLink fields", () => {
+    const apis = _.cloneDeep(REST_APIS);
+    apis.forEach(apiEntry => {
+      delete apiEntry.fatRaml.externalLink;
+    });
+
+    expect(removeRamlLinks(apis)).to.not.contain("externalLink");
+  });
+
+  it("should not do anything if an empty array is passed", () => {
+    expect(removeRamlLinks([])).to.deep.equal([]);
+  });
+
+  it("should return null if null is passed", () => {
+    expect(removeRamlLinks(null)).to.be.null;
+  });
+
+  it("should return undefined if undefined is passed", () => {
+    expect(removeRamlLinks(undefined)).to.be.undefined;
   });
 });
