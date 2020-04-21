@@ -6,6 +6,7 @@
  */
 import path from "path";
 import amf, { Raml10Parser } from "amf-client-js";
+import { FatRamlResourceLoader } from "./exchange-connector";
 
 function validateCustom(
   model: amf.model.document.BaseUnit,
@@ -38,7 +39,13 @@ export async function validateModel(
 export async function parseRaml(
   filename: string
 ): Promise<amf.model.document.BaseUnit> {
-  const parser = new Raml10Parser();
+  const ccStandardResourceLoader = new FatRamlResourceLoader(
+    path.dirname(filename)
+  );
+  const ccEnvironment = amf.client.DefaultEnvironment.apply().addClientLoader(
+    ccStandardResourceLoader
+  );
+  const parser = new amf.Raml10Parser(ccEnvironment);
 
   let model: amf.model.document.BaseUnit;
   try {

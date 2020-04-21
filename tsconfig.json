@@ -1,5 +1,5 @@
 {
-    "compilerOptions": {   
+    "compilerOptions": {
         "module": "commonjs",
         "allowSyntheticDefaultImports": true,
         "alwaysStrict": true,

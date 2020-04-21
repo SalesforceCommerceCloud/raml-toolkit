@@ -18,4 +18,5 @@ export {
 export { groupByCategory } from "./exchangeTools";
 export { extractFiles } from "./exchangeDirectoryParser";
 
+export { FatRamlResourceLoader } from "./resourceLoader";
 export { RestApi } from "./exchangeTypes";

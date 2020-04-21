@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, salesforce.com, inc.
+ * Copyright (c) 2020, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -81,6 +81,8 @@ RamlToolkitCommand.args = [{ name: "filename" }];
 RamlToolkitCommand.strict = false;
 
 // module.exports = RamlToolkitCommand;
+export { FatRamlResourceLoader } from "./exchange-connector";
+
 export { getBearer } from "./exchange-connector/bearerToken";
 export {
   searchExchange,
