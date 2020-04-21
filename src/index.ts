@@ -96,3 +96,4 @@ export { groupByCategory } from "./exchange-connector/exchangeTools";
 export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 
 export { RestApi } from "./exchange-connector/exchangeTypes";
+export { ramlToolLogger } from "./logger";
