@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { RestApi, groupByCategory } from "../../src";
+import { removeRamlLinks } from "../../src/exchange-connector/exchangeTools";
+
 import _ from "lodash";
 
 import { expect, default as chai } from "chai";
@@ -182,5 +184,66 @@ describe("Test groupByCategory method", () => {
       dog: [safeApisObject[3]],
       unclassified: [safeApisObject[1]]
     });
+  });
+});
+
+describe("removeRamlLinks", () => {
+  const REST_APIS: RestApi[] = [
+    {
+      id: "8888888/test-api/1.0.0",
+      name: "Test API",
+      groupId: "8888888",
+      assetId: "test-api",
+      fatRaml: {
+        classifier: "rest-api",
+        sha1: "sha1",
+        md5: "md5",
+        externalLink: "https://somewhere/fatraml.zip",
+        packaging: "zip",
+        createdDate: "today",
+        mainFile: "api.raml"
+      }
+    },
+    {
+      id: "8888888/test-api2/1.0.0",
+      name: "Test API",
+      groupId: "8888888",
+      assetId: "test-api",
+      fatRaml: {
+        classifier: "rest-api",
+        sha1: "sha1",
+        md5: "md5",
+        externalLink: "https://somewhere/fatraml2.zip",
+        packaging: "zip",
+        createdDate: "today",
+        mainFile: "api.raml"
+      }
+    }
+  ];
+
+  it("should remove fat RAML external links for all the apis", () => {
+    const apis = _.cloneDeep(REST_APIS);
+    removeRamlLinks(apis).forEach(api => expect(api.fatRaml.externalLink).to.be.undefined);
+  });
+
+  it("should not fail if the RAML does not have externalLink fields", () => {
+    const apis = _.cloneDeep(REST_APIS);
+    apis.forEach(apiEntry => {
+      delete apiEntry.fatRaml.externalLink;
+    });
+
+    removeRamlLinks(apis).forEach(api => expect(api.fatRaml.externalLink).to.be.undefined);
+  });
+
+  it("should not do anything if an empty array is passed", () => {
+    expect(removeRamlLinks([])).to.deep.equal([]);
+  });
+
+  it("should fail if null is passed", () => {
+    expect(() => removeRamlLinks(null)).to.throw;
+  });
+
+  it("should fail if undefined is passed", () => {
+    expect(() => removeRamlLinks(undefined)).to.throw;
   });
 });
