@@ -53,10 +53,10 @@ const REST_API: RestApi = {
   version: "1.0.0"
 };
 
-describe("Test downloadRestApi", () => {
+describe("downloadRestApi", () => {
   afterEach(nock.cleanAll);
 
-  it("can download single file", async () => {
+  it("can download a single file", async () => {
     const tmpDir = tmp.dirSync();
 
     nock("https://somewhere")
@@ -66,11 +66,11 @@ describe("Test downloadRestApi", () => {
     const api = _.cloneDeep(REST_API);
 
     return downloadRestApi(api, tmpDir.name).then((res: Response) => {
-      expect(res.status).to.be.equal(200);
+      expect(res.status).to.equal(200);
     });
   });
 
-  it("can download single file, no download dir specified", async () => {
+  it("can download a single file even when no download dir is specified", async () => {
     nock("https://somewhere")
       .get("/fatraml.zip")
       .reply(200);
@@ -78,11 +78,11 @@ describe("Test downloadRestApi", () => {
     const api = _.cloneDeep(REST_API);
 
     return downloadRestApi(api).then((res: Response) => {
-      expect(res.status).to.be.equal(200);
+      expect(res.status).to.equal(200);
     });
   });
 
-  it("throws if no fat raml", async () => {
+  it("throws an error if no Fat RAML is found", async () => {
     const tmpDir = tmp.dirSync();
 
     nock("https://somewhere")
@@ -99,7 +99,7 @@ describe("Test downloadRestApi", () => {
   });
 });
 
-describe("Test downloadRestApis", () => {
+describe("downloadRestApis", () => {
   afterEach(nock.cleanAll);
 
   it("can download multiple files", async () => {
@@ -115,11 +115,11 @@ describe("Test downloadRestApis", () => {
     scope.get("/fatraml2.zip").reply(200);
 
     return downloadRestApis(apis, tmpDir.name).then(res => {
-      expect(res).to.be.equal(tmpDir.name);
+      expect(res).to.equal(tmpDir.name);
     });
   });
 
-  it("can download multiple files with no specified dir", async () => {
+  it("can download multiple files even when no destination folder is provided", async () => {
     const apis = [_.cloneDeep(REST_API), _.cloneDeep(REST_API)];
 
     apis[1].fatRaml.externalLink = "https://somewhere/fatraml2.zip";
@@ -130,20 +130,20 @@ describe("Test downloadRestApis", () => {
     scope.get("/fatraml2.zip").reply(200);
 
     return downloadRestApis(apis).then(res => {
-      expect(res).to.be.equal("download");
+      expect(res).to.equal("download");
     });
   });
 
-  it("does nothing on empty list", async () => {
+  it("does nothing when an empty list is passed", async () => {
     const apis = [];
 
     return downloadRestApis(apis).then(res => {
-      expect(res).to.be.equal("download");
+      expect(res).to.equal("download");
     });
   });
 });
 
-describe("Test searchExchange", () => {
+describe("searchExchange", () => {
   afterEach(nock.cleanAll);
 
   it("can download multiple files", async () => {
@@ -152,15 +152,15 @@ describe("Test searchExchange", () => {
     scope.get("/assets?search=searchString").reply(200, assetSearchResults);
 
     return searchExchange("AUTH_TOKEN", "searchString").then(res => {
-      expect(res).to.be.deep.equal(searchAssetApiResultObject);
+      expect(res).to.deep.equal(searchAssetApiResultObject);
     });
   });
 });
 
-describe("Test getSpecificApi", () => {
+describe("getSpecificApi", () => {
   afterEach(nock.cleanAll);
 
-  it("Happy Path", async () => {
+  it("should return the response in RestApi type", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope
@@ -175,7 +175,7 @@ describe("Test getSpecificApi", () => {
         "shopper-customers",
         "0.0.1"
       )
-    ).to.eventually.be.deep.equal({
+    ).to.eventually.deep.equal({
       id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1",
       name: "Shopper Customers",
       description:
@@ -203,7 +203,7 @@ describe("Test getSpecificApi", () => {
     });
   });
 
-  it("404 Error", async () => {
+  it("should return 404 Error if an asset is not found", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope
@@ -218,24 +218,24 @@ describe("Test getSpecificApi", () => {
         "shopper-customers",
         "0.0.1"
       )
-    ).to.eventually.rejectedWith("404 - Not Found");
+    ).to.eventually.be.rejectedWith("404 - Not Found");
   });
 });
 
-describe("Test getVersionByDeployment", () => {
+describe("getVersionByDeployment", () => {
   afterEach(nock.cleanAll);
 
-  it("Deployment exists", async () => {
+  it("should return a version if a deployment exists", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
     return expect(
       getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
-    ).to.eventually.be.equal("0.0.1");
+    ).to.eventually.equal("0.0.1");
   });
 
-  it("Deployment does not exist", async () => {
+  it("should return null if the deployment does not exist", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);

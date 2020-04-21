@@ -5,6 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { RestApi, groupByCategory } from "../../src";
+import { removeRamlLinks } from "../../src/exchange-connector/exchangeTools";
+
 import _ from "lodash";
 
 import { expect, default as chai } from "chai";
@@ -182,5 +184,45 @@ describe("Test groupByCategory method", () => {
       dog: [safeApisObject[3]],
       unclassified: [safeApisObject[1]]
     });
+  });
+});
+
+describe("removeRamlLinks", () => {
+  const REST_APIS: RestApi[] = [
+    {
+      id: "8888888/test-api/1.0.0",
+      name: "Test API",
+      groupId: "8888888",
+      assetId: "test-api",
+      fatRaml: {
+        classifier: "rest-api",
+        sha1: "sha1",
+        md5: "md5",
+        externalLink: "https://somewhere/fatraml.zip",
+        packaging: "zip",
+        createdDate: "today",
+        mainFile: "api.raml"
+      }
+    },
+    {
+      id: "8888888/test-api2/1.0.0",
+      name: "Test API",
+      groupId: "8888888",
+      assetId: "test-api",
+      fatRaml: {
+        classifier: "rest-api",
+        sha1: "sha1",
+        md5: "md5",
+        externalLink: "https://somewhere/fatraml2.zip",
+        packaging: "zip",
+        createdDate: "today",
+        mainFile: "api.raml"
+      }
+    }
+  ];
+
+  it("removes fat raml external links for all the apis", () => {
+    const apis = _.cloneDeep(REST_APIS);
+    expect(removeRamlLinks(apis)).to.not.contain("externalLink");
   });
 });
