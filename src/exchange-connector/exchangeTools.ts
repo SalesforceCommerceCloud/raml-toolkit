@@ -41,9 +41,6 @@ export function groupByCategory(
  * @returns {RestApi[]} Same list of APIs but without their external links
  */
 export function removeRamlLinks(apis: RestApi[]): RestApi[] {
-  if(!apis) {
-    return apis;
-  }
   const apiCopy = _.cloneDeep(apis);
   apiCopy.forEach(apiEntry => {
     delete apiEntry.fatRaml.externalLink;
