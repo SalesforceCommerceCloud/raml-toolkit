@@ -79,3 +79,9 @@ export function getSingleInvalidFile(): string {
   fs.writeFileSync(tmpFile, "");
   return tmpFile;
 }
+
+export function getSlightlyInvalidFile(): string {
+  const doc = getHappySpec();
+  doc.version = "v1.1";
+  return renderSpecAsFile(doc);
+}

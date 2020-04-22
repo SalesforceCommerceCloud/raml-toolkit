@@ -16,7 +16,7 @@ A linting tool for raml for commerce cloud and beyond
 ## Installation
 
 ```bash
-$ npm install @commerce-apps/raml-toolkit
+$ npm install -g @commerce-apps/raml-toolkit
 ```
 
 ## Usage

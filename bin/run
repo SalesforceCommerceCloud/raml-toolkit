@@ -17,6 +17,6 @@ if (dev) {
 
 // require(`../${dev ? "src" : "lib"}`)
 require(`../${dev ? "src" : "lib"}`)
-  .run()
+  .default.run()
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   .catch(require("@oclif/errors/handle"));

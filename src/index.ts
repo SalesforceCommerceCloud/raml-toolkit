@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, salesforce.com, inc.
+ * Copyright (c) 2020, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -25,6 +25,9 @@ export default class RamlToolkitCommand extends Command {
       // eslint-disable-next-line no-await-in-loop
       promises.push(
         validateFile(arg, flags.profile).then(results => {
+          if (results.conforms === false) {
+            exitCode += 1;
+          }
           return printResults(results, flags.warnings);
         })
       );
@@ -77,4 +80,24 @@ RamlToolkitCommand.args = [{ name: "filename" }];
 // This allows a variable length list of files
 RamlToolkitCommand.strict = false;
 
-module.exports = RamlToolkitCommand;
+// module.exports = RamlToolkitCommand;
+export { FatRamlResourceLoader } from "./exchange-connector";
+
+export { getBearer } from "./exchange-connector/bearerToken";
+export {
+  searchExchange,
+  downloadRestApi,
+  downloadRestApis,
+  getVersionByDeployment,
+  getSpecificApi,
+  getAsset
+} from "./exchange-connector/exchangeDownloader";
+export {
+  groupByCategory,
+  removeVersionSpecificInformation,
+  removeRamlLinks
+} from "./exchange-connector/exchangeTools";
+export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
+
+export { RestApi } from "./exchange-connector/exchangeTypes";
+export { ramlToolLogger } from "./logger";

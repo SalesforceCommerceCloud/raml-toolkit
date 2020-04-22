@@ -9,7 +9,11 @@
 
 import path from "path";
 import { expect, test } from "@oclif/test";
-import { getSingleValidFile, getSingleInvalidFile } from "./utils.test";
+import {
+  getSingleValidFile,
+  getSingleInvalidFile,
+  getSlightlyInvalidFile
+} from "./utils.test";
 import { rename } from "fs-extra";
 
 import cmd from "../src";
@@ -130,6 +134,20 @@ describe("raml-toolkit cli", () => {
     )
     .exit(1)
     .it("validates one valid and one invalid file and exits non-zero");
+
+  test
+    .stdout()
+    .stderr()
+    .do(() =>
+      cmd.run([
+        "--profile",
+        MERCURY_PROFILE,
+        getSingleValidFile(),
+        getSlightlyInvalidFile()
+      ])
+    )
+    .exit(1)
+    .it("validates one valid and one slightly invalid file and exits non-zero");
 
   test
     .stdout()
