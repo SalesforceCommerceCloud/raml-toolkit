@@ -157,6 +157,24 @@ describe("Fat raml resource loader fetch tests", () => {
       });
   });
 
+  it("Resolved for resources with 2 exchange_modules/ in path that are successfully read", () => {
+    const content = new amf.client.remote.Content(
+      "content",
+      "file:///workingDir/exchange_modules/resource.json",
+      "application/yaml"
+    );
+    fatRamlResourceLoader.fsAdapter.readFileSync.returns("content");
+    return fatRamlResourceLoader
+      .fetch("first_level/exchange_modules/second_level/exchange_modules/resource.json")
+      .then(function(s) {
+        sinon.assert.calledWith(
+          fatRamlResourceLoader.fsAdapter.readFileSync,
+          "/workingDir/exchange_modules/resource.json"
+        );
+        return expect(s).to.eql(content);
+      });
+  });
+
   it("Rejected for undefined resource paths", () => {
     return fatRamlResourceLoader.fetch(undefined).catch(function(err) {
       sinon.assert.notCalled(fatRamlResourceLoader.fsAdapter.readFileSync);
