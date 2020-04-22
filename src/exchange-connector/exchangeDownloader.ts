@@ -24,7 +24,7 @@ export async function downloadRestApi(
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
 ): Promise<void | Response> {
   if (!restApi.id) {
-    ramlToolLogger.info(
+    ramlToolLogger.warn(
       `Failed to download '${restApi.name}' RAML as Fat RAML download information is missing.`,
       `Please download it manually from ${ANYPOINT_BASE_URI_WITHOUT_VERSION}/${restApi.groupId}/${restApi.assetId} and update the relevant details in apis/api-config.json`
     );
@@ -115,7 +115,7 @@ export async function getAsset(
     }
   });
   if (!res.ok) {
-    ramlToolLogger.info(
+    ramlToolLogger.warn(
       `Failed to get information about ${assetId} from exchange: ${res.status} - ${res.statusText}`,
       `Please get it manually from ${ANYPOINT_BASE_URI}/assets/${assetId} and update the relevant details in apis/api-config.json`
     );
