@@ -165,7 +165,9 @@ describe("Fat raml resource loader fetch tests", () => {
     );
     fatRamlResourceLoader.fsAdapter.readFileSync.returns("content");
     return fatRamlResourceLoader
-      .fetch("first_level/exchange_modules/second_level/exchange_modules/resource.json")
+      .fetch(
+        "first_level/exchange_modules/second_level/exchange_modules/resource.json"
+      )
       .then(function(s) {
         sinon.assert.calledWith(
           fatRamlResourceLoader.fsAdapter.readFileSync,
