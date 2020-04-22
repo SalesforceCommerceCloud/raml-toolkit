@@ -45,7 +45,7 @@ export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
     const resourceAbsolutePath = path.join(
       this.workingDir,
       EXCHANGE_MODULES,
-      resourceUriParts[1]
+      resourceUriParts[resourceUriParts.length - 1]
     );
 
     try {

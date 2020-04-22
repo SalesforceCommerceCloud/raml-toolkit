@@ -39,11 +39,11 @@ export async function validateModel(
 export async function parseRaml(
   filename: string
 ): Promise<amf.model.document.BaseUnit> {
-  const ccStandardResourceLoader = new FatRamlResourceLoader(
+  const fatRamlResourceLoader = new FatRamlResourceLoader(
     path.dirname(filename)
   );
   const ccEnvironment = amf.client.DefaultEnvironment.apply().addClientLoader(
-    ccStandardResourceLoader
+    fatRamlResourceLoader
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
 
