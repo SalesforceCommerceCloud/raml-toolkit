@@ -47,3 +47,28 @@ export function removeRamlLinks(apis: RestApi[]): RestApi[] {
   });
   return apiCopy;
 }
+
+/**
+ * Remove all the information that is specific to a version so that the SDK is
+ * not generated with incorrect information accidentally in the event of a
+ * failure to retrieve information about the asset. Correct information should
+ * be filled manually in 'apis/api-config.json' before the SDK can be generated.
+ *
+ * @param api The target API
+ */
+export function removeVersionSpecificInformation(api: RestApi): RestApi {
+  const apiCopy = _.cloneDeep(api);
+  apiCopy.id = null;
+  apiCopy.updatedDate = null;
+  apiCopy.version = null;
+
+  if (apiCopy.fatRaml) {
+    apiCopy.fatRaml.createdDate = null;
+    apiCopy.fatRaml.md5 = null;
+    apiCopy.fatRaml.sha1 = null;
+
+    delete apiCopy.fatRaml.externalLink;
+  }
+
+  return apiCopy;
+}
