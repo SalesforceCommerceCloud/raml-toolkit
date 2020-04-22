@@ -12,38 +12,32 @@ import fetch, { Response } from "node-fetch";
 import path from "path";
 
 import { RestApi, FileInfo, Categories } from "./exchangeTypes";
+import { ramlToolLogger } from "../logger";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange/api/v2";
+const ANYPOINT_BASE_URI_WITHOUT_VERSION =
+  "https://anypoint.mulesoft.com/exchange";
 
-export function downloadRestApi(
+export async function downloadRestApi(
   restApi: RestApi,
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
 ): Promise<void | Response> {
-  return new Promise((resolve, reject) => {
-    if (!restApi.fatRaml) {
-      reject(
-        new Error(
-          `Fat RAML download information for ${restApi.assetId} is missing`
-        )
-      );
-    }
+  if (!restApi.id) {
+    ramlToolLogger.warn(
+      `Failed to download '${restApi.name}' RAML as Fat RAML download information is missing.`,
+      `Please download it manually from ${ANYPOINT_BASE_URI_WITHOUT_VERSION}/${restApi.groupId}/${restApi.assetId} and update the relevant details in apis/api-config.json`
+    );
+    return;
+  }
 
-    ensureDirSync(destinationFolder);
+  ensureDirSync(destinationFolder);
+  const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
+  const response = await fetch(restApi.fatRaml.externalLink);
+  const arrayBuffer = await response.arrayBuffer();
+  writeFileSync(zipFilePath, Buffer.from(arrayBuffer));
 
-    const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
-
-    let ret: Response;
-    return fetch(restApi.fatRaml.externalLink)
-      .then(result => {
-        ret = result;
-        return result.arrayBuffer();
-      })
-      .then(x => {
-        writeFileSync(zipFilePath, Buffer.from(x));
-        resolve(ret);
-      });
-  });
+  return response;
 }
 
 export function downloadRestApis(
@@ -111,17 +105,24 @@ function convertResponseToRestApi(apiResponse: JSON): RestApi {
  * @param {string} assetId
  * @returns {Promise<JSON>}
  */
-export function getAsset(accessToken: string, assetId: string): Promise<JSON> {
-  return fetch(`${ANYPOINT_BASE_URI}/assets/${assetId}`, {
+export async function getAsset(
+  accessToken: string,
+  assetId: string
+): Promise<void | JSON> {
+  const res = await fetch(`${ANYPOINT_BASE_URI}/assets/${assetId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
     }
-  }).then(res => {
-    if (!res.ok) {
-      throw new Error(`${res.status} - ${res.statusText}`);
-    }
-    return res.json();
   });
+  if (!res.ok) {
+    ramlToolLogger.warn(
+      `Failed to get information about ${assetId} from exchange: ${res.status} - ${res.statusText}`,
+      `Please get it manually from ${ANYPOINT_BASE_URI}/assets/${assetId} and update the relevant details in apis/api-config.json`
+    );
+    return;
+  }
+
+  return res.json();
 }
 
 /**
@@ -159,29 +160,33 @@ export function searchExchange(
  * @param {RegExp} deployment
  * @returns {Promise<string>} Returned the version string that matches the regex passed.  Will return first found result
  */
-export function getVersionByDeployment(
+export async function getVersionByDeployment(
   accessToken: string,
   restApi: RestApi,
   deployment: RegExp
-): Promise<string> {
-  return getAsset(accessToken, `${restApi.groupId}/${restApi.assetId}`).then(
-    asset => {
-      let version = null;
-      asset["instances"].forEach(
-        (instance: { environmentName: string; version: string }) => {
-          if (
-            instance.environmentName &&
-            deployment.test(instance.environmentName) &&
-            version === null
-          ) {
-            version = instance.version;
-          }
-        }
-      );
-
-      return version;
+): Promise<void | string> {
+  const asset = await getAsset(
+    accessToken,
+    `${restApi.groupId}/${restApi.assetId}`
+  );
+  if (!asset) {
+    return;
+  }
+  let version = null;
+  asset["instances"].forEach(
+    (instance: { environmentName: string; version: string }) => {
+      if (
+        instance.environmentName &&
+        deployment.test(instance.environmentName) &&
+        !version
+      ) {
+        version = instance.version;
+      }
     }
   );
+  // If no instance matched the intended deployment get the version info
+  // from the fetched asset.
+  return version || asset["version"];
 }
 
 /**
@@ -199,10 +204,11 @@ export function getSpecificApi(
   assetId: string,
   version: string
 ): Promise<RestApi> {
-  if (version == null) {
-    return null;
-  }
-  return getAsset(accessToken, `${groupId}/${assetId}/${version}`).then(api => {
-    return convertResponseToRestApi(api);
-  });
+  return version
+    ? getAsset(accessToken, `${groupId}/${assetId}/${version}`).then(
+        (api: JSON) => {
+          return api ? convertResponseToRestApi(api) : null;
+        }
+      )
+    : null;
 }

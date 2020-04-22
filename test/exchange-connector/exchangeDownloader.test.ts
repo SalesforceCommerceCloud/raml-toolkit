@@ -82,20 +82,11 @@ describe("downloadRestApi", () => {
     });
   });
 
-  it("throws an error if no Fat RAML is found", async () => {
-    const tmpDir = tmp.dirSync();
-
-    nock("https://somewhere")
-      .get("/fatraml.zip")
-      .reply(200);
-
+  it("should not return anything if Fat RAML information is missing", async () => {
     const api = _.cloneDeep(REST_API);
+    api.id = null;
 
-    delete api.fatRaml;
-
-    return expect(downloadRestApi(api, tmpDir.name)).to.be.rejectedWith(
-      "Fat RAML download information for test-api is missing"
-    );
+    return expect(downloadRestApi(api)).to.eventually.be.undefined;
   });
 });
 
@@ -134,10 +125,8 @@ describe("downloadRestApis", () => {
     });
   });
 
-  it("does nothing when an empty list is passed", async () => {
-    const apis = [];
-
-    return downloadRestApis(apis).then(res => {
+  it("should not do anything when an empty list is passed", async () => {
+    return downloadRestApis([]).then(res => {
       expect(res).to.equal("download");
     });
   });
@@ -203,7 +192,25 @@ describe("getSpecificApi", () => {
     });
   });
 
-  it("should return 404 Error if an asset is not found", async () => {
+  it("should return null if version is not provided", async () => {
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+
+    scope
+      .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      .reply(200, getAssetWithVersion);
+
+    const restApi = getSpecificApi(
+      "AUTH_TOKEN",
+      "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+      "shopper-customers",
+      null
+    );
+
+    return expect(restApi).to.be.null;
+  });
+
+  it("should return null it fails to fetch the asset", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope
@@ -218,7 +225,7 @@ describe("getSpecificApi", () => {
         "shopper-customers",
         "0.0.1"
       )
-    ).to.eventually.be.rejectedWith("404 - Not Found");
+    ).to.eventually.be.null;
   });
 });
 
@@ -242,6 +249,29 @@ describe("getVersionByDeployment", () => {
 
     return expect(
       getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-    ).to.eventually.be.equal(null);
+    ).to.eventually.equal(getAssetWithoutVersion.version);
+  });
+
+  it("should return null if the asset does not exist", async () => {
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+
+    scope.get("/8888888/test-api").reply(404, "Not Found");
+
+    return expect(
+      getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
+    ).to.eventually.be.undefined;
+  });
+
+  it("should return undefined if the asset does not have a version", async () => {
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+
+    const assetWithoutVersion = _.cloneDeep(getAssetWithoutVersion);
+    delete assetWithoutVersion.version;
+
+    scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
+
+    return expect(
+      getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
+    ).to.eventually.be.undefined;
   });
 });

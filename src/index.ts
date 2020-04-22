@@ -92,7 +92,11 @@ export {
   getSpecificApi,
   getAsset
 } from "./exchange-connector/exchangeDownloader";
-export { groupByCategory } from "./exchange-connector/exchangeTools";
+export {
+  groupByCategory,
+  removeVersionSpecificInformation,
+  removeRamlLinks
+} from "./exchange-connector/exchangeTools";
 export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 
 export { RestApi } from "./exchange-connector/exchangeTypes";
