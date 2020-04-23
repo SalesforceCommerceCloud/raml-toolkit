@@ -1,4 +1,4 @@
-# Raml Toolkit Tools  <!-- omit in toc -->
+# Raml Toolkit Tools
 
 A tool to lint & verify all commerce-sdk endpoints in an isolated container. 
 
@@ -22,7 +22,6 @@ The docker container requires `raml-toolkit` directory mounted as `/linter` volu
 
 ```shell script
 $ docker run -t -d --name linter -v /<<raml-toolkit absolute path>>:/linter -v /<<commerce-sdk/apis absolute path>>:/apis node
-$ docker exec linter chmod 544 /linter/tools/lint.sh
 ```
 
 You can check all commerce-sdk endpoints as follows
