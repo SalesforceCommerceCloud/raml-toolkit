@@ -18,17 +18,30 @@ The tool requires [raml-toolkit](https://github.com/SalesforceCommerceCloud/raml
 ## Usage
 
 The docker container requires `raml-toolkit` directory mounted as `/linter` volume and 
-`commerce-sdk/apis` directory mounted as `/apis` volume. You can do so as follows
+`commerce-sdk/apis` directory mounted as `/apis` volume. You can do so and check all commerce-sdk endpoints as follows.
 
 ```shell script
-$ docker run -t -d --name linter -v /<<raml-toolkit absolute path>>:/linter -v /<<commerce-sdk/apis absolute path>>:/apis node
+$ docker run -t --name linter -v /<<raml-toolkit absolute path>>:/linter -v /<<commerce-sdk/apis absolute path>>:/apis node:12-alpine /linter/tools/lint.js
 ```
 
-You can check all commerce-sdk endpoints as follows
+The tool uses latest `raml-toolkit` npm library by default to check the endpoints. 
+The default can be overridden by providing another `raml-toolkit` npm library as a parameter.
 
 ```shell script
-$ docker exec linter chmod 544 /linter/tools/lint.sh && docker exec linter /linter/tools/lint.sh 
+$ docker run -t --name linter -v /<<raml-toolkit absolute path>>:/linter -v /<<commerce-sdk/apis absolute path>>:/apis node:12-alpine /linter/tools/lint.js @commerce-apps/raml-toolkit@0.2.9
 ```
+  
+You can also build `raml-toolkit` npm library as follows from your local `raml-toolkit` folder
+
+```nashorn js
+$ npm pack
+```
+The `npm pack` command creates a file similar to `commerce-apps-raml-toolkit-x.x.x.tgz`. Providing this file as follows overrides the default npm library that checks the endpoints. 
+
+```shell script
+$ docker run -t --name linter -v /<<raml-toolkit absolute path>>:/linter -v /<<commerce-sdk/apis absolute path>>:/apis node:12-alpine /linter/tools/lint.js /linter/commerce-apps-raml-toolkit-0.3.1.tgz
+```
+
 The response will look something like 
 
 ```bash
