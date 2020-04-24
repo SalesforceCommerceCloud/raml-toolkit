@@ -32,14 +32,14 @@ validations:
 
   at-least-one-2xx-or-3xx-response:
     message: Methods must have at least one 2xx or 3xx response
-    targetClass: hydra.Operation
+    targetClass: apiContract.Operation
     functionConstraint:
       code: |
         function(method) {
           const re = /[23][0-9][0-9]/;
-          let returns = (method["hydra:returns"] || []);
+          let returns = (method["apiContract:returns"] || []);
           for (let i = 0; i < returns.length; i++) {
-            if (re.test(returns[i]["hydra:statusCode"])) {
+            if (re.test(returns[i]["apiContract:statusCode"])) {
               return true;
             }
           }
@@ -48,24 +48,24 @@ validations:
 
   camelcase-method-displayname:
     message: The API Method must have displayName and the value must be in camelcase
-    targetClass: hydra.Operation
+    targetClass: apiContract.Operation
     propertyConstraints: 
-      schema.name:
+      core.name:
           minCount: 1
           pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
 
   camelcase-query-parameters:
     message: Query parameters names must be in camelcase
-    targetClass: http.Parameter
+    targetClass: apiContract.Parameter
     functionConstraint:
       code: |
         function(parameter) {
           const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
 
           // Parameters include query, path and headers so we need to check binding to filter
-          if (parameter['http:binding'] &&
-              parameter['http:binding'] == 'query' &&
-              !re.test(parameter['schema:name'])
+          if (parameter['apiContract:binding'] &&
+              parameter['apiContract:binding'] == 'query' &&
+              !re.test(parameter['core:name'])
           ) {
             return false;
           }
@@ -74,17 +74,17 @@ validations:
 
   https-required:
     message: Protocol MUST be HTTPS
-    targetClass: schema.WebAPI
+    targetClass: apiContract.WebAPI
     propertyConstraints:
-      http.scheme:
+      apiContract.scheme:
         in: [https,HTTPS]
         minCount: 1
 
   require-api-description:
     message: The API Description must be set
-    targetClass: schema.WebAPI
+    targetClass: apiContract.WebAPI
     propertyConstraints:
-      schema.description:
+      core.description:
         minCount: 1
 
   no-literal-question-marks-in-property-names:
@@ -102,9 +102,9 @@ validations:
       Query parameter, path parameter and header names must not contain question marks when 'required' is present. Using both results in names that include literal question marks.
 
       More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
-    targetClass: http.Parameter
+    targetClass: apiContract.Parameter
     propertyConstraints:
-      schema.name:
+      core.name:
         pattern: ^[^?]*$
 
   no-todo-text-in-description-fields:
@@ -115,8 +115,8 @@ validations:
         function(resource) {
           const todoRegex = /\b(todo(_)*)\b|^\s*$/i;
           //doc.DomainElement may not have a description field, return true
-          if ( resource['schema:description']
-            && todoRegex.test(resource['schema:description'][0])  ) {
+          if ( resource['core:description']
+            && todoRegex.test(resource['core:description'][0])  ) {
             return false;
           }
           return true;
@@ -124,38 +124,38 @@ validations:
 
   require-method-description:
     message: The API Method description must be set
-    targetClass: hydra.Operation
+    targetClass: apiContract.Operation
     propertyConstraints:
-      schema.description:
+      core.description:
         minCount: 1
 
   require-response-description:
     message: The description for API responses must be set
-    targetClass: http.Response
+    targetClass: apiContract.Response
     propertyConstraints:
-      schema.description:
+      core.description:
         minCount: 1
 
   require-json:
     message: Require the API Spec's default mediaType to be application/json
-    targetClass: schema.WebAPI
+    targetClass: apiContract.WebAPI
     propertyConstraints:
-      http.accepts:
+      apiContract.accepts:
         in: ["application/json"]
         minCount: 1
 
   resource-name-validation:
     message: Resource endpoints must be lowercase (Mercury only)
-    targetClass: http.EndPoint
+    targetClass: apiContract.EndPoint
     propertyConstraints:
-      http.path:
+      apiContract.path:
         pattern: "(\/[a-z]([a-z0-9-])*[a-z0-9]+$)|(\/{[a-zA-Z0-9-]+}$)"
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
-    targetClass: schema.WebAPI
+    targetClass: apiContract.WebAPI
     propertyConstraints:
-      schema.version:
+      core.version:
         pattern: ^v[0-9]+$
         minCount: 1
 
