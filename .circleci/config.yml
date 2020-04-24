@@ -7,7 +7,7 @@ jobs:
       - checkout
       - node/with-cache:
           steps:
-            - run: npm install
+            - run: npm ci
       - run: npm run test
       - store_test_results:
           path: reports
