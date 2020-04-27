@@ -5,6 +5,11 @@ version: v1
 mediaType: application/json
 protocols: https
 description: This is a description of the API spec
+baseUri: https://{shortCode}.api.commercecloud.salesforce.com/checkout/shopper-orders/{version}
+baseUriParameters:
+  shortCode:
+    description: Region-specific merchant identifier.
+    example: fd4gt8
 
 types:
     ClassA:
