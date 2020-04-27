@@ -7,3 +7,4 @@ lib
 .vscode
 .env
 reports
+commerce-apps-raml-toolkit*.tgz
