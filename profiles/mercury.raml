@@ -15,6 +15,7 @@ disabled:
 
 violation:
   - at-least-one-2xx-or-3xx-response
+  - baseuriparameters-must-only-have-shortcode
   - camelcase-method-displayname
   - camelcase-query-parameters
   - https-required
@@ -44,6 +45,27 @@ validations:
             }
           }
           return false;
+        }
+
+  # baseUriParameters are either implicit when they only appear in the baseUri template
+  # or explicit when they are declared in the baseUriParameters. When parsed, they show up the same.
+  # Version is special parameter and should be allowed in the template.
+  # Here we really check that we have shortCode definitely and version maybe.
+  baseuriparameters-must-only-have-shortcode:
+    message: baseUriParameter section *MUST* only have shortCode
+    targetClass: apiContract.WebAPI
+    functionConstraint:
+      code: |
+        function(webapi) {
+          const isShortCode = (variable) => variable["core:name"][0] === "shortCode";
+          const isShortCodeOrVersion = (variable) => ["shortCode", "version"].includes(variable["core:name"][0]);
+
+          return webapi["apiContract:server"].every((server) => { 
+            const includesShortCode = server["apiContract:variable"].some(isShortCode);
+            const isOnlyShortCodeOrVersion = server["apiContract:variable"].every(isShortCodeOrVersion);
+
+            return includesShortCode && isOnlyShortCodeOrVersion;
+          });
         }
 
   camelcase-method-displayname:
