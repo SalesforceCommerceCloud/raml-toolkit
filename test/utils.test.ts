@@ -44,10 +44,8 @@ export function breaksOnlyOneRule(
   rule: string
 ): void {
   assert.equal(result.conforms, false, result.toString());
-  if (!result.conforms) {
-    assert.equal(result.results.length, 1, result.toString());
-    assert.equal(result.results[0].validationId, rule, result.toString());
-  }
+  assert.equal(result.results.length, 1, result.toString());
+  assert.equal(result.results[0].validationId, rule, result.toString());
 }
 
 export function breaksTheseRules(
