@@ -28,6 +28,7 @@ violation:
   - resource-name-validation
   - version-format
   - base-uri-matches-pattern
+  - title-matches-api-name
 
 validations:
 
@@ -169,5 +170,22 @@ validations:
           const baseUriRegex = /^https:\/\/{shortCode}.api.commercecloud.salesforce.com\/[a-z]+-?[a-z]+\/[a-z]+-?[a-z]+\/{version}$/;
           const server = resource['apiContract:server'];
           return server ? baseUriRegex.test(server[0]['core:urlTemplate'][0]) : false;
+        }
+
+  title-matches-api-name:
+    message: The title must match separated and capitalized api-name
+    targetClass: apiContract.WebAPI
+    functionConstraint:
+      code: |
+        function(resource) {
+          const title = resource['core:name'][0];
+          const baseUri = resource['apiContract:server'][0]['core:urlTemplate'][0];
+          const apiName = baseUri.split("/")[4];
+          const parts = apiName.split("-");
+          for(let i=0; i<parts.length; i++) {
+            parts[i] = parts[i].charAt(0).toUpperCase() + parts[i].slice(1);
+          }
+          const transformedApiName = parts.join(" ");
+          return title === transformedApiName;
         }
 
