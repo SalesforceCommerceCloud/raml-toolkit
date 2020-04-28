@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2019, salesforce.com, inc.
+ * Copyright (c) 2020, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
-import amf, { Raml10Parser } from "amf-client-js";
+import amf from "amf-client-js";
 import { FatRamlResourceLoader } from "./exchange-connector";
 
 function validateCustom(
