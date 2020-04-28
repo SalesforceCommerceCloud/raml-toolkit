@@ -114,7 +114,8 @@ The default profile validates the following rules from the [Mercury API Definiti
 * `queryParameters` MUST be camelCase
 * Response codes MUST have a `description`
 * Response codes `description` MUST NOT contain the word TODO
-* baseUriParameter section MUST only have shortCode
+* `baseUri` must match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
+* `baseUriParameters` section MUST only have shortCode
 
 ## Contributing
 
