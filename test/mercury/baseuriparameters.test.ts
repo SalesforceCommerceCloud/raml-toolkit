@@ -49,4 +49,19 @@ describe("baseUriParameters checking tests", () => {
       "http://a.ml/vocabularies/data#baseuriparameters-must-only-have-shortcode"
     );
   });
+
+  it("does not conform with additional baseUriParameters in different position", async () => {
+    const doc = getHappySpec();
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/checkout/{apiFamily}/{version}";
+    doc["baseUriParameters"]["apiFamily"] = {
+      description: "my additional parameter",
+      example: "hello"
+    };
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#baseuriparameters-must-only-have-shortcode"
+    );
+  });
 });
