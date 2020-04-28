@@ -9,7 +9,8 @@
 import {
   getHappySpec,
   renderSpecAsFile,
-  breaksOnlyOneRule
+  breaksOnlyOneRule,
+  conforms
 } from "../utils.test";
 import { validateFile } from "../../src/validator";
 
@@ -23,8 +24,15 @@ describe("base uri pattern validation", () => {
     doc = getHappySpec();
   });
 
+  it("should conform if the baseUri matches the pattern", async () => {
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    conforms(result);
+  });
+
   it("should not conform if the baseUri is missing", async () => {
     delete doc.baseUri;
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -33,6 +41,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the protocol is http", async () => {
     doc["baseUri"] =
       "http://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -41,6 +50,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the protocol is missing", async () => {
     doc["baseUri"] =
       "{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -49,6 +59,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the shortCode is not followed by 'api.commercecloud.salesforce.com'", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.salesforce.commercecloud.com/test-family/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -57,6 +68,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api family is camelCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/testFamily/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -65,6 +77,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api family is PascalCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/TestFamily/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -73,6 +86,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api family is snake_case", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test_family/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -81,6 +95,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api name is camelCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/testApi/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -89,6 +104,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api name is PascalCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/TestApi/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -97,6 +113,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api name is snake_case", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test_api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -105,6 +122,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if shortCode is missing ", async () => {
     doc["baseUri"] =
       "https://api.commercecloud.salesforce.com/test-family/testApi/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -113,6 +131,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the api family or the api name is missing", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-api/{version}";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -121,6 +140,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the version is missing", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
@@ -129,6 +149,7 @@ describe("base uri pattern validation", () => {
   it("should not conform if the baseUri doesn't end with {version}", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}/";
+
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     breaksOnlyOneRule(result, RULE);
