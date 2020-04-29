@@ -1,5 +1,10 @@
 # CHANGELOG
 
+### 0.3.2
+* Now uses AMF 4.0!
+* Fixed an issue where some transitive dependencies weren't resolved properly
+* `baseUri` must now match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
+
 ### 0.3.1
 * Dependency issue fixed
 
