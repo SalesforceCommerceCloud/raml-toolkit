@@ -136,7 +136,7 @@ describe("base uri pattern validation", () => {
 
     breaksOnlyOneRule(result, RULE);
   });
-  
+
   it("should not conform if the api name is camelCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/testApi/{version}";
