@@ -65,6 +65,51 @@ describe("base uri pattern validation", () => {
     breaksOnlyOneRule(result, RULE);
   });
 
+  it("should conform if the api family has more than 2 words ", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/test-api-family-name/test-api/{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    conforms(result);
+  });
+
+  it("should conform if the api name has more than 2 words ", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-dummy-api-name/{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    conforms(result);
+  });
+
+  it("should not conform if the api family is preceded by 2 forward-slashes", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com//test-family/test-api/{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
+  it("should not conform if the api name is preceded by 2 forward-slashes", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/test-family//test-api/{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
+  it("should not conform if the version is preceded by 2 forward-slashes", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api//{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
   it("should not conform if the api family is camelCase", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/testFamily/test-api/{version}";
@@ -146,9 +191,36 @@ describe("base uri pattern validation", () => {
     breaksOnlyOneRule(result, RULE);
   });
 
-  it("should not conform if the baseUri doesn't end with {version}", async () => {
+  it("should conform if the baseUri ends with a forward-slash", async () => {
     doc["baseUri"] =
       "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}/";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    conforms(result);
+  });
+
+  it("should not conform if the shortCode is uppercase", async () => {
+    doc["baseUri"] =
+      "https://{SHORTCODE}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
+  it("should not conform if the version is uppercase", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{VERSION}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
+  it("should not conform if there is a comma", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud,salesforce.com/test-family/test-api/{VERSION}";
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 

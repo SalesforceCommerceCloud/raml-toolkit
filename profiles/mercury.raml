@@ -167,9 +167,21 @@ validations:
     functionConstraint:
       code: |
         function(resource) {
-          const baseUriRegex = /^https:\/\/{shortCode}.api.commercecloud.salesforce.com\/[a-z]+-?[a-z]+\/[a-z]+-?[a-z]+\/{version}$/;
-          const server = resource['apiContract:server'];
-          return server ? baseUriRegex.test(server[0]['core:urlTemplate'][0]) : false;
+          const baseUriRegex = /^https:\/\/{shortCode}\.api\.commercecloud\.salesforce\.com\/([a-z]([a-z0-9-])*[a-z0-9]+)\/([a-z]([a-z0-9-])*[a-z0-9]+)\/{version}\/?$/;
+          const servers = resource['apiContract:server'];
+          if(servers.length < 1) {
+            return false;
+          }
+          let result = true;
+          servers.forEach(server => {
+            urlTemplates = server['core:urlTemplate'];
+            urlTemplates.forEach(urlTemplate => {
+              if(!baseUriRegex.test(urlTemplate)) {
+                result = false;
+              }
+            });
+          });
+          return result;
         }
 
   title-matches-api-name:
