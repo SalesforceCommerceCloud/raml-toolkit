@@ -31,11 +31,11 @@ workflows:
               ignore: /^v.*/
   build-test-and-deploy:
       - build:
-        filters:
-          tags:
-            only: /^v.*/
-          branches:
-            ignore: /.*/
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - confirm-publish-if-tagged:
           filters:
             tags:
@@ -45,6 +45,16 @@ workflows:
           type: approval
           requires:
             - build
+      - publish:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+          requires:
+            - confirm-publish-if-tagged
+          
+  
 orbs:
   node: circleci/node@1.1
 version: 2.1
