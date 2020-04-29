@@ -16,6 +16,10 @@ jobs:
       name: node/default
       tag: '10.16'
     steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: npm ci
       - run:
           name: Create npmrc file to authenticate with npm registry.
           command: echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
