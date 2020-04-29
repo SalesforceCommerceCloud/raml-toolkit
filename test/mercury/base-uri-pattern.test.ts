@@ -217,4 +217,13 @@ describe("base uri pattern validation", () => {
 
     breaksOnlyOneRule(result, RULE);
   });
+
+  it("should not conform if there is a comma", async () => {
+    doc["baseUri"] =
+      "https://{shortCode}.api.commercecloud,salesforce.com/test-family/test-api/{VERSION}";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
 });
