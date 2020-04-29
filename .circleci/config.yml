@@ -30,6 +30,7 @@ workflows:
             tags:
               ignore: /^v.*/
   build-test-and-deploy:
+    jobs:
       - build:
           filters:
             tags:
@@ -54,7 +55,6 @@ workflows:
           requires:
             - confirm-publish-if-tagged
           
-  
 orbs:
   node: circleci/node@1.1
 version: 2.1
