@@ -87,18 +87,6 @@ describe("protocol checking tests", () => {
   });
 });
 
-describe("title checking tests", () => {
-  it("does not conform when title is missing", async () => {
-    const doc = getHappySpec();
-    delete doc.title;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(
-      result,
-      "http://a.ml/vocabularies/amf/parser#WebAPI-name-minCount"
-    );
-  });
-});
-
 describe("description checking tests", () => {
   it("does not conform when description is missing", async () => {
     const doc = getHappySpec();
