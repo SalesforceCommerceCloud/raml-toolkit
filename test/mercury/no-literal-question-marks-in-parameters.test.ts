@@ -19,10 +19,10 @@ const PROFILE = "mercury";
 
 describe("no literal question marks in query parameters tests", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
-  const ENDPOINT_RULE =
-    "http://a.ml/vocabularies/data#resource-name-validation";
   const QUERY_RULE =
     "http://a.ml/vocabularies/data#no-literal-question-marks-in-parameters";
+const TEMPLATE_RULE =
+  "http://a.ml/vocabularies/data#camelcase-template-parameters";
   let doc;
   let parameters;
 
@@ -76,6 +76,6 @@ describe("no literal question marks in query parameters tests", () => {
   it("fails when path parameter has a question mark", async () => {
     renameKey(doc["/resource"], "/{resourceId}", "/{resourceId?}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksTheseRules(result, [ENDPOINT_RULE, QUERY_RULE]);
+    breaksTheseRules(result, [TEMPLATE_RULE, QUERY_RULE]);
   });
 });

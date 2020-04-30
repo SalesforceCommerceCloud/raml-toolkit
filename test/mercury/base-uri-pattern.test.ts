@@ -10,12 +10,15 @@ import {
   getHappySpec,
   renderSpecAsFile,
   breaksOnlyOneRule,
-  conforms
+  conforms,
+  breaksTheseRules
 } from "../utils.test";
 import { validateFile } from "../../src/validator";
 
 const PROFILE = "mercury";
 const RULE = "http://a.ml/vocabularies/data#base-uri-matches-pattern";
+const TEMPLATE_RULE =
+  "http://a.ml/vocabularies/data#camelcase-template-parameters";
 
 describe("base uri pattern validation", () => {
   let doc;
@@ -206,7 +209,7 @@ describe("base uri pattern validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, TEMPLATE_RULE]);
   });
 
   it("should not conform if the version is uppercase", async () => {
@@ -215,7 +218,7 @@ describe("base uri pattern validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, TEMPLATE_RULE]);
   });
 
   it("should not conform if there is a comma", async () => {
@@ -224,6 +227,6 @@ describe("base uri pattern validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, TEMPLATE_RULE]);
   });
 });

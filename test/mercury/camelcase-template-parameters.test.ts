@@ -17,7 +17,8 @@ import {
 } from "../utils.test";
 
 const PROFILE = "mercury";
-const TEMPLATE_RULE = "http://a.ml/vocabularies/data#camelcase-template-parameters";
+const TEMPLATE_RULE =
+  "http://a.ml/vocabularies/data#camelcase-template-parameters";
 
 describe("template parameter checking tests", () => {
   it("fails when template starts with capital", async () => {

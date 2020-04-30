@@ -100,5 +100,4 @@ describe("resource checking tests", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     conforms(result);
   });
-
 });
