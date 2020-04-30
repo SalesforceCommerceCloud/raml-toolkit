@@ -176,14 +176,15 @@ validations:
     functionConstraint:
       code: |
         function(resource) {
-          const title = resource['core:name'][0];
+          const titles = resource['core:name'];
           const servers = resource['apiContract:server'];
           // There are specific rules to check if baseuri or title is missing,
           // no need to fail this rule as well
-          if(!servers || !title) {
+          if(!servers || !titles) {
             return true;
           }
           const baseUri = servers[0]['core:urlTemplate'][0];
+          const title = titles[0];
           const apiName = baseUri.split("/")[4];
           const parts = apiName.split("-");
           for(let i=0; i<parts.length; i++) {
