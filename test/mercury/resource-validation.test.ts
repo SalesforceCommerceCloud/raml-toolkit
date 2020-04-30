@@ -101,20 +101,4 @@ describe("resource checking tests", () => {
     conforms(result);
   });
 
-  it("conforms when template is in caps", async () => {
-    const doc = getHappySpec();
-    renameKey(doc["/resource"], "/{resourceId}", "/{ID}");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    conforms(result);
-  });
-
-  it("fails when template has underscores", async () => {
-    const doc = getHappySpec();
-    renameKey(doc["/resource"], "/{resourceId}", "/{resource_id}");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(
-      result,
-      "http://a.ml/vocabularies/data#resource-name-validation"
-    );
-  });
 });
