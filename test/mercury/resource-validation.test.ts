@@ -80,6 +80,13 @@ describe("resource checking tests", () => {
     conforms(result);
   });
 
+  it("conforms when resource contains multiple literal parts and  multiple template", async () => {
+    const doc = getHappySpec();
+    renameKey(doc, "/resource", "/path/{parameter}/is/{ok}");
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    conforms(result);
+  });
+
   it("does not conform when resource starts with symbol", async () => {
     const doc = getHappySpec();
     renameKey(doc, "/resource", "/-path");
