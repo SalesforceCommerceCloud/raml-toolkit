@@ -21,50 +21,43 @@ const TEMPLATE_RULE =
   "http://a.ml/vocabularies/data#camelcase-template-parameters";
 
 describe("template parameter checking tests", () => {
+  let doc;
+
+  beforeEach(() => {
+    doc = getHappySpec();
+  });
+
   it("fails when template starts with capital", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{ResourceId}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
   });
 
   it("fails when template starts with number", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{9esourceId}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
   });
 
   it("fails when template has a space", async () => {
-    const doc = getHappySpec();
-    renameKey(doc["/resource"], "/{resourceId}", "/{resource Id}");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(result, TEMPLATE_RULE);
-  });
-
-  it("fails when template has a space", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{resource Id}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
   });
 
   it("fails when template has a dash", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{resource-id}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
   });
 
   it("does not conform when template is in caps", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{ID}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
   });
 
   it("fails when template has underscores", async () => {
-    const doc = getHappySpec();
     renameKey(doc["/resource"], "/{resourceId}", "/{resource_id}");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
     breaksOnlyOneRule(result, TEMPLATE_RULE);
