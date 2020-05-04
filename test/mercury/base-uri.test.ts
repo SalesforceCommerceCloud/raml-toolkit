@@ -19,7 +19,9 @@ describe("base uri", () => {
   const PROFILE = "mercury";
 
   describe("pattern validation", () => {
-    const BASE_URI_RULE = "http://a.ml/vocabularies/data#base-uri-matches-pattern";
+    const BASE_URI_RULE =
+      "http://a.ml/vocabularies/data#base-uri-matches-pattern";
+    const TEMPLATE_RULE = "http://a.ml/vocabularies/data#camelcase-template-parameters";
     const TITLE_RULE = "http://a.ml/vocabularies/data#title-matches-api-name";
     let doc;
 
@@ -72,7 +74,7 @@ describe("base uri", () => {
     it("should pass if the api name has more than 2 words ", async () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-dummy-api-name/{version}";
-      doc["title"] = "Test Dummy Api Name"
+      doc["title"] = "Test Dummy Api Name";
 
       const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
@@ -202,7 +204,7 @@ describe("base uri", () => {
 
       const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-      breaksOnlyOneRule(result, BASE_URI_RULE);
+      breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
 
     it("should fail if the version variable is uppercase", async () => {
@@ -211,7 +213,7 @@ describe("base uri", () => {
 
       const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-      breaksOnlyOneRule(result, BASE_URI_RULE);
+      breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
 
     it("should fail if there is a comma in the baseUri", async () => {
@@ -220,7 +222,7 @@ describe("base uri", () => {
 
       const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-      breaksOnlyOneRule(result, BASE_URI_RULE);
+      breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
   });
 

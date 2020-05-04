@@ -21,8 +21,8 @@ describe("no literal question marks in query parameters tests", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
   const QUERY_RULE =
     "http://a.ml/vocabularies/data#no-literal-question-marks-in-parameters";
-const TEMPLATE_RULE =
-  "http://a.ml/vocabularies/data#camelcase-template-parameters";
+  const TEMPLATE_RULE =
+    "http://a.ml/vocabularies/data#camelcase-template-parameters";
   let doc;
   let parameters;
 

@@ -33,14 +33,6 @@ describe("base uri pattern validation", () => {
     conforms(result);
   });
 
-  it("should not conform if the baseUri is missing", async () => {
-    delete doc.baseUri;
-
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-
-    breaksOnlyOneRule(result, RULE);
-  });
-
   it("should not conform if the protocol is http", async () => {
     doc["baseUri"] =
       "http://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
