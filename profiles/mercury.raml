@@ -73,13 +73,7 @@ validations:
           const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
 
           // Parameters include query, path and headers so we need to check binding to filter
-          if (parameter['apiContract:binding'] &&
-              parameter['apiContract:binding'] == 'query' &&
-              !re.test(parameter['core:name'])
-          ) {
-            return false;
-          }
-          return true;
+          return !(parameter['apiContract:binding'] == 'query' && !re.test(parameter['core:name']));
         }
 
   camelcase-template-parameters:
@@ -91,13 +85,7 @@ validations:
           const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
 
           // Parameters include query, path and headers so we need to check binding to filter
-          if (parameter['apiContract:binding'] &&
-              parameter['apiContract:binding'] == 'path' &&
-              !re.test(parameter['core:name'])
-          ) {
-            return false;
-          }
-          return true;
+          return !(parameter['apiContract:binding'] == 'path' && !re.test(parameter['core:name']));
         }
 
   https-required:
