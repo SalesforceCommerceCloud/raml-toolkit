@@ -15,6 +15,7 @@ disabled:
 
 violation:
   - at-least-one-2xx-or-3xx-response
+  - base-uri-matches-pattern
   - camelcase-method-displayname
   - camelcase-query-parameters
   - camelcase-template-parameters
@@ -23,12 +24,12 @@ violation:
   - no-literal-question-marks-in-property-names
   - no-literal-question-marks-in-parameters
   - no-todo-text-in-description-fields
+  - only-one-base-uri
   - require-method-description
   - require-response-description
   - require-json
   - resource-name-validation
   - version-format
-  - base-uri-matches-pattern
 
 validations:
 
@@ -48,8 +49,15 @@ validations:
           return false;
         }
 
+  base-uri-matches-pattern:
+    message: The baseUri must match the pattern - https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}
+    targetClass: apiContract.Server
+    propertyConstraints:
+      core.urlTemplate:
+        pattern: ^https:\/\/{shortCode}\.api\.commercecloud\.salesforce\.com\/([a-z]([a-z0-9-])*[a-z0-9]+)\/([a-z]([a-z0-9-])*[a-z0-9]+)\/{version}\/?$
+
   camelcase-method-displayname:
-    message: The API Method must have displayName and the value must be in camelcase
+    message: The API Method must have displayName and the value must be in camelCase
     targetClass: apiContract.Operation
     propertyConstraints: 
       core.name:
@@ -57,7 +65,7 @@ validations:
           pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
 
   camelcase-query-parameters:
-    message: Query parameters names must be in camelcase
+    message: Query parameters names must be in camelCase
     targetClass: apiContract.Parameter
     functionConstraint:
       code: |
@@ -142,6 +150,15 @@ validations:
           return true;
         }
 
+  only-one-base-uri:
+    message: There must be exactly one baseUri
+    targetClass: apiContract.WebAPI
+    functionConstraint:
+      code: |
+        function(resource) {
+          return resource['apiContract:server'].length === 1;
+        }
+
   require-method-description:
     message: The API Method description must be set
     targetClass: apiContract.Operation
@@ -180,27 +197,3 @@ validations:
       core.version:
         pattern: ^v[0-9]+$
         minCount: 1
-
-  base-uri-matches-pattern:
-    message: The baseUri must match the pattern - https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}
-    targetClass: apiContract.WebAPI
-    functionConstraint:
-      code: |
-        function(resource) {
-          const baseUriRegex = /^https:\/\/{shortCode}\.api\.commercecloud\.salesforce\.com\/([a-z]([a-z0-9-])*[a-z0-9]+)\/([a-z]([a-z0-9-])*[a-z0-9]+)\/{version}\/?$/;
-          const servers = resource['apiContract:server'];
-          if(servers.length < 1) {
-            return false;
-          }
-          let result = true;
-          servers.forEach(server => {
-            urlTemplates = server['core:urlTemplate'];
-            urlTemplates.forEach(urlTemplate => {
-              if(!baseUriRegex.test(urlTemplate)) {
-                result = false;
-              }
-            });
-          });
-          return result;
-        }
-
