@@ -18,6 +18,7 @@ violation:
   - base-uri-matches-pattern
   - camelcase-method-displayname
   - camelcase-query-parameters
+  - camelcase-template-parameters
   - https-required
   - require-api-description
   - no-literal-question-marks-in-property-names
@@ -72,13 +73,19 @@ validations:
           const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
 
           // Parameters include query, path and headers so we need to check binding to filter
-          if (parameter['apiContract:binding'] &&
-              parameter['apiContract:binding'] == 'query' &&
-              !re.test(parameter['core:name'])
-          ) {
-            return false;
-          }
-          return true;
+          return !(parameter['apiContract:binding'] == 'query' && !re.test(parameter['core:name']));
+        }
+
+  camelcase-template-parameters:
+    message: All template/URI params *MUST* be lowerCamelCase
+    targetClass: apiContract.Parameter
+    functionConstraint:
+      code: |
+        function(parameter) {
+          const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
+
+          // Parameters include query, path and headers so we need to check binding to filter
+          return !(parameter['apiContract:binding'] == 'path' && !re.test(parameter['core:name']));
         }
 
   https-required:
@@ -162,12 +169,14 @@ validations:
         in: ["application/json"]
         minCount: 1
 
+  # This doesn't validate the template params, the
+  # camelcase-template-parameters rule does
   resource-name-validation:
-    message: Resource endpoints must be lowercase (Mercury only)
+    message: Resource endpoints must be lowercase
     targetClass: apiContract.EndPoint
     propertyConstraints:
       apiContract.path:
-        pattern: "(\/[a-z]([a-z0-9-])*[a-z0-9]+$)|(\/{[a-zA-Z0-9-]+}$)"
+        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/{[^}]+}))+$
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
