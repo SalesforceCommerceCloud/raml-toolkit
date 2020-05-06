@@ -105,8 +105,9 @@ The default profile validates the following rules from the [Mercury API Definiti
 * API must have a `mediaType` default of application/json
 * `description` MUST be set and not be empty
 * `description` MUST not include the word TODO
-* All resource paths MUST be lowercase (except path parameters)
+* All resource paths MUST be lowercase (except template parameters)
 * Resource paths MUST not start with symbols
+* All template/URI params MUST be lowerCamelCase
 * Methods MUST have a `displayName` set
 * Method `displayName` MUST be in camelCase
 * Methods MUST have a `description` field set
