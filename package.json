@@ -24,7 +24,7 @@
   "license": "BSD 3-Clause",
   "dependencies": {
     "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.13.3",
+    "@oclif/config": "^1.15.1",
     "lodash": "^4.17.15",
     "amf-client-js": "^4.0.4",
     "express": "^4.17.1",
