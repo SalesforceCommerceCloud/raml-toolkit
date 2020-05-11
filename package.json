@@ -24,7 +24,7 @@
   "license": "BSD 3-Clause",
   "dependencies": {
     "@oclif/command": "^1.5.19",
-    "@oclif/config": "^1.13.3",
+    "@oclif/config": "^1.15.1",
     "lodash": "^4.17.15",
     "amf-client-js": "^4.0.4",
     "express": "^4.17.1",
@@ -35,7 +35,8 @@
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5",
     "unzipper": "^0.10.10",
-    "loglevel": "^1.6.8"
+    "loglevel": "^1.6.8",
+    "snyk": "^1.316.1"
   },
   "lint-staged": {
     "*.ts": [
@@ -117,7 +118,9 @@
     "lint": "eslint \"**/*.ts\" --quiet --fix",
     "test:debug": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\"",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\" --reporter=xunit --reporter-options output=reports/generator.xml",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -152,5 +155,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "snyk": true
 }
