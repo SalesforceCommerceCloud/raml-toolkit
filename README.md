@@ -95,6 +95,10 @@ The second error, however, is because it exists, but doesn't match our standard.
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
 
+### Exchange Connector
+
+This package also contains the code formerly published under `@commerce-apps/exchange-connector`. There are no breaking changes between the last version of `@commerce-apps/exchange-connector` and v0.3.0 of this package. For changes since then, see the [changelog](CHANGELOG.md).
+
 ## SDK Ready for Mercury
 
 The default profile validates the following rules from the [Mercury API Definition of Done](https://salesforce.quip.com/lHK7ADgscANI)
