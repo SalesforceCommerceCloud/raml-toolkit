@@ -29,7 +29,7 @@ describe("unique display name validation", () => {
     conforms(result);
   });
 
-  it("should fail if duplicate display names exist under an endpoint", async () => {
+  it("should fail on duplicate display name within a resource", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
     doc["/resource"]["/{resourceId}"].post.displayName = "notUnique";
 
@@ -38,9 +38,18 @@ describe("unique display name validation", () => {
     breaksOnlyOneRule(result, RULE);
   });
 
-  it("should fail if duplicate display names exist under two different endpoints", async () => {
+  it("should fail on duplicate display name between two different resources", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
     doc["/resource2"]["/{id}"].get.displayName = "notUnique";
+
+    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+
+    breaksOnlyOneRule(result, RULE);
+  });
+
+  it("should fail if two display names only differ by case of characters", async () => {
+    doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
+    doc["/resource"]["/{resourceId}"].post.displayName = "notuNique";
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 

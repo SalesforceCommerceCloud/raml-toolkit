@@ -180,14 +180,16 @@ validations:
         pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/{[^}]+}))+$
   
   unique-display-name:
-    message: displayName must be unique across an API
+    message: displayName must be unique within an API
     targetClass: apiContract.Operation
     functionConstraint:
       code: |
         function(ops) {
           const name = (ops['core:name'] || [])[0];
-          if(!accumulators[name]) {
-            accumulators[name] = true;
+          const namespace = "uniqueDisplayName";
+          const key = `${namespace}:${name.toLowerCase()}`;
+          if(!accumulators[key]) {
+            accumulators[key] = true;
             return true;
           } else {
             return false;
