@@ -186,7 +186,8 @@ validations:
       code: |
         function(ops) {
           const name = (ops['core:name'] || [])[0];
-          if(!accumulators[name]) {
+          // the validation engine offers a global accumulators hash persistent between validation function invocations
+          if (!accumulators[name]) {
             accumulators[name] = true;
             return true;
           } else {
