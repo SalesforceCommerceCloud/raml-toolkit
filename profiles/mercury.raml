@@ -185,9 +185,11 @@ validations:
     functionConstraint:
       code: |
         function(ops) {
-          const name = (ops['core:name'] || [])[0];
-          const namespace = "uniqueDisplayName";
-          const key = `${namespace}:${name.toLowerCase()}`;
+          const name = ops['core:name'];
+          if(!name) {
+            return true;
+          }
+          const key = `uniqueDisplayName:${name[0].toLowerCase()}`;
           if(!accumulators[key]) {
             accumulators[key] = true;
             return true;
