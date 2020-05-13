@@ -1,4 +1,5 @@
 # Raml Toolkit  <!-- omit in toc -->
+
 A linting tool for raml for commerce cloud and beyond
 
   [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
@@ -12,11 +13,10 @@ A linting tool for raml for commerce cloud and beyond
 - [Known issues and limitations](#known-issues-and-limitations)
 - [Development Resources](#development-resources)
 
-
 ## Installation
 
 ```bash
-$ npm install -g @commerce-apps/raml-toolkit
+npm install -g @commerce-apps/raml-toolkit
 ```
 
 ## Usage
@@ -91,9 +91,13 @@ Let us look more closely at each of these errors.
 
 The first error is saying that the API description is not set, but we need to have it set according to our standards.  There is a "Position:" field in the response, but it is saying 2-1885. This happens to be the entire RAML document. Ranges like this will be common for "Missing" components since the parser doesn't know where you want to put it, but knows you need to put it somewhere.
 
-The second error, however, is because it exists, but doesn't match our standard.  There you can see that the position leads you to the exact line number and column of the non-conforming component. 
+The second error, however, is because it exists, but doesn't match our standard.  There you can see that the position leads you to the exact line number and column of the non-conforming component.
 
 When there are no more violations, the output will say it conforms, but also provide you with some warnings you might want to fix as well.
+
+### Exchange Connector
+
+This package also contains the code formerly published under `@commerce-apps/exchange-connector`. There are no breaking changes between the last version of `@commerce-apps/exchange-connector` and v0.3.0 of this package. For changes since then, see the [changelog](CHANGELOG.md).
 
 ## SDK Ready for Mercury
 
@@ -131,10 +135,9 @@ You can read all about our contribution model [here!](./.github/CONTRIBUTING.md)
 
 Here is an AMF validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
 
-* https://github.com/mulesoft-labs/amf-validation-example
-* https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml
-* https://github.com/aml-org/amf/tree/develop/documentation/validations
-
+* <https://github.com/mulesoft-labs/amf-validation-example>
+* <https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml>
+* <https://github.com/aml-org/amf/tree/develop/documentation/validations>
 
 <!-- Markdown link & img dfn's -->
 [circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=f0e669168c5d1538fc0b76ad71e13b2e2251ebd4
