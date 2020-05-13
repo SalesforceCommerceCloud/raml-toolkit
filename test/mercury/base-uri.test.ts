@@ -12,7 +12,7 @@ import {
   breaksOnlyOneRule,
   breaksTheseRules,
   conforms
-} from "../utils.test";
+} from "../testUtils";
 import { validateFile } from "../../src/validator";
 
 describe("base uri", () => {

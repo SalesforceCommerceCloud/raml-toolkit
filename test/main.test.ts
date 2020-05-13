@@ -13,7 +13,7 @@ import {
   getSingleValidFile,
   getSingleInvalidFile,
   getSlightlyInvalidFile
-} from "./utils.test";
+} from "./testUtils";
 import { rename } from "fs-extra";
 
 import cmd from "../src";

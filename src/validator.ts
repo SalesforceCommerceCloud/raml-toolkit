@@ -61,17 +61,15 @@ export async function printResults(
   results: amf.client.validate.ValidationReport,
   warnings = false
 ): Promise<void> {
-  if (results) {
-    if (!warnings && results.conforms) {
-      console.log(`Model: ${results.model}
-  Profile: ${results.profile}
-  Conforms? ${results.conforms}
-  Number of results: 0
-  Number of hidden warnings: ${results.results.length}
-      `);
-    } else {
-      console.log(results.toString());
-    }
+  if (results && !warnings && results.conforms) {
+    console.log(`Model: ${results.model}
+Profile: ${results.profile}
+Conforms? ${results.conforms}
+Number of results: 0
+Number of hidden warnings: ${results.results.length}
+    `);
+  } else if (results) {
+    console.log(results.toString());
   }
 }
 
