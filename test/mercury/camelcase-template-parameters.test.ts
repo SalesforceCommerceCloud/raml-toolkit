@@ -14,7 +14,7 @@ import {
   breaksTheseRules,
   renameKey,
   renderSpecAsFile
-} from "../utils.test";
+} from "../testUtils";
 
 const PROFILE = "mercury";
 const TEMPLATE_RULE =

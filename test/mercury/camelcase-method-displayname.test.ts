@@ -7,7 +7,7 @@
 /* eslint-disable no-undef */
 "use strict";
 import * as validator from "../../src/validator";
-import * as utils from "../utils.test";
+import * as utils from "../testUtils";
 
 const PROFILE = "mercury";
 
@@ -29,7 +29,7 @@ describe("camelcase method displayname tests", () => {
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
 
-  it("does not conform when method display name is kebab-case and not camelcase", async () => {
+  it("does not conform when method display name is kebab-case and not camelCase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not-camel-case";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
@@ -38,7 +38,7 @@ describe("camelcase method displayname tests", () => {
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
 
-  it("does not conform when method display name is snake_case and not camelcase", async () => {
+  it("does not conform when method display name is snake_case and not camelCase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not_camel_case";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
@@ -47,7 +47,7 @@ describe("camelcase method displayname tests", () => {
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
 
-  it("does not conform when method display name is PascalCase and not camelcase", async () => {
+  it("does not conform when method display name is PascalCase and not camelCase", async () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "PascalCase";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
