@@ -11,7 +11,7 @@ import {
   renderSpecAsFile,
   breaksOnlyOneRule,
   conforms
-} from "../utils.test";
+} from "../testUtils";
 import { validateFile } from "../../src/validator";
 
 describe("unique display name validation", () => {

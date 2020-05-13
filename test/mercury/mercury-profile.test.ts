@@ -13,7 +13,7 @@ import {
   breaksOnlyOneRule,
   renameKey,
   renderSpecAsFile
-} from "../utils.test";
+} from "../testUtils";
 
 const PROFILE = "mercury";
 
