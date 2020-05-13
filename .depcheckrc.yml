@@ -6,5 +6,6 @@ ignores: [
   "nyc",
   "prettier",
   "typescript",
-  "tslib"
+  "tslib",
+  "snyk"
 ]
