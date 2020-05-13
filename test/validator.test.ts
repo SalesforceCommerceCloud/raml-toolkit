@@ -53,8 +53,8 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result);
-    return expect(consoleSpy.getCall(0).args[0]).to.have.string(
-      "Conforms? false"
+    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+      "Number of hidden warnings: ${result.results.length}"
     );
   });
 
