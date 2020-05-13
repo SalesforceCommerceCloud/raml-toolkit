@@ -35,8 +35,6 @@ describe("#printResults", () => {
 
   it("doesn't console log when no results passed", async () => {
     await printResults(null);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     return expect(consoleSpy.callCount).to.equal(0);
   });
 
@@ -45,11 +43,8 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result);
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
-    return expect(consoleSpy.getCall(0).args[0]).to.have.string(
-      "Conforms? true"
+    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+      "Level: Warning"
     );
   });
 
@@ -58,9 +53,6 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result);
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     return expect(consoleSpy.getCall(0).args[0]).to.have.string(
       "Conforms? false"
     );
@@ -71,9 +63,6 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result, true);
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
     return expect(consoleSpy.getCall(0).args[0]).to.have.string(
       "Level: Warning"
     );
