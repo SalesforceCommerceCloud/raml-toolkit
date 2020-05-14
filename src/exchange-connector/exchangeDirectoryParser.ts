@@ -55,5 +55,5 @@ export function extractFiles(
       );
     });
 
-  return Promise.all(promises).then();
+  return Promise.all(promises);
 }
