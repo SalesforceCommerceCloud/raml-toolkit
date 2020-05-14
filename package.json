@@ -86,16 +86,13 @@
   "nyc": {
     "all": true,
     "check-coverage": true,
-    "branches": 75,
+    "branches": 85,
     "functions": 85,
     "lines": 85,
     "statements": -10,
     "per-file": true,
     "include": [
       "src/**/*.ts"
-    ],
-    "exclude": [
-      "src/exchange-connector/exchangeDirectoryParser.ts"
     ],
     "extension": [
       ".ts"

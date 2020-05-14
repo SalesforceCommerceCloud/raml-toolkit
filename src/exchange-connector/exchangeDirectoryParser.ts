@@ -25,11 +25,12 @@ function getFiles(directory): fs.Dirent[] {
 export function extractFiles(
   directory: string,
   removeFiles = true
-): Promise<void> {
+): Promise<void[]> {
   const files: fs.Dirent[] = getFiles(directory);
   const promises: Promise<void>[] = [];
-  files.forEach(file => {
-    if (file.isFile()) {
+  files
+    .filter(file => file.isFile() && path.extname(file.name) === ".zip")
+    .forEach(file => {
       promises.push(
         new Promise((resolve, reject) => {
           fs.createReadStream(
@@ -52,9 +53,7 @@ export function extractFiles(
           );
         })
       );
-    }
-  });
+    });
 
-  // The then here collapses the return from an array of void to a single void
-  return Promise.all(promises).then();
+  return Promise.all(promises);
 }
