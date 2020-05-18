@@ -1,41 +1,88 @@
-jobs:
+# COMMANDS
+commands:
   build:
-    executor:
-      name: node/default
-      tag: '10.16'
     steps:
       - checkout
       - node/with-cache:
           steps:
             - run: npm ci
+      - run: npm run compile
+  test:
+    steps:
       - run: npm run test
       - store_test_results:
           path: reports
-  publish:
-    executor:
-      name: node/default
-      tag: '10.16'
+
+# EXECUTORS
+executors:
+  node-10:
+    docker:
+      - image: circleci/node:10.20.1
+  node-12:
+    docker:
+      - image: circleci/node:12.16.3
+  node-14:
+    docker:
+      - image: circleci/node:14.2.0
+
+# JOBS
+jobs:
+  build-node-10:
+    executor: node-10
     steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm ci
+      - build
+      - test
+  build-node-12:
+    executor: node-12
+    steps:
+      - build
+      - test
+  build-node-14:
+    executor: node-14
+    steps:
+      - build
+      - test
+  publish:
+    executor: node-10
+    steps:
+      - build
       - run:
           name: Create npmrc file to authenticate with npm registry.
           command: echo "//registry.npmjs.org/:_authToken=$NPM_AUTH_TOKEN" > ~/.npmrc
       - run: npm publish
 
+# WORKFLOWS
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build:
+      - build-node-10:
           filters:
             tags:
               ignore: /^v.*/
+      - build-node-12:
+          filters:
+            tags:
+              ignore: /^v.*/
+      - build-node-14:
+          filters:
+            tags:
+              only: /^v.*/
   build-test-and-deploy:
     jobs:
-      - build:
+      - build-node-10:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build-node-12:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build-node-14:
           filters:
             tags:
               only: /^v.*/
@@ -49,7 +96,9 @@ workflows:
               ignore: /.*/
           type: approval
           requires:
-            - build
+            - build-node-10
+            - build-node-12
+            - build-node-14
       - publish:
           filters:
             tags:
@@ -58,7 +107,10 @@ workflows:
               ignore: /.*/
           requires:
             - confirm-publish-if-tagged
-          
+
+# ORBS       
 orbs:
   node: circleci/node@1.1
+
+# VERSION
 version: 2.1
