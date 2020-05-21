@@ -59,9 +59,7 @@ export function findJsonDiffs(left: object, right: object): Array<NodeDiff> {
 
   const jsonDiff = new DiffPatcher({
     // Define an object hash function
-    objectHash: function getObjectHash(obj, index) {
-      return obj["@id"];
-    },
+    objectHash: (obj): string => obj["@id"],
     arrays: {
       // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
       detectMove: true,
@@ -91,7 +89,7 @@ export function findJsonDiffs(left: object, right: object): Array<NodeDiff> {
  */
 function validateJson(obj: any, objLoc: "left" | "right"): void {
   let msg;
-  if (obj == null || _.isEmpty(obj)) {
+  if (_.isEmpty(obj)) {
     msg = `Invalid ${objLoc} object`;
     logError(msg);
     return;
@@ -124,7 +122,7 @@ function logError(msg: string): never {
  */
 function parseDiffs(diffs: object): Array<NodeDiff> {
   const typedDiffs: Array<NodeDiff> = [];
-  if (diffs == null || _.isEmpty(diffs)) {
+  if (_.isEmpty(diffs)) {
     //no changes
     ramlToolLogger.info("No differences found by the jsondiffPatch");
     return typedDiffs;
