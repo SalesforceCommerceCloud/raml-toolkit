@@ -235,19 +235,20 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
  * @return DiffType Type of the difference
  */
 function getDiffType(diff: Array<any>): DiffType {
-  if (diff.length === 1) {
+  const diffLength = diff.length;
+  if (diffLength === 1) {
     return DiffType.ADDED;
   }
-  if (diff.length === 2) {
+  if (diffLength === 2) {
     return DiffType.MODIFIED;
   }
-  if (diff.length === 3 && diff[2] === 0) {
+  if (diffLength === 3 && diff[2] === 0) {
     return DiffType.REMOVED;
   }
-  if (diff.length === 3 && diff[2] === 2) {
+  if (diffLength === 3 && diff[2] === 2) {
     return DiffType.TEXT_DIFF;
   }
-  if (diff.length === 3 && diff[2] === 3) {
+  if (diffLength === 3 && diff[2] === 3) {
     return DiffType.MOVED;
   }
   logError(

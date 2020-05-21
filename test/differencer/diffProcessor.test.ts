@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from "path";
-import { diffRaml } from "../../src/differencer/diffProcessor";
+import { diffRaml } from "../../src/diffTool/diffProcessor";
 import * as chai from "chai";
 
 const expect = chai.expect;

@@ -10,7 +10,7 @@ import {
   JSON_LD_KEY_GRAPH,
   JSON_LD_KEY_CONTEXT,
   JSON_LD_KEY_ID
-} from "../../src/differencer/jsonDiff";
+} from "../../src/diffTool/jsonDiff";
 import chaiAsPromised from "chai-as-promised";
 import _ from "lodash";
 
