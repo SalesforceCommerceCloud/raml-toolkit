@@ -21,7 +21,7 @@ import * as path from "path";
 export async function diffRaml(
   leftRaml: string,
   rightRaml: string
-): Promise<Array<NodeDiff>> {
+): Promise<NodeDiff[]> {
   const [leftGraph, rightGraph] = await Promise.all([
     generateGraph(leftRaml),
     generateGraph(rightRaml)
@@ -45,6 +45,7 @@ async function generateGraph(ramlFilePath: string): Promise<object> {
   amf.plugins.features.AMFValidation.register();
   await amf.Core.init();
 
+  //TODO: use common parser function that is used by validator and sdk
   let model = await new amf.Raml10Parser().parseFileAsync(
     `file://${ramlFilePath}`
   );
@@ -58,7 +59,7 @@ async function generateGraph(ramlFilePath: string): Promise<object> {
   );
   /**
    * Types referenced from another RAML contain the filepath in their ID. Replace with empty string so that paths are not compared
-   * TODO: Find if we can avoid this
+   * TODO: Find if we can avoid this, if not handle escape special characters in the directory path
    */
   graphStr = _.replace(
     graphStr,

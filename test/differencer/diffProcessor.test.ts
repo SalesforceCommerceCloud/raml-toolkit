@@ -9,7 +9,6 @@ import { diffRaml } from "../../src/diffTool/diffProcessor";
 import * as chai from "chai";
 
 const expect = chai.expect;
-const assert = chai.assert;
 
 describe("Test RAML differencing", () => {
   it("can generate differences between RAML files ", async () => {
@@ -17,7 +16,6 @@ describe("Test RAML differencing", () => {
     const leftRaml = path.join(basePath, "left.raml");
     const rightRaml = path.join(basePath, "right.raml");
     const diffs = await diffRaml(leftRaml, rightRaml);
-    assert(diffs != null);
     expect(diffs.length).to.greaterThan(0);
   });
 });

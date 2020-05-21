@@ -8,27 +8,24 @@ import * as chai from "chai";
 import {
   findJsonDiffs,
   JSON_LD_KEY_GRAPH,
-  JSON_LD_KEY_CONTEXT,
-  JSON_LD_KEY_ID
+  JSON_LD_KEY_CONTEXT
 } from "../../src/diffTool/jsonDiff";
-import chaiAsPromised from "chai-as-promised";
+
 import _ from "lodash";
 
 const expect = chai.expect;
 
-before(() => {
-  chai.should();
-  chai.use(chaiAsPromised);
-});
-
 function buildValidJson(): object {
-  const obj = {};
-  obj[JSON_LD_KEY_GRAPH] = [
-    { "@id": "#/web-api", "core:name": "Test Raml" },
-    { "@id": "#/web-api/end-points/resource", "apiContract:path": "/resource" }
-  ];
-  obj[JSON_LD_KEY_CONTEXT] = { "@base": "test.raml" };
-  return obj;
+  return {
+    [JSON_LD_KEY_GRAPH]: [
+      { "@id": "#/web-api", "core:name": "Test Raml" },
+      {
+        "@id": "#/web-api/end-points/resource",
+        "apiContract:path": "/resource"
+      }
+    ],
+    [JSON_LD_KEY_CONTEXT]: { "@base": "test.raml" }
+  };
 }
 
 describe("Test validations of the differencing object", () => {
@@ -81,7 +78,7 @@ describe("Test validations of the differencing object", () => {
   });
 });
 
-describe("Test json node differences", () => {
+describe("Test add/remove of json nodes", () => {
   it("returns empty differences when left json content is same as right json content", async () => {
     const diffs = findJsonDiffs(buildValidJson(), buildValidJson());
     expect(diffs.length).to.equal(0);
@@ -94,7 +91,7 @@ describe("Test json node differences", () => {
     const diffs = findJsonDiffs(left, buildValidJson());
 
     expect(diffs.length).to.equal(1);
-    expect(diffs[0].added[obj[JSON_LD_KEY_ID]]).to.deep.equal(obj);
+    expect(diffs[0].added[obj["@id"]]).to.deep.equal(obj);
     expect(_.isEmpty(diffs[0].removed)).to.true;
   });
 
@@ -105,7 +102,7 @@ describe("Test json node differences", () => {
     const diffs = findJsonDiffs(buildValidJson(), right);
 
     expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed[obj[JSON_LD_KEY_ID]]).to.deep.equal(obj);
+    expect(diffs[0].removed[obj["@id"]]).to.deep.equal(obj);
     expect(_.isEmpty(diffs[0].added)).to.true;
   });
 
@@ -130,7 +127,7 @@ describe("Test json node differences", () => {
   });
 });
 
-describe("Test json node property differences", () => {
+describe("Test changes to the properties with in a json node", () => {
   it("returns added properties", async () => {
     const right = buildValidJson();
     const apiObj = right[JSON_LD_KEY_GRAPH][0];
@@ -167,7 +164,7 @@ describe("Test json node property differences", () => {
   });
 });
 
-describe("Test json node array property differences", () => {
+describe("Test changes to the array properties with in a json node", () => {
   it("returns added array properties", async () => {
     const left = buildValidJson();
     const arrayValue = { "@id": "#/web-api/end-points/resource" };
