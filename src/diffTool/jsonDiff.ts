@@ -78,6 +78,10 @@ export function findJsonDiffs(left: object, right: object): NodeDiff[] {
     `Added plugin to include node ID in the diff: ${jsonDiff.processor.pipes.diff.list()}`
   );
 
+  /**
+   * Refer to jsondiffpath documentation for the format of the diffs that are returned
+   * https://github.com/benjamine/jsondiffpatch/blob/master/docs/deltas.md
+   */
   const diffs = jsonDiff.diff(left, right);
 
   return parseDiffs(diffs);
@@ -150,6 +154,7 @@ function parseDiffs(diffs: object): NodeDiff[] {
  */
 function parseGraph(graphDiffs: object[]): NodeDiff[] {
   const typedDiffs: NodeDiff[] = [];
+  //graphDiffs is an object in which keys represent the index in the original array (left for removed diffs and right for added diffs)
   Object.keys(graphDiffs).forEach(key => {
     if (key === JSON_DIFF_PATCH_ARRAY_KEY) {
       //Ignoring the property added by jsondiffpath to indicate that graph is an array
@@ -158,7 +163,7 @@ function parseGraph(graphDiffs: object[]): NodeDiff[] {
     const diff = graphDiffs[key];
     let typedDiff;
     if (_.isArray(diff)) {
-      //Node is added/removed/moved
+      //jsondiffpatch returns each diff as an array. So an array in place of node indicates that array is added/removed/moved
       typedDiff = addNodeDiff(diff);
     } else if (_.isObject(diff)) {
       //properties in a node are added/removed/modified/moved
@@ -184,18 +189,8 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
     .filter(key => key !== JSON_LD_KEY_ID) //ignore node id
     .forEach(key => {
       const value = diff[key];
-
       /**
-       * check if the property of the node is an array. Key is the index of the original array in string array
-       * Example:
-       * "apiContract:parameter": {
-          "2": [
-            {
-              "@id": "#/web-api/end-points/resource/get/request/parameter/p1"
-            }
-          ],
-          "_t": "a"
-        }
+       * check if the property of the node is an array. Key is the index of the original array
        */
       if (value[JSON_DIFF_PATCH_ARRAY_KEY] === JSON_DIFF_PATCH_ARRAY_VALUE) {
         //Ignore property added by jsondiffpath to indicate array property
