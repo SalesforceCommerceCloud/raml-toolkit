@@ -9,6 +9,7 @@ import amf from "amf-client-js";
 import _ from "lodash";
 import { findJsonDiffs, NodeDiff } from "./jsonDiff";
 import { ramlToolLogger } from "../logger";
+import * as path from "path";
 
 /**
  * Generate differences between two RAML files
@@ -21,9 +22,10 @@ export async function diffRaml(
   leftRaml: string,
   rightRaml: string
 ): Promise<Array<NodeDiff>> {
-  const leftGraph = await generateGraph(leftRaml);
-  const rightGraph = await generateGraph(rightRaml);
-
+  const [leftGraph, rightGraph] = await Promise.all([
+    generateGraph(leftRaml),
+    generateGraph(rightRaml)
+  ]);
   ramlToolLogger.info(
     `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
   );
@@ -58,8 +60,11 @@ async function generateGraph(ramlFilePath: string): Promise<object> {
    * Types referenced from another RAML contain the filepath in their ID. Replace with empty string so that paths are not compared
    * TODO: Find if we can avoid this
    */
-  const dirPath = ramlFilePath.substring(0, ramlFilePath.lastIndexOf("/"));
-  graphStr = _.replace(graphStr, new RegExp(dirPath, "g"), "");
+  graphStr = _.replace(
+    graphStr,
+    new RegExp(path.dirname(ramlFilePath), "g"),
+    ""
+  );
 
   return JSON.parse(graphStr);
 }
