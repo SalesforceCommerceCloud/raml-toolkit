@@ -62,13 +62,13 @@ export function findJsonDiffs(left: object, right: object): NodeDiff[] {
     // Define an object hash function
     objectHash: (obj): string => obj["@id"],
     arrays: {
-      // default true, detect items moved inside the array (otherwise they will be registered as remove+add)
+      // detect items moved inside the array (otherwise they will be registered as remove+add). This flag defaults to true if not specified
       detectMove: true,
-      // default false, the value of items moved is not included in deltas
-      includeValueOnMove: true //set to true so that we can log node ids that are moved
+      // include the value of items moved so that we can have node ids in the diffs. This flag defaults to false if not specified
+      includeValueOnMove: true
     },
     textDiff: {
-      // default 60, minimum string length (left and right sides) to use text diff algorithm: google-diff-match-patch
+      // minimum string length (left and right sides) to use text diff algorithm: google-diff-match-patch. Default value if not specified is 60
       minLength: 6000
     }
   });
