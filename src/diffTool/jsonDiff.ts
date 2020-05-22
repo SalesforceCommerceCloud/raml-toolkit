@@ -36,6 +36,7 @@ export enum DiffType {
 /**
  * Class to hold differences of a JSON node
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class NodeDiff {
   public added?: { [key: string]: any };
   public removed?: { [key: string]: any };
@@ -148,11 +149,11 @@ function parseDiffs(diffs: object): NodeDiff[] {
 
 /**
  * Parse differences for each JSON node in the graph
- * @param graphDiffs Array of JSON nodes with differences
+ * @param graphDiffs JSON with differences
  *
  * @returns Array of NodeDiff objects
  */
-function parseGraph(graphDiffs: object[]): NodeDiff[] {
+function parseGraph(graphDiffs: object): NodeDiff[] {
   const typedDiffs: NodeDiff[] = [];
   //graphDiffs is an object in which keys represent the index in the original array (left for removed diffs and right for added diffs)
   Object.keys(graphDiffs).forEach(key => {
@@ -163,7 +164,7 @@ function parseGraph(graphDiffs: object[]): NodeDiff[] {
     const diff = graphDiffs[key];
     let typedDiff;
     if (_.isArray(diff)) {
-      //jsondiffpatch returns each diff as an array. So an array in place of node indicates that array is added/removed/moved
+      //jsondiffpatch returns each diff as an array. So an array in place of node indicates that node is added/removed/moved
       typedDiff = addNodeDiff(diff);
     } else if (_.isObject(diff)) {
       //properties in a node are added/removed/modified/moved
@@ -226,6 +227,7 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
  *
  * @return DiffType Type of the difference
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getDiffType(diff: any[]): DiffType {
   const diffLength = diff.length;
   if (diffLength === 1) {
@@ -290,10 +292,11 @@ function addNodeDiff(diff: object[]): NodeDiff {
  * @param key Name of the property that has difference
  * @param diff Differences of the property
  * @param diffType Type of the difference
- * @param typedDiff Type object for the difference
+ * @param typedDiff Instance of NodeDiff for the node
  */
 function addNodePropertyDiffs(
   key: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
   diffType: DiffType,
   typedDiff: NodeDiff
@@ -320,8 +323,16 @@ function addNodePropertyDiffs(
   }
 }
 
+/**
+ * Add differences of node property of type array to NodeDiff object
+ * @param key Name of the property that has difference
+ * @param diff Differences of the property
+ * @param diffType Type of the difference
+ * @param typedDiff Instance of NodeDiff for the node
+ */
 function addNodeArrayPropertyDiffs(
   key: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
   diffType: DiffType,
   typedDiff: NodeDiff
@@ -354,7 +365,7 @@ function addNodeArrayPropertyDiffs(
 /**
  * jsondiffpatch plugin to add node ID to the difference
  */
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions,@typescript-eslint/no-explicit-any
 const addDiffId = <any>function(context) {
   if (
     context.leftType === "object" &&
