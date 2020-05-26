@@ -1,0 +1,40 @@
+#%RAML 1.0
+---
+title: Test Raml File
+version: v1
+mediaType: application/json
+protocols: https
+baseUri: https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}
+description: This is a description of the API spec
+
+types:
+    ClassA:
+        type: object
+        description: Class A type
+        properties:
+            property1:
+                type: string
+                description: String type property.
+            property2?:
+                type: integer
+                description: Number data type property.
+
+/resource:
+    /{resourceId}:
+        get:
+            displayName: getResource
+            description: Get this resource
+            queryParameters:
+                expand:
+                    description: The expand parameter. A comma separated list with the allowed values (availability, links, promotions, options, images, prices, variations)
+                    type: array
+                    items:
+                        type: string
+                    example: [availability,links,promotions,options,images,prices,variations]
+                    required: false
+            responses:
+                200:
+                    description: OK
+                    body:
+                        application/json:
+                            type: ClassA
