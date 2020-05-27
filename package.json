@@ -8,9 +8,10 @@
     "/oclif.manifest.json",
     "/profiles"
   ],
-  "homepage": "https://github.com/oclif/example-multi-ts",
+  "homepage": "https://github.com/SalesforceCommerceCloud/raml-toolkit",
   "keywords": [
-    "oclif"
+    "oclif",
+    "raml"
   ],
   "bin": {
     "raml-toolkit": "./bin/run",
