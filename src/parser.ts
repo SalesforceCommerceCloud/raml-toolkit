@@ -11,7 +11,6 @@ import path from "path";
 import _ from "lodash";
 
 import { FatRamlResourceLoader } from "./exchange-connector";
-import { RestApi } from ".";
 
 /**
  * Parses a RAML file to an AMF model.
@@ -40,7 +39,7 @@ export async function parseRamlFile(
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
 
-  let model: amf.model.document.BaseUnit;
+  let model: model.document.BaseUnit;
   try {
     model = await parser.parseFileAsync(fileUri);
   } catch (err) {
@@ -83,7 +82,7 @@ export function getReferenceDataTypes(
     return;
   }
   apiReferences.forEach(
-    (reference: model.document.BaseUnit & amf.model.document.DeclaresModel) => {
+    (reference: model.document.BaseUnit & model.document.DeclaresModel) => {
       if (reference.declares) {
         dataTypes.push(
           ...getDataTypesFromDeclare(reference.declares, existingDataTypes)
@@ -106,7 +105,7 @@ export function getReferenceDataTypes(
  * @returns data types from model
  */
 export function getAllDataTypes(
-  api: model.document.BaseUnit & amf.model.document.DeclaresModel
+  api: model.document.BaseUnit & model.document.DeclaresModel
 ): model.domain.CustomDomainProperty[] {
   let ret: model.domain.CustomDomainProperty[] = [];
   const dataTypes: Set<string> = new Set();
@@ -130,9 +129,9 @@ export function getAllDataTypes(
  * @returns AMF model after resolving with the given pipeline
  */
 export function resolveApiModel(
-  apiModel: model.document.BaseUnit & amf.model.document.EncodesModel,
+  apiModel: model.document.BaseUnit & model.document.EncodesModel,
   resolutionPipeline: "default" | "editing" | "compatibility"
-): model.document.BaseUnit & amf.model.document.EncodesModel {
+): model.document.BaseUnit & model.document.EncodesModel {
   /**
    * TODO: core.resolution.pipelines.ResolutionPipeline has all the pipelines defined but is throwing an error when used - "Cannot read property 'pipelines' of undefined".
    *  When this is fixed we should change the type of input param "resolutionPipeline"
@@ -147,7 +146,7 @@ export function resolveApiModel(
   return resolver.resolve(
     apiModel,
     resolutionPipeline
-  ) as model.document.BaseUnit & amf.model.document.EncodesModel;
+  ) as model.document.BaseUnit & model.document.EncodesModel;
 }
 
 /**
@@ -170,7 +169,7 @@ export function getNormalizedName(name: string): string {
  * @returns Name of the API
  */
 export function getApiName(
-  apiModel: model.document.BaseUnit & amf.model.document.EncodesModel
+  apiModel: model.document.BaseUnit & model.document.EncodesModel
 ): string {
   const apiName: string = (apiModel.encodes as model.domain.WebApi).name.value();
   return getNormalizedName(apiName);
