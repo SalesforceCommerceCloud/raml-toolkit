@@ -20,14 +20,9 @@ import {
   WebApiBaseUnitWithEncodesModel
 } from "webapi-parser";
 
-import { expect, default as chai } from "chai";
+import { expect } from "chai";
 import path from "path";
-import chaiAsPromised from "chai-as-promised";
 import _ from "lodash";
-
-before(() => {
-  chai.use(chaiAsPromised);
-});
 
 describe("Test RAML file", () => {
   it("Test invalid RAML file", () => {
