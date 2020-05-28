@@ -13,8 +13,14 @@ function validateCustom(
   profileFile: string
 ): Promise<amf.client.validate.ValidationReport> {
   return new Promise(async resolve => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const profileName: any = await amf.Core.loadValidationProfile(profileFile);
+    let profileName: amf.ProfileName;
+    try {
+      profileName = await amf.Core.loadValidationProfile(profileFile);
+    } catch (err) {
+      console.error("Error parsing validation profile.");
+      console.error(err.vw);
+      process.exit(1);
+    }
     const report = await amf.Core.validate(
       model,
       profileName,
