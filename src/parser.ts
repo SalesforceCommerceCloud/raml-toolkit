@@ -39,14 +39,7 @@ export async function parseRamlFile(
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
 
-  let model: model.document.BaseUnit;
-  try {
-    model = await parser.parseFileAsync(fileUri);
-  } catch (err) {
-    console.log("Error validating");
-    console.log(err);
-  }
-  return model;
+  return parser.parseFileAsync(fileUri);
 }
 
 function getDataTypesFromDeclare(
