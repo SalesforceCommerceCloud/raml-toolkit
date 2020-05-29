@@ -19,7 +19,6 @@ export async function validateCustom(
     // We rethrow to provide a cleaner error message
     throw new Error(err.vw);
   }
-  console.log("SHOULD NOT HIT");
   const report = await amf.Core.validate(
     model,
     profileName,
