@@ -9,7 +9,8 @@
 import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
-import { printResults, validateFile } from "../src/validator";
+import * as wap from "webapi-parser";
+import { printResults, validateFile, validateCustom } from "../src/validator";
 import {
   getHappySpec,
   renderSpecAsFile,
@@ -66,5 +67,23 @@ describe("#printResults", () => {
     return expect(consoleSpy.getCall(0).args[0]).to.have.string(
       "Level: Warning"
     );
+  });
+});
+
+describe("#validateCustom", () => {
+  let model: wap.model.document.BaseUnit;
+
+  before(() => {
+    wap.WebApiParser.init();
+  });
+
+  beforeEach(() => {
+    model = new wap.webapi.WebApiDocument();
+  });
+
+  it("missing validation profile", () => {
+    expect(
+      validateCustom(model, "file://MISSINGFILE")
+    ).to.be.eventually.rejectedWith("No registered runtime validator");
   });
 });

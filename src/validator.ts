@@ -8,26 +8,24 @@ import path from "path";
 import amf from "amf-client-js";
 import { FatRamlResourceLoader } from "./exchange-connector";
 
-function validateCustom(
+export async function validateCustom(
   model: amf.model.document.BaseUnit,
   profileFile: string
 ): Promise<amf.client.validate.ValidationReport> {
-  return new Promise(async resolve => {
-    let profileName: amf.ProfileName;
-    try {
-      profileName = await amf.Core.loadValidationProfile(profileFile);
-    } catch (err) {
-      console.error("Error parsing validation profile.");
-      console.error(err.vw);
-      process.exit(1);
-    }
-    const report = await amf.Core.validate(
-      model,
-      profileName,
-      amf.MessageStyles.RAML
-    );
-    resolve(report);
-  });
+  let profileName: amf.ProfileName;
+  try {
+    profileName = await amf.Core.loadValidationProfile(profileFile);
+  } catch (err) {
+    // We rethrow to provide a cleaner error message
+    throw new Error(err.vw);
+  }
+  console.log("SHOULD NOT HIT");
+  const report = await amf.Core.validate(
+    model,
+    profileName,
+    amf.MessageStyles.RAML
+  );
+  return report;
 }
 
 export async function validateModel(

@@ -114,7 +114,7 @@
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run depcheck && npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test:debug": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\"",
+    "test:debug": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\" --grep \"#validateCustom\"",
     "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\" --reporter=xunit --reporter-options output=reports/generator.xml",
     "version": "oclif-dev readme && git add README.md",
     "snyk-protect": "snyk protect",
@@ -149,7 +149,8 @@
     "nyc": "^15.0.0",
     "prettier": "^1.15.2",
     "sinon": "^9.0.2",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "webapi-parser": "^0.5.0"
   },
   "publishConfig": {
     "access": "public"
