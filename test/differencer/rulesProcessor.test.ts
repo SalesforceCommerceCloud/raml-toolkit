@@ -51,22 +51,19 @@ describe("Test that rules application exits with relevant message when there are
 });
 
 describe("Test that rules application exits with relevant message when there are no rules", () => {
-  const noRulesMsg = "No rules to apply on the differences";
-  const diffs = [new NodeDiff("test")];
-  it("exits when the rules file path is undefined", async () => {
-    await applyRules(diffs, undefined);
-    //verify that diff is not modified
-    expect(diffs).to.deep.equal(diffs);
-    //verify log message
-    sinon.assert.calledWith(loggerSpy, noRulesMsg);
+  it("throws rules file path is undefined", async () => {
+    const diffs = [new NodeDiff("test")];
+    const rulesPath = undefined;
+    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
+      `Invalid rules path: ${rulesPath}`
+    );
   });
   it("exits when the rules file path is null", async () => {
     const diffs = [new NodeDiff("test")];
-    await applyRules(diffs, null);
-    //verify that diff is not modified
-    expect(diffs).to.deep.equal(diffs);
-    //verify log message
-    sinon.assert.calledWith(loggerSpy, noRulesMsg);
+    const rulesPath = null;
+    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
+      `Invalid rules path: ${rulesPath}`
+    );
   });
   it("throws error when the rules file has no valid json", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
@@ -85,11 +82,7 @@ describe("Test that rules application exits with relevant message when there are
     return expect(
       applyRules(diffs, tmpFile.name)
     ).to.eventually.be.rejectedWith(
-      `Rules must be defined as as a json array: ${JSON.stringify(
-        rules,
-        null,
-        2
-      )}`
+      `Rules must be defined as a json array: ${JSON.stringify(rules, null, 2)}`
     );
   });
   it("exits when rules is an empty array", async () => {
@@ -100,7 +93,7 @@ describe("Test that rules application exits with relevant message when there are
     //verify that diff is not modified
     expect(diffs).to.deep.equal(diffs);
     //verify log message
-    sinon.assert.calledWith(loggerSpy, noRulesMsg);
+    sinon.assert.calledWith(loggerSpy, "No rules to apply on the differences");
   });
 });
 

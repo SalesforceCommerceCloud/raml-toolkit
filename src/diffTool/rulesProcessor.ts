@@ -58,10 +58,7 @@ export async function applyRules(
  * @returns Array of rules
  */
 function getRules(rulesPath: string): RuleProperties[] {
-  if (rulesPath == null) {
-    return undefined;
-  }
-  if (!fs.statSync(rulesPath)) {
+  if (rulesPath == null || !fs.statSync(rulesPath)) {
     throw new Error(`Invalid rules path: ${rulesPath}`);
   }
   let rules: RuleProperties[];
@@ -73,11 +70,7 @@ function getRules(rulesPath: string): RuleProperties[] {
   }
   if (!Array.isArray(rules)) {
     throw new Error(
-      `Rules must be defined as as a json array: ${JSON.stringify(
-        rules,
-        null,
-        2
-      )}`
+      `Rules must be defined as a json array: ${JSON.stringify(rules, null, 2)}`
     );
   }
   return rules;

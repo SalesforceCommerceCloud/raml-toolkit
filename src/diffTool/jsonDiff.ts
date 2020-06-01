@@ -41,6 +41,9 @@ export enum DiffType {
 export class NodeDiff {
   public added?: { [key: string]: any };
   public removed?: { [key: string]: any };
+  /**
+   * Rule that is evaluated to true on the difference
+   */
   public rule?: {
     //name of the rule that is evaluated to true
     name: string;
