@@ -51,18 +51,32 @@ describe("Test that rules application exits with relevant message when there are
 });
 
 describe("Test that rules application exits with relevant message when there are no rules", () => {
-  it("throws rules file path is undefined", async () => {
+  it("throws error when rules file path is undefined", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = undefined;
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
       `Invalid rules path: ${rulesPath}`
     );
   });
-  it("exits when the rules file path is null", async () => {
+  it("throws error when the rules file path is null", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = null;
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
       `Invalid rules path: ${rulesPath}`
+    );
+  });
+  it("throws error when the rules file path is empty", async () => {
+    const diffs = [new NodeDiff("test")];
+    const rulesPath = "";
+    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
+      `Invalid rules path: ${rulesPath}`
+    );
+  });
+  it("throws error when the rules file do not exist", async () => {
+    const diffs = [new NodeDiff("test")];
+    const rulesPath = "/tmp/no-rules.json";
+    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
+      `Error parsing the rules file: ${rulesPath}`
     );
   });
   it("throws error when the rules file has no valid json", async () => {

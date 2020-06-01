@@ -29,12 +29,12 @@ export async function applyRules(
   diffs: NodeDiff[],
   rulesPath: string
 ): Promise<void> {
-  if (diffs == null || diffs.length == 0) {
+  if (!diffs || diffs.length == 0) {
     ramlToolLogger.info("No differences to apply the rules");
     return;
   }
   const rules = getRules(rulesPath);
-  if (rules == null || rules.length == 0) {
+  if (!rules || rules.length == 0) {
     ramlToolLogger.info("No rules to apply on the differences");
     return;
   }
@@ -58,7 +58,7 @@ export async function applyRules(
  * @returns Array of rules
  */
 function getRules(rulesPath: string): RuleProperties[] {
-  if (rulesPath == null || !fs.statSync(rulesPath)) {
+  if (!rulesPath) {
     throw new Error(`Invalid rules path: ${rulesPath}`);
   }
   let rules: RuleProperties[];
