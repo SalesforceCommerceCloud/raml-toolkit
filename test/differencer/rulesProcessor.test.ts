@@ -76,7 +76,7 @@ describe("Test that rules application exits with relevant message when there are
     const diffs = [new NodeDiff("test")];
     const rulesPath = "/tmp/no-rules.json";
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      `Error parsing the rules file: ${rulesPath}`
+      `Error parsing the rules file '${rulesPath}'`
     );
   });
   it("throws error when the rules file has no valid json", async () => {
