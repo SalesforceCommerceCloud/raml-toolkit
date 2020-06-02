@@ -101,3 +101,5 @@ export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 
 export { RestApi } from "./exchange-connector/exchangeTypes";
 export { ramlToolLogger } from "./logger";
+
+export { diffRaml } from "./diffTool";
