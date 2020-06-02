@@ -28,7 +28,7 @@ after(() => {
   sinon.reset();
 });
 
-describe("Test that rules application function returns and logs a relevant message when there are no differences", () => {
+describe("Rules engine when no differences are provided", () => {
   const noDiffsMsg = "No differences to apply the rules";
   it("logs message when the differences are undefined", async () => {
     await applyRules(undefined, rulesPath);
@@ -46,33 +46,34 @@ describe("Test that rules application function returns and logs a relevant messa
   });
 });
 
-describe("Test that rules application function and logs a relevant message when there are no rules", () => {
+describe("Rules engine when rules file is invalid", () => {
+  const errMsg = "Error parsing the rules file";
   it("throws error when rules file path is undefined", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = undefined;
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      `Invalid rules path: ${rulesPath}`
+      errMsg
     );
   });
   it("throws error when the rules file path is null", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = null;
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      `Invalid rules path: ${rulesPath}`
+      errMsg
     );
   });
   it("throws error when the rules file path is empty", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = "";
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      `Invalid rules path: ${rulesPath}`
+      errMsg
     );
   });
   it("throws error when the rules file do not exist", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = "/tmp/no-rules.json";
     return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      `Error parsing the rules file '${rulesPath}'`
+      errMsg
     );
   });
   it("throws error when the rules file has no valid json", async () => {
@@ -80,9 +81,7 @@ describe("Test that rules application function and logs a relevant message when 
     const diffs = [new NodeDiff("test")];
     return expect(
       applyRules(diffs, tmpFile.name)
-    ).to.eventually.be.rejectedWith(
-      `Error parsing the rules file '${tmpFile.name}'`
-    );
+    ).to.eventually.be.rejectedWith(errMsg);
   });
   it("throws error when the rules is not a json array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
@@ -106,7 +105,11 @@ describe("Test that rules application function and logs a relevant message when 
 });
 
 describe("Test display name change rule ", () => {
-  const rulesPath = path.join(__dirname, "..", "..", "diffRules", "rules.json");
+  const rulesPath = path.join(
+    __dirname,
+    "../../diffRules",
+    "defaultRules.json"
+  );
   it("applies display name change rule ", async () => {
     const diff: NodeDiff = {
       id: "#/web-api/end-points/resource/get",

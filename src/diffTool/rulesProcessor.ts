@@ -33,7 +33,7 @@ export async function applyRules(
     ramlToolLogger.info("No differences to apply the rules");
     return;
   }
-  const rules = getRules(rulesPath);
+  const rules = loadRulesFile(rulesPath);
   if (!rules || rules.length == 0) {
     ramlToolLogger.info("No rules to apply on the differences");
     return;
@@ -57,15 +57,12 @@ export async function applyRules(
  *
  * @returns Array of rules
  */
-function getRules(rulesPath: string): RuleProperties[] {
-  if (!rulesPath) {
-    throw new Error(`Invalid rules path: ${rulesPath}`);
-  }
+function loadRulesFile(rulesPath: string): RuleProperties[] {
   let rules: RuleProperties[];
   try {
     rules = fs.readJSONSync(rulesPath);
   } catch (error) {
-    error.message = `Error parsing the rules file '${rulesPath}': ${error.message}`;
+    error.message = `Error parsing the rules file: ${error.message}`;
     throw error;
   }
   if (!Array.isArray(rules)) {
@@ -89,6 +86,7 @@ async function successHandler(
   ramlToolLogger.debug(
     `Rule '${ruleResult.name}' is passed on difference '${nodeDiff.id}'`
   );
+  //Add rule details to the diff
   nodeDiff.rule = {
     name: ruleResult.name,
     type: event.type,

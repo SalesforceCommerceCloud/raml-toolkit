@@ -33,9 +33,11 @@ export async function diffRaml(
     `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
   );
   const diffs = findJsonDiffs(leftGraph, rightGraph);
-  if (rulesPath != null) {
-    await applyRules(diffs, rulesPath);
+  if (rulesPath == null) {
+    ramlToolLogger.info("Applying default rules on the differences");
+    rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
   }
+  await applyRules(diffs, rulesPath);
   return diffs;
 }
 
