@@ -16,14 +16,14 @@ import { applyRules } from "./rulesProcessor";
  * Generate differences between two RAML files
  * @param leftRaml Base RAML file to compare
  * @param rightRaml Other RAML file to compare with the left RAML to find differences
- * @param rules Optional rules file to apply on the differences
+ * @param rulesPath Optional rules file to apply on the differences
  *
  * @returns Array of NodeDiff objects
  */
 export async function diffRaml(
   leftRaml: string,
   rightRaml: string,
-  rules?: string
+  rulesPath?: string
 ): Promise<NodeDiff[]> {
   const [leftGraph, rightGraph] = await Promise.all([
     generateGraph(leftRaml),
@@ -33,8 +33,8 @@ export async function diffRaml(
     `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
   );
   const diffs = findJsonDiffs(leftGraph, rightGraph);
-  if (rules != null) {
-    await applyRules(diffs, rules);
+  if (rulesPath != null) {
+    await applyRules(diffs, rulesPath);
   }
   return diffs;
 }

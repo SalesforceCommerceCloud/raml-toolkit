@@ -17,40 +17,36 @@ import chaiAsPromised from "chai-as-promised";
 /* eslint-disable @typescript-eslint/no-use-before-define*/
 
 const expect = chai.expect;
-const rulesPath = path.join(__dirname, "..", "..", "diffRules", "rules.json");
+chai.use(chaiAsPromised);
+
+const rulesPath = path.join(__dirname, "../../diffRules", "rules.json");
 let loggerSpy;
 before(() => {
-  chai.should();
-  chai.use(chaiAsPromised);
   loggerSpy = sinon.spy(ramlToolLogger, "info");
 });
 after(() => {
   sinon.reset();
 });
 
-describe("Test that rules application exits with relevant message when there are no differences", () => {
+describe("Test that rules application function returns and logs a relevant message when there are no differences", () => {
   const noDiffsMsg = "No differences to apply the rules";
-  it("exits when the differences are undefined", async () => {
-    const diffs = undefined;
+  it("logs message when the differences are undefined", async () => {
     await applyRules(undefined, rulesPath);
-    expect(diffs).to.equal(diffs);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
-  it("exits when there are empty differences", async () => {
+  it("logs message when there are empty differences", async () => {
     const diffs = [];
     await applyRules(diffs, rulesPath);
-    expect(diffs).to.deep.equal(diffs);
+    expect(diffs).to.deep.equal([]);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
-  it("exits when the differences are null", async () => {
-    const diffs = null;
+  it("logs message when the differences are null", async () => {
     await applyRules(null, rulesPath);
-    expect(diffs).to.equal(diffs);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
 });
 
-describe("Test that rules application exits with relevant message when there are no rules", () => {
+describe("Test that rules application function and logs a relevant message when there are no rules", () => {
   it("throws error when rules file path is undefined", async () => {
     const diffs = [new NodeDiff("test")];
     const rulesPath = undefined;
@@ -95,11 +91,9 @@ describe("Test that rules application exits with relevant message when there are
     const diffs = [new NodeDiff("test")];
     return expect(
       applyRules(diffs, tmpFile.name)
-    ).to.eventually.be.rejectedWith(
-      `Rules must be defined as a json array: ${JSON.stringify(rules, null, 2)}`
-    );
+    ).to.eventually.be.rejectedWith("Rules must be defined as a json array");
   });
-  it("exits when rules is an empty array", async () => {
+  it("returns and logs message when rules is an empty array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, "[]");
     const diffs = [new NodeDiff("test")];

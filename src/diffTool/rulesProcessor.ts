@@ -22,8 +22,8 @@ export const DIFF_FACT_ID = "diff";
 
 /**
  * Apply rules on the AMF node differences, updates passed rules details in the node
- * @param diffs  Array of differences
- * @param rulesPath File path of the rules
+ * @param diffs - Array of differences
+ * @param rulesPath - File path of the rules
  */
 export async function applyRules(
   diffs: NodeDiff[],
@@ -53,7 +53,7 @@ export async function applyRules(
 
 /**
  * Get rules from rules json file
- * @param rulesPath Path to rules json file
+ * @param rulesPath - Path to rules json file
  *
  * @returns Array of rules
  */
@@ -63,24 +63,22 @@ function getRules(rulesPath: string): RuleProperties[] {
   }
   let rules: RuleProperties[];
   try {
-    rules = JSON.parse(fs.readFileSync(rulesPath, "UTF-8"));
+    rules = fs.readJSONSync(rulesPath);
   } catch (error) {
     error.message = `Error parsing the rules file '${rulesPath}': ${error.message}`;
     throw error;
   }
   if (!Array.isArray(rules)) {
-    throw new Error(
-      `Rules must be defined as a json array: ${JSON.stringify(rules, null, 2)}`
-    );
+    throw new Error("Rules must be defined as a json array");
   }
   return rules;
 }
 
 /**
  * Callback function that executes when a rule is passed/evaluates to true on a diff
- * @param event
- * @param almanac
- * @param ruleResult
+ * @param event - Event defined in the rule
+ * @param almanac - Almanac that has the fact/diff on which the rule is applied
+ * @param ruleResult - Result of rule execution
  */
 async function successHandler(
   event: Event,
@@ -100,7 +98,7 @@ async function successHandler(
 
 /**
  * Add custom operators to use in rules
- * @param engine Instance of rules engine
+ * @param engine - Instance of rules engine
  */
 function addCustomOperators(engine: Engine): void {
   engine.addOperator("hasProperty", (factValue: object, jsonValue: string) => {
@@ -110,8 +108,8 @@ function addCustomOperators(engine: Engine): void {
 
 /**
  * Apply rules on a difference
- * @param engine Rules Engine
- * @param diff Difference of a node
+ * @param engine - Rules Engine
+ * @param diff - Difference of a node
  */
 function runEngine(engine: Engine, diff: NodeDiff): Promise<EngineResult> {
   ramlToolLogger.debug(`Running rules on diff: ${diff.id}`);
