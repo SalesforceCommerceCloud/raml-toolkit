@@ -1,6 +1,6 @@
 # CHANGELOG
 
-### 0.3.3
+### 0.4.0
 * Mercury rules updated
   * Template parameters must be camelCase
   * BaseURI pattern check slightly refactored
