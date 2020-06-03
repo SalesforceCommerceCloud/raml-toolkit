@@ -1,5 +1,14 @@
 # CHANGELOG
 
+### 0.4.0
+* Mercury rules updated
+  * Template parameters must be camelCase
+  * BaseURI pattern check slightly refactored
+  * Display Name must unique across an api definition
+* RAML -> AMF code has been migrated from the commerce-sdk to the raml-toolkit
+* Error messaging has been greatly improved
+  * You will get a specific error now when a profile fails to parse
+
 ### 0.3.2
 * Now uses AMF 4.0!
 * Fixed an issue where some transitive dependencies weren't resolved properly
