@@ -102,4 +102,13 @@ export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 export { RestApi } from "./exchange-connector/exchangeTypes";
 export { ramlToolLogger } from "./logger";
 
+export { model } from "amf-client-js";
+export {
+  getAllDataTypes,
+  getApiName,
+  getNormalizedName,
+  parseRamlFile,
+  resolveApiModel
+} from "./parser";
+
 export { diffRaml } from "./diffTool";

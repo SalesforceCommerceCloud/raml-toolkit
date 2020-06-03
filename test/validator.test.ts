@@ -9,7 +9,7 @@
 import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
-import * as wap from "webapi-parser";
+import { model } from "amf-client-js";
 import { printResults, validateFile, validateCustom } from "../src/validator";
 import {
   getHappySpec,
@@ -71,19 +71,15 @@ describe("#printResults", () => {
 });
 
 describe("#validateCustom", () => {
-  let model: wap.model.document.BaseUnit;
-
-  before(() => {
-    wap.WebApiParser.init();
-  });
+  let testModel: model.document.BaseUnit;
 
   beforeEach(() => {
-    model = new wap.webapi.WebApiDocument();
+    testModel = new model.document.Document();
   });
 
   it("missing validation profile", () => {
     expect(
-      validateCustom(model, "file://MISSINGFILE")
+      validateCustom(testModel, "file://MISSINGFILE")
     ).to.be.eventually.rejectedWith("No registered runtime validator");
   });
 });
