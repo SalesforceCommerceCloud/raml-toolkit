@@ -1,0 +1,33 @@
+[
+  {
+    "name": "Rule to detect display name changes",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Operation"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "display-name-change",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  }
+]

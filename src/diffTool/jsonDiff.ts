@@ -15,6 +15,7 @@ import { ramlToolLogger } from "../logger";
 export const JSON_LD_KEY_GRAPH = "@graph";
 export const JSON_LD_KEY_CONTEXT = "@context";
 export const JSON_LD_KEY_ID = "@id";
+export const JSON_LD_KEY_TYPE = "@type";
 
 /**
  * External property, added by jsondiffpath to indicate that the node property is an array
@@ -40,7 +41,24 @@ export enum DiffType {
 export class NodeDiff {
   public added?: { [key: string]: any };
   public removed?: { [key: string]: any };
-  constructor(public id: string) {
+  /**
+   * Rule that is evaluated to true on the difference
+   */
+  public rule?: {
+    //name of the rule that is evaluated to true
+    name: string;
+    //event type defined in the rule
+    type: string;
+    //additional params defined in the rule. json-rules-engine allows any value
+    params: { [key: string]: any };
+  };
+
+  /**
+   * Constructs differences object to hold for a node
+   * @param id ID of the node
+   * @param type Node type based on AMF vocabulary
+   */
+  constructor(public id: string, public type?: string[]) {
     this.added = {};
     this.removed = {};
   }
@@ -74,7 +92,7 @@ export function findJsonDiffs(left: object, right: object): NodeDiff[] {
     }
   });
   //add plugin to include ID of the JSON node in the diff
-  jsonDiff.processor.pipes.diff.before("collectChildren", addDiffId);
+  jsonDiff.processor.pipes.diff.before("collectChildren", addNodeInfo);
   ramlToolLogger.debug(
     `Added plugin to include node ID in the diff: ${jsonDiff.processor.pipes.diff.list()}`
   );
@@ -185,9 +203,9 @@ function parseGraph(graphDiffs: object): NodeDiff[] {
  * @returns Instance of NodeDiff for the node if there are differences
  */
 function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
-  let typedDiff = new NodeDiff(nodeId);
+  let typedDiff = new NodeDiff(nodeId, diff[JSON_LD_KEY_TYPE]);
   Object.keys(diff)
-    .filter(key => key !== JSON_LD_KEY_ID) //ignore node id
+    .filter(key => key !== JSON_LD_KEY_ID && key !== JSON_LD_KEY_TYPE) //ignore node id and type
     .forEach(key => {
       const value = diff[key];
       /**
@@ -260,17 +278,18 @@ function addNodeDiff(diff: object[]): NodeDiff {
   let typedDiff;
   const diffNode = diff[0];
   const id = diffNode[JSON_LD_KEY_ID];
+  const type = diffNode[JSON_LD_KEY_TYPE];
   const diffType = getDiffType(diff);
   ramlToolLogger.debug(
     `Parsing differences of node: ${id}, difference type: ${DiffType[diffType]}`
   );
   switch (diffType) {
     case DiffType.ADDED:
-      typedDiff = new NodeDiff(id);
+      typedDiff = new NodeDiff(id, type);
       typedDiff.added[id] = diffNode;
       break;
     case DiffType.REMOVED:
-      typedDiff = new NodeDiff(id);
+      typedDiff = new NodeDiff(id, type);
       typedDiff.removed[id] = diffNode;
       break;
     case DiffType.MOVED:
@@ -363,13 +382,13 @@ function addNodeArrayPropertyDiffs(
 }
 
 /**
- * jsondiffpatch plugin to add node ID to the difference
+ * jsondiffpatch plugin to add node ID and type to the difference
  */
 // eslint-disable-next-line @typescript-eslint/consistent-type-assertions,@typescript-eslint/no-explicit-any
-const addDiffId = <any>function(context) {
+const addNodeInfo = <any>function(context) {
   if (
     context.leftType === "object" &&
-    typeof context.left["@id"] !== "undefined"
+    typeof context.left[JSON_LD_KEY_ID] !== "undefined"
   ) {
     const changed = !!_.find(
       context.children,
@@ -377,9 +396,15 @@ const addDiffId = <any>function(context) {
     );
     if (changed) {
       context.setResult({
-        "@id": context.right["@id"]
+        /**
+         * Add additional details of the node that has differences
+         * @id: Node ID - diff is done based on the node ID, so this is unique
+         * @type: Node type - AMF vocabulary that is expected to be the same for all the RAMLs
+         */
+        [JSON_LD_KEY_ID]: context.right[JSON_LD_KEY_ID],
+        [JSON_LD_KEY_TYPE]: context.right[JSON_LD_KEY_TYPE]
       });
     }
   }
 };
-addDiffId.filterName = "addDiffId";
+addNodeInfo.filterName = "addNodeInfo";

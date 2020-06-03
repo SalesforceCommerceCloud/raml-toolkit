@@ -10,17 +10,20 @@ import _ from "lodash";
 import { findJsonDiffs, NodeDiff } from "./jsonDiff";
 import { ramlToolLogger } from "../logger";
 import * as path from "path";
+import { applyRules } from "./rulesProcessor";
 
 /**
  * Generate differences between two RAML files
  * @param leftRaml Base RAML file to compare
  * @param rightRaml Other RAML file to compare with the left RAML to find differences
+ * @param rulesPath Optional rules file to apply on the differences
  *
  * @returns Array of NodeDiff objects
  */
 export async function diffRaml(
   leftRaml: string,
-  rightRaml: string
+  rightRaml: string,
+  rulesPath?: string
 ): Promise<NodeDiff[]> {
   const [leftGraph, rightGraph] = await Promise.all([
     generateGraph(leftRaml),
@@ -29,7 +32,13 @@ export async function diffRaml(
   ramlToolLogger.info(
     `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
   );
-  return findJsonDiffs(leftGraph, rightGraph);
+  const diffs = findJsonDiffs(leftGraph, rightGraph);
+  if (rulesPath == null) {
+    ramlToolLogger.info("Applying default rules on the differences");
+    rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
+  }
+  await applyRules(diffs, rulesPath);
+  return diffs;
 }
 
 /**
