@@ -19,7 +19,11 @@ import chaiAsPromised from "chai-as-promised";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
+const validRulesPath = path.join(
+  __dirname,
+  "../../diffRules",
+  "defaultRules.json"
+);
 let loggerSpy;
 before(() => {
   loggerSpy = sinon.spy(ramlToolLogger, "info");
@@ -31,17 +35,17 @@ after(() => {
 describe("Rules engine when no differences are provided", () => {
   const noDiffsMsg = "No differences to apply the rules";
   it("logs message when the differences are undefined", async () => {
-    await applyRules(undefined, rulesPath);
+    await applyRules(undefined, validRulesPath);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
   it("logs message when there are empty differences", async () => {
     const diffs = [];
-    await applyRules(diffs, rulesPath);
+    await applyRules(diffs, validRulesPath);
     expect(diffs).to.deep.equal([]);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
   it("logs message when the differences are null", async () => {
-    await applyRules(null, rulesPath);
+    await applyRules(null, validRulesPath);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
 });
@@ -112,7 +116,7 @@ describe("Test display name change rule ", () => {
       added: { "core:name": "newName" },
       removed: { "core:name": "oldName" }
     };
-    await applyRules([diff], rulesPath);
+    await applyRules([diff], validRulesPath);
     const diffRule = diff.rule;
     expect(diffRule.name).to.equal("Rule to detect display name changes");
     expect(diffRule.type).to.equal("display-name-change");
