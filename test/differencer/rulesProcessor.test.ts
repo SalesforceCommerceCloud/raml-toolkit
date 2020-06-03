@@ -19,7 +19,7 @@ import chaiAsPromised from "chai-as-promised";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const rulesPath = path.join(__dirname, "../../diffRules", "rules.json");
+const rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
 let loggerSpy;
 before(() => {
   loggerSpy = sinon.spy(ramlToolLogger, "info");
@@ -105,11 +105,6 @@ describe("Rules engine when rules file is invalid", () => {
 });
 
 describe("Test display name change rule ", () => {
-  const rulesPath = path.join(
-    __dirname,
-    "../../diffRules",
-    "defaultRules.json"
-  );
   it("applies display name change rule ", async () => {
     const diff: NodeDiff = {
       id: "#/web-api/end-points/resource/get",
