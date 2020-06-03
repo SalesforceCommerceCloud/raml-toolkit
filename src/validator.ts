@@ -6,7 +6,8 @@
  */
 import path from "path";
 import amf from "amf-client-js";
-import { FatRamlResourceLoader } from "./exchange-connector";
+
+import { parseRamlFile } from "./parser";
 
 export async function validateCustom(
   model: amf.model.document.BaseUnit,
@@ -39,27 +40,6 @@ export async function validateModel(
   return results as amf.client.validate.ValidationReport;
 }
 
-export async function parseRaml(
-  filename: string
-): Promise<amf.model.document.BaseUnit> {
-  const fatRamlResourceLoader = new FatRamlResourceLoader(
-    path.dirname(filename)
-  );
-  const ccEnvironment = amf.client.DefaultEnvironment.apply().addClientLoader(
-    fatRamlResourceLoader
-  );
-  const parser = new amf.Raml10Parser(ccEnvironment);
-
-  let model: amf.model.document.BaseUnit;
-  try {
-    model = await parser.parseFileAsync(filename);
-  } catch (err) {
-    console.log("Error validating");
-    console.log(err);
-  }
-  return model;
-}
-
 export async function printResults(
   results: amf.client.validate.ValidationReport,
   warnings = false
@@ -80,14 +60,7 @@ export async function validateFile(
   filename: string,
   profile: string
 ): Promise<amf.client.validate.ValidationReport> {
-  // We initialize AMF first
-  amf.plugins.document.WebApi.register();
-  amf.plugins.document.Vocabularies.register();
-  amf.plugins.features.AMFValidation.register();
-
-  await amf.Core.init();
-
-  const model = await parseRaml(`file://${path.resolve(filename)}`);
+  const model = await parseRamlFile(filename);
   if (!model) throw new Error("Error validating file");
   return await validateModel(model, profile);
 }
