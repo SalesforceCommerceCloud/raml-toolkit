@@ -149,10 +149,7 @@ describe("Test resolving API model", () => {
 
   it("returns model with valid model and resolution pipeline", async () => {
     const testModel = await parseRamlFile(validRamlFile);
-    const resolved = resolveApiModel(
-      testModel as model.document.BaseUnitWithEncodesModel,
-      "editing"
-    );
+    const resolved = resolveApiModel(testModel, "editing");
     return expect(resolved).to.not.be.null;
   });
 });

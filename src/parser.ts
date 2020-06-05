@@ -122,9 +122,9 @@ export function getAllDataTypes(
  * @returns AMF model after resolving with the given pipeline
  */
 export function resolveApiModel(
-  apiModel: model.document.BaseUnitWithEncodesModel,
+  apiModel: model.document.BaseUnit,
   resolutionPipeline: "default" | "editing" | "compatibility"
-): model.document.BaseUnitWithEncodesModel {
+): model.document.BaseUnit {
   /**
    * TODO: core.resolution.pipelines.ResolutionPipeline has all the pipelines defined but is throwing an error when used - "Cannot read property 'pipelines' of undefined".
    *  When this is fixed we should change the type of input param "resolutionPipeline"
@@ -136,10 +136,7 @@ export function resolveApiModel(
     throw new Error("Invalid resolution pipeline provided to resolve");
   }
   const resolver = new Raml10Resolver();
-  return resolver.resolve(
-    apiModel,
-    resolutionPipeline
-  ) as model.document.BaseUnitWithEncodesModel;
+  return resolver.resolve(apiModel, resolutionPipeline);
 }
 
 /**
