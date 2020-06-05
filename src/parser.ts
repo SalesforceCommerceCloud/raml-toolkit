@@ -75,7 +75,7 @@ export function getReferenceDataTypes(
     return;
   }
   apiReferences.forEach(
-    (reference: model.document.BaseUnit & model.document.DeclaresModel) => {
+    (reference: model.document.BaseUnitWithDeclaresModel) => {
       if (reference.declares) {
         dataTypes.push(
           ...getDataTypesFromDeclare(reference.declares, existingDataTypes)
@@ -98,7 +98,7 @@ export function getReferenceDataTypes(
  * @returns data types from model
  */
 export function getAllDataTypes(
-  api: model.document.BaseUnit & model.document.DeclaresModel
+  api: model.document.BaseUnitWithDeclaresModel
 ): model.domain.CustomDomainProperty[] {
   let ret: model.domain.CustomDomainProperty[] = [];
   const dataTypes: Set<string> = new Set();
@@ -122,9 +122,9 @@ export function getAllDataTypes(
  * @returns AMF model after resolving with the given pipeline
  */
 export function resolveApiModel(
-  apiModel: model.document.BaseUnit & model.document.EncodesModel,
+  apiModel: model.document.BaseUnitWithEncodesModel,
   resolutionPipeline: "default" | "editing" | "compatibility"
-): model.document.BaseUnit & model.document.EncodesModel {
+): model.document.BaseUnitWithEncodesModel {
   /**
    * TODO: core.resolution.pipelines.ResolutionPipeline has all the pipelines defined but is throwing an error when used - "Cannot read property 'pipelines' of undefined".
    *  When this is fixed we should change the type of input param "resolutionPipeline"
@@ -139,7 +139,7 @@ export function resolveApiModel(
   return resolver.resolve(
     apiModel,
     resolutionPipeline
-  ) as model.document.BaseUnit & model.document.EncodesModel;
+  ) as model.document.BaseUnitWithEncodesModel;
 }
 
 /**
@@ -162,7 +162,7 @@ export function getNormalizedName(name: string): string {
  * @returns Name of the API
  */
 export function getApiName(
-  apiModel: model.document.BaseUnit & model.document.EncodesModel
+  apiModel: model.document.BaseUnitWithEncodesModel
 ): string {
   const apiName: string = (apiModel.encodes as model.domain.WebApi).name.value();
   return getNormalizedName(apiName);
