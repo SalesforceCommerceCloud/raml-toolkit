@@ -55,8 +55,8 @@ export class NodeDiff {
 
   /**
    * Constructs differences object to hold for a node
-   * @param id ID of the node
-   * @param type Node type based on AMF vocabulary
+   * @param id - ID of the node
+   * @param type - Node type based on AMF vocabulary
    */
   constructor(public id: string, public type?: string[]) {
     this.added = {};
@@ -66,17 +66,25 @@ export class NodeDiff {
 
 /**
  * Find differences between two flattened JSON-LD AMF graphs
- * @param left Left JSON object to compare
- * @param right Right JSON object to compare
+ * @param left - Left JSON object to compare
+ * @param right - Right JSON object to compare
  *
- * @
  * @returns Array of NodeDiff objects
  */
 export function findJsonDiffs(left: object, right: object): NodeDiff[] {
   //Verify left and right objects conform to flattened AMF graph json structure
-  validateJson(left, "left");
-  validateJson(right, "right");
-
+  try {
+    validateJson(left);
+  } catch (error) {
+    error.message = `Error validating left object: ${error.message}`;
+    throw error;
+  }
+  try {
+    validateJson(right);
+  } catch (error) {
+    error.message = `Error validating right object: ${error.message}`;
+    throw error;
+  }
   const jsonDiff = new DiffPatcher({
     // Define an object hash function
     objectHash: (obj): string => obj["@id"],
@@ -108,30 +116,27 @@ export function findJsonDiffs(left: object, right: object): NodeDiff[] {
 
 /**
  * Verify object to diff/compare conform to flattened AMF graph json structure
- * @param obj Json provided to diff/compare
- * @param objLoc Left/Right json in the diff
+ * @param obj - Json provided to diff/compare
  */
-function validateJson(obj: object, objLoc: "left" | "right"): void {
+function validateJson(obj: object): void {
   if (_.isEmpty(obj)) {
-    throw new Error(`Invalid ${objLoc} object`);
+    throw new Error(`Invalid object`);
   }
   //Flattened AMF graph must have valid @graph or @context properties
   const graph = obj[JSON_LD_KEY_GRAPH];
   if (graph == null) {
-    throw new Error(
-      `${_.startCase(objLoc)} json must have ${JSON_LD_KEY_GRAPH} property`
-    );
+    throw new Error(`${JSON_LD_KEY_GRAPH} property is missing`);
   }
   if (!_.isArray(graph) || graph.length == 0) {
     throw new Error(
-      `${JSON_LD_KEY_GRAPH} property in ${objLoc} json must be an array of json nodes`
+      `${JSON_LD_KEY_GRAPH} property must be an array of json nodes`
     );
   }
 }
 
 /**
  * Parse JSON differences and generate an array of typed diff objects
- * @param diffs Differences JSON
+ * @param diffs - Differences JSON
  *
  * @returns Array of NodeDiff objects
  */
@@ -167,7 +172,7 @@ function parseDiffs(diffs: object): NodeDiff[] {
 
 /**
  * Parse differences for each JSON node in the graph
- * @param graphDiffs JSON with differences
+ * @param graphDiffs - JSON with differences
  *
  * @returns Array of NodeDiff objects
  */
@@ -197,8 +202,8 @@ function parseGraph(graphDiffs: object): NodeDiff[] {
 
 /**
  * Parse differences to the node properties
- * @param nodeId ID of the node
- * @param diff JSON node that has differences
+ * @param nodeId - ID of the node
+ * @param diff - JSON node that has differences
  *
  * @returns Instance of NodeDiff for the node if there are differences
  */
@@ -210,6 +215,7 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
       const value = diff[key];
       /**
        * check if the property of the node is an array. Key is the index of the original array
+       * {"0":[oldValue, newValue],"_t":"a"}
        */
       if (value[JSON_DIFF_PATCH_ARRAY_KEY] === JSON_DIFF_PATCH_ARRAY_VALUE) {
         //Ignore property added by jsondiffpath to indicate array property
@@ -224,12 +230,26 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
             );
             addNodeArrayPropertyDiffs(key, arrValue, diffType, typedDiff);
           });
-      } else {
+      } else if (_.isArray(value)) {
+        /**
+         * Differences are reported in array format
+         * example: [oldValue, newValue]
+         */
         const diffType = getDiffType(value);
         ramlToolLogger.debug(
           `Adding difference of node: ${typedDiff.id}, property: ${key}, difference type: ${DiffType[diffType]}`
         );
         addNodePropertyDiffs(key, value, diffType, typedDiff);
+      } else {
+        /**
+         * Since we are dealing with flattened JSON-LD structure, value is a object with just node ID referring other node
+         * example diff: {@id:[oldId, newId]}
+         */
+        const diffType = getDiffType(value[JSON_LD_KEY_ID]);
+        ramlToolLogger.debug(
+          `Adding difference of node: ${typedDiff.id}, reference property: ${key}, difference type: ${DiffType[diffType]}`
+        );
+        addNodeReferenceDiffs(key, value[JSON_LD_KEY_ID], diffType, typedDiff);
       }
     });
   if (_.isEmpty(typedDiff.added) && _.isEmpty(typedDiff.removed)) {
@@ -241,12 +261,12 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
 
 /**
  * Get the type of the difference from the difference array generated by jsondiffpatch
- * @param diff Difference of a node or a node property
+ * @param diff - Difference of a node or a node property
  *
  * @return DiffType Type of the difference
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getDiffType(diff: any[]): DiffType {
+export function getDiffType(diff: any[]): DiffType {
   const diffLength = diff.length;
   if (diffLength === 1) {
     return DiffType.ADDED;
@@ -270,11 +290,11 @@ function getDiffType(diff: any[]): DiffType {
 
 /**
  * Add node differences (add or remove) to NodeDiff object
- * @param diff Node that has been added/removed
+ * @param diff - Node that has been added/removed
  *
  * @returns Instance of NodeDiff for the node
  */
-function addNodeDiff(diff: object[]): NodeDiff {
+export function addNodeDiff(diff: object[]): NodeDiff {
   let typedDiff;
   const diffNode = diff[0];
   const id = diffNode[JSON_LD_KEY_ID];
@@ -308,12 +328,12 @@ function addNodeDiff(diff: object[]): NodeDiff {
 
 /**
  * Add node property differences to NodeDiff object
- * @param key Name of the property that has difference
- * @param diff Differences of the property
- * @param diffType Type of the difference
- * @param typedDiff Instance of NodeDiff for the node
+ * @param key - Name of the property that has difference
+ * @param diff - Differences of the property
+ * @param diffType - Type of the difference
+ * @param typedDiff - Instance of NodeDiff for the node
  */
-function addNodePropertyDiffs(
+export function addNodePropertyDiffs(
   key: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
@@ -344,12 +364,12 @@ function addNodePropertyDiffs(
 
 /**
  * Add differences of node property of type array to NodeDiff object
- * @param key Name of the property that has difference
- * @param diff Differences of the property
- * @param diffType Type of the difference
- * @param typedDiff Instance of NodeDiff for the node
+ * @param key - Name of the property that has difference
+ * @param diff - Differences of the property
+ * @param diffType - Type of the difference
+ * @param typedDiff - Instance of NodeDiff for the node
  */
-function addNodeArrayPropertyDiffs(
+export function addNodeArrayPropertyDiffs(
   key: string,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
@@ -377,6 +397,34 @@ function addNodeArrayPropertyDiffs(
     default:
       throw new Error(
         `Invalid difference type for node array property value: ${DiffType[diffType]},  node: ${typedDiff.id}, property: ${key}`
+      );
+  }
+}
+/**
+ * Add differences to reference ID to NodeDiff object
+ * @param key - Name of the property that has difference
+ * @param diff - Differences of the property
+ * @param diffType - Type of the difference
+ * @param typedDiff - Instance of NodeDiff for the node
+ */
+function addNodeReferenceDiffs(
+  key: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  diff: any[],
+  diffType: DiffType,
+  typedDiff: NodeDiff
+): void {
+  switch (diffType) {
+    case DiffType.MODIFIED:
+      typedDiff.removed[key] = { [JSON_LD_KEY_ID]: diff[0] };
+      typedDiff.added[key] = { [JSON_LD_KEY_ID]: diff[1] };
+      break;
+    case DiffType.TEXT_DIFF:
+      //TODO: Handle text diffs where the text length exceeds the configured length
+      break;
+    default:
+      throw new Error(
+        `Invalid difference type for node reference property: ${DiffType[diffType]},  node: ${typedDiff.id}, property: ${key}`
       );
   }
 }
