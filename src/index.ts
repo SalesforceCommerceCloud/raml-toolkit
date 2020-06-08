@@ -8,6 +8,7 @@ import path from "path";
 import fs from "fs";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults } from "./validator";
+import { AmfGraphRenderer } from 'amf-client-js';
 
 export default class RamlToolkitCommand extends Command {
   async run(): Promise<void> {
@@ -102,7 +103,7 @@ export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 export { RestApi } from "./exchange-connector/exchangeTypes";
 export { ramlToolLogger } from "./logger";
 
-export { model } from "amf-client-js";
+export { model, AMF, plugins } from "amf-client-js";
 export {
   getAllDataTypes,
   getApiName,
@@ -111,4 +112,4 @@ export {
   resolveApiModel
 } from "./parser";
 
-export { diffRaml } from "./diffTool";
+export { diffRaml, NodeDiff } from "./diffTool";
