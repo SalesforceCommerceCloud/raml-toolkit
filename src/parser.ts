@@ -101,7 +101,7 @@ export function getAllDataTypes(
   api: model.document.BaseUnitWithDeclaresModel
 ): model.domain.CustomDomainProperty[] {
   let ret: model.domain.CustomDomainProperty[] = [];
-  const dataTypes: Set<string> = new Set();
+  const dataTypes = new Set<string>();
   const temp: model.domain.CustomDomainProperty[] = getDataTypesFromDeclare(
     api.declares,
     dataTypes
@@ -161,6 +161,6 @@ export function getNormalizedName(name: string): string {
 export function getApiName(
   apiModel: model.document.BaseUnitWithEncodesModel
 ): string {
-  const apiName: string = (apiModel.encodes as model.domain.WebApi).name.value();
+  const apiName = (apiModel.encodes as model.domain.WebApi).name.value();
   return getNormalizedName(apiName);
 }

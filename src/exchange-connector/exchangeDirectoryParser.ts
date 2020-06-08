@@ -26,7 +26,7 @@ export function extractFiles(
   directory: string,
   removeFiles = true
 ): Promise<void[]> {
-  const files: fs.Dirent[] = getFiles(directory);
+  const files = getFiles(directory);
   const promises: Promise<void>[] = [];
   files
     .filter(file => file.isFile() && path.extname(file.name) === ".zip")

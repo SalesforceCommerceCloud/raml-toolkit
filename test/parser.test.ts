@@ -80,9 +80,9 @@ describe("Test that API Name is returned in lower camelCase", () => {
   const expectedApiName = "shopperCustomers";
 
   const testGetApiName = (name: string): string => {
-    const api: model.domain.WebApi = new model.domain.WebApi();
+    const api = new model.domain.WebApi();
     api.withName(name);
-    const doc: model.document.Document = new model.document.Document();
+    const doc = new model.document.Document();
     doc.withEncodes(api);
     return getApiName(doc);
   };
@@ -133,14 +133,14 @@ describe("Test resolving API model", () => {
     ));
 
   it("throws with null resolution pipeline", () => {
-    const apiModel: model.document.Document = new model.document.Document();
+    const apiModel = new model.document.Document();
     return expect(() => resolveApiModel(apiModel, null)).to.throw(
       "Invalid resolution pipeline provided to resolve"
     );
   });
 
   it("throws with undefined resolution pipeline", () => {
-    const apiModel: model.document.Document = new model.document.Document();
+    const apiModel = new model.document.Document();
     return expect(() => resolveApiModel(apiModel, undefined)).to.throw(
       "Invalid resolution pipeline provided to resolve"
     );
