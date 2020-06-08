@@ -8,7 +8,6 @@ import path from "path";
 import fs from "fs";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults } from "./validator";
-import { AmfGraphRenderer } from 'amf-client-js';
 
 export default class RamlToolkitCommand extends Command {
   async run(): Promise<void> {
