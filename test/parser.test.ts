@@ -11,7 +11,6 @@ import path from "path";
 import { model } from "amf-client-js";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import _ from "lodash";
 
 import {
   getAllDataTypes,
@@ -80,7 +79,7 @@ describe("Get Data types", () => {
 describe("Test that API Name is returned in lower camelCase", () => {
   const expectedApiName = "shopperCustomers";
 
-  const testGetApiName = (name: string) => {
+  const testGetApiName = (name: string): string => {
     const api: model.domain.WebApi = new model.domain.WebApi();
     api.withName(name);
     const doc: model.document.Document = new model.document.Document();
