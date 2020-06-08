@@ -21,7 +21,7 @@ import { FatRamlResourceLoader } from "./exchange-connector";
  */
 export async function parseRamlFile(
   filename: string
-): Promise<amf.model.document.BaseUnit> {
+): Promise<model.document.Document> {
   const fileUri = `file://${path.resolve(filename)}`;
 
   // We initialize AMF first
@@ -39,7 +39,7 @@ export async function parseRamlFile(
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
 
-  return parser.parseFileAsync(fileUri);
+  return parser.parseFileAsync(fileUri) as Promise<model.document.Document>;
 }
 
 function getDataTypesFromDeclare(
@@ -75,6 +75,7 @@ export function getReferenceDataTypes(
     return;
   }
   apiReferences.forEach(
+    // reference could actually be BaseUnit or BaseUnitWithDeclaresModel
     (reference: model.document.BaseUnitWithDeclaresModel) => {
       if (reference.declares) {
         dataTypes.push(
@@ -124,7 +125,7 @@ export function getAllDataTypes(
 export function resolveApiModel(
   apiModel: model.document.BaseUnit,
   resolutionPipeline: "default" | "editing" | "compatibility"
-): model.document.BaseUnit {
+): model.document.Document {
   /**
    * TODO: core.resolution.pipelines.ResolutionPipeline has all the pipelines defined but is throwing an error when used - "Cannot read property 'pipelines' of undefined".
    *  When this is fixed we should change the type of input param "resolutionPipeline"
@@ -136,7 +137,10 @@ export function resolveApiModel(
     throw new Error("Invalid resolution pipeline provided to resolve");
   }
   const resolver = new Raml10Resolver();
-  return resolver.resolve(apiModel, resolutionPipeline);
+  return resolver.resolve(
+    apiModel,
+    resolutionPipeline
+  ) as model.document.Document;
 }
 
 /**

@@ -37,9 +37,7 @@ describe("Test RAML file", () => {
 describe("Get Data types", () => {
   it("Test valid RAML file", async () => {
     const baseUnit = await parseRamlFile(validRamlFile);
-    const dataTypes = getAllDataTypes(
-      baseUnit as model.document.BaseUnitWithDeclaresModel
-    );
+    const dataTypes = getAllDataTypes(baseUnit);
     const dataTypeNames = dataTypes.map(entry => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
@@ -58,9 +56,7 @@ describe("Get Data types", () => {
     const refModel = await parseRamlFile(validRamlFile);
     const mainModel = await parseRamlFile(validRamlFile);
     mainModel.withReferences([refModel]);
-    const dataTypes = getAllDataTypes(
-      mainModel as model.document.BaseUnitWithDeclaresModel
-    );
+    const dataTypes = getAllDataTypes(mainModel);
     const dataTypeNames = dataTypes.map(entry => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
