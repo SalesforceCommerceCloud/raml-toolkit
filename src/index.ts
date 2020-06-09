@@ -9,6 +9,8 @@ import fs from "fs";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults } from "./validator";
 
+export const profilePath = path.join(__dirname, "../resources/lint/profiles");
+
 export default class RamlToolkitCommand extends Command {
   async run(): Promise<void> {
     const { argv, flags } = this.parse(RamlToolkitCommand);
@@ -47,7 +49,7 @@ export default class RamlToolkitCommand extends Command {
 }
 
 function getProfiles(): string[] {
-  const files = fs.readdirSync(path.join(__dirname, "..", "profiles"));
+  const files = fs.readdirSync(profilePath);
   return files.map(name => name.replace(/\.raml$/i, ""));
 }
 
