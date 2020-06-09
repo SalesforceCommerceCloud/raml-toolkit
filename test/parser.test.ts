@@ -11,7 +11,6 @@ import path from "path";
 import { model } from "amf-client-js";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
-import _ from "lodash";
 
 import {
   getAllDataTypes,
@@ -38,9 +37,7 @@ describe("Test RAML file", () => {
 describe("Get Data types", () => {
   it("Test valid RAML file", async () => {
     const baseUnit = await parseRamlFile(validRamlFile);
-    const dataTypes = getAllDataTypes(
-      baseUnit as model.document.BaseUnitWithDeclaresModel
-    );
+    const dataTypes = getAllDataTypes(baseUnit);
     const dataTypeNames = dataTypes.map(entry => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
@@ -59,9 +56,7 @@ describe("Get Data types", () => {
     const refModel = await parseRamlFile(validRamlFile);
     const mainModel = await parseRamlFile(validRamlFile);
     mainModel.withReferences([refModel]);
-    const dataTypes = getAllDataTypes(
-      mainModel as model.document.BaseUnitWithDeclaresModel
-    );
+    const dataTypes = getAllDataTypes(mainModel);
     const dataTypeNames = dataTypes.map(entry => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
@@ -80,10 +75,10 @@ describe("Get Data types", () => {
 describe("Test that API Name is returned in lower camelCase", () => {
   const expectedApiName = "shopperCustomers";
 
-  const testGetApiName = (name: string) => {
-    const api: model.domain.WebApi = new model.domain.WebApi();
+  const testGetApiName = (name: string): string => {
+    const api = new model.domain.WebApi();
     api.withName(name);
-    const doc: model.document.Document = new model.document.Document();
+    const doc = new model.document.Document();
     doc.withEncodes(api);
     return getApiName(doc);
   };
@@ -134,14 +129,14 @@ describe("Test resolving API model", () => {
     ));
 
   it("throws with null resolution pipeline", () => {
-    const apiModel: model.document.Document = new model.document.Document();
+    const apiModel = new model.document.Document();
     return expect(() => resolveApiModel(apiModel, null)).to.throw(
       "Invalid resolution pipeline provided to resolve"
     );
   });
 
   it("throws with undefined resolution pipeline", () => {
-    const apiModel: model.document.Document = new model.document.Document();
+    const apiModel = new model.document.Document();
     return expect(() => resolveApiModel(apiModel, undefined)).to.throw(
       "Invalid resolution pipeline provided to resolve"
     );
@@ -149,10 +144,7 @@ describe("Test resolving API model", () => {
 
   it("returns model with valid model and resolution pipeline", async () => {
     const testModel = await parseRamlFile(validRamlFile);
-    const resolved = resolveApiModel(
-      testModel as model.document.BaseUnitWithEncodesModel,
-      "editing"
-    );
+    const resolved = resolveApiModel(testModel, "editing");
     return expect(resolved).to.not.be.null;
   });
 });
