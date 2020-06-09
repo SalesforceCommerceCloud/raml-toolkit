@@ -33,8 +33,8 @@ describe("Rules engine when no differences are provided", () => {
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
   it("logs message when there are empty differences", async () => {
-    const diffs = [];
-    await applyRules(diffs, "test.json");
+    let diffs = [];
+    diffs = await applyRules(diffs, "test.json");
     expect(diffs).to.deep.equal([]);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
@@ -93,8 +93,8 @@ describe("Rules engine when rules file is invalid", () => {
   it("returns and logs message when rules is an empty array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, "[]");
-    const diffs = [new NodeDiff("test")];
-    await applyRules(diffs, tmpFile.name);
+    let diffs = [new NodeDiff("test")];
+    diffs = await applyRules(diffs, tmpFile.name);
     //verify that diff is not modified
     expect(diffs).to.deep.equal(diffs);
     //verify log message

@@ -16,7 +16,7 @@ const expect = chai.expect;
 
 describe("Custom operators - hasProperty ", () => {
   it("rule is applied when the diff object contains given key", async () => {
-    const diff = getDefaultDiff();
+    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -28,16 +28,16 @@ describe("Custom operators - hasProperty ", () => {
       ]
     });
 
-    await applyRules([diff], createRulesFile(rule));
+    diffs = await applyRules(diffs, createRulesFile(rule));
 
-    const diffRule = diff.rule;
+    const diffRule = diffs[0].rule;
     expect(diffRule.name).to.equal(rule.name);
     expect(diffRule.type).to.equal(rule.event.type);
     expect(diffRule.params).to.deep.equal(rule.event.params);
   });
 
   it("rule is NOT applied when the diff object does not contain given key", async () => {
-    const diff = getDefaultDiff();
+    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -49,15 +49,15 @@ describe("Custom operators - hasProperty ", () => {
       ]
     });
 
-    await applyRules([diff], createRulesFile(rule));
+    diffs = await applyRules(diffs, createRulesFile(rule));
 
-    expect(diff.rule).to.undefined;
+    expect(diffs[0].rule).to.undefined;
   });
 });
 
 describe("Custom operators - hasNoProperty ", () => {
   it("rule is applied when the diff object does not contain given key", async () => {
-    const diff = getDefaultDiff();
+    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -69,15 +69,15 @@ describe("Custom operators - hasNoProperty ", () => {
       ]
     });
 
-    await applyRules([diff], createRulesFile(rule));
+    diffs = await applyRules(diffs, createRulesFile(rule));
 
-    const diffRule = diff.rule;
+    const diffRule = diffs[0].rule;
     expect(diffRule.name).to.equal(rule.name);
     expect(diffRule.type).to.equal(rule.event.type);
     expect(diffRule.params).to.deep.equal(rule.event.params);
   });
   it("rule is NOT applied when the diff object contains given key", async () => {
-    const diff = getDefaultDiff();
+    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -89,9 +89,9 @@ describe("Custom operators - hasNoProperty ", () => {
       ]
     });
 
-    await applyRules([diff], createRulesFile(rule));
+    diffs = await applyRules(diffs, createRulesFile(rule));
 
-    expect(diff.rule).to.undefined;
+    expect(diffs[0].rule).to.undefined;
   });
 });
 
