@@ -71,7 +71,7 @@ describe("#printResults", () => {
 });
 
 describe("#validateCustom", () => {
-  let testModel: model.document.BaseUnit;
+  let testModel: model.document.Document;
 
   beforeEach(() => {
     testModel = new model.document.Document();

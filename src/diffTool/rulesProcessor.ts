@@ -82,7 +82,7 @@ async function successHandler(
   almanac: Almanac,
   ruleResult: RuleResult
 ): Promise<void> {
-  const nodeDiff = (await almanac.factValue(DIFF_FACT_ID)) as NodeDiff;
+  const nodeDiff: NodeDiff = await almanac.factValue(DIFF_FACT_ID);
   ramlToolLogger.debug(
     `Rule '${ruleResult.name}' is passed on difference '${nodeDiff.id}'`
   );

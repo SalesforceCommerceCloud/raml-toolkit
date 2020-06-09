@@ -37,7 +37,7 @@ export async function validateModel(
     `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`
   );
 
-  return results as amf.client.validate.ValidationReport;
+  return results;
 }
 
 export async function printResults(
