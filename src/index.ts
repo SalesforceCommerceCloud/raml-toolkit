@@ -111,6 +111,6 @@ export {
   getNormalizedName,
   parseRamlFile,
   resolveApiModel
-} from "./parser";
+} from "./common/parser";
 
 export { diffRaml } from "./diffTool";
