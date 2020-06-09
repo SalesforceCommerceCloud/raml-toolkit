@@ -15,6 +15,7 @@ import {
 import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../logger";
+import customOperators from "./engineOperators";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
@@ -42,7 +43,8 @@ export async function applyRules(
   const engine = new Engine(rules);
   //callback function to execute when a rule is passed/evaluates to true
   engine.on("success", successHandler);
-  addCustomOperators(engine);
+  //Add custom operators to use in rules
+  customOperators.map(o => engine.addOperator(o));
 
   //run rules on diffs
   const promises = diffs.map(diff => {
@@ -92,16 +94,6 @@ async function successHandler(
     type: event.type,
     params: event.params
   };
-}
-
-/**
- * Add custom operators to use in rules
- * @param engine - Instance of rules engine
- */
-function addCustomOperators(engine: Engine): void {
-  engine.addOperator("hasProperty", (factValue: object, jsonValue: string) => {
-    return factValue.hasOwnProperty(jsonValue);
-  });
 }
 
 /**

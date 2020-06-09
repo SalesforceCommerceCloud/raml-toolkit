@@ -24,7 +24,137 @@
       ]
     },
     "event": {
-      "type": "display-name-change",
+      "type": "display-name-changed",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  },
+  {
+    "name": "Rule to detect operation removal",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Operation"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasNoProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "operation-removed",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  },
+  {
+    "name": "Rule to detect parameter removal",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Parameter"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasNoProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "parameter-removed",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  },
+  {
+    "name": "Rule to detect required parameter addition",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Parameter"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added.apiContract:required",
+          "operator": "equal",
+          "value": true
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasNoProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "required-parameter-added",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  },
+  {
+    "name": "Rule to detect version change",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:WebAPI"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:version"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:version"
+        }
+      ]
+    },
+    "event": {
+      "type": "version-changed",
       "params": {
         "category": "Breaking"
       }
