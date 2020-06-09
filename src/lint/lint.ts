@@ -7,8 +7,8 @@
 import path from "path";
 import amf from "amf-client-js";
 
-import { parseRamlFile } from "./common/parser";
-import { profilePath } from ".";
+import { parseRamlFile } from "../common/parser";
+import { profilePath } from "..";
 
 export async function validateCustom(
   model: amf.model.document.BaseUnit,

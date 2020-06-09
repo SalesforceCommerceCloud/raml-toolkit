@@ -10,7 +10,7 @@ import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
 import { model } from "amf-client-js";
-import { printResults, validateFile, validateCustom } from "../src/validator";
+import { printResults, validateFile, validateCustom } from "../src/lint/lint";
 import {
   getHappySpec,
   renderSpecAsFile,

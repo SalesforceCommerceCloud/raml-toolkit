@@ -7,7 +7,7 @@
 import path from "path";
 import fs from "fs";
 import { Command, flags } from "@oclif/command";
-import { validateFile, printResults } from "./validator";
+import { validateFile, printResults } from "./lint/lint";
 
 export const profilePath = path.join(__dirname, "../resources/lint/profiles");
 
