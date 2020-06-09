@@ -8,7 +8,7 @@
 import amf from "amf-client-js";
 import _ from "lodash";
 import { findJsonDiffs, NodeDiff } from "./jsonDiff";
-import { ramlToolLogger } from "../logger";
+import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
 import { applyRules } from "./rulesProcessor";
 

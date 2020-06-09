@@ -6,7 +6,7 @@
  */
 import * as chai from "chai";
 import * as log from "loglevel";
-import { ramlToolLogger, RAML_TOOL_LOGGER_KEY } from "../src/logger";
+import { ramlToolLogger, RAML_TOOL_LOGGER_KEY } from "../src/common/logger";
 
 describe("Test log level", () => {
   it("Test default log level", async () => {

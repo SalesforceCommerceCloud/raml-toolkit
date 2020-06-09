@@ -102,7 +102,7 @@ export {
 export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
 
 export { RestApi } from "./exchange-connector/exchangeTypes";
-export { ramlToolLogger } from "./logger";
+export { ramlToolLogger } from "./common/logger";
 
 export { model } from "amf-client-js";
 export {

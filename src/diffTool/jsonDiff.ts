@@ -7,7 +7,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 import _ from "lodash";
 import { DiffPatcher } from "jsondiffpatch";
-import { ramlToolLogger } from "../logger";
+import { ramlToolLogger } from "../common/logger";
 
 /**
  * Top level keys/property names in flattened JSON-LD

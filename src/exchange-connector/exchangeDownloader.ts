@@ -12,7 +12,7 @@ import fetch, { Response } from "node-fetch";
 import path from "path";
 
 import { RestApi, FileInfo, Categories } from "./exchangeTypes";
-import { ramlToolLogger } from "../logger";
+import { ramlToolLogger } from "../common/logger";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange/api/v2";
