@@ -15,7 +15,7 @@ import {
 import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../logger";
-import customOperators from "./engineOperators";
+import customOperators from "./customOperators";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
