@@ -9,7 +9,8 @@ import { applyRules, DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";
-import { expect } from "@oclif/test";
+import { expect } from "chai";
+
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 describe("Custom operators - hasProperty ", () => {

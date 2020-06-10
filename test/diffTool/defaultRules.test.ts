@@ -7,7 +7,7 @@
 import { NodeDiff } from "../../src/diffTool/jsonDiff";
 import { applyRules } from "../../src/diffTool/rulesProcessor";
 import * as path from "path";
-import { expect } from "@oclif/test";
+import { expect } from "chai";
 
 const defaultRulesPath = path.join(
   __dirname,

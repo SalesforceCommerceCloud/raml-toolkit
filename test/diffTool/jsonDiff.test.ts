@@ -17,7 +17,7 @@ import {
 } from "../../src/diffTool/jsonDiff";
 
 import _ from "lodash";
-import { expect } from "@oclif/test";
+import { expect } from "chai";
 
 function buildValidJson(): object {
   return {

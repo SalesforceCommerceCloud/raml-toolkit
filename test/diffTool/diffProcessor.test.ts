@@ -10,7 +10,7 @@ import { DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
 import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
 import tmp from "tmp";
-import { expect } from "@oclif/test";
+import { expect } from "chai";
 
 describe("Test RAML differencing", () => {
   it("can generate differences between RAML files", async () => {
