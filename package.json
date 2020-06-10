@@ -6,8 +6,7 @@
     "/bin",
     "/lib",
     "/oclif.manifest.json",
-    "/profiles",
-    "/diffRules"
+    "/profiles"
   ],
   "homepage": "https://github.com/SalesforceCommerceCloud/raml-toolkit",
   "keywords": [
