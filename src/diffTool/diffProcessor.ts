@@ -37,8 +37,7 @@ export async function diffRaml(
     ramlToolLogger.info("Applying default rules on the differences");
     rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
   }
-  await applyRules(diffs, rulesPath);
-  return diffs;
+  return await applyRules(diffs, rulesPath);
 }
 
 /**
