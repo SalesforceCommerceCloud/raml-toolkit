@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.4.1
+
+* Changed TypeScript annotations for `parseRamlFile` and `resolveApiModel` to more accurate `amf.model.document.Document`.
+* Added [`amf-client-js`](https://npmjs.com/package/amf-client-js) as an export (as `amf`)
+
 ## 0.4.0
 
 * Mercury rules updated
