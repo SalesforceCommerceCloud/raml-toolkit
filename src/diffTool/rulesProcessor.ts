@@ -15,6 +15,7 @@ import {
 import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../logger";
+import customOperators from "./customOperators";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
@@ -28,27 +29,34 @@ export const DIFF_FACT_ID = "diff";
 export async function applyRules(
   diffs: NodeDiff[],
   rulesPath: string
-): Promise<void> {
+): Promise<NodeDiff[]> {
   if (!diffs || diffs.length == 0) {
     ramlToolLogger.info("No differences to apply the rules");
-    return;
+    return diffs;
   }
   const rules = loadRulesFile(rulesPath);
   if (!rules || rules.length == 0) {
     ramlToolLogger.info("No rules to apply on the differences");
-    return;
+    return diffs;
   }
   //initialize engine with rules
   const engine = new Engine(rules);
   //callback function to execute when a rule is passed/evaluates to true
   engine.on("success", successHandler);
-  addCustomOperators(engine);
+  //Add custom operators to use in rules
+  customOperators.map(o => engine.addOperator(o));
 
-  //run rules on diffs
+  /**
+   * run rules on diffs
+   *
+   * Result from the engine run is processed by the callback, the success handler. So the "EngineResult" returned by the runEngine function is ignored here.
+   * Also callback has access to RuleResult which has all the details of the rule that is applied whereas EngineResult do not
+   */
   const promises = diffs.map(diff => {
     return runEngine(engine, diff);
   });
   await Promise.all(promises);
+  return diffs;
 }
 
 /**
@@ -92,16 +100,6 @@ async function successHandler(
     type: event.type,
     params: event.params
   };
-}
-
-/**
- * Add custom operators to use in rules
- * @param engine - Instance of rules engine
- */
-function addCustomOperators(engine: Engine): void {
-  engine.addOperator("hasProperty", (factValue: object, jsonValue: string) => {
-    return factValue.hasOwnProperty(jsonValue);
-  });
 }
 
 /**

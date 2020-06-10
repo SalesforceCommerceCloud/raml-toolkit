@@ -97,7 +97,7 @@ describe("Changes to json nodes", () => {
     const diffs = findJsonDiffs(left, buildValidJson());
 
     expect(diffs.length).to.equal(1);
-    expect(diffs[0].added[obj["@id"]]).to.deep.equal(obj);
+    expect(diffs[0].added).to.deep.equal(obj);
     expect(_.isEmpty(diffs[0].removed)).to.true;
   });
 
@@ -108,7 +108,7 @@ describe("Changes to json nodes", () => {
     const diffs = findJsonDiffs(buildValidJson(), right);
 
     expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed[obj["@id"]]).to.deep.equal(obj);
+    expect(diffs[0].removed).to.deep.equal(obj);
     expect(_.isEmpty(diffs[0].added)).to.true;
   });
 

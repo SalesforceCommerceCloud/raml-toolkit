@@ -7,7 +7,6 @@
 import { NodeDiff } from "../../src/diffTool/jsonDiff";
 import { applyRules } from "../../src/diffTool/rulesProcessor";
 import * as chai from "chai";
-import path from "path";
 import fs from "fs-extra";
 import tmp from "tmp";
 import sinon from "sinon";
@@ -19,11 +18,6 @@ import chaiAsPromised from "chai-as-promised";
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 
-const validRulesPath = path.join(
-  __dirname,
-  "../../diffRules",
-  "defaultRules.json"
-);
 let loggerSpy;
 before(() => {
   loggerSpy = sinon.spy(ramlToolLogger, "info");
@@ -35,17 +29,17 @@ after(() => {
 describe("Rules engine when no differences are provided", () => {
   const noDiffsMsg = "No differences to apply the rules";
   it("logs message when the differences are undefined", async () => {
-    await applyRules(undefined, validRulesPath);
+    await applyRules(undefined, "test.json");
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
   it("logs message when there are empty differences", async () => {
-    const diffs = [];
-    await applyRules(diffs, validRulesPath);
+    let diffs = [];
+    diffs = await applyRules(diffs, "test.json");
     expect(diffs).to.deep.equal([]);
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
   it("logs message when the differences are null", async () => {
-    await applyRules(null, validRulesPath);
+    await applyRules(null, "test.json");
     sinon.assert.calledWith(loggerSpy, noDiffsMsg);
   });
 });
@@ -99,27 +93,11 @@ describe("Rules engine when rules file is invalid", () => {
   it("returns and logs message when rules is an empty array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, "[]");
-    const diffs = [new NodeDiff("test")];
-    await applyRules(diffs, tmpFile.name);
+    let diffs = [new NodeDiff("test")];
+    diffs = await applyRules(diffs, tmpFile.name);
     //verify that diff is not modified
     expect(diffs).to.deep.equal(diffs);
     //verify log message
     sinon.assert.calledWith(loggerSpy, "No rules to apply on the differences");
-  });
-});
-
-describe("Test display name change rule ", () => {
-  it("applies display name change rule ", async () => {
-    const diff: NodeDiff = {
-      id: "#/web-api/end-points/resource/get",
-      type: ["apiContract:Operation"],
-      added: { "core:name": "newName" },
-      removed: { "core:name": "oldName" }
-    };
-    await applyRules([diff], validRulesPath);
-    const diffRule = diff.rule;
-    expect(diffRule.name).to.equal("Rule to detect display name changes");
-    expect(diffRule.type).to.equal("display-name-change");
-    expect(diffRule.params["category"]).to.equal("Breaking");
   });
 });

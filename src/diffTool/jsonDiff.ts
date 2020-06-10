@@ -306,11 +306,11 @@ export function addNodeDiff(diff: object[]): NodeDiff {
   switch (diffType) {
     case DiffType.ADDED:
       typedDiff = new NodeDiff(id, type);
-      typedDiff.added[id] = diffNode;
+      typedDiff.added = diffNode;
       break;
     case DiffType.REMOVED:
       typedDiff = new NodeDiff(id, type);
-      typedDiff.removed[id] = diffNode;
+      typedDiff.removed = diffNode;
       break;
     case DiffType.MOVED:
       ramlToolLogger.debug(`Ignoring the move of node: ${id}`);
