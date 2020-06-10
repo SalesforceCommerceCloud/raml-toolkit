@@ -77,3 +77,9 @@ async function generateGraph(ramlFilePath: string): Promise<object> {
 
   return JSON.parse(graphStr);
 }
+
+export type RamlDiff = {
+  file: string;
+  message?: string;
+  diff?: NodeDiff[];
+};
