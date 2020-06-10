@@ -1,5 +1,7 @@
 # CHANGELOG
 
+## 0.4.2
+
 ## 0.4.1
 
 * Changed TypeScript annotations for `parseRamlFile` and `resolveApiModel` to more accurate `amf.model.document.Document`.
