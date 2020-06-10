@@ -5,11 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import * as chai from "chai";
 import { applyRules } from "../../src/diffTool/rulesProcessor";
 import * as path from "path";
-
-const expect = chai.expect;
+import { expect } from "@oclif/test";
 
 const defaultRulesPath = path.join(
   __dirname,
@@ -18,7 +16,7 @@ const defaultRulesPath = path.join(
 );
 
 describe("Display name change", () => {
-  it("applies display name change rule ", async () => {
+  it("applies display name change rule", async () => {
     let diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
@@ -36,7 +34,7 @@ describe("Display name change", () => {
 });
 
 describe("Operation removal", () => {
-  it("applies operation removed rule ", async () => {
+  it("applies operation removed rule", async () => {
     let diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
@@ -54,7 +52,7 @@ describe("Operation removal", () => {
 });
 
 describe("Parameter removal", () => {
-  it("applies parameter removed rule ", async () => {
+  it("applies parameter removed rule", async () => {
     let diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
@@ -71,8 +69,8 @@ describe("Parameter removal", () => {
   });
 });
 
-describe("Required parameter addition ", () => {
-  it("applies required parameter added rule ", async () => {
+describe("Required parameter addition", () => {
+  it("applies required parameter added rule", async () => {
     let diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
@@ -92,7 +90,7 @@ describe("Required parameter addition ", () => {
 });
 
 describe("Version change", () => {
-  it("applies version change rule ", async () => {
+  it("applies version change rule", async () => {
     let diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",

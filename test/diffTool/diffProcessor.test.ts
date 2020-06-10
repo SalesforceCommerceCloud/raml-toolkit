@@ -6,13 +6,11 @@
  */
 import * as path from "path";
 import { diffRaml } from "../../src/diffTool/diffProcessor";
-import * as chai from "chai";
 import { DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
 import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
 import tmp from "tmp";
-
-const expect = chai.expect;
+import { expect } from "@oclif/test";
 
 describe("Test RAML differencing", () => {
   it("can generate differences between RAML files", async () => {

@@ -9,13 +9,11 @@ import { applyRules, DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";
-import * as chai from "chai";
+import { expect } from "@oclif/test";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-const expect = chai.expect;
-
 describe("Custom operators - hasProperty ", () => {
-  it("rule is applied when the diff object contains given key", async () => {
+  it("applies rule when the diff object contains given key", async () => {
     let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
@@ -36,7 +34,7 @@ describe("Custom operators - hasProperty ", () => {
     expect(diffRule.params).to.deep.equal(rule.event.params);
   });
 
-  it("rule is NOT applied when the diff object does not contain given key", async () => {
+  it("does NOT apply rule when the diff object does not contain given key", async () => {
     let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
@@ -51,7 +49,7 @@ describe("Custom operators - hasProperty ", () => {
 
     diffs = await applyRules(diffs, createRulesFile(rule));
 
-    expect(diffs[0].rule).to.undefined;
+    expect(diffs[0].rule).to.be.undefined;
   });
 });
 
@@ -91,7 +89,7 @@ describe("Custom operators - hasNoProperty ", () => {
 
     diffs = await applyRules(diffs, createRulesFile(rule));
 
-    expect(diffs[0].rule).to.undefined;
+    expect(diffs[0].rule).to.be.undefined;
   });
 });
 
