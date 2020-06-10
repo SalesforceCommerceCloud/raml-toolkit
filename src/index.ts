@@ -8,9 +8,9 @@
 import lint from "./lint";
 export default lint;
 
-export { FatRamlResourceLoader } from "./exchange-connector";
+export { FatRamlResourceLoader } from "./download";
 
-export { getBearer } from "./exchange-connector/bearerToken";
+export { getBearer } from "./download/bearerToken";
 export {
   searchExchange,
   downloadRestApi,
@@ -18,15 +18,15 @@ export {
   getVersionByDeployment,
   getSpecificApi,
   getAsset
-} from "./exchange-connector/exchangeDownloader";
+} from "./download/exchangeDownloader";
 export {
   groupByCategory,
   removeVersionSpecificInformation,
   removeRamlLinks
-} from "./exchange-connector/exchangeTools";
-export { extractFiles } from "./exchange-connector/exchangeDirectoryParser";
+} from "./download/exchangeTools";
+export { extractFiles } from "./download/exchangeDirectoryParser";
 
-export { RestApi } from "./exchange-connector/exchangeTypes";
+export { RestApi } from "./download/exchangeTypes";
 export { ramlToolLogger } from "./common/logger";
 
 import * as amf from "amf-client-js";
