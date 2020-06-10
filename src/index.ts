@@ -114,4 +114,4 @@ export {
   resolveApiModel
 } from "./parser";
 
-export { diffRaml, NodeDiff } from "./diffTool";
+export { diffRaml, NodeDiff, RamlDiff } from "./diffTool";
