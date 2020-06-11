@@ -19,7 +19,8 @@
   },
   "main": "lib/index.js",
   "oclif": {
-    "bin": "raml-toolkit"
+    "bin": "raml-toolkit",
+    "commands": "./lib/commands"
   },
   "author": "",
   "license": "BSD 3-Clause",
