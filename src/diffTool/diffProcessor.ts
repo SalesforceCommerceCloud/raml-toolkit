@@ -12,6 +12,8 @@ import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
 import { applyRules } from "./rulesProcessor";
 
+export const diffRulesPath = path.join(__dirname, "../../resources/diff/rules");
+
 /**
  * Generate differences between two RAML files
  * @param leftRaml Base RAML file to compare
@@ -35,7 +37,7 @@ export async function diffRaml(
   const diffs = findJsonDiffs(leftGraph, rightGraph);
   if (rulesPath == null) {
     ramlToolLogger.info("Applying default rules on the differences");
-    rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
+    rulesPath = path.join(diffRulesPath, "defaultRules.json");
   }
   return await applyRules(diffs, rulesPath);
 }
