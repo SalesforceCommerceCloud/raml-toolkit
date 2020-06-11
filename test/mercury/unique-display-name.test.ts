@@ -12,7 +12,7 @@ import {
   breaksOnlyOneRule,
   conforms
 } from "../testUtils";
-import { validateFile } from "../../src/validator";
+import { validateFile } from "../../src/lint/lint";
 
 describe("unique display name validation", () => {
   const PROFILE = "mercury";

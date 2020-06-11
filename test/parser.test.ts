@@ -17,7 +17,7 @@ import {
   getApiName,
   parseRamlFile,
   resolveApiModel
-} from "../src/parser";
+} from "../src/common/parser";
 
 const validRamlFile = path.join(__dirname, "site.raml");
 const invalidRamlFile = path.join(__dirname, "search-invalid.raml");
