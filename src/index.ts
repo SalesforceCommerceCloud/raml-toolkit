@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+// This preserves the linter as the default oclif command
 import lint from "./lint";
 export default lint;
 
