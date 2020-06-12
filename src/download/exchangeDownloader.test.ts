@@ -12,7 +12,7 @@ import {
   RestApi,
   getSpecificApi
 } from "../../src/";
-import { searchAssetApiResultObject } from "./resources/restApiResponseObjects";
+import { searchAssetApiResultObject } from "../../test/download/resources/restApiResponseObjects";
 
 import tmp from "tmp";
 import { Response } from "node-fetch";
@@ -23,13 +23,13 @@ import nock from "nock";
 import _ from "lodash";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const assetSearchResults = require("./resources/assetSearch.json");
+const assetSearchResults = require("../../test/download/resources/assetSearch.json");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const getAssetWithVersion = require("./resources/getAssetWithVersion");
+const getAssetWithVersion = require("../../test/download/resources/getAssetWithVersion");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const getAssetWithoutVersion = require("./resources/getAsset");
+const getAssetWithoutVersion = require("../../test/download/resources/getAsset");
 
 before(() => {
   chai.should();
