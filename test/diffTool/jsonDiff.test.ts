@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import * as chai from "chai";
 import {
   findJsonDiffs,
   JSON_LD_KEY_GRAPH,
@@ -18,8 +17,7 @@ import {
 } from "../../src/diffTool/jsonDiff";
 
 import _ from "lodash";
-
-const expect = chai.expect;
+import { expect } from "chai";
 
 function buildValidJson(): object {
   return {
