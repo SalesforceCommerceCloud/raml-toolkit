@@ -7,7 +7,8 @@
 import path from "path";
 import amf from "amf-client-js";
 
-import { parseRamlFile } from "./parser";
+import { parseRamlFile } from "../common/parser";
+import { profilePath } from ".";
 
 export async function validateCustom(
   model: amf.model.document.BaseUnit,
@@ -34,7 +35,7 @@ export async function validateModel(
 ): Promise<amf.client.validate.ValidationReport> {
   const results = await validateCustom(
     model,
-    `file://${path.join(__dirname, "..", "profiles", `${profile}.raml`)}`
+    `file://${path.join(profilePath, `${profile}.raml`)}`
   );
 
   return results;

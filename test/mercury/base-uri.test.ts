@@ -13,7 +13,7 @@ import {
   breaksTheseRules,
   conforms
 } from "../testUtils";
-import { validateFile } from "../../src/validator";
+import { validateFile } from "../../src/lint/lint";
 
 describe("base uri", () => {
   const PROFILE = "mercury";

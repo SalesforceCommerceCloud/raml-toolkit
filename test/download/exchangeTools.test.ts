@@ -8,7 +8,7 @@ import { RestApi, groupByCategory } from "../../src";
 import {
   removeRamlLinks,
   removeVersionSpecificInformation
-} from "../../src/exchange-connector/exchangeTools";
+} from "../../src/download/exchangeTools";
 
 import _ from "lodash";
 

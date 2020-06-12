@@ -14,7 +14,7 @@ import {
 } from "json-rules-engine";
 import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
-import { ramlToolLogger } from "../logger";
+import { ramlToolLogger } from "../common/logger";
 import customOperators from "./customOperators";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 

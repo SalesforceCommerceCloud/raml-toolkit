@@ -1,6 +1,6 @@
 # Raml Toolkit  <!-- omit in toc -->
 
-A linting tool for raml for commerce cloud and beyond
+A collection of raml tools for commerce cloud and beyond
 
   [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
 
@@ -33,7 +33,7 @@ OPTIONS
 
 ### Jenkins
 
-In your Jenkinsfile just make sure you init npm and then its a very simple one line command
+In your Jenkinsfile, init npm and then it's a simple one line command
 
   ```groovy
     stage('Init') {
@@ -42,7 +42,7 @@ In your Jenkinsfile just make sure you init npm and then its a very simple one l
     }
 
     stage('Whatever') {
-        sh "npx raml-toolkit --profile mercury file1.raml file2.raml etc.raml"
+        sh "npx raml-toolkit lint --profile mercury file1.raml file2.raml etc.raml"
     }
   ```
 
@@ -53,9 +53,9 @@ NOTE: Violations will return a non-zero exit code and fail the build, which warn
 To check your RAML currently the CLI just takes a list of files
 
 ```bash
-$ ramlint --profile mercury file.raml
+$ ramlint lint --profile mercury file.raml
 # or
-$ ramlint --profile mercury file1.raml file2.raml etc.raml
+$ ramlint lint --profile mercury file1.raml file2.raml etc.raml
 ```
 
 The response will look something like

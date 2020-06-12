@@ -9,11 +9,9 @@ import { applyRules } from "../../src/diffTool/rulesProcessor";
 import * as path from "path";
 import { expect } from "chai";
 
-const defaultRulesPath = path.join(
-  __dirname,
-  "../../diffRules",
-  "defaultRules.json"
-);
+import { diffRulesPath } from "../../src/diffTool/diffProcessor";
+
+const defaultRulesPath = path.join(diffRulesPath, "defaultRules.json");
 
 describe("Display name change", () => {
   it("applies display name change rule", async () => {

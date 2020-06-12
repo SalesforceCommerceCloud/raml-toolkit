@@ -48,7 +48,7 @@ Profiles should be named with clarity to be descriptive of the purpose of that p
 |--------------------------------|-----------------------|
 | test/{profile-name}.js         | Where the tests for your profile live |
 | test/{profile-name}.raml       | Where a valid RAML API Spec for your profile lives |
-| profiles/{profile-name}.raml   | Where your raml validation profile itself lives. |
+| resources/lint/profiles/{profile-name}.raml   | Where your raml validation profile itself lives. |
 
 #### Testing 
 

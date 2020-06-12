@@ -6,7 +6,7 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-import { validateFile } from "../../src/validator";
+import { validateFile } from "../../src/lint/lint";
 import {
   getHappySpec,
   renameKey,

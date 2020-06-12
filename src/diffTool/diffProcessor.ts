@@ -8,9 +8,11 @@
 import amf from "amf-client-js";
 import _ from "lodash";
 import { findJsonDiffs, NodeDiff } from "./jsonDiff";
-import { ramlToolLogger } from "../logger";
+import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
 import { applyRules } from "./rulesProcessor";
+
+export const diffRulesPath = path.join(__dirname, "../../resources/diff/rules");
 
 /**
  * Generate differences between two RAML files
@@ -35,7 +37,7 @@ export async function diffRaml(
   const diffs = findJsonDiffs(leftGraph, rightGraph);
   if (rulesPath == null) {
     ramlToolLogger.info("Applying default rules on the differences");
-    rulesPath = path.join(__dirname, "../../diffRules", "defaultRules.json");
+    rulesPath = path.join(diffRulesPath, "defaultRules.json");
   }
   return applyRules(diffs, rulesPath);
 }
