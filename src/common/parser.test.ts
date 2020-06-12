@@ -17,10 +17,10 @@ import {
   getApiName,
   parseRamlFile,
   resolveApiModel
-} from "../src/common/parser";
+} from "./parser";
 
-const validRamlFile = path.join(__dirname, "site.raml");
-const invalidRamlFile = path.join(__dirname, "search-invalid.raml");
+const validRamlFile = path.join(__dirname, "../../test/site.raml");
+const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
 
 before(() => {
   chai.use(chaiAsPromised);
