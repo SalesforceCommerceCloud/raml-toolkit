@@ -26,7 +26,40 @@
     "event": {
       "type": "display-name-changed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
+      }
+    }
+  },
+  {
+    "name": "Rule to detect description changes of a operation",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Operation"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:description"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:description"
+        }
+      ]
+    },
+    "event": {
+      "type": "operation-description-changed",
+      "params": {
+        "category": "Non-Breaking",
+        "changedProperty": "core:description"
       }
     }
   },
@@ -57,7 +90,8 @@
     "event": {
       "type": "operation-removed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -88,7 +122,8 @@
     "event": {
       "type": "parameter-removed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -125,7 +160,8 @@
     "event": {
       "type": "required-parameter-added",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -156,7 +192,27 @@
     "event": {
       "type": "version-changed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:version"
+      }
+    }
+  },
+  {
+    "name": "Rule to ignore nodes by type",
+    "conditions": {
+      "any": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Example"
+        }
+      ]
+    },
+    "event": {
+      "type": "example-change",
+      "params": {
+        "category": "Ignore"
       }
     }
   }

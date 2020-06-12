@@ -42,4 +42,5 @@ export {
   resolveApiModel
 } from "./common/parser";
 
-export { diffRaml, NodeDiff, RamlDiff } from "./diffTool";
+import * as diffTool from "./diffTool";
+export { diffTool };

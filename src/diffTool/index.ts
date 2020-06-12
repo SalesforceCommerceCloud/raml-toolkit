@@ -4,5 +4,14 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-export { diffRaml, RamlDiff } from "./diffProcessor";
+import * as formatters from "./formatters/formatters";
+
+export { findApiChanges, diffRaml, RamlDiff } from "./diffProcessor";
 export { NodeDiff } from "./jsonDiff";
+export {
+  applyRules,
+  ApiChanges,
+  NodeChanges,
+  CategorizedChange
+} from "./rulesProcessor";
+export { formatters };

@@ -5,94 +5,15 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import { applyRules, DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
+import {
+  ApiChanges,
+  applyRules,
+  DIFF_FACT_ID
+} from "../../src/diffTool/rulesProcessor";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";
 import { expect } from "chai";
-
-/* eslint-disable @typescript-eslint/no-use-before-define */
-
-describe("Custom operators - hasProperty ", () => {
-  it("applies rule when the diff object contains given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
-    const rule = buildRule({
-      all: [
-        {
-          fact: DIFF_FACT_ID,
-          path: "$.added",
-          operator: "hasProperty",
-          value: "core:name"
-        }
-      ]
-    });
-
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal(rule.name);
-    expect(diffRule.type).to.equal(rule.event.type);
-    expect(diffRule.params).to.deep.equal(rule.event.params);
-  });
-
-  it("does NOT apply rule when the diff object does not contain given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
-    const rule = buildRule({
-      all: [
-        {
-          fact: DIFF_FACT_ID,
-          path: "$.added",
-          operator: "hasProperty",
-          value: "core:desc"
-        }
-      ]
-    });
-
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    expect(diffs[0].rule).to.be.undefined;
-  });
-});
-
-describe("Custom operators - hasNoProperty ", () => {
-  it("rule is applied when the diff object does not contain given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
-    const rule = buildRule({
-      all: [
-        {
-          fact: DIFF_FACT_ID,
-          path: "$.added",
-          operator: "hasNoProperty",
-          value: "core:desc"
-        }
-      ]
-    });
-
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal(rule.name);
-    expect(diffRule.type).to.equal(rule.event.type);
-    expect(diffRule.params).to.deep.equal(rule.event.params);
-  });
-  it("rule is NOT applied when the diff object contains given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
-    const rule = buildRule({
-      all: [
-        {
-          fact: DIFF_FACT_ID,
-          path: "$.added",
-          operator: "hasNoProperty",
-          value: "core:name"
-        }
-      ]
-    });
-
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    expect(diffs[0].rule).to.be.undefined;
-  });
-});
 
 /**
  * Get a basic difference object
@@ -132,3 +53,92 @@ function createRulesFile(rule: Rule): string {
   fs.writeFileSync(tmpFile.name, `[${rule.toJSON()}]`);
   return tmpFile.name;
 }
+
+/**
+ * Verify that rule is applied on the diff
+ * @param diff - Node difference
+ * @param rule - Rule that is expected to be applied
+ * @param apiChanges - Result after rule is applied
+ */
+function verifyRule(diff: NodeDiff, rule: Rule, apiChanges: ApiChanges): void {
+  const nodeChanges = apiChanges.nodeChanges[0];
+  expect(nodeChanges.nodeId).to.equal(diff.id);
+
+  const categorizedChange = nodeChanges.changes[0];
+  expect(categorizedChange.type).to.equal(rule.event.type);
+  expect(categorizedChange.category).to.equal(rule.event.params.category);
+}
+
+describe("Custom operators - hasProperty ", () => {
+  it("applies rule when the diff object contains given key", async () => {
+    const diffs: NodeDiff[] = [getDefaultDiff()];
+    const rule = buildRule({
+      all: [
+        {
+          fact: DIFF_FACT_ID,
+          path: "$.added",
+          operator: "hasProperty",
+          value: "core:name"
+        }
+      ]
+    });
+
+    const apiChanges = await applyRules(diffs, createRulesFile(rule));
+    verifyRule(diffs[0], rule, apiChanges);
+  });
+
+  it("does NOT apply rule when the diff object does not contain given key", async () => {
+    const diffs: NodeDiff[] = [getDefaultDiff()];
+    const rule = buildRule({
+      all: [
+        {
+          fact: DIFF_FACT_ID,
+          path: "$.added",
+          operator: "hasProperty",
+          value: "core:desc"
+        }
+      ]
+    });
+
+    const apiChanges = await applyRules(diffs, createRulesFile(rule));
+
+    expect(apiChanges.nodeChanges.length).to.equal(0);
+    expect(apiChanges.ignoredChanges).to.equal(0);
+  });
+});
+
+describe("Custom operators - hasNoProperty ", () => {
+  it("rule is applied when the diff object does not contain given key", async () => {
+    const diffs: NodeDiff[] = [getDefaultDiff()];
+    const rule = buildRule({
+      all: [
+        {
+          fact: DIFF_FACT_ID,
+          path: "$.added",
+          operator: "hasNoProperty",
+          value: "core:desc"
+        }
+      ]
+    });
+
+    const apiChanges = await applyRules(diffs, createRulesFile(rule));
+    verifyRule(diffs[0], rule, apiChanges);
+  });
+  it("rule is NOT applied when the diff object contains given key", async () => {
+    const diffs: NodeDiff[] = [getDefaultDiff()];
+    const rule = buildRule({
+      all: [
+        {
+          fact: DIFF_FACT_ID,
+          path: "$.added",
+          operator: "hasNoProperty",
+          value: "core:name"
+        }
+      ]
+    });
+
+    const apiChanges = await applyRules(diffs, createRulesFile(rule));
+    expect(apiChanges.nodeChanges.length).to.equal(0);
+    expect(apiChanges.ignoredChanges).to.equal(0);
+  });
+});

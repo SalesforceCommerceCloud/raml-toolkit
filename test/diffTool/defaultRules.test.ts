@@ -5,17 +5,34 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import { applyRules } from "../../src/diffTool/rulesProcessor";
+import { ApiChanges, applyRules } from "../../src/diffTool/rulesProcessor";
 import * as path from "path";
 import { expect } from "chai";
 
 import { diffRulesPath } from "../../src/diffTool/diffProcessor";
+import { Rule } from "json-rules-engine";
+import fs from "fs-extra";
 
 const defaultRulesPath = path.join(diffRulesPath, "defaultRules.json");
+const defaultRules = fs.readJSONSync(defaultRulesPath);
+/**
+ * Verify that rule is applied on the diff
+ * @param diff - Node difference
+ * @param rule - Rule that is expected to be applied
+ * @param apiChanges - Result after rule is applied
+ */
+function verifyRule(diff: NodeDiff, rule: Rule, apiChanges: ApiChanges): void {
+  const nodeChanges = apiChanges.nodeChanges[0];
+  expect(nodeChanges.nodeId).to.equal(diff.id);
+
+  const categorizedChange = nodeChanges.changes[0];
+  expect(categorizedChange.type).to.equal(rule.event.type);
+  expect(categorizedChange.category).to.equal(rule.event.params.category);
+}
 
 describe("Display name change", () => {
   it("applies display name change rule", async () => {
-    let diffs: NodeDiff[] = [
+    const diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
         type: ["apiContract:Operation"],
@@ -23,17 +40,18 @@ describe("Display name change", () => {
         removed: { "core:name": "oldName" }
       }
     ];
-    diffs = await applyRules(diffs, defaultRulesPath);
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal("Rule to detect display name changes");
-    expect(diffRule.type).to.equal("display-name-changed");
-    expect(diffRule.params["category"]).to.equal("Breaking");
+    const apiChanges = await applyRules(diffs, defaultRulesPath);
+
+    const rule = defaultRules.find(
+      r => r.event.type === "display-name-changed"
+    );
+    verifyRule(diffs[0], rule, apiChanges);
   });
 });
 
 describe("Operation removal", () => {
   it("applies operation removed rule", async () => {
-    let diffs: NodeDiff[] = [
+    const diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
         type: ["apiContract:Operation"],
@@ -41,17 +59,16 @@ describe("Operation removal", () => {
         removed: { "core:name": "oldName" }
       }
     ];
-    diffs = await applyRules(diffs, defaultRulesPath);
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal("Rule to detect operation removal");
-    expect(diffRule.type).to.equal("operation-removed");
-    expect(diffRule.params["category"]).to.equal("Breaking");
+    const apiChanges = await applyRules(diffs, defaultRulesPath);
+
+    const rule = defaultRules.find(r => r.event.type === "operation-removed");
+    verifyRule(diffs[0], rule, apiChanges);
   });
 });
 
 describe("Parameter removal", () => {
   it("applies parameter removed rule", async () => {
-    let diffs: NodeDiff[] = [
+    const diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
         type: ["apiContract:Parameter"],
@@ -59,17 +76,16 @@ describe("Parameter removal", () => {
         removed: { "core:name": "oldName" }
       }
     ];
-    diffs = await applyRules(diffs, defaultRulesPath);
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal("Rule to detect parameter removal");
-    expect(diffRule.type).to.equal("parameter-removed");
-    expect(diffRule.params["category"]).to.equal("Breaking");
+    const apiChanges = await applyRules(diffs, defaultRulesPath);
+
+    const rule = defaultRules.find(r => r.event.type === "parameter-removed");
+    verifyRule(diffs[0], rule, apiChanges);
   });
 });
 
 describe("Required parameter addition", () => {
   it("applies required parameter added rule", async () => {
-    let diffs: NodeDiff[] = [
+    const diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
         type: ["apiContract:Parameter"],
@@ -77,19 +93,18 @@ describe("Required parameter addition", () => {
         removed: {}
       }
     ];
-    diffs = await applyRules(diffs, defaultRulesPath);
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal(
-      "Rule to detect required parameter addition"
+    const apiChanges = await applyRules(diffs, defaultRulesPath);
+
+    const rule = defaultRules.find(
+      r => r.event.type === "required-parameter-added"
     );
-    expect(diffRule.type).to.equal("required-parameter-added");
-    expect(diffRule.params["category"]).to.equal("Breaking");
+    verifyRule(diffs[0], rule, apiChanges);
   });
 });
 
 describe("Version change", () => {
   it("applies version change rule", async () => {
-    let diffs: NodeDiff[] = [
+    const diffs: NodeDiff[] = [
       {
         id: "#/web-api/end-points/resource/get",
         type: ["apiContract:WebAPI"],
@@ -97,10 +112,9 @@ describe("Version change", () => {
         removed: { "core:version": "v1" }
       }
     ];
-    diffs = await applyRules(diffs, defaultRulesPath);
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal("Rule to detect version change");
-    expect(diffRule.type).to.equal("version-changed");
-    expect(diffRule.params["category"]).to.equal("Breaking");
+    const apiChanges = await applyRules(diffs, defaultRulesPath);
+
+    const rule = defaultRules.find(r => r.event.type === "version-changed");
+    verifyRule(diffs[0], rule, apiChanges);
   });
 });

@@ -4,14 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {
-  Engine,
-  RuleProperties,
-  Event,
-  Almanac,
-  RuleResult,
-  EngineResult
-} from "json-rules-engine";
+import { Engine, RuleProperties } from "json-rules-engine";
 import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
@@ -22,6 +15,35 @@ import customOperators from "./customOperators";
 export const DIFF_FACT_ID = "diff";
 
 /**
+ * Class to categorize the change as defined by the rule
+ */
+export class CategorizedChange {
+  // event type defined in the rule
+  type: string;
+  //category defined in the rule. Example: Breaking, Ignore
+  category: string;
+  //[oldValue, newValue]
+  change: string[];
+}
+
+/**
+ * Class to hold all the categorized changes of a diff node
+ */
+export class NodeChanges {
+  public changes: CategorizedChange[];
+  constructor(public nodeId: string) {
+    this.changes = [];
+  }
+}
+
+/**
+ * Class to to hold all the categorized changes to an API/RAML
+ */
+export class ApiChanges {
+  public nodeChanges: NodeChanges[];
+  public ignoredChanges: number;
+}
+/**
  * Apply rules on the AMF node differences, updates passed rules details in the node
  * @param diffs - Array of differences
  * @param rulesPath - File path of the rules
@@ -29,34 +51,33 @@ export const DIFF_FACT_ID = "diff";
 export async function applyRules(
   diffs: NodeDiff[],
   rulesPath: string
-): Promise<NodeDiff[]> {
+): Promise<ApiChanges> {
+  const apiChanges: ApiChanges = {
+    nodeChanges: [],
+    ignoredChanges: 0
+  };
+
   if (!diffs || diffs.length == 0) {
     ramlToolLogger.info("No differences to apply the rules");
-    return diffs;
+    return apiChanges;
   }
   const rules = loadRulesFile(rulesPath);
   if (!rules || rules.length == 0) {
     ramlToolLogger.info("No rules to apply on the differences");
-    return diffs;
+    return apiChanges;
   }
   //initialize engine with rules
   const engine = new Engine(rules);
-  //callback function to execute when a rule is passed/evaluates to true
-  engine.on("success", successHandler);
   //Add custom operators to use in rules
   customOperators.map(o => engine.addOperator(o));
 
-  /**
-   * run rules on diffs
-   *
-   * Result from the engine run is processed by the callback, the success handler. So the "EngineResult" returned by the runEngine function is ignored here.
-   * Also callback has access to RuleResult which has all the details of the rule that is applied whereas EngineResult do not
-   */
+  //run rules on diffs
   const promises = diffs.map(diff => {
-    return runEngine(engine, diff);
+    //run rules on diff and save the result to api changes
+    return runEngine(engine, diff, apiChanges);
   });
   await Promise.all(promises);
-  return diffs;
+  return apiChanges;
 }
 
 /**
@@ -80,39 +101,45 @@ function loadRulesFile(rulesPath: string): RuleProperties[] {
 }
 
 /**
- * Callback function that executes when a rule is passed/evaluates to true on a diff
- * @param event - Event defined in the rule
- * @param almanac - Almanac that has the fact/diff on which the rule is applied
- * @param ruleResult - Result of rule execution
- */
-async function successHandler(
-  event: Event,
-  almanac: Almanac,
-  ruleResult: RuleResult
-): Promise<void> {
-  const nodeDiff: NodeDiff = await almanac.factValue(DIFF_FACT_ID);
-  ramlToolLogger.debug(
-    `Rule '${ruleResult.name}' is passed on difference '${nodeDiff.id}'`
-  );
-  //Add rule details to the diff
-  nodeDiff.rule = {
-    name: ruleResult.name,
-    type: event.type,
-    params: event.params
-  };
-}
-
-/**
  * Apply rules on a difference
  * @param engine - Rules Engine
  * @param diff - Difference of a node
+ * @param apiChanges - Object to save the categorized changes
  */
-function runEngine(engine: Engine, diff: NodeDiff): Promise<EngineResult> {
+async function runEngine(
+  engine: Engine,
+  diff: NodeDiff,
+  apiChanges: ApiChanges
+): Promise<void> {
   ramlToolLogger.debug(`Running rules on diff: ${diff.id}`);
   /**
    * json-rules-engine adds some metadata to the provided fact.
    * Wrapping diff object in a json prevents engine from modifying it. Engine now adds metadata to the wrapped object
    * https://github.com/CacheControl/json-rules-engine/issues/187
    */
-  return engine.run({ [DIFF_FACT_ID]: diff });
+  const result = await engine.run({ [DIFF_FACT_ID]: diff });
+
+  //process result
+  const categorizedChanges: CategorizedChange[] = [];
+  result.events.forEach(event => {
+    //Ignore the events that are marked as "Ignore" in the rule
+    if (event.params.category !== "Ignore") {
+      const changedProperty = event.params.changedProperty;
+      const cChange: CategorizedChange = {
+        type: event.type,
+        category: event.params.category,
+        change: [diff.removed[changedProperty], diff.added[changedProperty]]
+      };
+      categorizedChanges.push(cChange);
+    } else {
+      apiChanges.ignoredChanges += 1;
+    }
+  });
+  if (categorizedChanges.length !== 0) {
+    const nodeChanges: NodeChanges = {
+      nodeId: diff.id,
+      changes: categorizedChanges
+    };
+    apiChanges.nodeChanges.push(nodeChanges);
+  }
 }

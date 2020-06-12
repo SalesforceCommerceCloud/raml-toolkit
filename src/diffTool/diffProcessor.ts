@@ -10,31 +10,24 @@ import _ from "lodash";
 import { findJsonDiffs, NodeDiff } from "./jsonDiff";
 import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
-import { applyRules } from "./rulesProcessor";
+import { ApiChanges, applyRules } from "./rulesProcessor";
 
 export const diffRulesPath = path.join(__dirname, "../../resources/diff/rules");
 
 /**
- * Generate differences between two RAML files
- * @param leftRaml Base RAML file to compare
- * @param rightRaml Other RAML file to compare with the left RAML to find differences
- * @param rulesPath Optional rules file to apply on the differences
+ * Generate differences between two RAML files and apply rules
+ * @param leftRaml - Base RAML file to compare
+ * @param rightRaml - Other RAML file to compare with the left RAML to find differences
+ * @param rulesPath - Optional rules file to apply on the differences
  *
- * @returns Array of NodeDiff objects
+ * @returns Changes to the APIs
  */
-export async function diffRaml(
+export async function findApiChanges(
   leftRaml: string,
   rightRaml: string,
   rulesPath?: string
-): Promise<NodeDiff[]> {
-  const [leftGraph, rightGraph] = await Promise.all([
-    generateGraph(leftRaml),
-    generateGraph(rightRaml)
-  ]);
-  ramlToolLogger.info(
-    `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
-  );
-  const diffs = findJsonDiffs(leftGraph, rightGraph);
+): Promise<ApiChanges> {
+  const diffs = await diffRaml(leftRaml, rightRaml);
   if (rulesPath == null) {
     ramlToolLogger.info("Applying default rules on the differences");
     rulesPath = path.join(diffRulesPath, "defaultRules.json");
@@ -43,8 +36,29 @@ export async function diffRaml(
 }
 
 /**
+ * Generate differences between two RAML files
+ * @param leftRaml - Base RAML file to compare
+ * @param rightRaml - Other RAML file to compare with the left RAML to find differences
+ *
+ * @returns Array of NodeDiff objects
+ */
+export async function diffRaml(
+  leftRaml: string,
+  rightRaml: string
+): Promise<NodeDiff[]> {
+  const [leftGraph, rightGraph] = await Promise.all([
+    generateGraph(leftRaml),
+    generateGraph(rightRaml)
+  ]);
+  ramlToolLogger.info(
+    `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
+  );
+  return findJsonDiffs(leftGraph, rightGraph);
+}
+
+/**
  * Generate flattened JSON-LD AMF graph from the RAML files
- * @param ramlFilePath RAML file path
+ * @param ramlFilePath - RAML file path
  *
  * @returns flattened JSON-LD AMF graph
  */
