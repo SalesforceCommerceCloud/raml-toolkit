@@ -30,7 +30,7 @@
     "lodash": "^4.17.15",
     "amf-client-js": "^4.1.2",
     "fs-extra": "^8.1.0",
-    "js-yaml": "^3.13.1",
+    "js-yaml": "^3.14.0",
     "node-fetch": "^2.6.0",
     "tmp": "^0.2.0",
     "ts-node": "^8.9.1",
