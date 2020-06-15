@@ -4,13 +4,13 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import { applyRules } from "../../src/diffTool/rulesProcessor";
+import { NodeDiff } from "./jsonDiff";
+import { applyRules } from "./rulesProcessor";
 import * as chai from "chai";
 import fs from "fs-extra";
 import tmp from "tmp";
 import sinon from "sinon";
-import { ramlToolLogger } from "../../src";
+import { ramlToolLogger } from "../common/logger";
 import chaiAsPromised from "chai-as-promised";
 
 /* eslint-disable @typescript-eslint/no-use-before-define*/
@@ -20,9 +20,11 @@ chai.use(chaiAsPromised);
 
 let loggerSpy;
 before(() => {
+  // If the initial level is not set, the spy can be reset by other tests suites
+  ramlToolLogger.setLevel(ramlToolLogger.levels.INFO);
   loggerSpy = sinon.spy(ramlToolLogger, "info");
 });
-after(() => {
+afterEach(() => {
   sinon.reset();
 });
 
