@@ -11,8 +11,8 @@ import {
   renderSpecAsFile,
   breaksOnlyOneRule,
   conforms
-} from "../testUtils";
-import { validateFile } from "../../src/lint/lint";
+} from "../../../test/testUtils";
+import { validateFile } from "../../../src/lint/lint";
 
 describe("unique display name validation", () => {
   const PROFILE = "mercury";

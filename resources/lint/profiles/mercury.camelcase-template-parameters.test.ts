@@ -6,15 +6,13 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-import { validateFile } from "../../src/lint/lint";
+import { validateFile } from "../../../src/lint/lint";
 import {
   getHappySpec,
-  conforms,
   breaksOnlyOneRule,
-  breaksTheseRules,
   renameKey,
   renderSpecAsFile
-} from "../testUtils";
+} from "../../../test/testUtils";
 
 const PROFILE = "mercury";
 const TEMPLATE_RULE =

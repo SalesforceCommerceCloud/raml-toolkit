@@ -123,8 +123,10 @@
     "pretest": "npm run depcheck && npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
     "testrunner": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' mocha",
-    "test:debug": "npm run testrunner \"{src,test}/**/*.test.ts\"",
-    "test": "nyc npm run testrunner \"{src,test}/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:unit": "nyc npm run testrunner \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:debug": "npm run testrunner \"src/**/*.test.ts\"",
+    "test:resources": "npm run testrunner \"resources/**/*.test.ts\"",
+    "test": "npm run test:unit && npm run test:resources",
     "version": "oclif-dev readme && git add README.md",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"
