@@ -32,7 +32,6 @@ const getAssetWithVersion = require("../../test/download/resources/getAssetWithV
 const getAssetWithoutVersion = require("../../test/download/resources/getAsset");
 
 before(() => {
-  chai.should();
   chai.use(chaiAsPromised);
 });
 
