@@ -1,6 +1,6 @@
 node_modules
 .nyc_output
-download
+/download
 coverage
 lib
 .DS_Store

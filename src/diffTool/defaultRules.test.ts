@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import { applyRules } from "../../src/diffTool/rulesProcessor";
+import { NodeDiff } from "./jsonDiff";
+import { applyRules } from "./rulesProcessor";
 import * as path from "path";
 import { expect } from "chai";
 
-import { diffRulesPath } from "../../src/diffTool/diffProcessor";
+import { diffRulesPath } from "./diffProcessor";
 
 const defaultRulesPath = path.join(diffRulesPath, "defaultRules.json");
 

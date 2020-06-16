@@ -12,8 +12,8 @@ import {
   breaksOnlyOneRule,
   breaksTheseRules,
   conforms
-} from "../testUtils";
-import { validateFile } from "../../src/lint/lint";
+} from "../../../test/testUtils";
+import { validateFile } from "../../../src/lint/lint";
 
 describe("base uri", () => {
   const PROFILE = "mercury";

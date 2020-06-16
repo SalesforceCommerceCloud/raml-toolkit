@@ -14,7 +14,7 @@ import {
   NodeDiff,
   addNodeArrayPropertyDiffs,
   getDiffType
-} from "../../src/diffTool/jsonDiff";
+} from "./jsonDiff";
 
 import _ from "lodash";
 import { expect } from "chai";

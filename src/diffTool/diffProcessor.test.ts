@@ -5,23 +5,23 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from "path";
-import { diffRaml } from "../../src/diffTool/diffProcessor";
-import { DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
+import { diffRaml } from "./diffProcessor";
+import { DIFF_FACT_ID } from "./rulesProcessor";
 import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
 import tmp from "tmp";
 import { expect } from "chai";
 
+const basePath = path.join(__dirname, "../../test/diffTool/diffRaml");
+
 describe("Test RAML differencing", () => {
   it("can generate differences between RAML files", async () => {
-    const basePath = path.join(__dirname, "diffRaml");
     const leftRaml = path.join(basePath, "left.raml");
     const rightRaml = path.join(basePath, "right.raml");
     const diffs = await diffRaml(leftRaml, rightRaml);
     expect(diffs.length).to.greaterThan(0);
   });
   it("can generate differences and apply rules", async () => {
-    const basePath = path.join(__dirname, "diffRaml");
     const leftRaml = path.join(basePath, "left.raml");
     const rightRaml = path.join(basePath, "right.raml");
     //create rules file
