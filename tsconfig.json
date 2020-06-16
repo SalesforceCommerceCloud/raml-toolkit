@@ -19,7 +19,6 @@
         "noImplicitThis": true,
         "preserveConstEnums": true,
         "outDir": "./lib",
-        "rootDir": "./src"
     },
     "types": [
         "mocha"
@@ -29,6 +28,6 @@
         "**/*.test.ts"
     ],
     "include": [
-        "src/**/*.ts"
+        "src"
     ]
 }
