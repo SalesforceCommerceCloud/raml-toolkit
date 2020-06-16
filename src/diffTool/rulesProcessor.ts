@@ -9,6 +9,7 @@ import { NodeDiff } from "./jsonDiff";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
 import customOperators from "./customOperators";
+import _ from "lodash";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
@@ -31,7 +32,10 @@ export class CategorizedChange {
  */
 export class NodeChanges {
   public changes: CategorizedChange[];
-  constructor(public nodeId: string) {
+  public rawDiff: NodeDiff;
+  public ignoredChanges?: number;
+  public children: { [nodeId: string]: NodeChanges };
+  constructor() {
     this.changes = [];
   }
 }
@@ -40,7 +44,7 @@ export class NodeChanges {
  * Class to to hold all the categorized changes to an API/RAML
  */
 export class ApiChanges {
-  public nodeChanges: NodeChanges[];
+  public nodeChanges: { [nodeId: string]: NodeChanges };
   public ignoredChanges: number;
 }
 /**
@@ -53,7 +57,7 @@ export async function applyRules(
   rulesPath: string
 ): Promise<ApiChanges> {
   const apiChanges: ApiChanges = {
-    nodeChanges: [],
+    nodeChanges: {},
     ignoredChanges: 0
   };
 
@@ -112,6 +116,8 @@ async function runEngine(
   apiChanges: ApiChanges
 ): Promise<void> {
   ramlToolLogger.debug(`Running rules on diff: ${diff.id}`);
+
+  const unclassified = _.cloneDeep(diff);
   /**
    * json-rules-engine adds some metadata to the provided fact.
    * Wrapping diff object in a json prevents engine from modifying it. Engine now adds metadata to the wrapped object
@@ -120,11 +126,14 @@ async function runEngine(
   const result = await engine.run({ [DIFF_FACT_ID]: diff });
 
   //process result
+  console.log();
   const categorizedChanges: CategorizedChange[] = [];
+
+  let ignoredChanges = 0;
   result.events.forEach(event => {
     //Ignore the events that are marked as "Ignore" in the rule
+    const changedProperty = event.params.changedProperty;
     if (event.params.category !== "Ignore") {
-      const changedProperty = event.params.changedProperty;
       const cChange: CategorizedChange = {
         type: event.type,
         category: event.params.category,
@@ -132,14 +141,55 @@ async function runEngine(
       };
       categorizedChanges.push(cChange);
     } else {
-      apiChanges.ignoredChanges += 1;
+      ignoredChanges += 1;
     }
+    delete unclassified.added[changedProperty];
+    delete unclassified.removed[changedProperty];
   });
-  if (categorizedChanges.length !== 0) {
+
+  apiChanges.ignoredChanges += ignoredChanges;
+
+  if (ignoredChanges > 0 && categorizedChanges.length === 0) return;
+
+  if (apiChanges.nodeChanges[diff.id]) {
+    apiChanges.nodeChanges[diff.id].changes.concat(categorizedChanges);
+  } else {
     const nodeChanges: NodeChanges = {
-      nodeId: diff.id,
-      changes: categorizedChanges
+      children: {},
+      changes: categorizedChanges,
+      rawDiff: result.events.length == 0 ? unclassified : null
     };
-    apiChanges.nodeChanges.push(nodeChanges);
+    apiChanges.nodeChanges = appendChanges(
+      apiChanges.nodeChanges,
+      diff.id,
+      nodeChanges
+    );
   }
+}
+
+function appendChanges(
+  rootNode: { [nodeId: string]: NodeChanges },
+  nodeId: string,
+  nodeChanges: NodeChanges
+): { [nodeId: string]: NodeChanges } {
+  const ids = Object.keys(rootNode);
+  if (ids.length === 0) {
+    rootNode[nodeId] = nodeChanges;
+    return rootNode;
+  }
+  let i: number;
+  for (i = 0; i < ids.length; i++) {
+    if (nodeId.includes(ids[i])) {
+      return appendChanges(
+        rootNode[ids[i]].children,
+        nodeId.replace(ids[i], ""),
+        nodeChanges
+      );
+    }
+  }
+
+  if (i === ids.length) {
+    rootNode[nodeId] = nodeChanges;
+  }
+  return rootNode;
 }
