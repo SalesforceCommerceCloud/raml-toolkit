@@ -6,21 +6,24 @@
  */
 import { ApiChanges } from "../rulesProcessor";
 
-export function log(apiChanges: ApiChanges): void {
-  const tabularFmt = {};
+export function log(apiChanges: ApiChanges): boolean {
+  const tabularFmt = [];
   apiChanges.nodeChanges.forEach(nodeChange => {
     nodeChange.changes.forEach(categorizedChange => {
-      if (!tabularFmt[categorizedChange.type]) {
-        tabularFmt[categorizedChange.type] = {
+      if (categorizedChange.type) {
+        tabularFmt.push({
+          id: decodeURIComponent(nodeChange.nodeId),
+          rule: categorizedChange.type,
           severity: categorizedChange.category,
-          changes: []
-        };
+          changes: `${categorizedChange.change[0]} => ${categorizedChange.change[1]}`
+        });
       }
-      const changes = tabularFmt[categorizedChange.type].changes;
-      changes.push(
-        `${categorizedChange.change[0]} => ${categorizedChange.change[1]}`
-      );
     });
   });
+  if (tabularFmt.length === 0) {
+    console.log("No changes found");
+    return true;
+  }
   console.table(tabularFmt);
+  return false;
 }

@@ -5,7 +5,8 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 /* eslint-disable @typescript-eslint/no-use-before-define */
-import { ApiChanges } from "../rulesProcessor";
+import { ApiChanges, NodeChanges } from "../rulesProcessor";
+import { string } from "@oclif/command/lib/flags";
 
 /**
  * class to render changes in a table format in html, object represents the row in the table
@@ -46,9 +47,10 @@ export function getApiChangesByType(apiChanges: ApiChanges): ChangesByType[] {
 }
 
 export function format(diffs: ApiChanges): string {
-  const data = getApiChangesByType(diffs);
+  // const data = getApiChangesByType(diffs);
   /* generate rows */
-  const rows = data.map(createRow).join("");
+  // diffs.
+  const rows = diffs.nodeChanges.map(createRow).join("");
   /* generate table */
   const table = createTable(rows);
   /* generate html */
@@ -60,13 +62,31 @@ export function format(diffs: ApiChanges): string {
  * @param changesByType - Data object for the table rows
  * @returns html row as string
  */
-const createRow = (changesByType: ChangesByType): string => `
-  <tr>
-    <td>${changesByType.type}</td>
-    <td>${changesByType.category}</td>
-    <td>${changesByType.changes}</td>
-  </tr>
-`;
+const createRow = (nodeChanges: NodeChanges): string => {
+  const rows = [];
+
+  const MAX_SEGMENTS = 5;
+  const splitFullId = decodeURIComponent(nodeChanges.nodeId).split("/");
+  const shortenedId =
+    splitFullId.length > MAX_SEGMENTS
+      ? "..." +
+        splitFullId
+          .slice(splitFullId.length - MAX_SEGMENTS, splitFullId.length)
+          .join("/")
+      : splitFullId.join("/");
+
+  nodeChanges.changes.forEach(row => {
+    rows.push(`
+    <tr>
+      <td><span title="${splitFullId.join("/")}">${shortenedId}</span></td>
+      <td>${row.type}</td>
+      <td>${row.category}</td>
+      <td>${row.change[0]} => ${row.change[1]}</td>
+    </tr>`);
+  });
+
+  return rows.join("\n");
+};
 
 /**
  * Generates an html table with all the table rows
@@ -76,9 +96,10 @@ const createRow = (changesByType: ChangesByType): string => `
 export const createTable = (rows): string => `
   <table>
     <tr>
-        <th>Change Type</td>
-        <th>Category</td>
-        <th>Changes</td>
+        <th>ID</th>
+        <th>Rule Matched</th>
+        <th>Category</th>
+        <th>Changes</th>
     </tr>
     ${rows}
   </table>
