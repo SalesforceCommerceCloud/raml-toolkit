@@ -122,8 +122,10 @@
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run depcheck && npm run lint",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
-    "test:debug": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\"",
-    "test": "TS_NODE_COMPILER_OPTIONS='{\"rootDir\":\".\"}' nyc mocha \"test/**/*.test.ts\" --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:debug": "mocha \"src/**/*.test.ts\"",
+    "test:resources": "mocha \"resources/**/*.test.ts\"",
+    "test": "npm run test:unit && npm run test:resources",
     "version": "oclif-dev readme && git add README.md",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect"

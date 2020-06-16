@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeDiff } from "../../src/diffTool/jsonDiff";
-import { applyRules, DIFF_FACT_ID } from "../../src/diffTool/rulesProcessor";
+import { NodeDiff } from "./jsonDiff";
+import { applyRules, DIFF_FACT_ID } from "./rulesProcessor";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";

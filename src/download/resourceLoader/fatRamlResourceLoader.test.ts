@@ -6,7 +6,7 @@
  */
 "use strict";
 
-import { FatRamlResourceLoader } from "../../../src";
+import { FatRamlResourceLoader } from "./fatRamlResourceLoader";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";

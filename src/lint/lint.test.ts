@@ -10,12 +10,12 @@ import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
 import { model } from "amf-client-js";
-import { printResults, validateFile, validateCustom } from "../src/lint/lint";
+import { printResults, validateFile, validateCustom } from "./lint";
 import {
   getHappySpec,
   renderSpecAsFile,
   getSingleInvalidFile
-} from "./testUtils";
+} from "../../test/testUtils";
 
 const PROFILE = "mercury";
 

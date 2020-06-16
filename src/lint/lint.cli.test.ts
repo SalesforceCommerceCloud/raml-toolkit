@@ -13,10 +13,10 @@ import {
   getSingleValidFile,
   getSingleInvalidFile,
   getSlightlyInvalidFile
-} from "./testUtils";
+} from "../../test/testUtils";
 import { rename } from "fs-extra";
 
-import cmd from "../src";
+import cmd from "..";
 
 const MERCURY_PROFILE = "mercury";
 

@@ -6,14 +6,14 @@
  */
 /* eslint-disable no-undef */
 "use strict";
-import { validateFile } from "../../src/lint/lint";
+import { validateFile } from "../../../src/lint/lint";
 import {
   getHappySpec,
   conforms,
   breaksTheseRules,
   renameKey,
   renderSpecAsFile
-} from "../testUtils";
+} from "../../../test/testUtils";
 
 const PROFILE = "mercury";
 const NAME_VALIDATION =

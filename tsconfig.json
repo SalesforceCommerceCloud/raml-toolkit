@@ -19,17 +19,13 @@
         "noImplicitThis": true,
         "preserveConstEnums": true,
         "outDir": "./lib",
-        "rootDir": "./src"
     },
     "types": [
         "mocha"
-      ],
+    ],
     // NOTE: Everything except what you want compiled into JS should be in the exclusions.
     "exclude": [
-        "node_modules",
-        "release",
-        "test",
-        "gulpfile.ts"
+        "**/*.test.ts"
     ],
     "include": [
         "src"
