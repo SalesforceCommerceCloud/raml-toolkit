@@ -12,7 +12,10 @@ import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
 import { applyRules } from "./rulesProcessor";
 
-export const diffRulesPath = path.join(__dirname, "../../resources/diff/rules");
+export const defaultRulesPath = path.join(
+  __dirname,
+  "../../resources/diff/rules/defaultRules.json"
+);
 
 /**
  * Generate differences between two RAML files and apply rules
@@ -30,7 +33,7 @@ export async function findApiChanges(
   const diffs = await diffRaml(leftRaml, rightRaml);
   if (rulesPath == null) {
     ramlToolLogger.info("Applying default rules on the differences");
-    rulesPath = path.join(diffRulesPath, "defaultRules.json");
+    rulesPath = defaultRulesPath;
   }
   return applyRules(diffs, rulesPath);
 }
