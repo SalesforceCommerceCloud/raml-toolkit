@@ -32,10 +32,19 @@ describe("Test RAML differencing", () => {
 
     const diffs = await findApiChanges(leftRaml, rightRaml, tmpFile.name);
     expect(diffs.length).to.greaterThan(0);
-    const diffRule = diffs[0].rule;
+    const diffRule = diffs.find(diff => diff.id === "#/web-api").rule;
     expect(diffRule.name).to.equal(rule.name);
     expect(diffRule.type).to.equal(rule.event.type);
     expect(diffRule.params).to.deep.equal(rule.event.params);
+  });
+  it("can generate differences and apply default rules", async () => {
+    const leftRaml = path.join(basePath, "left.raml");
+    const rightRaml = path.join(basePath, "right.raml");
+
+    const diffs = await findApiChanges(leftRaml, rightRaml);
+    expect(diffs.length).to.greaterThan(0);
+    const diffRule = diffs.find(diff => diff.id === "#/web-api").rule;
+    expect(diffRule.type).to.equal("version-changed");
   });
 });
 
