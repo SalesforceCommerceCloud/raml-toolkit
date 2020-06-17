@@ -14,9 +14,9 @@ export const profilePath = path.join(
   "../../resources/lint/profiles"
 );
 
-export default class RamlToolkitCommand extends Command {
+export default class LintCommand extends Command {
   async run(): Promise<void> {
-    const { argv, flags } = this.parse(RamlToolkitCommand);
+    const { argv, flags } = this.parse(LintCommand);
 
     if (argv.length === 0) {
       this.error("Requires at least one file to validate", { exit: 1 });
@@ -56,12 +56,12 @@ function getProfiles(): string[] {
   return files.map(name => name.replace(/\.raml$/i, ""));
 }
 
-RamlToolkitCommand.description = `A linting tool for raml for commerce cloud and beyond
+LintCommand.description = `A linting tool for raml for commerce cloud and beyond
 
 FILENAME is one or more RAML files to lint.
 `;
 
-RamlToolkitCommand.flags = {
+LintCommand.flags = {
   // Add --profile flag to set the custom profile
   profile: flags.enum({
     char: "p",
@@ -81,6 +81,6 @@ RamlToolkitCommand.flags = {
   help: flags.help({ char: "h" })
 };
 
-RamlToolkitCommand.args = [{ name: "filename" }];
+LintCommand.args = [{ name: "filename" }];
 // This allows a variable length list of files
-RamlToolkitCommand.strict = false;
+LintCommand.strict = false;

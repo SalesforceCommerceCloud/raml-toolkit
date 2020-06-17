@@ -12,7 +12,7 @@ import fs from "fs-extra";
 import tmp from "tmp";
 import { expect } from "chai";
 
-const basePath = path.join(__dirname, "../../test/diffTool/diffRaml");
+const basePath = path.join(__dirname, "../../test/diff");
 
 describe("Test RAML differencing", () => {
   it("can generate differences between RAML files", async () => {

@@ -16,7 +16,7 @@ import {
 } from "../../test/testUtils";
 import { rename } from "fs-extra";
 
-import cmd from "..";
+import cmd from "../commands/lint";
 
 const MERCURY_PROFILE = "mercury";
 
