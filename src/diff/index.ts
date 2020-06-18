@@ -8,7 +8,7 @@ import path from "path";
 import fs, { existsSync } from "fs";
 import { Command, flags } from "@oclif/command";
 
-import { diffRaml } from "./diffProcessor";
+import { findApiChanges } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
 export { findApiChanges, diffRaml, RamlDiff } from "./diffProcessor";
@@ -35,7 +35,7 @@ export default class DiffCommand extends Command {
 
     const exitCode = 0;
 
-    const results = await diffRaml(fileLeft, fileRight);
+    const results = await findApiChanges(fileLeft, fileRight);
 
     console.log(results);
 
