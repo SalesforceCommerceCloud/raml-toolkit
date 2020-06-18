@@ -7,7 +7,6 @@
 // import "cross-fetch/polyfill";
 
 import { writeFileSync, ensureDirSync } from "fs-extra";
-import { clone } from "lodash";
 import fetch, { Response } from "node-fetch";
 import path from "path";
 
@@ -65,7 +64,17 @@ function mapCategories(categories: RawCategories[]): Categories {
 
 function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
   const found = files.find(file => file.classifier === classifier);
-  return clone(found);
+  // There are extra properties we don't want (downloadURL, isGenerated), so we
+  // create a new object that excludes them
+  return {
+    classifier: found.classifier,
+    packaging: found.packaging,
+    externalLink: found.externalLink,
+    createdDate: found.createdDate,
+    md5: found.md5,
+    sha1: found.sha1,
+    mainFile: found.mainFile
+  };
 }
 
 function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
