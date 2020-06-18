@@ -11,7 +11,7 @@ import { Command, flags } from "@oclif/command";
 import { diffRaml } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
-export { diffRaml, RamlDiff } from "./diffProcessor";
+export { findApiChanges, diffRaml, RamlDiff } from "./diffProcessor";
 export { NodeDiff } from "./jsonDiff";
 export default class DiffCommand extends Command {
   async run(): Promise<void> {

@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import * as path from "path";
-import { diffRaml } from "./diffProcessor";
+import { diffRaml, findApiChanges } from "./diffProcessor";
 import { DIFF_FACT_ID } from "./rulesProcessor";
 import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
@@ -30,12 +30,21 @@ describe("Test RAML differencing", () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, `[${rule.toJSON()}]`);
 
-    const diffs = await diffRaml(leftRaml, rightRaml, tmpFile.name);
+    const diffs = await findApiChanges(leftRaml, rightRaml, tmpFile.name);
     expect(diffs.length).to.greaterThan(0);
-    const diffRule = diffs[0].rule;
+    const diffRule = diffs.find(diff => diff.id === "#/web-api").rule;
     expect(diffRule.name).to.equal(rule.name);
     expect(diffRule.type).to.equal(rule.event.type);
     expect(diffRule.params).to.deep.equal(rule.event.params);
+  });
+  it("can generate differences and apply default rules", async () => {
+    const leftRaml = path.join(basePath, "left.raml");
+    const rightRaml = path.join(basePath, "right.raml");
+
+    const diffs = await findApiChanges(leftRaml, rightRaml);
+    expect(diffs.length).to.greaterThan(0);
+    const diffRule = diffs.find(diff => diff.id === "#/web-api").rule;
+    expect(diffRule.type).to.equal("version-changed");
   });
 });
 
