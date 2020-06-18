@@ -7,11 +7,17 @@
 // import "cross-fetch/polyfill";
 
 import { writeFileSync, ensureDirSync } from "fs-extra";
-
+import { clone } from "lodash";
 import fetch, { Response } from "node-fetch";
 import path from "path";
 
-import { RestApi, FileInfo, Categories } from "./exchangeTypes";
+import {
+  RawRestApi,
+  RestApi,
+  FileInfo,
+  RawCategories,
+  Categories
+} from "./exchangeTypes";
 import { ramlToolLogger } from "../common/logger";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
@@ -40,57 +46,39 @@ export async function downloadRestApi(
   return response;
 }
 
-export function downloadRestApis(
-  restApi: Array<RestApi>,
+export async function downloadRestApis(
+  restApi: RestApi[],
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
 ): Promise<string> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const promises: Promise<any>[] = [];
-
-  restApi.forEach((api: RestApi) => {
-    promises.push(downloadRestApi(api, destinationFolder));
-  });
-
-  return Promise.all(promises).then(() => destinationFolder);
+  const downloads = restApi.map(api => downloadRestApi(api, destinationFolder));
+  await Promise.all(downloads);
+  return destinationFolder;
 }
 
-function mapCategories(categories): Categories {
+function mapCategories(categories: RawCategories[]): Categories {
   const cats: Categories = {};
   categories.forEach(category => {
-    cats[category["key"]] = category["value"];
+    cats[category.key] = category.value;
   });
   return cats;
 }
 
-function getFileByClassifier(files, classifier): FileInfo {
-  let myFile: FileInfo;
-  files.forEach(file => {
-    if (file["classifier"] === classifier) {
-      myFile = {
-        classifier: file["classifier"],
-        packaging: file["packaging"],
-        externalLink: file["externalLink"],
-        createdDate: file["createdDate"],
-        md5: file["md5"],
-        sha1: file["sha1"],
-        mainFile: file["mainFile"]
-      };
-    }
-  });
-  return myFile;
+function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
+  const found = files.find(file => file.classifier === classifier);
+  return clone(found);
 }
 
-function convertResponseToRestApi(apiResponse: JSON): RestApi {
+function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
   return {
-    id: apiResponse["id"],
-    name: apiResponse["name"],
-    description: apiResponse["description"],
-    updatedDate: apiResponse["updatedDate"],
-    groupId: apiResponse["groupId"],
-    assetId: apiResponse["assetId"],
-    version: apiResponse["version"],
-    categories: mapCategories(apiResponse["categories"]),
-    fatRaml: getFileByClassifier(apiResponse["files"], "fat-raml")
+    id: apiResponse.id,
+    name: apiResponse.name,
+    description: apiResponse.description,
+    updatedDate: apiResponse.updatedDate,
+    groupId: apiResponse.groupId,
+    assetId: apiResponse.assetId,
+    version: apiResponse.version,
+    categories: mapCategories(apiResponse.categories),
+    fatRaml: getFileByClassifier(apiResponse.files, "fat-raml")
   };
 }
 
@@ -103,12 +91,12 @@ function convertResponseToRestApi(apiResponse: JSON): RestApi {
  * @export
  * @param {string} accessToken
  * @param {string} assetId
- * @returns {Promise<JSON>}
+ * @returns {Promise<void | RawRestApi>}
  */
 export async function getAsset(
   accessToken: string,
   assetId: string
-): Promise<void | JSON> {
+): Promise<void | RawRestApi> {
   const res = await fetch(`${ANYPOINT_BASE_URI}/assets/${assetId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`
@@ -132,7 +120,7 @@ export async function getAsset(
  * @param {string} searchString
  * @returns {Promise<RestApi[]>}
  */
-export function searchExchange(
+export async function searchExchange(
   accessToken: string,
   searchString: string
 ): Promise<RestApi[]> {
@@ -173,20 +161,18 @@ export async function getVersionByDeployment(
     return;
   }
   let version = null;
-  asset["instances"].forEach(
-    (instance: { environmentName: string; version: string }) => {
-      if (
-        instance.environmentName &&
-        deployment.test(instance.environmentName) &&
-        !version
-      ) {
-        version = instance.version;
-      }
+  asset.instances.forEach(instance => {
+    if (
+      instance.environmentName &&
+      deployment.test(instance.environmentName) &&
+      !version
+    ) {
+      version = instance.version;
     }
-  );
+  });
   // If no instance matched the intended deployment get the version info
   // from the fetched asset.
-  return version || asset["version"];
+  return version || asset.version;
 }
 
 /**
@@ -198,17 +184,13 @@ export async function getVersionByDeployment(
  * @param {string} version
  * @returns {Promise<RestApi>}
  */
-export function getSpecificApi(
+export async function getSpecificApi(
   accessToken: string,
   groupId: string,
   assetId: string,
   version: string
-): Promise<RestApi> {
-  return version
-    ? getAsset(accessToken, `${groupId}/${assetId}/${version}`).then(
-        (api: JSON) => {
-          return api ? convertResponseToRestApi(api) : null;
-        }
-      )
-    : null;
+): Promise<RestApi | null> {
+  if (!version) return null;
+  const api = await getAsset(accessToken, `${groupId}/${assetId}/${version}`);
+  return api ? convertResponseToRestApi(api) : null;
 }
