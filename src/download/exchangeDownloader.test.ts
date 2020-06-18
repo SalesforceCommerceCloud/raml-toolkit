@@ -206,7 +206,7 @@ describe("getSpecificApi", () => {
       null
     );
 
-    return expect(restApi).to.be.null;
+    return expect(restApi).to.eventually.be.null;
   });
 
   it("should return null it fails to fetch the asset", async () => {
