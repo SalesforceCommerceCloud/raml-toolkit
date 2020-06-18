@@ -13,20 +13,42 @@ import * as path from "path";
 import { applyRules } from "./rulesProcessor";
 import { parseRamlFile } from "../common/parser";
 
-export const diffRulesPath = path.join(__dirname, "../../resources/diff/rules");
+export const defaultRulesPath = path.join(
+  __dirname,
+  "../../resources/diff/rules/defaultRules.json"
+);
+
+/**
+ * Generate differences between two RAML files and apply rules
+ * @param leftRaml - Base RAML file to compare
+ * @param rightRaml - Other RAML file to compare with the left RAML to find differences
+ * @param rulesPath - Optional rules file to apply on the differences
+ *
+ * @returns Changes to the APIs
+ */
+export async function findApiChanges(
+  leftRaml: string,
+  rightRaml: string,
+  rulesPath?: string
+): Promise<NodeDiff[]> {
+  const diffs = await diffRaml(leftRaml, rightRaml);
+  if (rulesPath == null) {
+    ramlToolLogger.info("Applying default rules on the differences");
+    rulesPath = defaultRulesPath;
+  }
+  return applyRules(diffs, rulesPath);
+}
 
 /**
  * Generate differences between two RAML files
- * @param leftRaml Base RAML file to compare
- * @param rightRaml Other RAML file to compare with the left RAML to find differences
- * @param rulesPath Optional rules file to apply on the differences
+ * @param leftRaml - Base RAML file to compare
+ * @param rightRaml - Other RAML file to compare with the left RAML to find differences
  *
  * @returns Array of NodeDiff objects
  */
 export async function diffRaml(
   leftRaml: string,
-  rightRaml: string,
-  rulesPath?: string
+  rightRaml: string
 ): Promise<NodeDiff[]> {
   const [leftGraph, rightGraph] = await Promise.all([
     generateGraph(leftRaml),
@@ -35,17 +57,12 @@ export async function diffRaml(
   ramlToolLogger.info(
     `Finding differences between flattened JSON-LD of ${leftRaml} and ${rightRaml}`
   );
-  const diffs = findJsonDiffs(leftGraph, rightGraph);
-  if (rulesPath == null) {
-    ramlToolLogger.info("Applying default rules on the differences");
-    rulesPath = path.join(diffRulesPath, "defaultRules.json");
-  }
-  return applyRules(diffs, rulesPath);
+  return findJsonDiffs(leftGraph, rightGraph);
 }
 
 /**
  * Generate flattened JSON-LD AMF graph from the RAML files
- * @param ramlFilePath RAML file path
+ * @param ramlFilePath - RAML file path
  *
  * @returns flattened JSON-LD AMF graph
  */

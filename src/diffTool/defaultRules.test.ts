@@ -6,12 +6,9 @@
  */
 import { NodeDiff } from "./jsonDiff";
 import { applyRules } from "./rulesProcessor";
-import * as path from "path";
 import { expect } from "chai";
 
-import { diffRulesPath } from "./diffProcessor";
-
-const defaultRulesPath = path.join(diffRulesPath, "defaultRules.json");
+import { defaultRulesPath } from "./diffProcessor";
 
 describe("Display name change", () => {
   it("applies display name change rule", async () => {
