@@ -11,6 +11,7 @@ import { findJsonDiffs, NodeDiff } from "./jsonDiff";
 import { ramlToolLogger } from "../common/logger";
 import * as path from "path";
 import { applyRules } from "./rulesProcessor";
+import { parseRamlFile } from "../common/parser";
 
 export const defaultRulesPath = path.join(
   __dirname,
@@ -66,17 +67,9 @@ export async function diffRaml(
  * @returns flattened JSON-LD AMF graph
  */
 async function generateGraph(ramlFilePath: string): Promise<object> {
-  ramlToolLogger.debug(`Generating flattened JSON-LD for ${ramlFilePath}`);
-  amf.plugins.document.WebApi.register();
-  amf.plugins.document.Vocabularies.register();
-  amf.plugins.features.AMFValidation.register();
-  await amf.Core.init();
+  const parsedRaml = await parseRamlFile(ramlFilePath);
 
-  //TODO: use common parser function that is used by validator and sdk
-  let model = await new amf.Raml10Parser().parseFileAsync(
-    `file://${ramlFilePath}`
-  );
-  model = new amf.Raml10Resolver().resolve(model);
+  const model = new amf.Raml10Resolver().resolve(parsedRaml);
 
   const renderOptions = new amf.render.RenderOptions().withoutSourceMaps
     .withCompactUris.withFlattenedJsonLd;
