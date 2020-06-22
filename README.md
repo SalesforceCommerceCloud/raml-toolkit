@@ -31,6 +31,8 @@ OPTIONS
   -w, --warnings                   Show all the warnings
 ```
 
+> **Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
+
 ### Jenkins
 
 In your Jenkinsfile, init npm and then it's a simple one line command

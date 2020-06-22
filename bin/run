@@ -11,11 +11,12 @@ const path = require("path");
 const project = path.join(__dirname, "../tsconfig.json");
 const dev = fs.existsSync(project);
 
+require("dotenv").config();
+
 if (dev) {
   require("ts-node").register({ project });
 }
 
-// require(`../${dev ? "src" : "lib"}`)
 require(`../${dev ? "src" : "lib"}`)
   .default.run()
   // eslint-disable-next-line @typescript-eslint/no-var-requires
