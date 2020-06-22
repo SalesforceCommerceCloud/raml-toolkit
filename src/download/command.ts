@@ -7,43 +7,9 @@
 import fs from "fs-extra";
 import path from "path";
 import { Command, flags } from "@oclif/command";
-import { getBearer } from "./bearerToken";
 import { extractFiles } from "./exchangeDirectoryParser";
-import {
-  searchExchange,
-  getVersionByDeployment,
-  getSpecificApi,
-  downloadRestApis
-} from "./exchangeDownloader";
-import {
-  removeVersionSpecificInformation,
-  groupByCategory,
-  removeRamlLinks
-} from "./exchangeTools";
-import { RestApi } from "./exchangeTypes";
-
-/**
- * Gets information about all the APIs from exchange that match the given search
- * string for the version deployed in the given environment.
- * If it fails to get information about the deployed version of an API, it
- * removes all the version specific information from the returned object.
- *
- * @returns Information about the APIs found.
- */
-async function search(search: string, deployment: RegExp): Promise<RestApi[]> {
-  const token = await getBearer(
-    process.env.ANYPOINT_USERNAME,
-    process.env.ANYPOINT_PASSWORD
-  );
-  const apis = await searchExchange(token, search);
-  const promises = apis.map(async api => {
-    const version = await getVersionByDeployment(token, api, deployment);
-    return version
-      ? getSpecificApi(token, api.groupId, api.assetId, version)
-      : removeVersionSpecificInformation(api);
-  });
-  return Promise.all(promises);
-}
+import { downloadRestApis, search } from "./exchangeDownloader";
+import { groupByCategory, removeRamlLinks } from "./exchangeTools";
 
 export default class DownloadCommand extends Command {
   static description =
