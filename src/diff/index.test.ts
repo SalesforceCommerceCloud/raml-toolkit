@@ -11,6 +11,7 @@ import { writeSync } from "fs";
 import { FileResult, fileSync } from "tmp";
 
 import cmd from "../commands/diff";
+import { Rule } from "json-rules-engine";
 
 const createTempFile = (content: string): FileResult => {
   const tempFile = fileSync();
@@ -45,8 +46,8 @@ const ramlAdded = createTempFile(
 `
 );
 
-const operationRemovedRule = createTempFile(
-  `[{
+const operationRemovedRule = new Rule(
+  `{
     "name": "Rule to detect operation removal",
     "conditions": {
       "all": [
@@ -76,8 +77,10 @@ const operationRemovedRule = createTempFile(
         "category": "Breaking"
       }
     }
-  }]`
+  }`
 );
+
+const operationRemovedRuleset = createTempFile(`[${operationRemovedRule.toJSON()}]`);
 
 describe("raml-toolkit cli diff command", () => {
   test
@@ -159,7 +162,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlOld.name,
         "--ruleset",
-        operationRemovedRule.name
+        operationRemovedRuleset.name
       ])
     )
     .exit(0)
@@ -173,7 +176,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlAdded.name,
         "--ruleset",
-        operationRemovedRule.name
+        operationRemovedRuleset.name
       ])
     )
     .exit(0)
@@ -186,7 +189,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlRemoved.name,
         "--ruleset",
-        operationRemovedRule.name
+        operationRemovedRuleset.name
       ])
     )
     .exit(1)
@@ -200,7 +203,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         "--diff-only",
         "--ruleset",
-        operationRemovedRule.name
+        operationRemovedRuleset.name
       ])
     )
     .exit(2)

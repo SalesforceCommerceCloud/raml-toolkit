@@ -10,6 +10,8 @@ require("@oclif/command")
   .run()
   .then(require("@oclif/command/flush"))
   .catch(e => {
+    // To maintain backward compatibility with older versions of this, command
+    // errors will fallback to assuming the 'lint' command
     if (e.message.startsWith("command")) {
       return require("../lib/commands/lint")
         .default.run();
