@@ -45,6 +45,40 @@ const ramlAdded = createTempFile(
 `
 );
 
+const operationRemovedRule = createTempFile(
+  `[{
+    "name": "Rule to detect operation removal",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Operation"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasNoProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "operation-removed",
+      "params": {
+        "category": "Breaking"
+      }
+    }
+  }]`
+);
+
 describe("raml-toolkit cli diff command", () => {
   test
     .stdout()
@@ -92,13 +126,83 @@ describe("raml-toolkit cli diff command", () => {
     .stdout()
     .do(() => cmd.run([ramlOld.name, ramlAdded.name]))
     .exit(0)
-    .it(
-      "finds no breaking changes with the default ruleset and exits non-zero"
-    );
+    .it("finds no breaking changes with the default ruleset and exits zero");
 
   test
     .stdout()
     .do(() => cmd.run([ramlOld.name, ramlRemoved.name]))
     .exit(1)
     .it("finds breaking changes with the default ruleset and exits non-zero");
+
+  test
+    .stdout()
+    .do(() => cmd.run([ramlOld.name, ramlOld.name, "--diff-only"]))
+    .exit(0)
+    .it("finds no changes with diff only and exits zero");
+
+  test
+    .stdout()
+    .do(() => cmd.run([ramlOld.name, ramlAdded.name, "--diff-only"]))
+    .exit(1)
+    .it("finds added endpoint with diff only and exits non-zero");
+
+  test
+    .stdout()
+    .do(() => cmd.run([ramlOld.name, ramlRemoved.name, "--diff-only"]))
+    .exit(1)
+    .it("finds removed endpoint with diff only and exits non-zero");
+
+  test
+    .stdout()
+    .do(() =>
+      cmd.run([
+        ramlOld.name,
+        ramlOld.name,
+        "--ruleset",
+        operationRemovedRule.name
+      ])
+    )
+    .exit(0)
+    .it("finds no changes with custom ruleset and exits zero");
+
+  test
+    .stdout()
+    .stderr()
+    .do(() =>
+      cmd.run([
+        ramlOld.name,
+        ramlAdded.name,
+        "--ruleset",
+        operationRemovedRule.name
+      ])
+    )
+    .exit(0)
+    .it("finds no breaking changes with custom ruleset and exits zero");
+
+  test
+    .stdout()
+    .do(() =>
+      cmd.run([
+        ramlOld.name,
+        ramlRemoved.name,
+        "--ruleset",
+        operationRemovedRule.name
+      ])
+    )
+    .exit(1)
+    .it("finds breaking changes with custom ruleset and exits non-zero");
+
+  test
+    .stdout()
+    .do(() =>
+      cmd.run([
+        ramlOld.name,
+        ramlOld.name,
+        "--diff-only",
+        "--ruleset",
+        operationRemovedRule.name
+      ])
+    )
+    .exit(2)
+    .it("does not allow ruleset and diff only together, exits non-zero");
 });

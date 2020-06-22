@@ -11,9 +11,8 @@ require("@oclif/command")
   .then(require("@oclif/command/flush"))
   .catch(e => {
     if (e.message.startsWith("command")) {
-      require("../lib/commands/lint")
-        .default.run()
-        .catch(require("@oclif/errors/handle"));
+      return require("../lib/commands/lint")
+        .default.run();
     } else {
       throw e;
     }
