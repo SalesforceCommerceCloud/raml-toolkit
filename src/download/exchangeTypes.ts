@@ -30,3 +30,17 @@ export type FileInfo = {
 export type Categories = {
   [key: string]: string[];
 };
+
+export type RawCategories = {
+  key: string;
+  value: string[];
+};
+
+export type RawRestApi = Omit<RestApi, "categories" | "fatRaml"> & {
+  categories: RawCategories[];
+  files: FileInfo[];
+  instances: {
+    environmentName: string;
+    version: string;
+  }[];
+};
