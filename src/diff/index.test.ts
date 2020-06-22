@@ -80,7 +80,9 @@ const operationRemovedRule = new Rule(
   }`
 );
 
-const operationRemovedRuleset = createTempFile(`[${operationRemovedRule.toJSON()}]`);
+const operationRemovedRuleset = createTempFile(
+  `[${operationRemovedRule.toJSON()}]`
+);
 
 describe("raml-toolkit cli diff command", () => {
   test
