@@ -38,30 +38,17 @@ async function search(): Promise<RestApi[]> {
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, config.exchangeSearch);
-  const promises = [];
-  apis.forEach(api => {
-    promises.push(
-      getVersionByDeployment(token, api, config.exchangeDeploymentRegex).then(
-        (version: string) => {
-          const neededApi = getSpecificApi(
-            token,
-            api.groupId,
-            api.assetId,
-            version
-          );
-
-          if (neededApi) {
-            return neededApi;
-          } else {
-            return removeVersionSpecificInformation(api);
-          }
-        }
-      )
+  const promises = apis.map(async api => {
+    const version = await getVersionByDeployment(
+      token,
+      api,
+      config.exchangeDeploymentRegex
     );
+    return version
+      ? getSpecificApi(token, api.groupId, api.assetId, version)
+      : removeVersionSpecificInformation(api);
   });
-  return Promise.all(promises).then((deployedApis: RestApi[]) => {
-    return deployedApis;
-  });
+  return Promise.all(promises);
 }
 
 export default class DownloadCommand extends Command {
@@ -70,22 +57,18 @@ export default class DownloadCommand extends Command {
   static args = [];
   async run(): Promise<void> {
     const apis = await search();
-    return downloadRestApis(apis, config.inputDir)
-      .then(folder => {
-        ramlToolLogger.info(`Setting config.inputDir to '${folder}'`);
-        config.inputDir = folder;
-        return extractFiles(folder);
-      })
-      .then(async () => {
-        const apiFamilyGroups = groupByCategory(
-          removeRamlLinks(apis),
-          config.apiFamily
-        );
-        fs.ensureDirSync(config.inputDir);
-        return fs.writeFile(
-          path.join(config.inputDir, config.apiConfigFile),
-          JSON.stringify(apiFamilyGroups)
-        );
-      });
+    const folder = await downloadRestApis(apis, config.inputDir);
+    ramlToolLogger.info(`Setting config.inputDir to '${folder}'`);
+    config.inputDir = folder;
+    await extractFiles(folder);
+    const apiFamilyGroups = groupByCategory(
+      removeRamlLinks(apis),
+      config.apiFamily
+    );
+    await fs.ensureDir(config.inputDir);
+    await fs.writeJson(
+      path.join(config.inputDir, config.apiConfigFile),
+      apiFamilyGroups
+    );
   }
 }
