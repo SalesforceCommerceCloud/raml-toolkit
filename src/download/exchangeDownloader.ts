@@ -6,12 +6,17 @@
  */
 // import "cross-fetch/polyfill";
 
-import { writeFileSync, ensureDirSync } from "fs-extra";
+import fs from "fs-extra";
 import fetch, { Response } from "node-fetch";
 import path from "path";
 
 import { getBearer } from "./bearerToken";
-import { removeVersionSpecificInformation } from "./exchangeTools";
+import { extractFiles } from "./exchangeDirectoryParser";
+import {
+  groupByCategory,
+  removeRamlLinks,
+  removeVersionSpecificInformation
+} from "./exchangeTools";
 import {
   RawRestApi,
   RestApi,
@@ -38,11 +43,11 @@ export async function downloadRestApi(
     return;
   }
 
-  ensureDirSync(destinationFolder);
+  await fs.ensureDir(destinationFolder);
   const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
   const response = await fetch(restApi.fatRaml.externalLink);
   const arrayBuffer = await response.arrayBuffer();
-  writeFileSync(zipFilePath, Buffer.from(arrayBuffer));
+  await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
 
   return response;
 }
@@ -233,4 +238,19 @@ export async function search(
       : removeVersionSpecificInformation(api);
   });
   return Promise.all(promises);
+}
+
+export async function download(flags: Record<string, string>): Promise<void> {
+  const apis = await search(
+    flags.search,
+    new RegExp(flags.deployment, flags["deployment-regex-flags"])
+  );
+  await downloadRestApis(apis, flags.dest);
+  await extractFiles(flags.dest);
+  const apiFamilyGroups = groupByCategory(removeRamlLinks(apis), flags.family);
+  await fs.ensureDir(flags.dest);
+  await fs.writeJson(
+    path.join(flags.dest, flags["config-file"]),
+    apiFamilyGroups
+  );
 }
