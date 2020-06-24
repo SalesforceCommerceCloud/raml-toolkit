@@ -6,17 +6,16 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-const fs = require("fs");
-const path = require("path");
-const project = path.join(__dirname, "../tsconfig.json");
-const dev = fs.existsSync(project);
-
-if (dev) {
-  require("ts-node").register({ project });
-}
-
-// require(`../${dev ? "src" : "lib"}`)
-require(`../${dev ? "src" : "lib"}`)
-  .default.run()
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  .catch(require("@oclif/errors/handle"));
+require("@oclif/command")
+  .run()
+  .then(require("@oclif/command/flush"))
+  .catch(e => {
+    // To maintain backward compatibility with older versions of this, command
+    // errors will fallback to assuming the 'lint' command
+    if (e.message.startsWith("command")) {
+      return require("../lib/commands/lint")
+        .default.run();
+    } else {
+      throw e;
+    }
+  }).catch(require("@oclif/errors/handle"));

@@ -120,7 +120,7 @@
     "depcheck": "depcheck",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
-    "pretest": "npm run depcheck && npm run lint",
+    "pretest": "npm run lint && npm run compile && npm run depcheck",
     "lint": "eslint \"**/*.ts\" --quiet --fix",
     "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
     "test:debug": "mocha \"src/**/*.test.ts\"",
