@@ -131,7 +131,7 @@ describe("Fat raml resource loader fetch tests", () => {
     fatRamlResourceLoader = new FatRamlResourceLoader("file:///workingDir");
     fatRamlResourceLoader.fsAdapter = sinon.stub({
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      readFileSync: (resourcePath: string) => {}
+      readFileSync: () => {}
     });
   });
 

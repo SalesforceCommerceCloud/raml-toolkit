@@ -265,7 +265,6 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
  *
  * @return DiffType Type of the difference
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getDiffType(diff: any[]): DiffType {
   const diffLength = diff.length;
   if (diffLength === 1) {
@@ -335,7 +334,6 @@ export function addNodeDiff(diff: object[]): NodeDiff {
  */
 export function addNodePropertyDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
   diffType: DiffType,
   typedDiff: NodeDiff
@@ -371,7 +369,6 @@ export function addNodePropertyDiffs(
  */
 export function addNodeArrayPropertyDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
   diffType: DiffType,
   typedDiff: NodeDiff
@@ -409,7 +406,6 @@ export function addNodeArrayPropertyDiffs(
  */
 function addNodeReferenceDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   diff: any[],
   diffType: DiffType,
   typedDiff: NodeDiff
@@ -432,7 +428,7 @@ function addNodeReferenceDiffs(
 /**
  * jsondiffpatch plugin to add node ID and type to the difference
  */
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions,@typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/consistent-type-assertions
 const addNodeInfo = <any>function(context) {
   if (
     context.leftType === "object" &&

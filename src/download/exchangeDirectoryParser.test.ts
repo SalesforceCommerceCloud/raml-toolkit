@@ -14,7 +14,10 @@ import tmp from "tmp";
 import path from "path";
 import fs from "fs-extra";
 
-async function createZipFile(directory: tmp.DirResult, file = "some-api.zip") {
+async function createZipFile(
+  directory: tmp.DirResult,
+  file = "some-api.zip"
+): Promise<void> {
   const zip = new JSZip();
 
   return new Promise(resolve =>

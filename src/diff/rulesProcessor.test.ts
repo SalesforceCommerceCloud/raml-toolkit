@@ -11,8 +11,6 @@ import fs from "fs-extra";
 import tmp from "tmp";
 import chaiAsPromised from "chai-as-promised";
 
-/* eslint-disable @typescript-eslint/no-use-before-define*/
-
 const expect = chai.expect;
 chai.use(chaiAsPromised);
 

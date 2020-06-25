@@ -8,7 +8,6 @@ import { getBearer } from "./bearerToken";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 import nock from "nock";
-import _ from "lodash";
 
 before(() => {
   chai.use(chaiAsPromised);
