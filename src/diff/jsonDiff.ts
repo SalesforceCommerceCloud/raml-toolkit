@@ -39,8 +39,8 @@ export enum DiffType {
  */
 
 export class NodeDiff {
-  public added?: { [key: string]: { "@id": unknown } | unknown[] };
-  public removed?: { [key: string]: { "@id": unknown } | unknown[] };
+  public added?: { [key: string]: unknown };
+  public removed?: { [key: string]: unknown };
   /**
    * Rule that is evaluated to true on the difference
    */
@@ -334,7 +334,7 @@ export function addNodeDiff(diff: object[]): NodeDiff {
  */
 export function addNodePropertyDiffs(
   key: string,
-  diff: unknown[][],
+  diff: unknown[],
   diffType: DiffType,
   typedDiff: NodeDiff
 ): void {
