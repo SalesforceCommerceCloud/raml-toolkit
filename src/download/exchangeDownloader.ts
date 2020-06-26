@@ -217,20 +217,20 @@ export async function getSpecificApi(
  * If it fails to get information about the deployed version of an API, it
  * removes all the version specific information from the returned object.
  *
- * @param search - Exchange search query
+ * @param query - Exchange search query
  * @param deployment - RegExp matching the desired deployment targets
  *
  * @returns Information about the APIs found.
  */
 export async function search(
-  search: string,
+  query: string,
   deployment: RegExp
 ): Promise<RestApi[]> {
   const token = await getBearer(
     process.env.ANYPOINT_USERNAME,
     process.env.ANYPOINT_PASSWORD
   );
-  const apis = await searchExchange(token, search);
+  const apis = await searchExchange(token, query);
   const promises = apis.map(async api => {
     const version = await getVersionByDeployment(token, api, deployment);
     return version
