@@ -9,9 +9,10 @@ import {
   downloadRestApis,
   searchExchange,
   getVersionByDeployment,
-  RestApi,
-  getSpecificApi
-} from "../../src/";
+  getSpecificApi,
+  getAsset
+} from "./exchangeDownloader";
+import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../test/download/resources/restApiResponseObjects";
 
 import tmp from "tmp";
@@ -153,7 +154,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(200, getAssetWithVersion);
 
     return expect(
@@ -196,7 +196,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(200, getAssetWithVersion);
 
     const restApi = getSpecificApi(
@@ -214,7 +213,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(404, "Not Found");
 
     return expect(
@@ -241,7 +239,7 @@ describe("getVersionByDeployment", () => {
     ).to.eventually.equal("0.0.1");
   });
 
-  it("should return null if the deployment does not exist", async () => {
+  it("should return the base version if the deployment does not exist", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
@@ -251,7 +249,7 @@ describe("getVersionByDeployment", () => {
     ).to.eventually.equal(getAssetWithoutVersion.version);
   });
 
-  it("should return null if the asset does not exist", async () => {
+  it("should return undefined if the asset does not exist", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(404, "Not Found");
