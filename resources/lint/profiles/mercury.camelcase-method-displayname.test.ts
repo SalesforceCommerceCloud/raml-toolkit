@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-/* eslint-disable no-undef */
 "use strict";
 import * as validator from "../../../src/lint/lint";
 import * as utils from "../../../test/testUtils";

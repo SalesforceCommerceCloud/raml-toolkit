@@ -37,10 +37,10 @@ export enum DiffType {
 /**
  * Class to hold differences of a JSON node
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export class NodeDiff {
-  public added?: { [key: string]: any };
-  public removed?: { [key: string]: any };
+  public added?: { [key: string]: unknown };
+  public removed?: { [key: string]: unknown };
   /**
    * Rule that is evaluated to true on the difference
    */
@@ -50,7 +50,7 @@ export class NodeDiff {
     //event type defined in the rule
     type: string;
     //additional params defined in the rule. json-rules-engine allows any value
-    params: { [key: string]: any };
+    params: { [key: string]: unknown };
   };
 
   /**
@@ -265,8 +265,7 @@ function parseNodePropDiffs(nodeId: string, diff: object): NodeDiff {
  *
  * @return DiffType Type of the difference
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getDiffType(diff: any[]): DiffType {
+export function getDiffType(diff: unknown[]): DiffType {
   const diffLength = diff.length;
   if (diffLength === 1) {
     return DiffType.ADDED;
@@ -335,8 +334,7 @@ export function addNodeDiff(diff: object[]): NodeDiff {
  */
 export function addNodePropertyDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  diff: any[],
+  diff: unknown[],
   diffType: DiffType,
   typedDiff: NodeDiff
 ): void {
@@ -371,8 +369,7 @@ export function addNodePropertyDiffs(
  */
 export function addNodeArrayPropertyDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  diff: any[],
+  diff: unknown[],
   diffType: DiffType,
   typedDiff: NodeDiff
 ): void {
@@ -381,13 +378,13 @@ export function addNodeArrayPropertyDiffs(
       if (typedDiff.added[key] == null) {
         typedDiff.added[key] = [];
       }
-      typedDiff.added[key].push(diff[0]);
+      (typedDiff.added[key] as unknown[]).push(diff[0]);
       break;
     case DiffType.REMOVED:
       if (typedDiff.removed[key] == null) {
         typedDiff.removed[key] = [];
       }
-      typedDiff.removed[key].push(diff[0]);
+      (typedDiff.removed[key] as unknown[]).push(diff[0]);
       break;
     case DiffType.MOVED:
       ramlToolLogger.debug(
@@ -409,8 +406,7 @@ export function addNodeArrayPropertyDiffs(
  */
 function addNodeReferenceDiffs(
   key: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  diff: any[],
+  diff: unknown[],
   diffType: DiffType,
   typedDiff: NodeDiff
 ): void {
@@ -432,8 +428,7 @@ function addNodeReferenceDiffs(
 /**
  * jsondiffpatch plugin to add node ID and type to the difference
  */
-// eslint-disable-next-line @typescript-eslint/consistent-type-assertions,@typescript-eslint/no-explicit-any
-const addNodeInfo = <any>function(context) {
+const addNodeInfo = function(context): void {
   if (
     context.leftType === "object" &&
     typeof context.left[JSON_LD_KEY_ID] !== "undefined"
