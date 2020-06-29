@@ -272,3 +272,24 @@ describe("getVersionByDeployment", () => {
     ).to.eventually.be.undefined;
   });
 });
+
+describe("getAsset", () => {
+  it("gets the JSON asset with the specified ID", () => {
+    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+      .get("/8888888/test-api")
+      .reply(200, { data: "json response" });
+
+    expect(
+      getAsset("AUTH_TOKEN", "8888888/test-api")
+    ).to.eventually.deep.equal({ data: "json response" });
+  });
+
+  it("returns undefined when the response indicates an error", () => {
+    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+      .get("/8888888/test-api")
+      .reply(404, "Not Found");
+
+    expect(getAsset("AUTH_TOKEN", "8888888/test-api")).to.eventually.be
+      .undefined;
+  });
+});
