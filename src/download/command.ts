@@ -4,8 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+import fs from "fs-extra";
+import path from "path";
 import { Command, flags } from "@oclif/command";
-import { download } from "./exchangeDownloader";
+import { search, downloadRestApis } from "./exchangeDownloader";
+import { extractFiles } from "./exchangeDirectoryParser";
+import { groupByCategory, removeRamlLinks } from "./exchangeTools";
 
 export default class DownloadCommand extends Command {
   static description =
@@ -52,6 +56,20 @@ export default class DownloadCommand extends Command {
   };
   async run(): Promise<void> {
     const { flags } = this.parse(DownloadCommand);
-    await download(flags as Omit<typeof flags, "help">);
+    const apis = await search(
+      flags.search,
+      new RegExp(flags.deployment, flags["deployment-regex-flags"])
+    );
+    await downloadRestApis(apis, flags.dest);
+    await extractFiles(flags.dest);
+    const apiFamilyGroups = groupByCategory(
+      removeRamlLinks(apis),
+      flags.family
+    );
+    await fs.ensureDir(flags.dest);
+    await fs.writeJson(
+      path.join(flags.dest, flags["config-file"]),
+      apiFamilyGroups
+    );
   }
 }

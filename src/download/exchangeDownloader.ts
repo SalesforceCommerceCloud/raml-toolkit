@@ -11,12 +11,7 @@ import fetch, { Response } from "node-fetch";
 import path from "path";
 
 import { getBearer } from "./bearerToken";
-import { extractFiles } from "./exchangeDirectoryParser";
-import {
-  groupByCategory,
-  removeRamlLinks,
-  removeVersionSpecificInformation
-} from "./exchangeTools";
+import { removeVersionSpecificInformation } from "./exchangeTools";
 import {
   RawRestApi,
   RestApi,
@@ -238,19 +233,4 @@ export async function search(
       : removeVersionSpecificInformation(api);
   });
   return Promise.all(promises);
-}
-
-export async function download(flags: Record<string, string>): Promise<void> {
-  const apis = await search(
-    flags.search,
-    new RegExp(flags.deployment, flags["deployment-regex-flags"])
-  );
-  await downloadRestApis(apis, flags.dest);
-  await extractFiles(flags.dest);
-  const apiFamilyGroups = groupByCategory(removeRamlLinks(apis), flags.family);
-  await fs.ensureDir(flags.dest);
-  await fs.writeJson(
-    path.join(flags.dest, flags["config-file"]),
-    apiFamilyGroups
-  );
 }
