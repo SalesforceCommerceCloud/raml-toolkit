@@ -119,7 +119,6 @@
     "clean": "rm -rf lib",
     "compile": "tsc -b && echo Compiled",
     "depcheck": "depcheck",
-    "dev": "npm run clean && npm run compile && ./bin/run",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run lint && npm run compile && npm run depcheck",
