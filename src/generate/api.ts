@@ -7,7 +7,11 @@
 import { model } from "amf-client-js";
 import _ from "lodash";
 
-import { resolveApiModel, parseRamlFile, getAllDataTypes } from "./parser";
+import {
+  resolveApiModel,
+  parseRamlFile,
+  getAllDataTypes
+} from "../common/parser";
 
 /**
  * An API represented as an AMF model. Includes the extracted data types

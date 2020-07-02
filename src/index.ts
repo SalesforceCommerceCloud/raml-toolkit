@@ -38,8 +38,8 @@ export {
   resolveApiModel
 } from "./common/parser";
 
-export { Api } from "./common/api";
-export { ApiGroup } from "./common/apiGroup";
-export { ApiCollection } from "./common/apiCollection";
+export { Api } from "./generate/api";
+export { ApiGroup } from "./generate/apiGroup";
+export { ApiCollection } from "./generate/apiCollection";
 
 export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
