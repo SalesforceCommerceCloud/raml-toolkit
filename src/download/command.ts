@@ -66,7 +66,6 @@ export default class DownloadCommand extends Command {
       removeRamlLinks(apis),
       flags.family
     );
-    await fs.ensureDir(flags.dest);
     await fs.writeJson(
       path.join(flags.dest, flags["config-file"]),
       apiFamilyGroups
