@@ -48,11 +48,13 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("rejects from an invalid file path", () => {
-    return expect(ApiGroup.read(["THISISNOTAREALFILE"])).to.eventually.be.rejected;
+    return expect(ApiGroup.read(["THISISNOTAREALFILE"])).to.eventually.be
+      .rejected;
   });
 
   it("rejects from an invalid file path plus a good one", () => {
-    return expect(ApiGroup.read([validRamlFile, "THISISNOTAREALFILE"])).to.eventually.be.rejected;
+    return expect(ApiGroup.read([validRamlFile, "THISISNOTAREALFILE"])).to
+      .eventually.be.rejected;
   });
 });
 
