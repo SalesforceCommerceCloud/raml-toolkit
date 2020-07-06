@@ -171,4 +171,13 @@ describe("Download Command", () => {
     .command(["download", `--config-file=/path/to/api-config.json`])
     .exit(2)
     .it("forbids specifying a path for config file name");
+
+  test
+    .env({
+      ANYPOINT_USERNAME: undefined,
+      ANYPOINT_PASSWORD: undefined
+    })
+    .command(["download"])
+    .exit(2)
+    .it("requires ANYPOINT_USERNAME and ANYPOINT_PASSWORD env variables");
 });

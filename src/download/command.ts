@@ -43,18 +43,26 @@ export default class DownloadCommand extends Command {
     }),
     family: flags.string({
       char: "f",
-      description: "The category to use to group APIs together",
+      description: "Category to use to group APIs together",
       env: "API_FAMILY",
       default: "CC API Family"
     }),
     "config-file": flags.string({
       char: "c",
-      description: "",
+      description: "Name of the target file to save the API config",
       env: "API_CONFIG_FILE",
       default: "api-config.json"
     })
   };
   async run(): Promise<void> {
+    if (!process.env.ANYPOINT_USERNAME || !process.env.ANYPOINT_PASSWORD) {
+      this.error(
+        "Environment variables ANYPOINT_USERNAME and ANYPOINT_PASSWORD must be set to download files.",
+        {
+          exit: 2
+        }
+      );
+    }
     const { flags } = this.parse(DownloadCommand);
     if (flags["config-file"] !== path.basename(flags["config-file"])) {
       this.error("Config file name cannot be a path.", {
