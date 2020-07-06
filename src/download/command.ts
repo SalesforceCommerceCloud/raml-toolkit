@@ -56,6 +56,11 @@ export default class DownloadCommand extends Command {
   };
   async run(): Promise<void> {
     const { flags } = this.parse(DownloadCommand);
+    if (flags["config-file"] !== path.basename(flags["config-file"])) {
+      this.error("Config file name cannot be a path.", {
+        exit: 2
+      });
+    }
     const apis = await search(
       flags.search,
       new RegExp(flags.deployment, flags["deployment-regex-flags"])
