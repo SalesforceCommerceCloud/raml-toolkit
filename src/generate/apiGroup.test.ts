@@ -59,6 +59,17 @@ describe("Test ApiGroup class read", () => {
 });
 
 describe("Test Api class setName", () => {
+  it("sets the name for empty constructor", () => {
+    const group = new ApiGroup();
+    expect(group.name).to.deep.equal({
+      original: "",
+      kebabCase: "",
+      lowerCamelCase: "",
+      snakeCase: "",
+      upperCamelCase: ""
+    });
+  });
+
   it("sets the name for lowercase", () => {
     const group = new ApiGroup("lowercase");
     expect(group.name).to.deep.equal({
@@ -125,8 +136,9 @@ describe("Test Api class setName", () => {
     });
   });
 
-  it("sets the name for undefined", () => {
+  it("defaults to empty string for undefined", () => {
     const group = new ApiGroup();
+    group.setName(undefined);
     expect(group.name).to.deep.equal({
       original: "",
       kebabCase: "",

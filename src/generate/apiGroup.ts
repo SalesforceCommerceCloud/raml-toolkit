@@ -22,8 +22,9 @@ export class ApiGroup {
     upperCamelCase: string;
   };
 
-  constructor(name?: string) {
+  constructor(name = "", apis?: Api[]) {
     this.setName(name);
+    this.apis = apis;
   }
 
   /**
@@ -33,18 +34,7 @@ export class ApiGroup {
    * @param apiSpecFilePaths - a list of paths to API spec files like RAML
    */
   static async read(apiSpecFilePaths: string[]): Promise<ApiGroup> {
-    const apiPromises: Promise<Api>[] = [];
-    for (const apiSpecFilePath of apiSpecFilePaths) {
-      apiPromises.push(Api.read(apiSpecFilePath));
-    }
-    await Promise.all(apiPromises);
-
-    const apiGroup = new ApiGroup();
-    apiGroup.apis = [];
-    for (const p of apiPromises) {
-      apiGroup.apis.push(await p);
-    }
-    return apiGroup;
+    return new ApiGroup("", await Promise.all(apiSpecFilePaths.map(Api.read)));
   }
 
   setName(name = ""): ApiGroup {
