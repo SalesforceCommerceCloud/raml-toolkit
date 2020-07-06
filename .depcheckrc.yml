@@ -1,11 +1,2 @@
-ignores: [
-  "@oclif/dev-cli",
-  "depcheck",
-  "eslint*",
-  "mocha",
-  "nyc",
-  "prettier",
-  "typescript",
-  "tslib",
-  "snyk"
-]
+ignores:
+  - dotenv
