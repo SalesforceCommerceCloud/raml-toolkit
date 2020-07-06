@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-/* eslint-disable no-undef */
 "use strict";
 import {
   getHappySpec,
@@ -23,7 +22,6 @@ describe("base uri", () => {
       "http://a.ml/vocabularies/data#base-uri-matches-pattern";
     const TEMPLATE_RULE =
       "http://a.ml/vocabularies/data#camelcase-template-parameters";
-    const TITLE_RULE = "http://a.ml/vocabularies/data#title-matches-api-name";
     let doc;
 
     beforeEach(() => {

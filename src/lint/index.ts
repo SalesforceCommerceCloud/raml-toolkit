@@ -27,7 +27,6 @@ export default class LintCommand extends Command {
     const promises = [];
 
     for (const arg of argv) {
-      // eslint-disable-next-line no-await-in-loop
       promises.push(
         validateFile(arg, flags.profile).then(results => {
           if (results.conforms === false) {
