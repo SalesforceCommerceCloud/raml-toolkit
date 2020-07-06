@@ -39,7 +39,8 @@
     "tmp": "^0.2.0",
     "ts-node": "^8.9.1",
     "typescript": "^3.7.5",
-    "unzipper": "^0.10.11"
+    "unzipper": "^0.10.11",
+    "handlebars": "^4.7.6"
   },
   "lint-staged": {
     "*.ts": [

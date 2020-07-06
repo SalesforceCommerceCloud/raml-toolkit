@@ -39,3 +39,4 @@ export {
 } from "./common/parser";
 
 export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
+export { Template } from "./common/template";
