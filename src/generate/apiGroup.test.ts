@@ -9,7 +9,7 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import { ApiGroup } from "./apiGroup";
+import ApiGroup from "./apiGroup";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
@@ -61,90 +61,16 @@ describe("Test ApiGroup class read", () => {
 describe("Test Api class setName", () => {
   it("sets the name for empty constructor", () => {
     const group = new ApiGroup();
-    expect(group.name).to.deep.equal({
-      original: "",
-      kebabCase: "",
-      lowerCamelCase: "",
-      snakeCase: "",
-      upperCamelCase: ""
-    });
+    expect(group.name.original).to.equal("");
   });
 
   it("sets the name for lowercase", () => {
-    const group = new ApiGroup("lowercase");
-    expect(group.name).to.deep.equal({
-      original: "lowercase",
-      kebabCase: "lowercase",
-      lowerCamelCase: "lowercase",
-      snakeCase: "lowercase",
-      upperCamelCase: "Lowercase"
-    });
-  });
-
-  it("sets the name for Uppercase", () => {
-    const group = new ApiGroup("Uppercase");
-    expect(group.name).to.deep.equal({
-      original: "Uppercase",
-      kebabCase: "uppercase",
-      lowerCamelCase: "uppercase",
-      snakeCase: "uppercase",
-      upperCamelCase: "Uppercase"
-    });
-  });
-
-  it("sets the name for Name with Spaces", () => {
-    const group = new ApiGroup("Name with Spaces");
-    expect(group.name).to.deep.equal({
-      original: "Name with Spaces",
-      kebabCase: "name-with-spaces",
-      lowerCamelCase: "nameWithSpaces",
-      snakeCase: "name_with_spaces",
-      upperCamelCase: "NameWithSpaces"
-    });
-  });
-
-  it("sets the name for kebab-case", () => {
-    const group = new ApiGroup("kebab-case");
-    expect(group.name).to.deep.equal({
-      original: "kebab-case",
-      kebabCase: "kebab-case",
-      lowerCamelCase: "kebabCase",
-      snakeCase: "kebab_case",
-      upperCamelCase: "KebabCase"
-    });
-  });
-
-  it("sets the name for snake_case", () => {
-    const group = new ApiGroup("snake_case");
-    expect(group.name).to.deep.equal({
-      original: "snake_case",
-      kebabCase: "snake-case",
-      lowerCamelCase: "snakeCase",
-      snakeCase: "snake_case",
-      upperCamelCase: "SnakeCase"
-    });
-  });
-
-  it("sets the name for empty string", () => {
-    const group = new ApiGroup("");
-    expect(group.name).to.deep.equal({
-      original: "",
-      kebabCase: "",
-      lowerCamelCase: "",
-      snakeCase: "",
-      upperCamelCase: ""
-    });
-  });
-
-  it("defaults to empty string for undefined", () => {
     const group = new ApiGroup();
-    group.setName(undefined);
-    expect(group.name).to.deep.equal({
-      original: "",
-      kebabCase: "",
-      lowerCamelCase: "",
-      snakeCase: "",
-      upperCamelCase: ""
-    });
+    group.setName("This is my test name.");
+    expect(group.name.original).to.equal("This is my test name.");
+    expect(group.name.kebabCase).to.equal("this-is-my-test-name");
+    expect(group.name.lowerCamelCase).to.equal("thisIsMyTestName");
+    expect(group.name.snakeCase).to.equal("this_is_my_test_name");
+    expect(group.name.upperCamelCase).to.equal("ThisIsMyTestName");
   });
 });

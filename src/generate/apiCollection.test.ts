@@ -9,7 +9,7 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import { ApiCollection } from "./apiCollection";
+import ApiCollection from "./apiCollection";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");

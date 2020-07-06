@@ -9,13 +9,24 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import { Api } from "./api";
+import Api from "./api";
+import { model } from "amf-client-js";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
 
 before(() => {
   chai.use(chaiAsPromised);
+});
+
+describe("Test Api class read", () => {
+  it("constructs an instance with no args", () => {
+    const api = new Api();
+    expect(api.dataTypes).to.be.empty;
+    expect(api.model).to.eql(new model.document.Document());
+    expect(api.name.original).to.be.empty;
+    expect(api.path).to.be.empty;
+  });
 });
 
 describe("Test Api class read", () => {
@@ -34,84 +45,5 @@ describe("Test Api class read", () => {
 
   it("rejects from an invalid file path", () => {
     return expect(Api.read("THISISNOTAREALFILE")).to.eventually.be.rejected;
-  });
-});
-
-describe("Test Api class setName", () => {
-  it("sets the name for lowercase", () => {
-    const api = new Api();
-    expect(api.setName("lowercase").name).to.deep.equal({
-      original: "lowercase",
-      kebabCase: "lowercase",
-      lowerCamelCase: "lowercase",
-      snakeCase: "lowercase",
-      upperCamelCase: "Lowercase"
-    });
-  });
-
-  it("sets the name for Uppercase", () => {
-    const api = new Api();
-    expect(api.setName("Uppercase").name).to.deep.equal({
-      original: "Uppercase",
-      kebabCase: "uppercase",
-      lowerCamelCase: "uppercase",
-      snakeCase: "uppercase",
-      upperCamelCase: "Uppercase"
-    });
-  });
-
-  it("sets the name for Name with Spaces", () => {
-    const api = new Api();
-    expect(api.setName("Name with Spaces").name).to.deep.equal({
-      original: "Name with Spaces",
-      kebabCase: "name-with-spaces",
-      lowerCamelCase: "nameWithSpaces",
-      snakeCase: "name_with_spaces",
-      upperCamelCase: "NameWithSpaces"
-    });
-  });
-
-  it("sets the name for kebab-case", () => {
-    const api = new Api();
-    expect(api.setName("kebab-case").name).to.deep.equal({
-      original: "kebab-case",
-      kebabCase: "kebab-case",
-      lowerCamelCase: "kebabCase",
-      snakeCase: "kebab_case",
-      upperCamelCase: "KebabCase"
-    });
-  });
-
-  it("sets the name for snake_case", () => {
-    const api = new Api();
-    expect(api.setName("snake_case").name).to.deep.equal({
-      original: "snake_case",
-      kebabCase: "snake-case",
-      lowerCamelCase: "snakeCase",
-      snakeCase: "snake_case",
-      upperCamelCase: "SnakeCase"
-    });
-  });
-
-  it("sets the name for empty string", () => {
-    const api = new Api();
-    expect(api.setName("").name).to.deep.equal({
-      original: "",
-      kebabCase: "",
-      lowerCamelCase: "",
-      snakeCase: "",
-      upperCamelCase: ""
-    });
-  });
-
-  it("sets the name for undefined", () => {
-    const api = new Api();
-    expect(api.setName(undefined).name).to.deep.equal({
-      original: "",
-      kebabCase: "",
-      lowerCamelCase: "",
-      snakeCase: "",
-      upperCamelCase: ""
-    });
   });
 });

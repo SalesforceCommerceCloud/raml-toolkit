@@ -6,21 +6,16 @@
  */
 import _ from "lodash";
 
-import { Api } from "./api";
+import Api from "./api";
+import Name from "./name";
 
 /**
  * A group of API objects. Common transformations of the group name are cached
  * for reference in templates and file paths.
  */
-export class ApiGroup {
+export default class ApiGroup {
   apis: Api[];
-  name: {
-    original: string;
-    kebabCase: string;
-    lowerCamelCase: string;
-    snakeCase: string;
-    upperCamelCase: string;
-  };
+  name: Name;
 
   constructor(name = "", apis?: Api[]) {
     this.setName(name);
@@ -37,15 +32,8 @@ export class ApiGroup {
     return new ApiGroup("", await Promise.all(apiSpecFilePaths.map(Api.read)));
   }
 
-  setName(name = ""): ApiGroup {
-    this.name = {
-      original: name,
-      kebabCase: _.kebabCase(name),
-      lowerCamelCase: _.camelCase(name),
-      snakeCase: _.snakeCase(name),
-      upperCamelCase: _.upperFirst(_.camelCase(name))
-    };
-
+  setName(name = ""): this {
+    this.name = new Name(name);
     return this;
   }
 }

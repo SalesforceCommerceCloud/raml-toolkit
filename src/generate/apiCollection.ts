@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { ApiGroup } from "./apiGroup";
+import ApiGroup from "./apiGroup";
 
 /**
  * A collection of multiple groups of APIs stored by key.
  */
-export class ApiCollection {
+export default class ApiCollection {
   [key: string]: ApiGroup;
 
   /**
