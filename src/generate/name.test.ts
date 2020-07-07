@@ -28,7 +28,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("lowercase");
     expect(name.upperCamelCase).to.equal("Lowercase");
     expect(name.toString()).to.equal("lowercase");
-    expect(name + "T").to.equal("lowercaseT");
   });
 
   it("sets all fields from the constructor with Uppercase", () => {
@@ -39,7 +38,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("uppercase");
     expect(name.upperCamelCase).to.equal("Uppercase");
     expect(name.toString()).to.equal("Uppercase");
-    expect(name + "T").to.equal("UppercaseT");
   });
 
   it("sets all fields from the constructor with a name with spaces", () => {
@@ -50,7 +48,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("name_with_spaces");
     expect(name.upperCamelCase).to.equal("NameWithSpaces");
     expect(name.toString()).to.equal("Name with Spaces");
-    expect(name + "T").to.equal("Name with SpacesT");
   });
 
   it("sets all fields from the constructor with a kebab-case name", () => {
@@ -61,7 +58,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("kebab_case");
     expect(name.upperCamelCase).to.equal("KebabCase");
     expect(name.toString()).to.equal("kebab-case");
-    expect(name + "T").to.equal("kebab-caseT");
   });
 
   it("sets all fields from the constructor with a snake_case name", () => {
@@ -72,7 +68,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("snake_case");
     expect(name.upperCamelCase).to.equal("SnakeCase");
     expect(name.toString()).to.equal("snake_case");
-    expect(name + "T").to.equal("snake_caseT");
   });
 
   it("sets all fields from the constructor with an empty string", () => {
@@ -83,7 +78,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("");
     expect(name.upperCamelCase).to.equal("");
     expect(name.toString()).to.equal("");
-    expect(name + "T").to.equal("T");
   });
 
   it("sets all fields to empty string from the constructor with an undefined input", () => {
@@ -94,7 +88,6 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("");
     expect(name.upperCamelCase).to.equal("");
     expect(name.toString()).to.equal("");
-    expect(name + "T").to.equal("T");
   });
 
   it("sets all fields when setting original directly", () => {
@@ -106,6 +99,5 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("im_allowed_to_do_this");
     expect(name.upperCamelCase).to.equal("ImAllowedToDoThis");
     expect(name.toString()).to.equal("I'm allowed to do this.");
-    expect(name + "T").to.equal("I'm allowed to do this.T");
   });
 });
