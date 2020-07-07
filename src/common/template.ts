@@ -36,9 +36,12 @@ export class Template {
    * @param context - The data model to use for substitutions
    * @param destination - The file path to write the rendered template to
    */
-  render(context: { [key: string]: unknown }, destination: string): void {
+  async render(
+    context: { [key: string]: unknown },
+    destination: string
+  ): Promise<void> {
     try {
-      fs.outputFileSync(
+      await fs.outputFile(
         destination,
         //Parts of the AMF model use prototype properties and methods, we need to make those available to Handlebars
         this.handlebars.compile(this.content)(context, {

@@ -10,8 +10,10 @@ import { writeFileSync } from "fs-extra";
 import Handlebars from "handlebars";
 import chai from "chai";
 import chaiFs from "chai-fs";
+import chaiAsPromised from "chai-as-promised";
 
 chai.use(chaiFs);
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 
 describe("Create template instance", () => {
@@ -51,21 +53,23 @@ describe("Render template", () => {
     const tmpFile = fileSync({ postfix: ".hbs" });
     writeFileSync(tmpFile.name, "Test");
     const template = new Template(tmpFile.name);
-    return expect(() => template.render(undefined, undefined)).to.throw(errMsg);
+    return expect(template.render(undefined, undefined)).to.be.rejectedWith(
+      errMsg
+    );
   });
 
   it("throws error when destination file path is empty", async () => {
     const tmpFile = fileSync({ postfix: ".hbs" });
     writeFileSync(tmpFile.name, "Test");
     const template = new Template(tmpFile.name);
-    return expect(() => template.render(undefined, "")).to.throw(errMsg);
+    return expect(template.render(undefined, "")).to.be.rejectedWith(errMsg);
   });
 
   it("throws error when destination file path is null", async () => {
     const tmpFile = fileSync({ postfix: ".hbs" });
     writeFileSync(tmpFile.name, "Test");
     const template = new Template(tmpFile.name);
-    return expect(() => template.render(undefined, null)).to.throw(errMsg);
+    return expect(template.render(undefined, null)).to.be.rejectedWith(errMsg);
   });
 
   it("creates and renders when destination file does not exist", async () => {
@@ -76,7 +80,7 @@ describe("Render template", () => {
 
     const data = { name: "Test rendering" };
     const dest = "/tmp/rendered_testing.ts";
-    template.render(data, dest);
+    await template.render(data, dest);
     expect(dest)
       .to.be.a.file()
       .with.content(data.name);
@@ -91,7 +95,7 @@ describe("Render template", () => {
     //render template
     const data = { name: "Test rendering" };
     const renderedFile = fileSync();
-    template.render(data, renderedFile.name);
+    await template.render(data, renderedFile.name);
 
     //verify the rendered content
     expect(renderedFile.name)
@@ -114,7 +118,7 @@ describe("Render template", () => {
     //render template
     const data = { name: "Test rendering" };
     const renderedFile = fileSync();
-    template.render(data, renderedFile.name);
+    await template.render(data, renderedFile.name);
 
     //verify the rendered content
     expect(renderedFile.name)
