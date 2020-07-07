@@ -16,9 +16,9 @@ export class Template {
   /**
    * Creates a Template object
    * @param path - Path to the template file
-   * @param hb - Optional handlebars instance, default instance is used if not provided
+   * @param handlebars - Optional handlebars instance, default instance is used if not provided
    */
-  constructor(public path: string, public hb = Handlebars) {
+  constructor(public path: string, public handlebars = Handlebars) {
     try {
       this.content = fs.readFileSync(path, "utf8");
     } catch (error) {
@@ -40,7 +40,7 @@ export class Template {
     fs.outputFileSync(
       destination,
       //Parts of the AMF model use prototype properties and methods, we need to make those available to Handlebars
-      this.hb.compile(this.content)(context, {
+      this.handlebars.compile(this.content)(context, {
         allowProtoPropertiesByDefault: true,
         allowProtoMethodsByDefault: true
       })
