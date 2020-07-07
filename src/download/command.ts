@@ -11,7 +11,7 @@ import { search, downloadRestApis } from "./exchangeDownloader";
 import { extractFiles } from "./exchangeDirectoryParser";
 import { groupByCategory, removeRamlLinks } from "./exchangeTools";
 
-export default class DownloadCommand extends Command {
+export class DownloadCommand extends Command {
   static description =
     "Download API specification files from Anypoint Exchange";
   static flags = {
