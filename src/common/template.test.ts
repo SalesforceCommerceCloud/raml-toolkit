@@ -7,8 +7,11 @@
 import { expect } from "chai";
 import { Template } from "./template";
 import { fileSync } from "tmp";
-import { writeFileSync, readFileSync } from "fs-extra";
-import * as Handlebars from "handlebars";
+import { writeFileSync } from "fs-extra";
+import Handlebars from "handlebars";
+import chai from "chai";
+import chaiFs from "chai-fs";
+chai.use(chaiFs);
 
 describe("Create template instance", () => {
   const errMsg = "Error initializing template";
@@ -54,7 +57,9 @@ describe("Render template", () => {
     template.render(data, renderedFile.name);
 
     //verify the rendered content
-    expect(readFileSync(renderedFile.name).toString()).to.equal(data.name);
+    expect(renderedFile.name)
+      .to.be.a.file()
+      .with.content(data.name);
   });
 
   it("Renders template with the given handlebars environment", async () => {
@@ -75,8 +80,8 @@ describe("Render template", () => {
     template.render(data, renderedFile.name);
 
     //verify the rendered content
-    expect(readFileSync(renderedFile.name).toString()).to.equal(
-      data.name.toUpperCase()
-    );
+    expect(renderedFile.name)
+      .to.be.a.file()
+      .with.content(data.name.toUpperCase());
   });
 });
