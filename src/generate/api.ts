@@ -19,7 +19,7 @@ import Name from "./name";
  * defined in the spec. Common transformations of the name are cached for
  * reference in templates and for use in assembling file paths.
  */
-export default class Api {
+export class Api {
   private _dataTypes: model.domain.CustomDomainProperty[] = [];
   private _model = new model.document.Document();
   private _name = new Name();

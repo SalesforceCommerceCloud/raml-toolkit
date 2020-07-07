@@ -35,5 +35,5 @@ ApiGroup.read({
     "My Second Group": [
         "path/to/favorite-spec.raml"
     ]
-).then(console.log);
+}).then(console.log);
 ```

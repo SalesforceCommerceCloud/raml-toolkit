@@ -9,7 +9,7 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import ApiCollection from "./apiCollection";
+import { ApiCollection } from "./apiCollection";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
@@ -23,17 +23,19 @@ describe("Test ApiGroup class read", () => {
     const collection = await ApiCollection.read({
       "Group One": [validRamlFile]
     });
-    expect(collection["Group One"].apis).to.not.be.empty;
-    expect(collection["Group One"].apis[0].model).to.not.be.empty;
-    expect(collection["Group One"].apis[0].name.original).to.equal("Shop API");
-    expect(collection["Group One"].apis[0].path).to.be.equal(validRamlFile);
+    expect(collection.get("Group One").apis).to.not.be.empty;
+    expect(collection.get("Group One").apis[0].model).to.not.be.empty;
+    expect(collection.get("Group One").apis[0].name.original).to.equal(
+      "Shop API"
+    );
+    expect(collection.get("Group One").apis[0].path).to.be.equal(validRamlFile);
   });
 
   it("creates an instance from two valid raml files in one group", async () => {
     const collection = await ApiCollection.read({
       "Group One": [validRamlFile, validRamlFile]
     });
-    expect(collection["Group One"].apis.length).to.eq(2);
+    expect(collection.get("Group One").apis.length).to.eq(2);
   });
 
   it("creates an instance from two valid raml files in two groups", async () => {
@@ -41,8 +43,8 @@ describe("Test ApiGroup class read", () => {
       "Group One": [validRamlFile],
       "Group Two": [validRamlFile]
     });
-    expect(collection["Group One"].apis.length).to.eq(1);
-    expect(collection["Group Two"].apis.length).to.eq(1);
+    expect(collection.get("Group One").apis.length).to.eq(1);
+    expect(collection.get("Group Two").apis.length).to.eq(1);
   });
 
   it("rejects from an invalid raml file", () => {

@@ -6,14 +6,14 @@
  */
 import _ from "lodash";
 
-import Api from "./api";
+import { Api } from "./api";
 import Name from "./name";
 
 /**
  * A group of API objects. Common transformations of the group name are cached
  * for reference in templates and file paths.
  */
-export default class ApiGroup {
+export class ApiGroup {
   apis: Api[];
   name: Name;
 

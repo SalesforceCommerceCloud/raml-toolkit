@@ -9,7 +9,7 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import Api from "./api";
+import { Api } from "./api";
 import { model } from "amf-client-js";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");

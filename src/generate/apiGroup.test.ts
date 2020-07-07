@@ -9,7 +9,7 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import ApiGroup from "./apiGroup";
+import { ApiGroup } from "./apiGroup";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
@@ -61,6 +61,12 @@ describe("Test ApiGroup class read", () => {
 describe("Test Api class setName", () => {
   it("sets the name for empty constructor", () => {
     const group = new ApiGroup();
+    expect(group.name.original).to.equal("");
+  });
+
+  it("sets the name to empty string by default", () => {
+    const group = new ApiGroup();
+    group.setName();
     expect(group.name.original).to.equal("");
   });
 

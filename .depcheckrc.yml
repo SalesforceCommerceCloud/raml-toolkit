@@ -5,7 +5,8 @@ ignores: [
   "mocha",
   "nyc",
   "prettier",
+  "snyk",
+  "sort-package-json",
   "typescript",
-  "tslib",
-  "snyk"
+  "tslib"
 ]
