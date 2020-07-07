@@ -29,6 +29,7 @@
     "@oclif/config": "^1.15.1",
     "amf-client-js": "^4.1.2-0",
     "fs-extra": "^8.1.0",
+    "handlebars": "^4.7.6",
     "js-yaml": "^3.14.0",
     "json-rules-engine": "^5.0.3",
     "jsondiffpatch": "^0.4.1",
@@ -39,8 +40,7 @@
     "tmp": "^0.2.0",
     "ts-node": "^8.9.1",
     "typescript": "^3.7.5",
-    "unzipper": "^0.10.11",
-    "handlebars": "^4.7.6"
+    "unzipper": "^0.10.11"
   },
   "lint-staged": {
     "*.ts": [

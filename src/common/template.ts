@@ -37,13 +37,18 @@ export class Template {
    * @param destination - The file path to write the rendered template to
    */
   render(context: { [key: string]: unknown }, destination: string): void {
-    fs.outputFileSync(
-      destination,
-      //Parts of the AMF model use prototype properties and methods, we need to make those available to Handlebars
-      this.handlebars.compile(this.content)(context, {
-        allowProtoPropertiesByDefault: true,
-        allowProtoMethodsByDefault: true
-      })
-    );
+    try {
+      fs.outputFileSync(
+        destination,
+        //Parts of the AMF model use prototype properties and methods, we need to make those available to Handlebars
+        this.handlebars.compile(this.content)(context, {
+          allowProtoPropertiesByDefault: true,
+          allowProtoMethodsByDefault: true
+        })
+      );
+    } catch (error) {
+      error.message = `Error rendering template: ${error.message}`;
+      throw error;
+    }
   }
 }

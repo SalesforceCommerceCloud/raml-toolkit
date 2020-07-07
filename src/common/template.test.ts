@@ -46,7 +46,43 @@ describe("Create template instance", () => {
 });
 
 describe("Render template", () => {
-  it("Renders template with default handlebars environment", async () => {
+  const errMsg = "Error rendering template";
+  it("throws error when destination file path is undefined", async () => {
+    const tmpFile = fileSync({ postfix: ".hbs" });
+    writeFileSync(tmpFile.name, "Test");
+    const template = new Template(tmpFile.name);
+    return expect(() => template.render(undefined, undefined)).to.throw(errMsg);
+  });
+
+  it("throws error when destination file path is empty", async () => {
+    const tmpFile = fileSync({ postfix: ".hbs" });
+    writeFileSync(tmpFile.name, "Test");
+    const template = new Template(tmpFile.name);
+    return expect(() => template.render(undefined, "")).to.throw(errMsg);
+  });
+
+  it("throws error when destination file path is null", async () => {
+    const tmpFile = fileSync({ postfix: ".hbs" });
+    writeFileSync(tmpFile.name, "Test");
+    const template = new Template(tmpFile.name);
+    return expect(() => template.render(undefined, null)).to.throw(errMsg);
+  });
+
+  it("creates and renders when destination file does not exist", async () => {
+    const tmpFile = fileSync({ postfix: ".hbs" });
+    const templateContent = "{{name}}";
+    writeFileSync(tmpFile.name, templateContent);
+    const template = new Template(tmpFile.name);
+
+    const data = { name: "Test rendering" };
+    const dest = "/tmp/rendered_testing.ts";
+    template.render(data, dest);
+    expect(dest)
+      .to.be.a.file()
+      .with.content(data.name);
+  });
+
+  it("renders template with default handlebars environment", async () => {
     //create template
     const tmpFile = fileSync({ postfix: ".hbs" });
     const templateContent = "{{name}}";
@@ -63,15 +99,15 @@ describe("Render template", () => {
       .with.content(data.name);
   });
 
-  it("Renders template with the given handlebars environment", async () => {
+  it("renders template with the given handlebars environment", async () => {
     //create template
     const tmpFile = fileSync({ postfix: ".hbs" });
-    const templateContent = "{{{getUpperCaseName name}}}";
+    const templateContent = "{{{changeName name}}}";
     writeFileSync(tmpFile.name, templateContent);
     //Creates an isolated Handlebars environment.
     const customHb = Handlebars.create();
-    customHb.registerHelper("getUpperCaseName", name => {
-      return name.toUpperCase();
+    customHb.registerHelper("changeName", name => {
+      return `Testing custom handlebars - ${name}`;
     });
     const template = new Template(tmpFile.name, customHb);
 
@@ -83,6 +119,6 @@ describe("Render template", () => {
     //verify the rendered content
     expect(renderedFile.name)
       .to.be.a.file()
-      .with.content(data.name.toUpperCase());
+      .with.content(`Testing custom handlebars - ${data.name}`);
   });
 });
