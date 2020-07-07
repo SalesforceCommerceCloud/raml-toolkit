@@ -75,7 +75,7 @@ function setup({
       // Intercept searchExchange request
       .nock("https://anypoint.mulesoft.com/exchange/api/v2", scope =>
         scope
-          .get(`/assets?search=${encodeURIComponent(search)}`)
+          .get(`/assets?search=${encodeURIComponent(search)}&types=rest-api`)
           .reply(200, [assetSearchResults[0]])
       )
       // Intercept search requests
