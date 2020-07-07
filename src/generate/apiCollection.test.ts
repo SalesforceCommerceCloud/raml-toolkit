@@ -35,7 +35,9 @@ describe("Test ApiGroup class read", () => {
     const collection = await ApiCollection.read({
       "Group One": [validRamlFile, validRamlFile]
     });
-    expect(collection.get("Group One").apis.length).to.eq(2);
+    expect(collection.get("Group One").apis)
+      .to.be.an("array")
+      .with.lengthOf(2);
   });
 
   it("creates an instance from two valid raml files in two groups", async () => {
@@ -43,8 +45,12 @@ describe("Test ApiGroup class read", () => {
       "Group One": [validRamlFile],
       "Group Two": [validRamlFile]
     });
-    expect(collection.get("Group One").apis.length).to.eq(1);
-    expect(collection.get("Group Two").apis.length).to.eq(1);
+    expect(collection.get("Group One").apis)
+      .to.be.an("array")
+      .with.lengthOf(1);
+    expect(collection.get("Group Two").apis)
+      .to.be.an("array")
+      .with.lengthOf(1);
   });
 
   it("rejects from an invalid raml file", () => {
