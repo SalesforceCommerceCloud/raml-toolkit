@@ -2,44 +2,40 @@
   "name": "@commerce-apps/raml-toolkit",
   "version": "0.4.1",
   "description": "",
+  "keywords": [
+    "oclif",
+    "raml"
+  ],
+  "homepage": "https://github.com/SalesforceCommerceCloud/raml-toolkit",
+  "license": "BSD 3-Clause",
+  "author": "",
+  "main": "lib/index.js",
+  "bin": {
+    "raml-toolkit": "./bin/run",
+    "ramlint": "./bin/run"
+  },
   "files": [
     "/bin",
     "/lib",
     "/oclif.manifest.json",
     "/resources"
   ],
-  "homepage": "https://github.com/SalesforceCommerceCloud/raml-toolkit",
-  "keywords": [
-    "oclif",
-    "raml"
-  ],
-  "bin": {
-    "raml-toolkit": "./bin/run",
-    "ramlint": "./bin/run"
-  },
-  "main": "lib/index.js",
-  "oclif": {
-    "bin": "raml-toolkit",
-    "commands": "./lib/commands"
-  },
-  "author": "",
-  "license": "BSD 3-Clause",
-  "dependencies": {
-    "@oclif/command": "^1.6.1",
-    "@oclif/config": "^1.15.1",
-    "amf-client-js": "^4.1.2-0",
-    "fs-extra": "^8.1.0",
-    "js-yaml": "^3.14.0",
-    "json-rules-engine": "^5.0.3",
-    "jsondiffpatch": "^0.4.1",
-    "lodash": "^4.17.15",
-    "loglevel": "^1.6.8",
-    "node-fetch": "^2.6.0",
-    "snyk": "^1.341.1",
-    "tmp": "^0.2.0",
-    "ts-node": "^8.9.1",
-    "typescript": "^3.7.5",
-    "unzipper": "^0.10.11"
+  "scripts": {
+    "clean": "rm -rf lib",
+    "compile": "tsc -b && echo Compiled",
+    "depcheck": "depcheck",
+    "lint": "npm run lint:dev -- --quiet",
+    "lint:dev": "npx sort-package-json && eslint . --ext .ts --fix",
+    "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk protect",
+    "pretest": "npm run lint && npm run compile && npm run depcheck",
+    "test": "npm run test:unit && npm run test:resources",
+    "test:debug": "mocha \"src/**/*.test.ts\"",
+    "test:resources": "mocha \"resources/**/*.test.ts\"",
+    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "version": "oclif-dev readme && git add README.md"
   },
   "lint-staged": {
     "*.ts": [
@@ -49,21 +45,26 @@
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "header"
+    ],
     "extends": [
       "plugin:@typescript-eslint/recommended",
       "prettier/@typescript-eslint",
       "plugin:prettier/recommended"
     ],
-    "plugins": [
-      "@typescript-eslint",
-      "header"
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2018,
-      "sourceType": "module"
-    },
-    "reportUnusedDisableDirectives": true,
     "rules": {
+      "max-lines": [
+        "error",
+        {
+          "max": 500
+        }
+      ],
       "@typescript-eslint/interface-name-prefix": [
         "error",
         {
@@ -84,53 +85,48 @@
           " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause",
           " "
         ]
-      ],
-      "max-lines": [
-        "error",
-        {
-          "max": 500
-        }
       ]
-    }
-  },
-  "nyc": {
-    "all": true,
-    "check-coverage": true,
-    "branches": 85,
-    "functions": 85,
-    "lines": 85,
-    "statements": -10,
-    "per-file": true,
-    "include": [
-      "src/**/*.ts"
-    ],
-    "extension": [
-      ".ts"
-    ]
+    },
+    "reportUnusedDisableDirectives": true
   },
   "mocha": {
+    "colors": true,
     "forbidOnly": true,
     "require": [
       "ts-node/register"
-    ],
-    "colors": true
+    ]
   },
-  "scripts": {
-    "clean": "rm -rf lib",
-    "compile": "tsc -b && echo Compiled",
-    "depcheck": "depcheck",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
-    "pretest": "npm run lint && npm run compile && npm run depcheck",
-    "lint": "npm run lint:dev -- --quiet",
-    "lint:dev": "eslint . --ext .ts --fix",
-    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
-    "test:debug": "mocha \"src/**/*.test.ts\"",
-    "test:resources": "mocha \"resources/**/*.test.ts\"",
-    "test": "npm run test:unit && npm run test:resources",
-    "version": "oclif-dev readme && git add README.md",
-    "snyk-protect": "snyk protect",
-    "prepare": "npm run snyk-protect"
+  "nyc": {
+    "all": true,
+    "branches": 85,
+    "check-coverage": true,
+    "extension": [
+      ".ts"
+    ],
+    "functions": 85,
+    "include": [
+      "src/**/*.ts"
+    ],
+    "lines": 85,
+    "per-file": true,
+    "statements": -10
+  },
+  "dependencies": {
+    "@oclif/command": "^1.6.1",
+    "@oclif/config": "^1.15.1",
+    "amf-client-js": "^4.1.2-0",
+    "fs-extra": "^8.1.0",
+    "js-yaml": "^3.14.0",
+    "json-rules-engine": "^5.0.3",
+    "jsondiffpatch": "^0.4.1",
+    "lodash": "^4.17.15",
+    "loglevel": "^1.6.8",
+    "node-fetch": "^2.6.0",
+    "snyk": "^1.341.1",
+    "tmp": "^0.2.0",
+    "ts-node": "^8.9.1",
+    "typescript": "^3.7.5",
+    "unzipper": "^0.10.11"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -161,10 +157,15 @@
     "nyc": "^15.0.0",
     "prettier": "^1.15.2",
     "sinon": "^9.0.2",
+    "sort-package-json": "^1.44.0",
     "tslib": "^1.10.0"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "oclif": {
+    "bin": "raml-toolkit",
+    "commands": "./lib/commands"
   },
   "snyk": true
 }
