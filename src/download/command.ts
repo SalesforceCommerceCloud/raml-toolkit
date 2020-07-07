@@ -7,7 +7,7 @@
 import fs from "fs-extra";
 import path from "path";
 import { Command, flags } from "@oclif/command";
-import { search, downloadRestApis } from "./exchangeDownloader";
+import * as download from "./exchangeDownloader";
 import { extractFiles } from "./exchangeDirectoryParser";
 import { groupByCategory, removeRamlLinks } from "./exchangeTools";
 
@@ -20,37 +20,38 @@ export class DownloadCommand extends Command {
     }),
     search: flags.string({
       char: "s",
-      description: "Search query to filter results from Exchange",
-      env: "EXCHANGE_SEARCH",
-      default: 'category:"CC Visibility" = "External"'
+      description: "Search query to filter results from Anypoint Exchange",
+      env: "ANYPOINT_SEARCH",
+      default: ""
     }),
     deployment: flags.string({
       char: "D",
-      description: "Deployment status to filter results from Exchange",
-      env: "EXCHANGE_DEPLOYMENT",
-      default: "production"
+      description: "Deployment status to filter results from Anypoint Exchange",
+      env: "ANYPOINT_DEPLOYMENT",
+      default: "." // RegExp to match any non-empty string
     }),
     "deployment-regex-flags": flags.string({
       description: "RegExp flags to specify for advanced deployment matching",
+      // TODO: Decide on default for this flag
       default: "i",
       dependsOn: ["deployment"]
     }),
     dest: flags.string({
       char: "d",
       description: "Directory to download APIs into",
-      env: "EXCHANGE_DOWNLOAD_DEST",
+      env: "ANYPOINT_DOWNLOAD_DEST",
       default: "apis"
     }),
-    family: flags.string({
+    "group-by": flags.string({
       char: "f",
       description: "Category to use to group APIs together",
-      env: "API_FAMILY",
+      env: "ANYPOINT_GROUP_BY",
       default: "CC API Family"
     }),
     "config-file": flags.string({
       char: "c",
       description: "Name of the target file to save the API config",
-      env: "API_CONFIG_FILE",
+      env: "ANYPOINT_CONFIG_FILE",
       default: "api-config.json"
     })
   };
@@ -64,20 +65,15 @@ export class DownloadCommand extends Command {
       );
     }
     const { flags } = this.parse(DownloadCommand);
-    if (flags["config-file"] !== path.basename(flags["config-file"])) {
-      this.error("Config file name cannot be a path.", {
-        exit: 2
-      });
-    }
-    const apis = await search(
+    const apis = await download.search(
       flags.search,
       new RegExp(flags.deployment, flags["deployment-regex-flags"])
     );
-    await downloadRestApis(apis, flags.dest);
+    await download.downloadRestApis(apis, flags.dest);
     await extractFiles(flags.dest);
     const apiFamilyGroups = groupByCategory(
       removeRamlLinks(apis),
-      flags.family
+      flags["group-by"]
     );
     await fs.writeJson(
       path.join(flags.dest, flags["config-file"]),

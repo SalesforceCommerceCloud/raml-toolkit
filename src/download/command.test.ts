@@ -58,7 +58,7 @@ const API_CONFIG_JSON = JSON.stringify(API_CONFIG);
  * it is too complex for VS Code to parse and causes things to hang / break.
  */
 function setup({
-  search = 'category:"CC Visibility" = "External"',
+  search = "",
   version = "0.0.1"
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } = {}): any {
@@ -132,7 +132,7 @@ describe("Download Command", () => {
     .it("accepts a configurable deployment status");
 
   setup()
-    .command(["download", "--family=category"])
+    .command(["download", "--group-by=category"])
     .it("accepts a configurable category for grouping APIs");
 
   setup()
