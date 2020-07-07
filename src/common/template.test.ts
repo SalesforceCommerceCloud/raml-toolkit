@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { expect } from "chai";
 import { Template } from "./template";
 import { fileSync } from "tmp";
 import { writeFileSync } from "fs-extra";
 import Handlebars from "handlebars";
 import chai from "chai";
 import chaiFs from "chai-fs";
+
 chai.use(chaiFs);
+const expect = chai.expect;
 
 describe("Create template instance", () => {
   const errMsg = "Error initializing template";
