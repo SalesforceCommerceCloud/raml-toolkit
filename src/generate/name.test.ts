@@ -9,17 +9,6 @@ import { expect } from "chai";
 import Name from "./name";
 
 describe("Test Name class", () => {
-  it("sets all fields to empty string from the default constructor", () => {
-    const name = new Name();
-    expect(name.original).to.equal("");
-    expect(name.kebabCase).to.equal("");
-    expect(name.lowerCamelCase).to.equal("");
-    expect(name.snakeCase).to.equal("");
-    expect(name.upperCamelCase).to.equal("");
-    expect(name.toString()).to.equal("");
-    expect(name + "T").to.equal("T");
-  });
-
   it("sets all fields from the constructor with lowercase", () => {
     const name = new Name("lowercase");
     expect(name.original).to.equal("lowercase");
@@ -88,16 +77,5 @@ describe("Test Name class", () => {
     expect(name.snakeCase).to.equal("");
     expect(name.upperCamelCase).to.equal("");
     expect(name.toString()).to.equal("");
-  });
-
-  it("sets all fields when setting original directly", () => {
-    const name = new Name();
-    name.original = "I'm allowed to do this.";
-    expect(name.original).to.equal("I'm allowed to do this.");
-    expect(name.kebabCase).to.equal("im-allowed-to-do-this");
-    expect(name.lowerCamelCase).to.equal("imAllowedToDoThis");
-    expect(name.snakeCase).to.equal("im_allowed_to_do_this");
-    expect(name.upperCamelCase).to.equal("ImAllowedToDoThis");
-    expect(name.toString()).to.equal("I'm allowed to do this.");
   });
 });

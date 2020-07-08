@@ -20,40 +20,17 @@ import Name from "./name";
  * reference in templates and for use in assembling file paths.
  */
 export class Api {
-  private _dataTypes: model.domain.CustomDomainProperty[] = [];
-  private _model = new model.document.Document();
-  private _name = new Name();
-  private _path = "";
+  dataTypes: model.domain.CustomDomainProperty[];
+  model: model.document.Document;
+  name: Name;
+  path: string;
 
-  constructor(amfModel, path = "") {
-    this.model = amfModel;
-    this._path = path;
-  }
-
-  get dataTypes(): model.domain.CustomDomainProperty[] {
-    return this._dataTypes;
-  }
-
-  get model(): model.document.Document {
-    return this._model;
-  }
-
-  /**
-   * Sets the model field. Additionally automatically extracts the datatypes
-   * and names from the model and sets those fields.
-   */
-  set model(model: model.document.Document) {
-    this._model = model;
-    this._dataTypes = getAllDataTypes(model);
-    this._name = new Name((model.encodes as model.domain.WebApi)?.name.value());
-  }
-
-  get name(): Name {
-    return this._name;
-  }
-
-  get path(): string {
-    return this._path;
+  constructor(model, path = "") {
+    this.dataTypes = getAllDataTypes(model);
+    this.model = model;
+    this.name = new Name((model.encodes as model.domain.WebApi)?.name.value());
+    this.path = path;
+    Object.freeze(this);
   }
 
   /**

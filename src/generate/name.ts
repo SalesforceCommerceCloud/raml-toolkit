@@ -10,42 +10,21 @@ import _ from "lodash";
  * Stores a name with common transformations cached for use in templates and file paths.
  */
 export default class Name {
-  private _original = "";
-  private _kebabCase = "";
-  private _lowerCamelCase = "";
-  private _snakeCase = "";
-  private _upperCamelCase = "";
+  original = "";
+  kebabCase = "";
+  lowerCamelCase = "";
+  snakeCase = "";
+  upperCamelCase = "";
 
-  constructor(name = "") {
-    this.original = name;
-  }
-
-  set original(name: string) {
-    this._original = name;
-    this._kebabCase = _.kebabCase(name);
-    this._lowerCamelCase = _.camelCase(name);
-    this._snakeCase = _.snakeCase(name);
-    this._upperCamelCase = _.upperFirst(_.camelCase(name));
-  }
-
-  get original(): string {
-    return this._original;
-  }
-
-  get kebabCase(): string {
-    return this._kebabCase;
-  }
-
-  get lowerCamelCase(): string {
-    return this._lowerCamelCase;
-  }
-
-  get snakeCase(): string {
-    return this._snakeCase;
-  }
-
-  get upperCamelCase(): string {
-    return this._upperCamelCase;
+  constructor(name: string) {
+    if (name) {
+      this.original = name;
+      this.kebabCase = _.kebabCase(name);
+      this.lowerCamelCase = _.camelCase(name);
+      this.snakeCase = _.snakeCase(name);
+      this.upperCamelCase = _.upperFirst(_.camelCase(name));
+    }
+    Object.freeze(this);
   }
 
   toString(): string {
