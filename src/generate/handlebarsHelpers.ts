@@ -11,10 +11,10 @@ import {
   getDataType,
   getPayloadType,
   getFilteredProperties,
+  getValue,
   DEFAULT_DATA_TYPE,
   ARRAY_DATA_TYPE,
-  OBJECT_DATA_TYPE,
-  getValue
+  OBJECT_DATA_TYPE
 } from "./utils";
 
 import { model } from "amf-client-js";

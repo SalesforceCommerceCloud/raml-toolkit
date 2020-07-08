@@ -6,11 +6,8 @@
  */
 "use strict";
 import { expect, assert } from "chai";
-import tmp from "tmp";
-import fs from "fs";
-import yaml from "js-yaml";
 import _ from "lodash";
-import { client, model } from "amf-client-js";
+import { model } from "amf-client-js";
 
 export const getScalarType = function(
   typeName: string
