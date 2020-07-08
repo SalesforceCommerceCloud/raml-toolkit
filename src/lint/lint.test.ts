@@ -58,7 +58,7 @@ describe("#printResults", () => {
     );
   });
 
-  it("outputs results in second branch when results do conform and warnings are true", async () => {
+  it("outputs results in second branch when results do conform and warnings are true!", async () => {
     const doc = getHappySpec();
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
