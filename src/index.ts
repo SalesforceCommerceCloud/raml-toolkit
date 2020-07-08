@@ -39,5 +39,5 @@ export {
 } from "./common/parser";
 
 export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
-
 export { handlebarsHelpers } from "./generate";
+export { Template } from "./common/template";
