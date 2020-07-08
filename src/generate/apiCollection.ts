@@ -9,7 +9,11 @@ import { ApiGroup } from "./apiGroup";
 /**
  * A collection of multiple groups of APIs stored by key.
  */
-export class ApiCollection extends Map {
+export class ApiCollection extends null {
+  constructor() {
+    return Object.create(null);
+  }
+
   /**
    * Loads an entire collection of APIs from a simple description format.
    *
@@ -21,7 +25,11 @@ export class ApiCollection extends Map {
   }): Promise<ApiCollection> {
     const apiCollection = new ApiCollection();
     for (const group of Object.keys(description)) {
-      apiCollection.set(group, await ApiGroup.init(description[group], group));
+      if (!apiCollection[group]) {
+        apiCollection[group] = await ApiGroup.init(description[group], group);
+      } else {
+        throw new Error(`Property ${group} already exists on object`);
+      }
     }
     return apiCollection;
   }
