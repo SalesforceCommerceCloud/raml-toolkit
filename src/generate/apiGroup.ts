@@ -18,7 +18,7 @@ export class ApiGroup {
   name: Name;
 
   constructor(name = "", apis?: Api[]) {
-    this.setName(name);
+    this.name = new Name(name);
     this.apis = apis;
   }
 
@@ -27,13 +27,12 @@ export class ApiGroup {
    * constructor because it is async. Files are processed in parallel.
    *
    * @param apiSpecFilePaths - a list of paths to API spec files like RAML
+   * @param name - the name of this group
    */
-  static async init(apiSpecFilePaths: string[]): Promise<ApiGroup> {
-    return new ApiGroup("", await Promise.all(apiSpecFilePaths.map(Api.init)));
-  }
-
-  setName(name = ""): this {
-    this.name = new Name(name);
-    return this;
+  static async init(apiSpecFilePaths: string[], name = ""): Promise<ApiGroup> {
+    return new ApiGroup(
+      name,
+      await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name)))
+    );
   }
 }

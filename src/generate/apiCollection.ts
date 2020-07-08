@@ -21,8 +21,7 @@ export class ApiCollection extends Map {
   }): Promise<ApiCollection> {
     const apiCollection = new ApiCollection();
     for (const group of Object.keys(description)) {
-      apiCollection.set(group, await ApiGroup.init(description[group]));
-      apiCollection.get(group).setName(group);
+      apiCollection.set(group, await ApiGroup.init(description[group], group));
     }
     return apiCollection;
   }

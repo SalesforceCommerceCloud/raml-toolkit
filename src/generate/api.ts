@@ -21,12 +21,14 @@ import Name from "./name";
  */
 export class Api {
   dataTypes: model.domain.CustomDomainProperty[];
+  group: string;
   model: model.document.Document;
   name: Name;
   path: string;
 
-  constructor(model, path = "") {
+  constructor(model, group = "", path = "") {
     this.dataTypes = getAllDataTypes(model);
+    this.group = group;
     this.model = model;
     this.name = new Name((model.encodes as model.domain.WebApi)?.name.value());
     this.path = path;
@@ -38,10 +40,12 @@ export class Api {
    * because it is async.
    *
    * @param apiSpecFilePath - the path to an API spec file like RAML to be parsed to AMF
+   * @param group - if the API is part of a group, the name of that group
    */
-  static async init(apiSpecFilePath: string): Promise<Api> {
+  static async init(apiSpecFilePath: string, group = ""): Promise<Api> {
     return new Api(
       resolveApiModel(await parseRamlFile(apiSpecFilePath), "editing"),
+      group,
       apiSpecFilePath
     );
   }

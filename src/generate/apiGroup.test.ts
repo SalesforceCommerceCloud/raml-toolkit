@@ -64,15 +64,8 @@ describe("Test Api class setName", () => {
     expect(group.name.original).to.equal("");
   });
 
-  it("sets the name to empty string by default", () => {
-    const group = new ApiGroup();
-    group.setName();
-    expect(group.name.original).to.equal("");
-  });
-
   it("sets the name for lowercase", () => {
-    const group = new ApiGroup();
-    group.setName("This is my test name.");
+    const group = new ApiGroup("This is my test name.");
     expect(group.name.original).to.equal("This is my test name.");
     expect(group.name.kebabCase).to.equal("this-is-my-test-name");
     expect(group.name.lowerCamelCase).to.equal("thisIsMyTestName");
