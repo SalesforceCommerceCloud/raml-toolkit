@@ -56,15 +56,13 @@ describe("Test ApiGroup class init", () => {
     return expect(ApiGroup.init([validRamlFile, "THISISNOTAREALFILE"])).to
       .eventually.be.rejected;
   });
-});
 
-describe("Test Api class setName", () => {
   it("sets the name for empty constructor", () => {
     const group = new ApiGroup();
     expect(group.name.original).to.equal("");
   });
 
-  it("sets the name for lowercase", () => {
+  it("sets the name with constructor", () => {
     const group = new ApiGroup("This is my test name.");
     expect(group.name.original).to.equal("This is my test name.");
     expect(group.name.kebabCase).to.equal("this-is-my-test-name");
