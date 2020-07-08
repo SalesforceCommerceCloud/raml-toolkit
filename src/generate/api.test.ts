@@ -20,8 +20,8 @@ before(() => {
 });
 
 describe("Test Api class init", () => {
-  it("constructs an instance with no args", () => {
-    const api = new Api();
+  it("constructs an instance with model and no path", () => {
+    const api = new Api(new model.document.Document());
     expect(api.dataTypes).to.be.empty;
     expect(api.model).to.deep.equal(new model.document.Document());
     expect(api.name.original).to.be.empty;

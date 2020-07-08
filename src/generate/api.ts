@@ -25,7 +25,7 @@ export class Api {
   private _name = new Name();
   private _path = "";
 
-  constructor(amfModel = new model.document.Document(), path = "") {
+  constructor(amfModel, path = "") {
     this.model = amfModel;
     this._path = path;
   }
