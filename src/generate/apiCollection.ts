@@ -9,15 +9,11 @@ import { ApiGroup } from "./apiGroup";
 /**
  * A collection of multiple groups of APIs stored by key.
  */
-<<<<<<< HEAD
 export class ApiCollection extends null {
   constructor() {
     return Object.create(null);
   }
 
-=======
-export class ApiCollection extends Map {
->>>>>>> 34858ae11b733df49ba516d6b5dd3a9a8e613390
   /**
    * Loads an entire collection of APIs from a simple description format.
    *
