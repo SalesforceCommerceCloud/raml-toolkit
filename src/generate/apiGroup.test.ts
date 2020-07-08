@@ -18,9 +18,9 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Test ApiGroup class read", () => {
+describe("Test ApiGroup class init", () => {
   it("creates an instance from a valid raml file", async () => {
-    const group = await ApiGroup.read([validRamlFile]);
+    const group = await ApiGroup.init([validRamlFile]);
     expect(group.apis).to.not.be.empty;
     expect(group.apis[0].model).to.not.be.empty;
     expect(group.apis[0].name.original).to.equal("Shop API");
@@ -28,7 +28,7 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("creates an instance from two valid raml files", async () => {
-    const group = await ApiGroup.read([validRamlFile, validRamlFile]);
+    const group = await ApiGroup.init([validRamlFile, validRamlFile]);
     expect(group.apis).to.not.be.empty;
     expect(group.apis[0].model).to.not.be.empty;
     expect(group.apis[0].name.original).to.equal("Shop API");
@@ -39,21 +39,21 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("rejects from an invalid raml file", () => {
-    return expect(ApiGroup.read([invalidRamlFile])).to.eventually.be.rejected;
+    return expect(ApiGroup.init([invalidRamlFile])).to.eventually.be.rejected;
   });
 
   it("rejects from one good, one bad raml file", () => {
-    return expect(ApiGroup.read([validRamlFile, invalidRamlFile])).to.eventually
+    return expect(ApiGroup.init([validRamlFile, invalidRamlFile])).to.eventually
       .be.rejected;
   });
 
   it("rejects from an invalid file path", () => {
-    return expect(ApiGroup.read(["THISISNOTAREALFILE"])).to.eventually.be
+    return expect(ApiGroup.init(["THISISNOTAREALFILE"])).to.eventually.be
       .rejected;
   });
 
   it("rejects from an invalid file path plus a good one", () => {
-    return expect(ApiGroup.read([validRamlFile, "THISISNOTAREALFILE"])).to
+    return expect(ApiGroup.init([validRamlFile, "THISISNOTAREALFILE"])).to
       .eventually.be.rejected;
   });
 });

@@ -16,12 +16,12 @@ export class ApiCollection extends Map {
    * @param description - a simple object literal with group names as
    * properties and a list of file paths under each group
    */
-  static async read(description: {
+  static async init(description: {
     [key: string]: string[];
   }): Promise<ApiCollection> {
     const apiCollection = new ApiCollection();
     for (const group of Object.keys(description)) {
-      apiCollection.set(group, await ApiGroup.read(description[group]));
+      apiCollection.set(group, await ApiGroup.init(description[group]));
       apiCollection.get(group).setName(group);
     }
     return apiCollection;

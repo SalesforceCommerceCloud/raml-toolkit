@@ -28,8 +28,8 @@ export class ApiGroup {
    *
    * @param apiSpecFilePaths - a list of paths to API spec files like RAML
    */
-  static async read(apiSpecFilePaths: string[]): Promise<ApiGroup> {
-    return new ApiGroup("", await Promise.all(apiSpecFilePaths.map(Api.read)));
+  static async init(apiSpecFilePaths: string[]): Promise<ApiGroup> {
+    return new ApiGroup("", await Promise.all(apiSpecFilePaths.map(Api.init)));
   }
 
   setName(name = ""): this {

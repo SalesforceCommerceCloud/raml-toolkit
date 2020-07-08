@@ -18,9 +18,9 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Test ApiGroup class read", () => {
+describe("Test ApiGroup class init", () => {
   it("creates an instance from a valid raml file", async () => {
-    const collection = await ApiCollection.read({
+    const collection = await ApiCollection.init({
       "Group One": [validRamlFile]
     });
     expect(collection.get("Group One").apis).to.not.be.empty;
@@ -32,7 +32,7 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("creates an instance from two valid raml files in one group", async () => {
-    const collection = await ApiCollection.read({
+    const collection = await ApiCollection.init({
       "Group One": [validRamlFile, validRamlFile]
     });
     expect(collection.get("Group One").apis)
@@ -41,7 +41,7 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("creates an instance from two valid raml files in two groups", async () => {
-    const collection = await ApiCollection.read({
+    const collection = await ApiCollection.init({
       "Group One": [validRamlFile],
       "Group Two": [validRamlFile]
     });
@@ -54,24 +54,24 @@ describe("Test ApiGroup class read", () => {
   });
 
   it("rejects from an invalid raml file", () => {
-    return expect(ApiCollection.read({ "Group One": [invalidRamlFile] })).to
+    return expect(ApiCollection.init({ "Group One": [invalidRamlFile] })).to
       .eventually.be.rejected;
   });
 
   it("rejects from one good, one bad raml file", () => {
     return expect(
-      ApiCollection.read({ "Group One": [validRamlFile, invalidRamlFile] })
+      ApiCollection.init({ "Group One": [validRamlFile, invalidRamlFile] })
     ).to.eventually.be.rejected;
   });
 
   it("rejects from an invalid file path", () => {
-    return expect(ApiCollection.read({ "Group One": ["THISISNOTAREALFILE"] }))
+    return expect(ApiCollection.init({ "Group One": ["THISISNOTAREALFILE"] }))
       .to.eventually.be.rejected;
   });
 
   it("rejects from an invalid file path plus a good one", () => {
     return expect(
-      ApiCollection.read({ "Group One": [validRamlFile, "THISISNOTAREALFILE"] })
+      ApiCollection.init({ "Group One": [validRamlFile, "THISISNOTAREALFILE"] })
     ).to.eventually.be.rejected;
   });
 });

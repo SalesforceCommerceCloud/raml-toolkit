@@ -19,19 +19,19 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Test Api class read", () => {
+describe("Test Api class init", () => {
   it("constructs an instance with no args", () => {
     const api = new Api();
     expect(api.dataTypes).to.be.empty;
-    expect(api.model).to.eql(new model.document.Document());
+    expect(api.model).to.deep.equal(new model.document.Document());
     expect(api.name.original).to.be.empty;
     expect(api.path).to.be.empty;
   });
 });
 
-describe("Test Api class read", () => {
+describe("Test Api class init", () => {
   it("creates an instance from a valid raml file", async () => {
-    const api = await Api.read(validRamlFile);
+    const api = await Api.init(validRamlFile);
     expect(api.dataTypes).to.not.be.empty;
     expect(api.model).to.not.be.empty;
     expect(api.name.original).to.equal("Shop API");
@@ -40,10 +40,10 @@ describe("Test Api class read", () => {
   });
 
   it("rejects from an invalid raml file", () => {
-    return expect(Api.read(invalidRamlFile)).to.eventually.be.rejected;
+    return expect(Api.init(invalidRamlFile)).to.eventually.be.rejected;
   });
 
   it("rejects from an invalid file path", () => {
-    return expect(Api.read("THISISNOTAREALFILE")).to.eventually.be.rejected;
+    return expect(Api.init("THISISNOTAREALFILE")).to.eventually.be.rejected;
   });
 });

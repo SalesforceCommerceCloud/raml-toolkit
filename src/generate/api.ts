@@ -62,7 +62,7 @@ export class Api {
    *
    * @param apiSpecFilePath - the path to an API spec file like RAML to be parsed to AMF
    */
-  static async read(apiSpecFilePath: string): Promise<Api> {
+  static async init(apiSpecFilePath: string): Promise<Api> {
     return new Api(
       resolveApiModel(await parseRamlFile(apiSpecFilePath), "editing"),
       apiSpecFilePath

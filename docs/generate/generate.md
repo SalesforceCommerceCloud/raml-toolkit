@@ -10,14 +10,14 @@ For a single RAML file:
 ```javascript
 import { Api } from "@commerce-apps/raml-toolkit";
 
-Api.read("path/to/my-spec.raml").then(console.log);
+Api.init("path/to/my-spec.raml").then(console.log);
 ```
 
 For a group of RAML files:
 ```javascript
 import { ApiGroup } from "@commerce-apps/raml-toolkit";
 
-ApiGroup.read([
+ApiGroup.init([
     "path/to/my-spec.raml",
     "path/to/my-other-spec.raml"
 ]).then(console.log);
@@ -27,7 +27,7 @@ Finally, for a collection of grouped RAML files:
 ```javascript
 import { ApiCollection } from "@commerce-apps/raml-toolkit";
 
-ApiGroup.read({
+ApiGroup.init({
     "My First Group": [
         "path/to/my-spec.raml",
         "path/to/my-other-spec.raml"
