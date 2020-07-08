@@ -7,3 +7,4 @@
 export { Api } from "./api";
 export { ApiGroup } from "./apiGroup";
 export { ApiCollection } from "./apiCollection";
+export { Template } from "./template";
