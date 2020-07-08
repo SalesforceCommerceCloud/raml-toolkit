@@ -43,3 +43,4 @@ export { default as ApiGroup } from "./generate/apiGroup";
 export { default as ApiCollection } from "./generate/apiCollection";
 
 export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
+export { Template } from "./common/template";
