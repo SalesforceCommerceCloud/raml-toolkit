@@ -139,7 +139,9 @@ describe("searchExchange", () => {
   it("can download multiple files", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2");
 
-    scope.get("/assets?search=searchString").reply(200, assetSearchResults);
+    scope
+      .get("/assets?search=searchString&types=rest-api")
+      .reply(200, assetSearchResults);
 
     return searchExchange("AUTH_TOKEN", "searchString").then(res => {
       expect(res).to.deep.equal(searchAssetApiResultObject);
