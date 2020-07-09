@@ -9,7 +9,10 @@ import JSZip from "jszip";
 import tmp from "tmp";
 import chai from "chai";
 import chaiFs from "chai-fs";
+import { DownloadCommand } from "./command";
+
 chai.use(chaiFs);
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const assetSearchResults = require("../../test/download/resources/assetSearch.json");
 
@@ -96,22 +99,23 @@ function setup({
 }
 
 describe("Download Command", () => {
-  // Change working directory to a tmp dir just for these tests
-
   const tmpWorkDir = tmp.dirSync().name;
   const tmpOtherDir = tmp.dirSync().name;
-
   let oldWorkDir;
+
   before(() => {
+    // Change working directory to a tmp dir just for these tests
     oldWorkDir = process.cwd();
     process.chdir(tmpWorkDir);
   });
+
   after(() => {
+    // Restore original working directory
     process.chdir(oldWorkDir);
   });
 
   setup()
-    .command(["download"])
+    .do(() => DownloadCommand.run([]))
     .it("downloads APIs", () => {
       expect("apis").to.be.a.directory();
       expect("apis/api-config.json")
@@ -124,19 +128,19 @@ describe("Download Command", () => {
     });
 
   setup({ search: "test" })
-    .command(["download", "--search=test"])
+    .do(() => DownloadCommand.run(["--search=test"]))
     .it("accepts a configurable search query");
 
   setup({ version: "0.0.7" })
-    .command(["download", "--deployment=test"])
+    .do(() => DownloadCommand.run(["--deployment=test"]))
     .it("accepts a configurable deployment status");
 
   setup()
-    .command(["download", "--group-by=category"])
+    .do(() => DownloadCommand.run(["--group-by=category"]))
     .it("accepts a configurable category for grouping APIs");
 
   setup()
-    .command(["download", "--dest=test"])
+    .do(() => DownloadCommand.run(["--dest=test"]))
     .it("accepts a configurable target directory (relative)", () => {
       expect("test")
         .to.be.a.directory()
@@ -148,7 +152,7 @@ describe("Download Command", () => {
     });
 
   setup()
-    .command(["download", `--dest=${tmpOtherDir}`])
+    .do(() => DownloadCommand.run([`--dest=${tmpOtherDir}`]))
     .it("accepts a configurable target directory (absolute)", () => {
       expect("test")
         .to.be.a.directory()
@@ -160,7 +164,7 @@ describe("Download Command", () => {
     });
 
   setup()
-    .command(["download", "--config-file=test-file.json"])
+    .do(() => DownloadCommand.run(["--config-file=test-file.json"]))
     .it("accepts a configurable config file name", () => {
       expect("apis/test-file.json")
         .to.be.a.file()
@@ -168,7 +172,7 @@ describe("Download Command", () => {
     });
 
   test
-    .command(["download", `--config-file=/path/to/api-config.json`])
+    .do(() => DownloadCommand.run([`--config-file=/path/to/api-config.json`]))
     .exit(2)
     .it("forbids specifying a path for config file name");
 
@@ -177,7 +181,7 @@ describe("Download Command", () => {
       ANYPOINT_USERNAME: undefined,
       ANYPOINT_PASSWORD: undefined
     })
-    .command(["download"])
+    .do(() => DownloadCommand.run([]))
     .exit(2)
     .it("requires ANYPOINT_USERNAME and ANYPOINT_PASSWORD env variables");
 });
