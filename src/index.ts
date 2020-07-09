@@ -30,6 +30,11 @@ import * as amf from "amf-client-js";
 export { amf };
 export { model } from "amf-client-js";
 
+export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
+export { handlebarsHelpers } from "./generate";
+
+export * from "./generate";
+
 export {
   getAllDataTypes,
   getApiName,
@@ -38,6 +43,3 @@ export {
   resolveApiModel
 } from "./common/parser";
 
-export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
-export { handlebarsHelpers } from "./generate";
-export { Template } from "./common/template";
