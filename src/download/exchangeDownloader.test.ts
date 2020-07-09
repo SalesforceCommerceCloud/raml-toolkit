@@ -303,7 +303,8 @@ describe("search", () => {
   );
 
   // Search uses process.env, so we need to set expected values
-  let ANYPOINT_USERNAME, ANYPOINT_PASSWORD;
+  let ANYPOINT_USERNAME: string;
+  let ANYPOINT_PASSWORD: string;
   before(() => {
     ANYPOINT_USERNAME = process.env.ANYPOINT_USERNAME;
     ANYPOINT_PASSWORD = process.env.ANYPOINT_PASSWORD;
