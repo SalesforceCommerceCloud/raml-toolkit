@@ -28,9 +28,9 @@ import Handlebars from "handlebars";
  *
  * @returns the base URI of the model
  */
-export const getBaseUri = function(
+export const getBaseUri = (
   property: model.document.BaseUnitWithEncodesModel
-): string {
+): string => {
   return property && property.encodes
     ? (property.encodes as model.domain.WebApi).servers[0].url.value()
     : "";
@@ -43,11 +43,10 @@ export const getBaseUri = function(
  *
  * @returns true if the node is a type definition, false if not
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isTypeDefinition = function(obj: any): boolean {
-  return (
-    obj != null && obj.$classData.name === "amf.client.model.domain.NodeShape"
-  );
+export const isTypeDefinition = (
+  cdProperty: model.domain.DomainElement
+): boolean => {
+  return cdProperty instanceof model.domain.NodeShape;
 };
 
 /**
@@ -57,9 +56,9 @@ export const isTypeDefinition = function(obj: any): boolean {
  *
  * @returns a string for the data type returned by the successful operation
  */
-export const getReturnPayloadType = function(
+export const getReturnPayloadType = (
   operation: model.domain.Operation
-): string {
+): string => {
   const okResponses = getPayloadResponses(operation);
   const dataTypes: string[] = [];
 
@@ -84,9 +83,9 @@ export const getReturnPayloadType = function(
  * @param property - instance of model.domain.PropertyShape
  * @returns data type if defined in the property otherwise returns a default type
  */
-export const getPropertyDataType = function(
+export const getPropertyDataType = (
   property: model.domain.PropertyShape
-): string {
+): string => {
   if (property != null && property.range != null) {
     return getDataType(property.range);
   }
@@ -99,9 +98,7 @@ export const getPropertyDataType = function(
  * @param param - instance of model.domain.Parameter
  * @returns data type if defined in the parameter otherwise returns a default type
  */
-export const getParameterDataType = function(
-  param: model.domain.Parameter
-): string {
+export const getParameterDataType = (param: model.domain.Parameter): string => {
   if (param != null && param.schema != null) {
     return getDataType(param.schema);
   }
@@ -114,9 +111,9 @@ export const getParameterDataType = function(
  * @param request - AMF model of tge request
  * @returns Type of the request body
  */
-export const getRequestPayloadType = function(
+export const getRequestPayloadType = (
   request: model.domain.Request
-): string {
+): string => {
   if (
     request != null &&
     request.payloads != null &&
@@ -139,9 +136,9 @@ export const getRequestPayloadType = function(
  * @param dtoTypeModel - AMF model of the dto
  * @returns Array of properties in the dto that are not regular expressions
  */
-export const getProperties = function(
+export const getProperties = (
   dtoTypeModel: model.domain.NodeShape | undefined | null
-): model.domain.PropertyShape[] {
+): model.domain.PropertyShape[] => {
   return getFilteredProperties(dtoTypeModel, propertyName => {
     return !/^([/^]).*.$/.test(propertyName);
   });
@@ -156,9 +153,9 @@ export const getProperties = function(
  * @param property -
  * @returns true if the property is required
  */
-export const isRequiredProperty = function(
+export const isRequiredProperty = (
   property: model.domain.PropertyShape
-): boolean {
+): boolean => {
   return property != null && property.minCount.value() > 0;
 };
 
@@ -171,9 +168,9 @@ export const isRequiredProperty = function(
  * @param property -
  * @returns true if the property is optional
  */
-export const isOptionalProperty = function(
+export const isOptionalProperty = (
   property: model.domain.PropertyShape
-): boolean {
+): boolean => {
   return property != null && property.minCount.value() == 0;
 };
 
@@ -183,10 +180,9 @@ export const isOptionalProperty = function(
  * @param ramlTypeDefinition - Any RAML type definition
  * @returns true if additional properties are allowed, false otherwise
  */
-export const isAdditionalPropertiesAllowed = function(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ramlTypeDefinition: any
-): boolean {
+export const isAdditionalPropertiesAllowed = (
+  ramlTypeDefinition: model.domain.NodeShape
+): boolean => {
   return (
     ramlTypeDefinition !== undefined &&
     ramlTypeDefinition.closed !== undefined &&
@@ -196,17 +192,17 @@ export const isAdditionalPropertiesAllowed = function(
 };
 
 const helpers = {
-  getBaseUri: getBaseUri,
-  isTypeDefinition: isTypeDefinition,
-  getReturnPayloadType: getReturnPayloadType,
-  getPropertyDataType: getPropertyDataType,
-  getParameterDataType: getParameterDataType,
-  getRequestPayloadType: getRequestPayloadType,
-  getProperties: getProperties,
-  isRequiredProperty: isRequiredProperty,
-  isOptionalProperty: isOptionalProperty,
-  isAdditionalPropertiesAllowed: isAdditionalPropertiesAllowed,
-  getValue: getValue
+  getBaseUri,
+  getRequestPayloadType,
+  getReturnPayloadType,
+  getParameterDataType,
+  getProperties,
+  getPropertyDataType,
+  getValue,
+  isAdditionalPropertiesAllowed,
+  isOptionalProperty,
+  isRequiredProperty,
+  isTypeDefinition
 };
 
 const handlebars = Handlebars.create();

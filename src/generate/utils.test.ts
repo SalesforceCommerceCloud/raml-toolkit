@@ -6,15 +6,11 @@
  */
 import { extractTypeFromPayload } from "./utils";
 
-import { model, AMF } from "amf-client-js";
+import { model } from "amf-client-js";
 import { expect } from "chai";
 
 describe("extractTypeFromPayload", () => {
   let payload: model.domain.Payload;
-
-  before(() => {
-    return AMF.init();
-  });
 
   beforeEach(() => {
     payload = new model.domain.Payload();

@@ -37,3 +37,28 @@ ApiGroup.init({
     ]
 }).then(console.log);
 ```
+
+## Handlebars AMF Helpers
+handlebarsAmfHelpers module provides a number of functions to help easily access information from an AMF model. It also exports a Handlebars environment with all the handlebars AMF helper functions already registered. All the [handlebars-helpers](https://www.npmjs.com/package/handlebars-helpers) functions are also available through the Handlebars environment.
+
+### Usage
+Using the handlebars environment exported by handlbarsAmfHelpers:
+```javascript
+import {
+  handlebarsAmfHelpers
+} from "@commerce-apps/raml-toolkit";
+const Handlebars = handlebarsAmfHelpers.handlebars;
+
+const template = Handlebars.compile(
+  fs.readFileSync(handlebarsTemplate, "utf8")
+);
+```
+
+Using the handlebarsAmfHelpers functions registered with the Handlebars environment:
+```
+{{#each .}}
+    {{#if (isTypeDefinition .)}}
+export type {{getValue name}} = {};
+    {{/if}}
+{{/each}}
+```

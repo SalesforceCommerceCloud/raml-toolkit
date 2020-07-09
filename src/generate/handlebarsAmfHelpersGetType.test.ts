@@ -5,25 +5,25 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {
-  getPropertyDataType,
-  getReturnPayloadType,
   getParameterDataType,
-  getRequestPayloadType
-} from "./handlebarsHelpers";
+  getPropertyDataType,
+  getRequestPayloadType,
+  getReturnPayloadType
+} from "./handlebarsAmfHelpers";
 import { ARRAY_DATA_TYPE, OBJECT_DATA_TYPE } from "./utils";
 import {
-  getScalarType,
-  getLinkedScalarType,
-  getObjectType,
-  getLinkedType,
   getInheritedType,
-  getRequestPayloadModel
-} from "../../test/generate/handlebarsHelpersTestUtils";
+  getLinkedScalarType,
+  getLinkedType,
+  getObjectType,
+  getRequestPayloadModel,
+  getScalarType
+} from "../../test/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
 import { expect, assert } from "chai";
 
-describe("HandlebarsHelpers get type helper functions", () => {
+describe("HandlebarsAmfHelpers get type helper functions", () => {
   before(() => {
     return AMF.init();
   });

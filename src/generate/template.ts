@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import fs from "fs-extra";
-import Handlebars from "handlebars";
+import { handlebarsAmfHelpers } from ".";
 
 /**
  * Holds a template and renders the template with the given data
@@ -18,7 +18,10 @@ export class Template {
    * @param path - Path to the template file
    * @param handlebars - Optional handlebars instance, default instance is used if not provided
    */
-  constructor(public path: string, public handlebars = Handlebars) {
+  constructor(
+    public path: string,
+    public handlebars = handlebarsAmfHelpers.handlebars
+  ) {
     try {
       this.content = fs.readFileSync(path, "utf8");
     } catch (error) {

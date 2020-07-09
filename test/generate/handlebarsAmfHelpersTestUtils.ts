@@ -5,22 +5,20 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 "use strict";
-import { expect, assert } from "chai";
+import { expect } from "chai";
 import _ from "lodash";
 import { model } from "amf-client-js";
 
-export const getScalarType = function(
-  typeName: string
-): model.domain.ScalarShape {
+export const getScalarType = (typeName: string): model.domain.ScalarShape => {
   const scalarType: model.domain.ScalarShape = new model.domain.ScalarShape();
   scalarType.withDataType(typeName);
 
   return scalarType;
 };
 
-export const getLinkedScalarType = function(
+export const getLinkedScalarType = (
   typeName: string
-): model.domain.AnyShape {
+): model.domain.AnyShape => {
   const rangeLink = getScalarType(typeName);
 
   const range = new model.domain.ScalarShape();
@@ -29,7 +27,7 @@ export const getLinkedScalarType = function(
   return range;
 };
 
-export const getLinkedType = function(typeName: string): model.domain.AnyShape {
+export const getLinkedType = (typeName: string): model.domain.AnyShape => {
   const linkedType = new model.domain.NodeShape();
   linkedType.withName(typeName);
 
@@ -39,16 +37,14 @@ export const getLinkedType = function(typeName: string): model.domain.AnyShape {
   return shape;
 };
 
-export const getInheritedType = function(
-  typeName: string
-): model.domain.AnyShape {
+export const getInheritedType = (typeName: string): model.domain.AnyShape => {
   const nodeShape = new model.domain.AnyShape();
   nodeShape.withInherits([getLinkedType(typeName)]);
 
   return nodeShape;
 };
 
-export const getObjectType = function(): model.domain.NodeShape {
+export const getObjectType = (): model.domain.NodeShape => {
   const objProperty: model.domain.PropertyShape = new model.domain.PropertyShape();
   objProperty.withName("test");
 
@@ -64,10 +60,10 @@ export const getObjectType = function(): model.domain.NodeShape {
  * @param expectedProps - The expected property list
  * @param actualProps - The actual property list
  */
-export const verifyProperties = function(
+export const verifyProperties = (
   expectedProps: model.domain.PropertyShape[],
   actualProps: model.domain.PropertyShape[]
-): void {
+): void => {
   expect(actualProps).to.be.length(expectedProps.length);
   const expectedPropNames: Set<string> = new Set();
   expectedProps.forEach(prop => {
@@ -78,9 +74,9 @@ export const verifyProperties = function(
   });
 };
 
-export const getRequestPayloadModel = function(
+export const getRequestPayloadModel = (
   shape: model.domain.Shape
-): model.domain.Request {
+): model.domain.Request => {
   const payload = new model.domain.Payload();
   payload.withSchema(shape);
 

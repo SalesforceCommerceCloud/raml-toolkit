@@ -94,7 +94,8 @@
     "forbidOnly": true,
     "require": [
       "ts-node/register"
-    ]
+    ],
+    "timeout": 5000
   },
   "nyc": {
     "all": true,

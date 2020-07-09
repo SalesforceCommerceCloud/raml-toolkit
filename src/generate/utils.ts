@@ -18,9 +18,9 @@ export const PRIMITIVE_DATA_TYPE_MAP = {
   "http://www.w3.org/2001/XMLSchema#boolean": "boolean"
 };
 
-export const getPayloadResponses = function(
+export const getPayloadResponses = (
   operation: model.domain.Operation
-): model.domain.Response[] {
+): model.domain.Response[] => {
   const okResponses = [];
   for (const res of operation.responses) {
     if (res.statusCode.nonEmpty && res.statusCode.value().startsWith("2")) {
@@ -36,7 +36,9 @@ export const getPayloadResponses = function(
  * @param payload - Contains schema(s) from which to extract the type(s).
  * @returns string representation of the datatypes in the payload
  */
-export function extractTypeFromPayload(payload: model.domain.Payload): string {
+export const extractTypeFromPayload = (
+  payload: model.domain.Payload
+): string => {
   if (payload.schema.name.value() === "schema") {
     return "Object";
   }
@@ -48,9 +50,9 @@ export function extractTypeFromPayload(payload: model.domain.Payload): string {
     return union.join(" | ");
   }
   return payload.schema.name.value() + "T";
-}
+};
 
-export const getDataTypeFromMap = function(uuidDataType: string): string {
+export const getDataTypeFromMap = (uuidDataType: string): string => {
   return PRIMITIVE_DATA_TYPE_MAP[uuidDataType]
     ? PRIMITIVE_DATA_TYPE_MAP[uuidDataType]
     : DEFAULT_DATA_TYPE;
@@ -62,9 +64,9 @@ export const getDataTypeFromMap = function(uuidDataType: string): string {
  * @param scalarShape - instance of model.domain.ScalarShape
  * @returns scalar data type if defined otherwise returns a default type
  */
-export const getScalarType = function(
+export const getScalarType = (
   scalarShape: model.domain.ScalarShape
-): string {
+): string => {
   let dataType: string = undefined;
   if (scalarShape.dataType != null) {
     const typeValue = scalarShape.dataType.value();
@@ -94,7 +96,7 @@ export const getScalarType = function(
  * @param anyShape - instance of model.domain.AnyShape or its subclass
  * @returns linked/inherited data type
  */
-export const getLinkedType = function(anyShape: model.domain.AnyShape): string {
+export const getLinkedType = (anyShape: model.domain.AnyShape): string => {
   let linkedType: model.domain.DomainElement = undefined;
   let dataType: string = undefined;
   //check if type is inherited
@@ -135,7 +137,7 @@ export const getLinkedType = function(anyShape: model.domain.AnyShape): string {
  * @param anyShape - instance of model.domain.AnyShape or its subclass
  * @returns object type if defined otherwise returns a default type
  */
-export const getObjectType = function(anyShape: model.domain.AnyShape): string {
+export const getObjectType = (anyShape: model.domain.AnyShape): string => {
   let dataType: string = getLinkedType(anyShape);
   if (dataType == null) {
     if (
@@ -157,9 +159,7 @@ export const getObjectType = function(anyShape: model.domain.AnyShape): string {
  * @param dtElement - instance of model.domain.DomainElement or its subclass
  * @returns data type if defined otherwise returns a default type
  */
-export const getDataType = function(
-  dtElement: model.domain.DomainElement
-): string {
+export const getDataType = (dtElement: model.domain.DomainElement): string => {
   let dataType: string = undefined;
   if (dtElement != null) {
     if (dtElement instanceof model.domain.ScalarShape) {
@@ -182,7 +182,7 @@ export const getDataType = function(
  * @param arrayShape - instance of model.domain.ArrayShape
  * @returns array type if defined otherwise returns a default type
  */
-const getArrayType = function(arrayShape: model.domain.ArrayShape): string {
+const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
   let arrItem: model.domain.Shape = arrayShape.items;
   if (arrItem == null) {
     if (arrayShape.inherits != null && arrayShape.inherits.length > 0)
@@ -193,7 +193,7 @@ const getArrayType = function(arrayShape: model.domain.ArrayShape): string {
     .concat(">");
 };
 
-export const getPayloadType = function(schema: model.domain.Shape): string {
+export const getPayloadType = (schema: model.domain.Shape): string => {
   const name = schema.name.value();
   if (name == null) {
     return OBJECT_DATA_TYPE;
@@ -212,7 +212,7 @@ export const getPayloadType = function(schema: model.domain.Shape): string {
  *
  * @returns the string of the value
  */
-export const getValue = function<T>(name: model.ValueField<T>): string {
+export const getValue = <T>(name: model.ValueField<T>): string => {
   let value;
   if (typeof name?.value === "function") {
     value = name.value();
@@ -229,10 +229,10 @@ type propertyFilter = (propertyName: string) => boolean;
  * @param propertyFilter - function to filter properties based on certain criteria
  * @returns The filtered list of properties
  */
-export const getFilteredProperties = function(
+export const getFilteredProperties = (
   dtoTypeModel: model.domain.NodeShape | null | undefined,
   propertyFilter: propertyFilter
-): model.domain.PropertyShape[] {
+): model.domain.PropertyShape[] => {
   const properties: model.domain.PropertyShape[] = [];
   const existingProps: Set<string> = new Set();
 

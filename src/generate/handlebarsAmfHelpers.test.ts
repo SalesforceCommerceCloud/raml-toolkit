@@ -7,17 +7,18 @@
 import {
   getBaseUri,
   getProperties,
-  isRequiredProperty,
-  isOptionalProperty,
+  getValue,
   isAdditionalPropertiesAllowed,
-  getValue
-} from "./handlebarsHelpers";
-import { verifyProperties } from "../../test/generate/handlebarsHelpersTestUtils";
+  isOptionalProperty,
+  isRequiredProperty,
+  isTypeDefinition
+} from "./handlebarsAmfHelpers";
+import { verifyProperties } from "../../test/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
 import { expect, assert } from "chai";
 
-describe("HandlebarsHelpers", () => {
+describe("HandlebarsAmfHelpers", () => {
   before(() => {
     return AMF.init();
   });
@@ -233,15 +234,6 @@ describe("HandlebarsHelpers", () => {
       expect(isAdditionalPropertiesAllowed(undefined)).to.be.false;
     });
 
-    it("returns false on ScalarShape", () => {
-      const scalarShape = new model.domain.ScalarShape();
-      expect(isAdditionalPropertiesAllowed(scalarShape)).to.be.false;
-    });
-
-    it("returns false on objects other than NodeShape", () => {
-      expect(isAdditionalPropertiesAllowed({})).to.be.false;
-    });
-
     it("returns false when additional properties are not allowed", () => {
       const typeDto = new model.domain.NodeShape();
       // Closed ensures no Additional properties are allowed for this type
@@ -254,6 +246,20 @@ describe("HandlebarsHelpers", () => {
       // Closed ensures no Additional properties are allowed for this type
       typeDto.withClosed(false);
       expect(isAdditionalPropertiesAllowed(typeDto)).to.be.true;
+    });
+  });
+
+  describe("isTypeDefinition", () => {
+    it("returns true if shape is NodeShape", () => {
+      expect(isTypeDefinition(new model.domain.NodeShape())).to.be.true;
+    });
+
+    it("returns true if shape is null", () => {
+      expect(isTypeDefinition(null)).to.be.false;
+    });
+
+    it("returns false if shape is ScalarShape", () => {
+      expect(isTypeDefinition(new model.domain.ScalarShape())).to.be.false;
     });
   });
 });
