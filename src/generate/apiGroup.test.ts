@@ -71,3 +71,62 @@ describe("Test ApiGroup class init", () => {
     expect(group.name.upperCamelCase).to.equal("ThisIsMyTestName");
   });
 });
+
+describe("Test ApiGroup class init", () => {
+  it("creates an instance from a valid raml file", async () => {
+    const collection = await ApiGroup.loadCollection({
+      "Group One": [validRamlFile]
+    });
+    expect(collection["Group One"].apis).to.not.be.empty;
+    expect(collection["Group One"].apis[0].model).to.not.be.empty;
+    expect(collection["Group One"].apis[0].name.original).to.equal("Shop API");
+    expect(collection["Group One"].apis[0].path).to.be.equal(validRamlFile);
+  });
+
+  it("creates an instance from two valid raml files in one group", async () => {
+    const collection = await ApiGroup.loadCollection({
+      "Group One": [validRamlFile, validRamlFile]
+    });
+    expect(collection["Group One"].apis)
+      .to.be.an("array")
+      .with.lengthOf(2);
+  });
+
+  it("creates an instance from two valid raml files in two groups", async () => {
+    const collection = await ApiGroup.loadCollection({
+      "Group One": [validRamlFile],
+      "Group Two": [validRamlFile]
+    });
+    expect(collection["Group One"].apis)
+      .to.be.an("array")
+      .with.lengthOf(1);
+    expect(collection["Group Two"].apis)
+      .to.be.an("array")
+      .with.lengthOf(1);
+  });
+
+  it("rejects from an invalid raml file", () => {
+    return expect(ApiGroup.loadCollection({ "Group One": [invalidRamlFile] }))
+      .to.eventually.be.rejected;
+  });
+
+  it("rejects from one good, one bad raml file", () => {
+    return expect(
+      ApiGroup.loadCollection({ "Group One": [validRamlFile, invalidRamlFile] })
+    ).to.eventually.be.rejected;
+  });
+
+  it("rejects from an invalid file path", () => {
+    return expect(
+      ApiGroup.loadCollection({ "Group One": ["THISISNOTAREALFILE"] })
+    ).to.eventually.be.rejected;
+  });
+
+  it("rejects from an invalid file path plus a good one", () => {
+    return expect(
+      ApiGroup.loadCollection({
+        "Group One": [validRamlFile, "THISISNOTAREALFILE"]
+      })
+    ).to.eventually.be.rejected;
+  });
+});

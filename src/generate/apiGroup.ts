@@ -5,7 +5,12 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Api } from "./api";
-import Name from "./name";
+import { Name } from "./name";
+
+/**
+ * A simple type for an object literal that has ApiGroups as values.
+ */
+export type ApiCollection = Record<string, ApiGroup>;
 
 /**
  * A group of API objects. Common transformations of the group name are cached
@@ -32,5 +37,21 @@ export class ApiGroup {
       name,
       await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name)))
     );
+  }
+
+  /**
+   * Loads an entire collection of APIs from a simple description format.
+   *
+   * @param description - a simple object literal with group names as
+   * properties and a list of file paths under each group
+   */
+  static async loadCollection(description: {
+    [key: string]: string[];
+  }): Promise<ApiCollection> {
+    const apiCollection = Object.create(null);
+    for (const group of Object.keys(description)) {
+      apiCollection[group] = await ApiGroup.init(description[group], group);
+    }
+    return apiCollection;
   }
 }

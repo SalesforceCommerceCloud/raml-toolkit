@@ -25,9 +25,9 @@ ApiGroup.init([
 
 Finally, for a collection of grouped RAML files:
 ```javascript
-import { ApiCollection } from "@commerce-apps/raml-toolkit";
+import { ApiGroup } from "@commerce-apps/raml-toolkit";
 
-ApiCollection.init({
+ApiGroup.loadCollection({
     "My First Group": [
         "path/to/my-spec.raml",
         "path/to/my-other-spec.raml"

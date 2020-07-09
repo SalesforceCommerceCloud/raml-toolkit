@@ -5,6 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 export { Api } from "./api";
-export { ApiGroup } from "./apiGroup";
-export { ApiCollection } from "./apiCollection";
+export { ApiCollection, ApiGroup } from "./apiGroup";
+export { Name } from "./name";
 export { Template } from "./template";
