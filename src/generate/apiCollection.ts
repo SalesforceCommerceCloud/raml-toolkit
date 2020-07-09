@@ -26,6 +26,11 @@ export class ApiCollection extends Array<ApiGroup> {
     return new this(...(await Promise.all(promises)));
   }
 
+  /**
+   * Searches the collection for a particular API Group by name.
+   *
+   * @param name - Name of the API group to return from the collection
+   */
   get(name: string): ApiGroup {
     return this.find(g => g.name.original === name);
   }

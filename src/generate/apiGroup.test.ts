@@ -21,21 +21,21 @@ before(() => {
 describe("Test ApiGroup class init", () => {
   it("creates an instance from a valid raml file", async () => {
     const group = await ApiGroup.init([validRamlFile]);
-    expect(group.apis).to.not.be.empty;
-    expect(group.apis[0].model).to.not.be.empty;
-    expect(group.apis[0].name.original).to.equal("Shop API");
-    expect(group.apis[0].path).to.be.equal(validRamlFile);
+    expect(group).to.not.be.empty;
+    expect(group[0].model).to.not.be.empty;
+    expect(group[0].name.original).to.equal("Shop API");
+    expect(group[0].path).to.be.equal(validRamlFile);
   });
 
   it("creates an instance from two valid raml files", async () => {
     const group = await ApiGroup.init([validRamlFile, validRamlFile]);
-    expect(group.apis).to.not.be.empty;
-    expect(group.apis[0].model).to.not.be.empty;
-    expect(group.apis[0].name.original).to.equal("Shop API");
-    expect(group.apis[0].path).to.be.equal(validRamlFile);
-    expect(group.apis[1].model).to.not.be.empty;
-    expect(group.apis[1].name.original).to.equal("Shop API");
-    expect(group.apis[1].path).to.be.equal(validRamlFile);
+    expect(group).to.not.be.empty;
+    expect(group[0].model).to.not.be.empty;
+    expect(group[0].name.original).to.equal("Shop API");
+    expect(group[0].path).to.be.equal(validRamlFile);
+    expect(group[1].model).to.not.be.empty;
+    expect(group[1].name.original).to.equal("Shop API");
+    expect(group[1].path).to.be.equal(validRamlFile);
   });
 
   it("rejects from an invalid raml file", () => {
@@ -69,5 +69,13 @@ describe("Test ApiGroup class init", () => {
     expect(group.name.lowerCamelCase).to.equal("thisIsMyTestName");
     expect(group.name.snakeCase).to.equal("this_is_my_test_name");
     expect(group.name.upperCamelCase).to.equal("ThisIsMyTestName");
+  });
+
+  it("finds an API by name", async () => {
+    const group = await ApiGroup.init([validRamlFile, validRamlFile]);
+    const api = group.get("Shop API");
+    expect(api).to.not.be.empty;
+    expect(api.name.original).to.equal("Shop API");
+    expect(api.path).to.be.equal(validRamlFile);
   });
 });
