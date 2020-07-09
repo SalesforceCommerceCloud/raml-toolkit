@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Api } from "./api";
-import Name from "./name";
+import { Name } from "./name";
 
 /**
  * A group of API objects. Common transformations of the group name are cached

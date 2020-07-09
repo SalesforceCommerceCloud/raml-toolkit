@@ -12,7 +12,7 @@ import {
   getAllDataTypes
 } from "../common/parser";
 
-import Name from "./name";
+import { Name } from "./name";
 
 /**
  * An API represented as an AMF model. Includes the extracted data types
