@@ -25,7 +25,7 @@
     "compile": "tsc -b && echo Compiled",
     "depcheck": "depcheck",
     "lint": "npm run lint:dev -- --quiet",
-    "lint:dev": "npx sort-package-json && eslint . --ext .ts --fix",
+    "lint:dev": "sort-package-json && eslint . --ext .ts --fix",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "prepare": "npm run snyk-protect",
