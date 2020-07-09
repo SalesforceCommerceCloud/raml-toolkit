@@ -7,9 +7,9 @@
 import { ApiGroup } from "./apiGroup";
 
 /**
- * A collection of multiple groups of APIs stored by key.
+ * A collection of multiple groups of APIs.
  */
-export class ApiCollection extends Map {
+export class ApiCollection extends Array<ApiGroup> {
   /**
    * Loads an entire collection of APIs from a simple description format.
    *
@@ -19,10 +19,14 @@ export class ApiCollection extends Map {
   static async init(description: {
     [key: string]: string[];
   }): Promise<ApiCollection> {
-    const apiCollection = new ApiCollection();
-    for (const group of Object.keys(description)) {
-      apiCollection.set(group, await ApiGroup.init(description[group], group));
-    }
-    return apiCollection;
+    const promises: Promise<ApiGroup>[] = Object.entries(
+      description
+    ).map(([group, paths]) => ApiGroup.init(paths, group));
+
+    return new this(...(await Promise.all(promises)));
+  }
+
+  get(name: string): ApiGroup {
+    return this.find(g => g.name.original === name);
   }
 }
