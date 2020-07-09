@@ -10,6 +10,10 @@ import { ApiGroup } from "./apiGroup";
  * A collection of multiple groups of APIs.
  */
 export class ApiCollection extends Array<ApiGroup> {
+  constructor(groups: ApiGroup[]) {
+    super(...groups);
+  }
+
   /**
    * Loads an entire collection of APIs from a simple description format.
    *
@@ -23,7 +27,7 @@ export class ApiCollection extends Array<ApiGroup> {
       description
     ).map(([group, paths]) => ApiGroup.init(paths, group));
 
-    return new this(...(await Promise.all(promises)));
+    return new this(await Promise.all(promises));
   }
 
   /**

@@ -10,6 +10,8 @@ import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
 import { ApiGroup } from "./apiGroup";
+import { Api } from "./api";
+import { model } from "../../lib";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
@@ -24,7 +26,7 @@ describe("Test ApiGroup class init", () => {
     expect(group).to.not.be.empty;
     expect(group[0].model).to.not.be.empty;
     expect(group[0].name.original).to.equal("Shop API");
-    expect(group[0].path).to.be.equal(validRamlFile);
+    expect(group[0].path).to.equal(validRamlFile);
   });
 
   it("creates an instance from two valid raml files", async () => {
@@ -32,10 +34,10 @@ describe("Test ApiGroup class init", () => {
     expect(group).to.not.be.empty;
     expect(group[0].model).to.not.be.empty;
     expect(group[0].name.original).to.equal("Shop API");
-    expect(group[0].path).to.be.equal(validRamlFile);
+    expect(group[0].path).to.equal(validRamlFile);
     expect(group[1].model).to.not.be.empty;
     expect(group[1].name.original).to.equal("Shop API");
-    expect(group[1].path).to.be.equal(validRamlFile);
+    expect(group[1].path).to.equal(validRamlFile);
   });
 
   it("rejects from an invalid raml file", () => {
@@ -62,13 +64,13 @@ describe("Test ApiGroup class init", () => {
     expect(group.name.original).to.equal("");
   });
 
-  it("sets the name with constructor", () => {
-    const group = new ApiGroup("This is my test name.");
-    expect(group.name.original).to.equal("This is my test name.");
-    expect(group.name.kebabCase).to.equal("this-is-my-test-name");
-    expect(group.name.lowerCamelCase).to.equal("thisIsMyTestName");
-    expect(group.name.snakeCase).to.equal("this_is_my_test_name");
-    expect(group.name.upperCamelCase).to.equal("ThisIsMyTestName");
+  it("creates group without name", () => {
+    const group = new ApiGroup([new Api(new model.document.Document())]);
+    expect(group.name.original).to.equal("");
+    expect(group.name.kebabCase).to.equal("");
+    expect(group.name.lowerCamelCase).to.equal("");
+    expect(group.name.snakeCase).to.equal("");
+    expect(group.name.upperCamelCase).to.equal("");
   });
 
   it("finds an API by name", async () => {
@@ -76,6 +78,6 @@ describe("Test ApiGroup class init", () => {
     const api = group.get("Shop API");
     expect(api).to.not.be.empty;
     expect(api.name.original).to.equal("Shop API");
-    expect(api.path).to.be.equal(validRamlFile);
+    expect(api.path).to.equal(validRamlFile);
   });
 });

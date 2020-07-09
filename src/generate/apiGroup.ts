@@ -14,7 +14,7 @@ import { Name } from "./name";
 export class ApiGroup extends Array<Api> {
   name: Name;
 
-  constructor(name = "", ...apis: Api[]) {
+  constructor(apis: Api[] = [], name = "") {
     super(...apis);
     this.name = new Name(name);
   }
@@ -28,8 +28,8 @@ export class ApiGroup extends Array<Api> {
    */
   static async init(apiSpecFilePaths: string[], name = ""): Promise<ApiGroup> {
     return new ApiGroup(
-      name,
-      ...(await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name))))
+      await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name))),
+      name
     );
   }
 

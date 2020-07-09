@@ -18,7 +18,7 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Test ApiGroup class init", () => {
+describe("Test ApiCollection class init", () => {
   it("creates an instance from a valid raml file", async () => {
     const collection = await ApiCollection.init({
       "Group One": [validRamlFile]
@@ -26,7 +26,7 @@ describe("Test ApiGroup class init", () => {
     expect(collection.get("Group One")).to.not.be.empty;
     expect(collection.get("Group One")[0].model).to.not.be.empty;
     expect(collection.get("Group One")[0].name.original).to.equal("Shop API");
-    expect(collection.get("Group One")[0].path).to.be.equal(validRamlFile);
+    expect(collection.get("Group One")[0].path).to.equal(validRamlFile);
   });
 
   it("creates an instance from two valid raml files in one group", async () => {
