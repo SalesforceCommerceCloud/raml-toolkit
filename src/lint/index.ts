@@ -14,6 +14,11 @@ export const profilePath = path.join(
   "../../resources/lint/profiles"
 );
 
+const profiles = fs
+  .readdirSync(profilePath)
+  .filter(file => path.extname(file).toLowerCase() === ".raml")
+  .map(file => file.slice(0, -5)); // Strip .raml extension from file name
+
 export default class LintCommand extends Command {
   async run(): Promise<void> {
     const { argv, flags } = this.parse(LintCommand);
@@ -50,11 +55,6 @@ export default class LintCommand extends Command {
   }
 }
 
-function getProfiles(): string[] {
-  const files = fs.readdirSync(profilePath);
-  return files.map(name => name.replace(/\.raml$/i, ""));
-}
-
 LintCommand.description = `A linting tool for raml for commerce cloud and beyond
 
 FILENAME is one or more RAML files to lint.
@@ -64,7 +64,7 @@ LintCommand.flags = {
   // Add --profile flag to set the custom profile
   profile: flags.enum({
     char: "p",
-    options: getProfiles(),
+    options: profiles,
     description: "profile to apply",
     required: true
   }),
