@@ -154,4 +154,12 @@ describe("raml-toolkit cli", () => {
     .do(() => cmd.run([]))
     .exit(2)
     .it("does not accept an empty file list and exits non-zero");
+
+  test
+    .stdout()
+    .do(() => cmd.run(["--help"]))
+    .exit(0)
+    .it("does not include TypeScript files in profile", ctx => {
+      expect(ctx.stdout).to.not.include(".ts");
+    });
 });
