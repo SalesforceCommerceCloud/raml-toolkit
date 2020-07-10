@@ -45,11 +45,11 @@ export const extractTypeFromPayload = (
   if ((payload.schema as model.domain.UnionShape).anyOf !== undefined) {
     const union: string[] = [];
     (payload.schema as model.domain.UnionShape).anyOf.forEach(element => {
-      union.push(element.name.value() + "T");
+      union.push(element.name.value());
     });
     return union.join(" | ");
   }
-  return payload.schema.name.value() + "T";
+  return payload.schema.name.value();
 };
 
 export const getDataTypeFromMap = (uuidDataType: string): string => {
@@ -125,7 +125,7 @@ export const getLinkedType = (anyShape: model.domain.AnyShape): string => {
   ) {
     const temp = linkedType.name.value();
     if (temp != null) {
-      dataType = temp + "T";
+      dataType = temp;
     }
   }
   return dataType;
@@ -201,7 +201,7 @@ export const getPayloadType = (schema: model.domain.Shape): string => {
   if (name === "schema") {
     return OBJECT_DATA_TYPE;
   } else {
-    return name + "T";
+    return name;
   }
 };
 
