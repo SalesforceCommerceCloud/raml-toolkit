@@ -84,3 +84,7 @@ test
     .do(() => MyCommand.run(["example argument", "--example-flag"]))
     .it("runs the command successfully");
 ```
+
+### Updating the README
+
+To update the README when adding or changing a command, simply run `npx oclif-dev readme`. This will automatically update the text, but it will also change the headings to the incorrect level. Be sure to change them back before committing the updates.
