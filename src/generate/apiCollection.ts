@@ -10,7 +10,7 @@ import { ApiGroup } from "./apiGroup";
  * A collection of multiple groups of APIs.
  */
 export class ApiCollection extends Array<ApiGroup> {
-  constructor(groups: ApiGroup[]) {
+  constructor(groups: ApiGroup[] = []) {
     super(...groups);
   }
 
