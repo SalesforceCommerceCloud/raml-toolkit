@@ -61,6 +61,11 @@ src
 * Functionality used by multiple commands should be located in `src/common`.
 * All implementation files should be accompanied by test files of the same name that test the implementation.
 
+### Testing commands
+
+* To run the compiled JavaScript, run `./bin/run my-command ...`
+* To run the TypeScript source, run `./bin/run-dev my-command ...`
+
 ### Debugging Oclif
 
 Oclif is inextricably tied to the compiled JavaScript. If something isn't working, run `npm run compile` and try again.
