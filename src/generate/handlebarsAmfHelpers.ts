@@ -11,6 +11,7 @@ import {
   getDataType,
   getPayloadType,
   getFilteredProperties,
+  getValue,
   DEFAULT_DATA_TYPE,
   ARRAY_DATA_TYPE,
   OBJECT_DATA_TYPE
@@ -188,3 +189,5 @@ export const isAdditionalPropertiesAllowed = (
     !ramlTypeDefinition.closed.value()
   );
 };
+
+export { getValue };

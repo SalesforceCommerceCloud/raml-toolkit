@@ -32,6 +32,7 @@ export default class LintCommand extends Command {
 
     const promises = [];
 
+    // Initialize AMF so that we have a clean environment to work with
     await AMF.init();
     for (const arg of argv) {
       promises.push(
