@@ -62,7 +62,7 @@ $ ramlint lint --profile mercury file1.raml file2.raml etc.raml
 
 The response will look something like
 
-```
+```txt
 Model: file://data-products-api-v1.raml
 Profile: mercury
 Conforms? false
@@ -105,25 +105,25 @@ This package also contains the code formerly published under `@commerce-apps/exc
 
 The default profile validates the following rules from the [Mercury API Definition of Done](https://salesforce.quip.com/lHK7ADgscANI)
 
-* `title` MUST be set and not be empty
-* `protocols` MUST be HTTPS
-* `version` MUST be set and follow the pattern /v[0-9]+/
-* API must have a `mediaType` default of application/json
-* `description` MUST be set and not be empty
-* `description` MUST not include the word TODO
-* All resource paths MUST be lowercase (except template parameters)
-* Resource paths MUST not start with symbols
-* All template/URI params MUST be lowerCamelCase
-* Methods MUST have a `displayName` set
-* Method `displayName` MUST be in camelCase
-* Methods MUST have a `description` field set
-* Method `description` MUST NOT contain the word TODO
-* `queryParameters` MUST be camelCase
-* Response codes MUST have a `description`
-* Response codes `description` MUST NOT contain the word TODO
-* There must be exactly one `baseUri`
-* `baseUri` must match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
-* `displayName` must be unique across an API
+- `title` MUST be set and not be empty
+- `protocols` MUST be HTTPS
+- `version` MUST be set and follow the pattern /v[0-9]+/
+- API must have a `mediaType` default of application/json
+- `description` MUST be set and not be empty
+- `description` MUST not include the word TODO
+- All resource paths MUST be lowercase (except template parameters)
+- Resource paths MUST not start with symbols
+- All template/URI params MUST be lowerCamelCase
+- Methods MUST have a `displayName` set
+- Method `displayName` MUST be in camelCase
+- Methods MUST have a `description` field set
+- Method `description` MUST NOT contain the word TODO
+- `queryParameters` MUST be camelCase
+- Response codes MUST have a `description`
+- Response codes `description` MUST NOT contain the word TODO
+- There must be exactly one `baseUri`
+- `baseUri` must match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
+- `displayName` must be unique across an API
 
 ## Contributing
 
@@ -131,15 +131,15 @@ You can read all about our contribution model [here!](./.github/CONTRIBUTING.md)
 
 ## Known issues and limitations
 
-* Currently works only with local files
+- Currently works only with local files
 
 ## Development Resources
 
 Here is an AMF validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
 
-* <https://github.com/mulesoft-labs/amf-validation-example>
-* <https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml>
-* <https://github.com/aml-org/amf/tree/develop/documentation/validations>
+- <https://github.com/mulesoft-labs/amf-validation-example>
+- <https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml>
+- <https://github.com/aml-org/amf/tree/develop/documentation/validations>
 
 <!-- Markdown link & img dfn's -->
 [circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=f0e669168c5d1538fc0b76ad71e13b2e2251ebd4
