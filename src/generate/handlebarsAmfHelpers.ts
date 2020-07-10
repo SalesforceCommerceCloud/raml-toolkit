@@ -106,7 +106,7 @@ export const getParameterDataType = (param: model.domain.Parameter): string => {
 /**
  * Get type of the request body
  *
- * @param request - AMF model of tge request
+ * @param request - AMF model of the request
  * @returns Type of the request body
  */
 export const getRequestPayloadType = (

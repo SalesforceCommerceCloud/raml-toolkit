@@ -82,14 +82,14 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getInheritedType("defined_type"));
 
-      expect(getPropertyDataType(property)).to.equal("defined_typeT");
+      expect(getPropertyDataType(property)).to.equal("defined_type");
     });
 
     it("returns 'defined_type' on linked object type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getLinkedType("defined_type"));
 
-      expect(getPropertyDataType(property)).to.equal("defined_typeT");
+      expect(getPropertyDataType(property)).to.equal("defined_type");
     });
 
     it("returns 'any' on object type that has no details defined", () => {
@@ -116,7 +116,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(range);
 
-      expect(getPropertyDataType(property)).to.equal("Array<defined_typeT>");
+      expect(getPropertyDataType(property)).to.equal("Array<defined_type>");
     });
 
     it("returns 'Array<string>' on array of linked string types ", () => {
@@ -140,7 +140,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(arrType);
 
-      expect(getPropertyDataType(property)).to.equal("Array<defined_typeT>");
+      expect(getPropertyDataType(property)).to.equal("Array<defined_type>");
     });
 
     it("returns 'any' on unhandled type", () => {
@@ -202,7 +202,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const response: model.domain.Response = operation.responses[0];
       response.withStatusCode("200");
       response.payloads[0].schema.withName("DefinedType");
-      expect(getReturnPayloadType(operation)).to.equal("DefinedTypeT");
+      expect(getReturnPayloadType(operation)).to.equal("DefinedType");
     });
 
     it("returns 'void' on defined_type data type, but with statusCode as 500", () => {
@@ -236,7 +236,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const shape = new model.domain.NodeShape();
       shape.withName(typeName);
       expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
-        typeName + "T"
+        typeName
       );
     });
 
@@ -267,7 +267,6 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
         ARRAY_DATA_TYPE.concat("<")
           .concat(typeName)
-          .concat("T")
           .concat(">")
       );
     });

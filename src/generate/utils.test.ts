@@ -27,7 +27,7 @@ describe("extractTypeFromPayload", () => {
     const schema = new model.domain.SchemaShape();
     payload.withSchema(schema);
     payload.schema.withName("Foo");
-    expect(extractTypeFromPayload(payload)).to.equal("FooT");
+    expect(extractTypeFromPayload(payload)).to.equal("Foo");
   });
 
   it("gets schema from payload when type is not set and schema anyOf is populated with one type", () => {
@@ -38,7 +38,7 @@ describe("extractTypeFromPayload", () => {
     schema.withAnyOf([shape1]);
     payload.withSchema(schema);
 
-    expect(extractTypeFromPayload(payload)).to.equal("FooT");
+    expect(extractTypeFromPayload(payload)).to.equal("Foo");
   });
 
   it("gets schema from payload when type is not set and schema anyOf is populated with multiple types", () => {
@@ -52,7 +52,7 @@ describe("extractTypeFromPayload", () => {
     schema.withAnyOf([shape1, shape2]);
     payload.withSchema(schema);
 
-    expect(extractTypeFromPayload(payload)).to.equal("FooT | BaaT");
+    expect(extractTypeFromPayload(payload)).to.equal("Foo | Baa");
   });
 
   it("fails to get schema when schema is not set", () => {
