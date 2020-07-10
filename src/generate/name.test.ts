@@ -6,7 +6,7 @@
  */
 import { expect } from "chai";
 
-import Name from "./name";
+import { Name } from "./name";
 
 describe("Test Name class", () => {
   it("sets all fields from the constructor with lowercase", () => {

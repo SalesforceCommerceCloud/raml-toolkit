@@ -36,7 +36,7 @@ describe("Test Api class init", () => {
     expect(api.model).to.not.be.empty;
     expect(api.name.original).to.equal("Shop API");
     expect(api.name.lowerCamelCase).to.equal("shopApi");
-    expect(api.path).to.be.equal(validRamlFile);
+    expect(api.path).to.equal(validRamlFile);
   });
 
   it("rejects from an invalid raml file", () => {
