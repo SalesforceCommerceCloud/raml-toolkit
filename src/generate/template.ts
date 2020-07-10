@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import fs from "fs-extra";
-import { handlebarsAmfHelpers } from ".";
+import { HandlebarsWithAmfHelpers } from "./handlebarsConfig";
 
 /**
  * Holds a template and renders the template with the given data
@@ -20,7 +20,7 @@ export class Template {
    */
   constructor(
     public path: string,
-    public handlebars = handlebarsAmfHelpers.handlebars
+    public handlebars = HandlebarsWithAmfHelpers
   ) {
     try {
       this.content = fs.readFileSync(path, "utf8");

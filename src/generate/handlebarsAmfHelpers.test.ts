@@ -7,7 +7,6 @@
 import {
   getBaseUri,
   getProperties,
-  getValue,
   isAdditionalPropertiesAllowed,
   isOptionalProperty,
   isRequiredProperty,
@@ -16,7 +15,7 @@ import {
 import { verifyProperties } from "../../test/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
-import { expect, assert } from "chai";
+import { expect } from "chai";
 
 describe("HandlebarsAmfHelpers", () => {
   before(() => {
@@ -37,26 +36,6 @@ describe("HandlebarsAmfHelpers", () => {
       api.withServer("test-url-value");
       const testModel = new model.document.Document().withEncodes(api);
       expect(getBaseUri(testModel)).to.equal("test-url-value");
-    });
-  });
-
-  describe("getValue", () => {
-    it("returns null on undefined name", () => {
-      assert.isNull(getValue(undefined));
-    });
-
-    it("returns null on undefined value", () => {
-      const property: model.domain.ScalarShape = new model.domain.ScalarShape();
-
-      expect(getValue(property.dataType)).to.be.null;
-    });
-
-    it("returns 'valid' on valid value", () => {
-      const property: model.domain.ScalarShape = new model.domain.ScalarShape();
-
-      property.withDataType("valid");
-
-      expect(getValue(property.dataType)).to.equal("valid");
     });
   });
 

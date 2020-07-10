@@ -21,7 +21,7 @@ import {
 } from "../../test/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
-import { expect, assert } from "chai";
+import { expect } from "chai";
 
 describe("HandlebarsAmfHelpers get type helper functions", () => {
   before(() => {
@@ -75,21 +75,21 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getObjectType());
 
-      assert.isTrue(getPropertyDataType(property) === "object");
+      expect(getPropertyDataType(property)).to.equal("object");
     });
 
     it("returns 'defined_type' on inherited object type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getInheritedType("defined_type"));
 
-      assert.isTrue(getPropertyDataType(property) === "defined_typeT");
+      expect(getPropertyDataType(property)).to.equal("defined_typeT");
     });
 
     it("returns 'defined_type' on linked object type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getLinkedType("defined_type"));
 
-      assert.isTrue(getPropertyDataType(property) === "defined_typeT");
+      expect(getPropertyDataType(property)).to.equal("defined_typeT");
     });
 
     it("returns 'any' on object type that has no details defined", () => {

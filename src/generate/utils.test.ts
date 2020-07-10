@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { extractTypeFromPayload } from "./utils";
+import { extractTypeFromPayload, getValue } from "./utils";
 
 import { model } from "amf-client-js";
 import { expect } from "chai";
@@ -65,5 +65,25 @@ describe("extractTypeFromPayload", () => {
 
   it("fails to get schema when payload is undefined", () => {
     expect(() => extractTypeFromPayload(undefined)).to.throw();
+  });
+});
+
+describe("getValue", () => {
+  it("returns null on undefined name", () => {
+    expect(getValue(undefined)).to.be.null;
+  });
+
+  it("returns null on undefined value", () => {
+    const property: model.domain.ScalarShape = new model.domain.ScalarShape();
+
+    expect(getValue(property.dataType)).to.be.null;
+  });
+
+  it("returns 'valid' on valid value", () => {
+    const property: model.domain.ScalarShape = new model.domain.ScalarShape();
+
+    property.withDataType("valid");
+
+    expect(getValue(property.dataType)).to.equal("valid");
   });
 });

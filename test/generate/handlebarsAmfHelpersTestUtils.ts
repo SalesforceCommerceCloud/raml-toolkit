@@ -6,7 +6,6 @@
  */
 "use strict";
 import { expect } from "chai";
-import _ from "lodash";
 import { model } from "amf-client-js";
 
 export const getScalarType = (typeName: string): model.domain.ScalarShape => {

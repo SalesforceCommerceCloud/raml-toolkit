@@ -56,8 +56,8 @@ const template = Handlebars.compile(
 
 Using the handlebarsAmfHelpers functions registered with the Handlebars environment:
 ```
-{{#each .}}
-    {{#if (isTypeDefinition .)}}
+{{#each this}}
+    {{#if (isTypeDefinition this)}}
 export type {{getValue name}} = {};
     {{/if}}
 {{/each}}

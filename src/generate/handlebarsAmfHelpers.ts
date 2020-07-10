@@ -11,14 +11,12 @@ import {
   getDataType,
   getPayloadType,
   getFilteredProperties,
-  getValue,
   DEFAULT_DATA_TYPE,
   ARRAY_DATA_TYPE,
   OBJECT_DATA_TYPE
 } from "./utils";
 
 import { model } from "amf-client-js";
-import Handlebars from "handlebars";
 
 /**
  * Selects the baseUri from an AMF model. TypeScript will not allow access to
@@ -190,26 +188,3 @@ export const isAdditionalPropertiesAllowed = (
     !ramlTypeDefinition.closed.value()
   );
 };
-
-const helpers = {
-  getBaseUri,
-  getRequestPayloadType,
-  getReturnPayloadType,
-  getParameterDataType,
-  getProperties,
-  getPropertyDataType,
-  getValue,
-  isAdditionalPropertiesAllowed,
-  isOptionalProperty,
-  isRequiredProperty,
-  isTypeDefinition
-};
-
-const handlebars = Handlebars.create();
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("handlebars-helpers")({ handlebars }, ["string", "comparison"]);
-for (const helper of Object.keys(helpers)) {
-  handlebars.registerHelper(helper, helpers[helper]);
-}
-
-export { getValue, handlebars };

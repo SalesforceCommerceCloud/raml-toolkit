@@ -31,7 +31,7 @@ export { amf };
 export { model } from "amf-client-js";
 
 export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
-export { handlebarsAmfHelpers } from "./generate";
+export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers } from "./generate";
 
 export * from "./generate";
 

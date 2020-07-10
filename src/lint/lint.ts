@@ -36,7 +36,6 @@ export async function validateModel(
   model: model.document.BaseUnit,
   profile: string
 ): Promise<client.validate.ValidationReport> {
-  await AMF.init();
   const results = await validateCustom(
     model,
     `file://${path.join(profilePath, `${profile}.raml`)}`

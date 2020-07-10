@@ -9,5 +9,31 @@ export { ApiGroup } from "./apiGroup";
 export { ApiCollection } from "./apiCollection";
 export { Template } from "./template";
 
-import * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
-export { handlebarsAmfHelpers };
+import {
+  getBaseUri,
+  getParameterDataType,
+  getPropertyDataType,
+  getRequestPayloadType,
+  getReturnPayloadType,
+  getProperties,
+  isAdditionalPropertiesAllowed,
+  isOptionalProperty,
+  isRequiredProperty,
+  isTypeDefinition
+} from "./handlebarsAmfHelpers";
+import { getValue } from "./utils";
+const handlebarsAmfHelpers = {
+  getBaseUri,
+  getParameterDataType,
+  getPropertyDataType,
+  getRequestPayloadType,
+  getReturnPayloadType,
+  getProperties,
+  getValue,
+  isAdditionalPropertiesAllowed,
+  isOptionalProperty,
+  isRequiredProperty,
+  isTypeDefinition
+};
+import { HandlebarsWithAmfHelpers } from "./handlebarsConfig";
+export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers };

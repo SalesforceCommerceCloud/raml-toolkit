@@ -6,6 +6,7 @@
  */
 import path from "path";
 import fs from "fs";
+import { AMF } from "amf-client-js";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults } from "./lint";
 
@@ -31,6 +32,7 @@ export default class LintCommand extends Command {
 
     const promises = [];
 
+    await AMF.init();
     for (const arg of argv) {
       promises.push(
         validateFile(arg, flags.profile).then(results => {
