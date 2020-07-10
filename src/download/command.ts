@@ -32,8 +32,6 @@ export class DownloadCommand extends Command {
     }),
     "deployment-regex-flags": flags.string({
       description: "RegExp flags to specify for advanced deployment matching",
-      // TODO: Decide on default for this flag
-      default: "i",
       dependsOn: ["deployment"]
     }),
     dest: flags.string({
@@ -43,10 +41,10 @@ export class DownloadCommand extends Command {
       default: "apis"
     }),
     "group-by": flags.string({
-      char: "f",
+      char: "g",
       description: "Category to use to group APIs together",
       env: "ANYPOINT_GROUP_BY",
-      default: "CC API Family"
+      required: true
     }),
     "config-file": flags.string({
       char: "c",

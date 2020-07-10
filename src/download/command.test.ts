@@ -115,7 +115,7 @@ describe("Download Command", () => {
   });
 
   setup()
-    .do(() => DownloadCommand.run([]))
+    .do(() => DownloadCommand.run(["--group-by", "CC API Family"]))
     .it("downloads APIs", () => {
       expect("apis").to.be.a.directory();
       expect("apis/api-config.json")
@@ -128,19 +128,31 @@ describe("Download Command", () => {
     });
 
   setup({ search: "test" })
-    .do(() => DownloadCommand.run(["--search=test"]))
+    .do(() =>
+      DownloadCommand.run(["--search=test", "--group-by", "CC API Family"])
+    )
     .it("accepts a configurable search query");
 
   setup({ version: "0.0.7" })
-    .do(() => DownloadCommand.run(["--deployment=test"]))
+    .do(() =>
+      DownloadCommand.run(["--deployment=test", "--group-by", "CC API Family"])
+    )
     .it("accepts a configurable deployment status");
 
   setup()
-    .do(() => DownloadCommand.run(["--group-by=category"]))
+    .do(() =>
+      DownloadCommand.run([
+        "--group-by=category",
+        "--group-by",
+        "CC API Family"
+      ])
+    )
     .it("accepts a configurable category for grouping APIs");
 
   setup()
-    .do(() => DownloadCommand.run(["--dest=test"]))
+    .do(() =>
+      DownloadCommand.run(["--dest=test", "--group-by", "CC API Family"])
+    )
     .it("accepts a configurable target directory (relative)", () => {
       expect("test")
         .to.be.a.directory()
@@ -152,7 +164,13 @@ describe("Download Command", () => {
     });
 
   setup()
-    .do(() => DownloadCommand.run([`--dest=${tmpOtherDir}`]))
+    .do(() =>
+      DownloadCommand.run([
+        `--dest=${tmpOtherDir}`,
+        "--group-by",
+        "CC API Family"
+      ])
+    )
     .it("accepts a configurable target directory (absolute)", () => {
       expect("test")
         .to.be.a.directory()
@@ -164,7 +182,13 @@ describe("Download Command", () => {
     });
 
   setup()
-    .do(() => DownloadCommand.run(["--config-file=test-file.json"]))
+    .do(() =>
+      DownloadCommand.run([
+        "--config-file=test-file.json",
+        "--group-by",
+        "CC API Family"
+      ])
+    )
     .it("accepts a configurable config file name", () => {
       expect("apis/test-file.json")
         .to.be.a.file()
@@ -172,16 +196,27 @@ describe("Download Command", () => {
     });
 
   test
-    .do(() => DownloadCommand.run([`--config-file=/path/to/api-config.json`]))
+    .do(() =>
+      DownloadCommand.run([
+        `--config-file=/path/to/api-config.json`,
+        "--group-by",
+        "CC API Family"
+      ])
+    )
     .exit(2)
     .it("forbids specifying a path for config file name");
+
+  test
+    .do(() => DownloadCommand.run([]))
+    .exit(2)
+    .it("requires --group-by flag to be set");
 
   test
     .env({
       ANYPOINT_USERNAME: undefined,
       ANYPOINT_PASSWORD: undefined
     })
-    .do(() => DownloadCommand.run([]))
+    .do(() => DownloadCommand.run(["--group-by", "CC API Family"]))
     .exit(2)
     .it("requires ANYPOINT_USERNAME and ANYPOINT_PASSWORD env variables");
 });
