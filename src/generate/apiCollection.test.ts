@@ -19,6 +19,11 @@ before(() => {
 });
 
 describe("Test ApiCollection class init", () => {
+  it("creates a default instance", async () => {
+    const collection = new ApiCollection();
+    expect(collection).to.deep.equal([]);
+  });
+
   it("creates an instance from a valid raml file", async () => {
     const collection = await ApiCollection.init({
       "Group One": [validRamlFile]
