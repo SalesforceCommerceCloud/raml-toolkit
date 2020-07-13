@@ -18,6 +18,13 @@ export const PRIMITIVE_DATA_TYPE_MAP = {
   "http://www.w3.org/2001/XMLSchema#boolean": "boolean"
 };
 
+/**
+ * Get responses from the given operation object
+ * 
+ * @param operation - The target operation
+ * 
+ * @returns An array of responses extracted from the given operation
+ */
 export const getPayloadResponses = (
   operation: model.domain.Operation
 ): model.domain.Response[] => {
@@ -34,9 +41,9 @@ export const getPayloadResponses = (
  * Given a payload, extract the types.
  *
  * @param payload - Contains schema(s) from which to extract the type(s).
- * @returns string representation of the datatypes in the payload
+ * @returns string representation of the data types in the payload
  */
-export const extractTypeFromPayload = (
+export const getTypeFromPayload = (
   payload: model.domain.Payload
 ): string => {
   if (payload.schema.name.value() === "schema") {

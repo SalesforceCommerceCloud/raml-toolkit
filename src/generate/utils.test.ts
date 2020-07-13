@@ -4,12 +4,12 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { extractTypeFromPayload, getValue } from "./utils";
+import { getTypeFromPayload, getValue } from "./utils";
 
 import { model } from "amf-client-js";
 import { expect } from "chai";
 
-describe("extractTypeFromPayload", () => {
+describe("getTypeFromPayload", () => {
   let payload: model.domain.Payload;
 
   beforeEach(() => {
@@ -20,14 +20,14 @@ describe("extractTypeFromPayload", () => {
     const schema = new model.domain.SchemaShape();
     payload.withSchema(schema);
     payload.schema.withName("schema");
-    expect(extractTypeFromPayload(payload)).to.equal("Object");
+    expect(getTypeFromPayload(payload)).to.equal("Object");
   });
 
   it("gets schema from payload when type is Schema", () => {
     const schema = new model.domain.SchemaShape();
     payload.withSchema(schema);
     payload.schema.withName("Foo");
-    expect(extractTypeFromPayload(payload)).to.equal("Foo");
+    expect(getTypeFromPayload(payload)).to.equal("Foo");
   });
 
   it("gets schema from payload when type is not set and schema anyOf is populated with one type", () => {
@@ -38,7 +38,7 @@ describe("extractTypeFromPayload", () => {
     schema.withAnyOf([shape1]);
     payload.withSchema(schema);
 
-    expect(extractTypeFromPayload(payload)).to.equal("Foo");
+    expect(getTypeFromPayload(payload)).to.equal("Foo");
   });
 
   it("gets schema from payload when type is not set and schema anyOf is populated with multiple types", () => {
@@ -52,19 +52,19 @@ describe("extractTypeFromPayload", () => {
     schema.withAnyOf([shape1, shape2]);
     payload.withSchema(schema);
 
-    expect(extractTypeFromPayload(payload)).to.equal("Foo | Baa");
+    expect(getTypeFromPayload(payload)).to.equal("Foo | Baa");
   });
 
   it("fails to get schema when schema is not set", () => {
-    expect(() => extractTypeFromPayload(payload)).to.throw();
+    expect(() => getTypeFromPayload(payload)).to.throw();
   });
 
   it("fails to get schema when payload is null", () => {
-    expect(() => extractTypeFromPayload(null)).to.throw();
+    expect(() => getTypeFromPayload(null)).to.throw();
   });
 
   it("fails to get schema when payload is undefined", () => {
-    expect(() => extractTypeFromPayload(undefined)).to.throw();
+    expect(() => getTypeFromPayload(undefined)).to.throw();
   });
 });
 

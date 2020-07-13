@@ -7,7 +7,7 @@
 
 import {
   getPayloadResponses,
-  extractTypeFromPayload,
+  getTypeFromPayload,
   getDataType,
   getPayloadType,
   getFilteredProperties,
@@ -38,14 +38,14 @@ export const getBaseUri = (
 /**
  * Checks the node is a type definition.
  *
- * @param obj - The node to check
+ * @param domainElement - The node to check
  *
  * @returns true if the node is a type definition, false if not
  */
 export const isTypeDefinition = (
-  cdProperty: model.domain.DomainElement
+  domainElement: model.domain.DomainElement
 ): boolean => {
-  return cdProperty instanceof model.domain.NodeShape;
+  return domainElement instanceof model.domain.NodeShape;
 };
 
 /**
