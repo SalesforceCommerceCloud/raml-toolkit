@@ -63,19 +63,17 @@ export class DownloadCommand extends Command {
       );
     }
     const { flags } = this.parse(DownloadCommand);
+    const configFile = flags["config-file"];
+    if (configFile !== path.basename(configFile)) {
+      this.error("Config file name must not be a path.", { exit: 2 });
+    }
     const apis = await download.search(
       flags.search,
       new RegExp(flags.deployment, flags["deployment-regex-flags"])
     );
     await download.downloadRestApis(apis, flags.dest);
     await extractFiles(flags.dest);
-    const apiFamilyGroups = groupByCategory(
-      removeRamlLinks(apis),
-      flags["group-by"]
-    );
-    await fs.writeJson(
-      path.join(flags.dest, flags["config-file"]),
-      apiFamilyGroups
-    );
+    const apiGroups = groupByCategory(removeRamlLinks(apis), flags["group-by"]);
+    await fs.writeJson(path.join(flags.dest, configFile), apiGroups);
   }
 }
