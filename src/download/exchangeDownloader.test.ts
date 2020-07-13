@@ -279,20 +279,20 @@ describe("getVersionByDeployment", () => {
 describe("getAsset", () => {
   it("gets the JSON asset with the specified ID", () => {
     nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
-      .get("/8888888/test-api")
+      .get("/8888888/test-get-asset")
       .reply(200, { data: "json response" });
 
     expect(
-      getAsset("AUTH_TOKEN", "8888888/test-api")
+      getAsset("AUTH_TOKEN", "8888888/test-get-asset")
     ).to.eventually.deep.equal({ data: "json response" });
   });
 
   it("returns undefined when the response indicates an error", () => {
     nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
-      .get("/8888888/test-api")
+      .get("/8888888/get-asset-404")
       .reply(404, "Not Found");
 
-    expect(getAsset("AUTH_TOKEN", "8888888/test-api")).to.eventually.be
+    expect(getAsset("AUTH_TOKEN", "8888888/get-asset-404")).to.eventually.be
       .undefined;
   });
 });
@@ -315,6 +315,7 @@ describe("search", () => {
   after(() => {
     process.env.ANYPOINT_USERNAME = ANYPOINT_USERNAME;
     process.env.ANYPOINT_PASSWORD = ANYPOINT_PASSWORD;
+    nock.cleanAll();
   });
 
   beforeEach(() => {
