@@ -6,10 +6,12 @@
  */
 // import "cross-fetch/polyfill";
 
-import { writeFileSync, ensureDirSync } from "fs-extra";
+import fs from "fs-extra";
 import fetch, { Response } from "node-fetch";
 import path from "path";
 
+import { getBearer } from "./bearerToken";
+import { removeVersionSpecificInformation } from "./exchangeTools";
 import {
   RawRestApi,
   RestApi,
@@ -36,11 +38,11 @@ export async function downloadRestApi(
     return;
   }
 
-  ensureDirSync(destinationFolder);
+  await fs.ensureDir(destinationFolder);
   const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
   const response = await fetch(restApi.fatRaml.externalLink);
   const arrayBuffer = await response.arrayBuffer();
-  writeFileSync(zipFilePath, Buffer.from(arrayBuffer));
+  await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
 
   return response;
 }
@@ -133,11 +135,14 @@ export async function searchExchange(
   accessToken: string,
   searchString: string
 ): Promise<RestApi[]> {
-  return fetch(`${ANYPOINT_BASE_URI}/assets?search=${searchString}`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
+  return fetch(
+    `${ANYPOINT_BASE_URI}/assets?search=${searchString}&types=rest-api`,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
     }
-  })
+  )
     .then(res => res.json())
     .then(restApis => {
       const apis: RestApi[] = [];
@@ -202,4 +207,33 @@ export async function getSpecificApi(
   if (!version) return null;
   const api = await getAsset(accessToken, `${groupId}/${assetId}/${version}`);
   return api ? convertResponseToRestApi(api) : null;
+}
+
+/**
+ * Gets information about all the APIs from exchange that match the given search
+ * string for the version deployed in the given environment.
+ * If it fails to get information about the deployed version of an API, it
+ * removes all the version specific information from the returned object.
+ *
+ * @param query - Exchange search query
+ * @param deployment - RegExp matching the desired deployment targets
+ *
+ * @returns Information about the APIs found.
+ */
+export async function search(
+  query: string,
+  deployment: RegExp
+): Promise<RestApi[]> {
+  const token = await getBearer(
+    process.env.ANYPOINT_USERNAME,
+    process.env.ANYPOINT_PASSWORD
+  );
+  const apis = await searchExchange(token, query);
+  const promises = apis.map(async api => {
+    const version = await getVersionByDeployment(token, api, deployment);
+    return version
+      ? getSpecificApi(token, api.groupId, api.assetId, version)
+      : removeVersionSpecificInformation(api);
+  });
+  return Promise.all(promises);
 }

@@ -9,9 +9,11 @@ import {
   downloadRestApis,
   searchExchange,
   getVersionByDeployment,
-  RestApi,
-  getSpecificApi
-} from "../../src/";
+  getSpecificApi,
+  getAsset,
+  search
+} from "./exchangeDownloader";
+import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../test/download/resources/restApiResponseObjects";
 
 import tmp from "tmp";
@@ -137,7 +139,9 @@ describe("searchExchange", () => {
   it("can download multiple files", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2");
 
-    scope.get("/assets?search=searchString").reply(200, assetSearchResults);
+    scope
+      .get("/assets?search=searchString&types=rest-api")
+      .reply(200, assetSearchResults);
 
     return searchExchange("AUTH_TOKEN", "searchString").then(res => {
       expect(res).to.deep.equal(searchAssetApiResultObject);
@@ -153,7 +157,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(200, getAssetWithVersion);
 
     return expect(
@@ -196,7 +199,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(200, getAssetWithVersion);
 
     const restApi = getSpecificApi(
@@ -214,7 +216,6 @@ describe("getSpecificApi", () => {
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
       .reply(404, "Not Found");
 
     return expect(
@@ -241,7 +242,7 @@ describe("getVersionByDeployment", () => {
     ).to.eventually.equal("0.0.1");
   });
 
-  it("should return null if the deployment does not exist", async () => {
+  it("should return the base version if the deployment does not exist", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
@@ -251,7 +252,7 @@ describe("getVersionByDeployment", () => {
     ).to.eventually.equal(getAssetWithoutVersion.version);
   });
 
-  it("should return null if the asset does not exist", async () => {
+  it("should return undefined if the asset does not exist", async () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
 
     scope.get("/8888888/test-api").reply(404, "Not Found");
@@ -272,5 +273,170 @@ describe("getVersionByDeployment", () => {
     return expect(
       getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
     ).to.eventually.be.undefined;
+  });
+});
+
+describe("getAsset", () => {
+  it("gets the JSON asset with the specified ID", () => {
+    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+      .get("/8888888/test-api")
+      .reply(200, { data: "json response" });
+
+    expect(
+      getAsset("AUTH_TOKEN", "8888888/test-api")
+    ).to.eventually.deep.equal({ data: "json response" });
+  });
+
+  it("returns undefined when the response indicates an error", () => {
+    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+      .get("/8888888/test-api")
+      .reply(404, "Not Found");
+
+    expect(getAsset("AUTH_TOKEN", "8888888/test-api")).to.eventually.be
+      .undefined;
+  });
+});
+
+describe("search", () => {
+  const scope = nock(
+    "https://anypoint.mulesoft.com/exchange/api/v2/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8"
+  );
+
+  // Search uses process.env, so we need to set expected values
+  let ANYPOINT_USERNAME: string;
+  let ANYPOINT_PASSWORD: string;
+  before(() => {
+    ANYPOINT_USERNAME = process.env.ANYPOINT_USERNAME;
+    ANYPOINT_PASSWORD = process.env.ANYPOINT_PASSWORD;
+    process.env.ANYPOINT_USERNAME = "user";
+    process.env.ANYPOINT_PASSWORD = "pass";
+  });
+  // Restore the original values so other tests can use them
+  after(() => {
+    process.env.ANYPOINT_USERNAME = ANYPOINT_USERNAME;
+    process.env.ANYPOINT_PASSWORD = ANYPOINT_PASSWORD;
+  });
+
+  beforeEach(() => {
+    // Intercept getBearer request
+    nock("https://anypoint.mulesoft.com")
+      .post("/accounts/login", { username: "user", password: "pass" })
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      .reply(200, { access_token: "AUTH_TOKEN" });
+
+    // Intercept searchExchange request
+    nock("https://anypoint.mulesoft.com/exchange/api/v2", {
+      reqheaders: {
+        Authorization: "Bearer AUTH_TOKEN"
+      }
+    })
+      .get("/assets?search=searchString")
+      .reply(200, [assetSearchResults[0]]);
+  });
+
+  it("searches Exchange and filters by deployment", () => {
+    scope
+      .get("/shop-products-categories-api-v1")
+      .reply(200, getAssetWithVersion)
+      .get("/shop-products-categories-api-v1/0.0.1")
+      .reply(200, getAssetWithVersion);
+
+    expect(search("searchString", /production/i)).to.eventually.deep.equal([
+      {
+        id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1",
+        name: "Shopper Customers",
+        description:
+          "Let customers log in and manage their profiles and product lists.",
+        updatedDate: "2020-02-06T17:55:32.375Z",
+        groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+        assetId: "shopper-customers",
+        version: "0.0.1",
+        categories: {
+          "API layer": ["Process"],
+          "CC API Visibility": ["External"],
+          "CC Version Status": ["Beta"],
+          "CC API Family": ["Customer"]
+        },
+        fatRaml: {
+          classifier: "fat-raml",
+          packaging: "zip",
+          externalLink:
+            "https://exchange2-asset-manager-kprod.s3.amazonaws.com/893f605e-10e2-423a-bdb4-f952f56eb6d8/bfff7ae2c59dd68e81adee900b56f8fd0d8ab00bc42206d0af3e96fa1025e9c3.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20200206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200206T191341Z&X-Amz-Expires=86400&X-Amz-Signature=32c30dbb73e3031ef95da76382e52acb14ad734535e108864a506a34f8e21f3f&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dshopper-customers-0.0.1-raml.zip",
+          createdDate: "2020-01-22T03:25:00.200Z",
+          md5: "3ce41ea699c8be4446909f172cfac317",
+          sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
+          mainFile: "shopper-customers.raml"
+        }
+      }
+    ]);
+  });
+
+  it("works when an asset does not exist", () => {
+    scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
+    expect(search("searchString", /unused regex/)).to.eventually.deep.equal([
+      {
+        id: null,
+        name: "Shopper Products",
+        description:
+          "Enable developers to add functionality that shows product details in shopping apps.",
+        updatedDate: null,
+        groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+        assetId: "shop-products-categories-api-v1",
+        version: null,
+        categories: {
+          "API layer": ["Process"],
+          "CC API Family": ["Product"],
+          "CC Version Status": ["Beta"],
+          "CC API Visibility": ["External"]
+        },
+        fatRaml: {
+          classifier: "fat-raml",
+          packaging: "zip",
+          createdDate: null,
+          md5: null,
+          sha1: null,
+          mainFile: "shop-products-categories-api-v1.raml"
+        }
+      }
+    ]);
+  });
+
+  it("works when there are no matches for the specified deployment", () => {
+    scope
+      .get("/shop-products-categories-api-v1")
+      .reply(200, getAssetWithoutVersion)
+      .get("/shop-products-categories-api-v1/0.0.7")
+      .reply(200, getAssetWithoutVersion);
+
+    expect(
+      search("searchString", /nothing should match/)
+    ).to.eventually.deep.equal([
+      {
+        id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.7",
+        name: "Shopper Customers",
+        description:
+          "Let customers log in and manage their profiles and product lists.",
+        updatedDate: "2020-02-06T17:55:32.375Z",
+        groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+        assetId: "shopper-customers",
+        version: "0.0.7",
+        categories: {
+          "CC API Visibility": ["External"],
+          "CC Version Status": ["Beta"],
+          "CC API Family": ["Customer"],
+          "API layer": ["Process"]
+        },
+        fatRaml: {
+          classifier: "fat-raml",
+          packaging: "zip",
+          externalLink:
+            "https://exchange2-asset-manager-kprod.s3.amazonaws.com/893f605e-10e2-423a-bdb4-f952f56eb6d8/37bb0c576a8e98746ba998dc42c926007d96229de7566b04d555f0d83f05368a.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20200206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200206T192402Z&X-Amz-Expires=86400&X-Amz-Signature=0345e90e7e437e539b21f8a6d0fab74e711dde1131ccc6419782302dbd337954&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dshopper-customers-0.0.7-raml.zip",
+          createdDate: "2020-02-05T21:26:01.199Z",
+          md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
+          sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
+          mainFile: "shopper-customers.raml"
+        }
+      }
+    ]);
   });
 });
