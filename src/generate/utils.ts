@@ -20,9 +20,9 @@ export const PRIMITIVE_DATA_TYPE_MAP = {
 
 /**
  * Get responses from the given operation object
- * 
+ *
  * @param operation - The target operation
- * 
+ *
  * @returns An array of responses extracted from the given operation
  */
 export const getPayloadResponses = (
@@ -43,9 +43,7 @@ export const getPayloadResponses = (
  * @param payload - Contains schema(s) from which to extract the type(s).
  * @returns string representation of the data types in the payload
  */
-export const getTypeFromPayload = (
-  payload: model.domain.Payload
-): string => {
+export const getTypeFromPayload = (payload: model.domain.Payload): string => {
   if (payload.schema.name.value() === "schema") {
     return "Object";
   }

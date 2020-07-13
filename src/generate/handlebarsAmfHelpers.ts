@@ -63,7 +63,7 @@ export const getReturnPayloadType = (
 
   okResponses.forEach(res => {
     if (res.payloads.length > 0) {
-      dataTypes.push(extractTypeFromPayload(res.payloads[0]));
+      dataTypes.push(getTypeFromPayload(res.payloads[0]));
     } else {
       dataTypes.push("void");
     }
