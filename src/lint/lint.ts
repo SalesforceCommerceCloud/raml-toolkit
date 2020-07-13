@@ -5,34 +5,37 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
-import amf from "amf-client-js";
+import {
+  client,
+  model,
+  AMF,
+  Core,
+  MessageStyles,
+  ProfileName
+} from "amf-client-js";
 
 import { parseRamlFile } from "../common/parser";
 import { profilePath } from ".";
 
 export async function validateCustom(
-  model: amf.model.document.BaseUnit,
+  model: model.document.BaseUnit,
   profileFile: string
-): Promise<amf.client.validate.ValidationReport> {
-  let profileName: amf.ProfileName;
+): Promise<client.validate.ValidationReport> {
+  let profileName: ProfileName;
   try {
-    profileName = await amf.Core.loadValidationProfile(profileFile);
+    profileName = await Core.loadValidationProfile(profileFile);
   } catch (err) {
     // We rethrow to provide a cleaner error message
     throw new Error(err.vw);
   }
-  const report = await amf.Core.validate(
-    model,
-    profileName,
-    amf.MessageStyles.RAML
-  );
+  const report = await Core.validate(model, profileName, MessageStyles.RAML);
   return report;
 }
 
 export async function validateModel(
-  model: amf.model.document.BaseUnit,
+  model: model.document.BaseUnit,
   profile: string
-): Promise<amf.client.validate.ValidationReport> {
+): Promise<client.validate.ValidationReport> {
   const results = await validateCustom(
     model,
     `file://${path.join(profilePath, `${profile}.raml`)}`
@@ -42,7 +45,7 @@ export async function validateModel(
 }
 
 export async function printResults(
-  results: amf.client.validate.ValidationReport,
+  results: client.validate.ValidationReport,
   warnings = false
 ): Promise<void> {
   if (results && !warnings && results.conforms) {
@@ -60,7 +63,7 @@ Number of hidden warnings: ${results.results.length}
 export async function validateFile(
   filename: string,
   profile: string
-): Promise<amf.client.validate.ValidationReport> {
+): Promise<client.validate.ValidationReport> {
   const model = await parseRamlFile(filename);
   if (!model) throw new Error("Error validating file");
   return await validateModel(model, profile);
