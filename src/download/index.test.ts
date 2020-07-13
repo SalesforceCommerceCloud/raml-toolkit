@@ -9,7 +9,7 @@ import JSZip from "jszip";
 import tmp from "tmp";
 import chai from "chai";
 import chaiFs from "chai-fs";
-import { DownloadCommand } from "./command";
+import { DownloadCommand } from ".";
 
 chai.use(chaiFs);
 
