@@ -48,8 +48,7 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }),
     "out-file": flags.string({
       char: "o",
-      description: "File to store the computed difference",
-      dependsOn: ["dir"]
+      description: "File to store the computed difference"
     })
   };
 
@@ -68,18 +67,21 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }
   ];
 
+  protected async _saveOrLog(file: string, json: object): Promise<void> {
+    if (file) {
+      await fs.writeJson(file, json);
+    } else {
+      console.log(json);
+    }
+  }
+
   protected async _diffDirs(
     oldApis: string,
     newApis: string,
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
-    const result = await diffNewAndArchivedRamlFiles(oldApis, newApis);
-    const outfile = flags["out-file"];
-    if (outfile) {
-      await fs.writeJson(outfile, result);
-    } else {
-      this.log(JSON.stringify(result, null, 2));
-    }
+    const results = await diffNewAndArchivedRamlFiles(oldApis, newApis);
+    await this._saveOrLog(flags["out-file"], results);
   }
 
   protected async _diffFiles(
@@ -95,6 +97,7 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
       if (results.length > 0) {
         this.exit(1);
       }
+      await this._saveOrLog(flags["out-file"], results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -111,7 +114,8 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     // changes, exit 2 for unsuccessful
     try {
       const results = await findApiChanges(oldApis, newApis, flags.ruleset);
-      console.log(results);
+      await this._saveOrLog(flags["out-file"], results);
+
       // TODO: Move to logic to the library
       const hasBreakingChanges = (diff: NodeDiff[]): boolean =>
         diff.some(n => n.rule?.params?.category === "Breaking");
