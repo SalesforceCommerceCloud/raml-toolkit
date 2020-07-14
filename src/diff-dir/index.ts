@@ -119,12 +119,13 @@ async function diffCommonRamls(
  * old and new RAML files
  */
 export async function diffNewAndArchivedRamlFiles(
-  oldApiDir: string,
-  newApiDir: string,
-  configFile: string
+  oldConfigFile: string,
+  newConfigFile: string
 ): Promise<RamlDiff[]> {
-  const oldRamls = listRamlsFromConfig(path.join(oldApiDir, configFile));
-  const newRamls = listRamlsFromConfig(path.join(newApiDir, configFile));
+  const oldApiDir = path.dirname(oldConfigFile);
+  const newApiDir = path.dirname(newConfigFile);
+  const oldRamls = listRamlsFromConfig(oldConfigFile);
+  const newRamls = listRamlsFromConfig(newConfigFile);
   const ramls = compareArrays(oldRamls, newRamls);
 
   const result: RamlDiff[] = await diffCommonRamls(
@@ -171,8 +172,7 @@ export class DiffDirectoriesCommand extends Command {
     const { args, flags } = this.parse(DiffDirectoriesCommand);
     const result = await diffNewAndArchivedRamlFiles(
       args.oldApis,
-      args.newApis,
-      flags["config-file"]
+      args.newApis
     );
     const outfile = flags["out-file"];
     if (outfile) {
