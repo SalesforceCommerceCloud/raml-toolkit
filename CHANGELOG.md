@@ -1,5 +1,67 @@
 # CHANGELOG
 
+## 0.4.3
+
+* Added `diff` and `download` commands.
+
+### New Command Usage
+
+#### `raml-toolkit diff APISPECBASEPATH APISPECNEWPATH`
+
+Takes two API spec files as input and outputs the differences.
+
+```txt
+USAGE
+  $ raml-toolkit diff APISPECBASEPATH APISPECNEWPATH
+
+ARGUMENTS
+  APISPECBASEPATH  The base API spec file for the comparison
+  APISPECNEWPATH   The new version of the API spec for comparison against the base version
+
+OPTIONS
+  -h, --help             show CLI help
+  -r, --ruleset=ruleset  Path to ruleset to apply to diff
+  -v, --version          show CLI version
+
+  --diff-only            Only show differences without evaluating a ruleset. The exit status in this mode is 0 for no
+                         changes, 1 for any difference and 2 when unsuccessful.
+
+DESCRIPTION
+  By default, a ruleset is applied to determine if changes are breaking. Exit status is:
+     0 - all changes are non-breaking
+     1 - any changes are breaking
+     2 - evaluation could not be completed
+
+  The ruleset flag is used to evaluate a custom ruleset in place of the default rules. The diff-only flag disables
+  evaluation against any ruleset.
+```
+
+#### `raml-toolkit download`
+
+Download API specification files from Anypoint Exchange
+
+```txt
+USAGE
+  $ raml-toolkit download
+
+OPTIONS
+  -D, --deployment=deployment                      [default: .] Deployment status to filter results from Anypoint
+                                                   Exchange
+
+  -c, --config-file=config-file                    [default: api-config.json] Name of the target file to save the API
+                                                   config
+
+  -d, --dest=dest                                  [default: apis] Directory to download APIs into
+
+  -g, --group-by=group-by                          (required) Category to use to group APIs together
+
+  -h, --help                                       show CLI help
+
+  -s, --search=search                              Search query to filter results from Anypoint Exchange
+
+  --deployment-regex-flags=deployment-regex-flags  RegExp flags to specify for advanced deployment matching
+```
+
 ## 0.4.1
 
 * Changed TypeScript annotations for `parseRamlFile` and `resolveApiModel` to more accurate `amf.model.document.Document`.
