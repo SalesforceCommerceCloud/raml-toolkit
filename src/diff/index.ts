@@ -6,7 +6,9 @@
  */
 import { Command, flags } from "@oclif/command";
 import * as Parser from "@oclif/parser";
+import fs from "fs-extra";
 
+import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
 import { findApiChanges, diffRaml } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
@@ -43,25 +45,48 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
       description: "",
       default: false,
       exclusive: ["ruleset", "diff-only"]
+    }),
+    "out-file": flags.string({
+      char: "o",
+      description: "File to store the computed difference",
+      dependsOn: ["dir"]
     })
   };
 
   static args = [
     {
-      name: "apiSpecBasePath",
-      required: true,
-      description: "The base API spec file for the comparison"
-    },
-    {
-      name: "apiSpecNewPath",
+      name: "oldApis",
       required: true,
       description:
-        "The new version of the API spec for comparison against the base version"
+        "The old API spec file (file mode) or configuration (dir mode)"
+    },
+    {
+      name: "newApis",
+      required: true,
+      description:
+        "The new API spec file (file mode) or configuration (dir mode)"
     }
   ];
 
-  protected async _diffDirs({ args, flags }): Promise<void> {
-    //
+  protected async _diffDirs({
+    args,
+    flags
+  }: Parser.Output<
+    Parser.OutputFlags<typeof DiffCommand.flags>,
+    { [name: string]: string }
+  >): Promise<void> {
+    const { oldApis, newApis } = args;
+
+    const result = await diffNewAndArchivedRamlFiles(
+      args.oldApis,
+      args.newApis
+    );
+    const outfile = flags["out-file"];
+    if (outfile) {
+      await fs.writeJson(outfile, result);
+    } else {
+      this.log(JSON.stringify(result, null, 2));
+    }
   }
 
   protected async _diffFiles({
@@ -71,13 +96,15 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     Parser.OutputFlags<typeof DiffCommand.flags>,
     { [name: string]: string }
   >): Promise<void> {
+    const { oldApis, newApis } = args;
+
     let results: NodeDiff[];
 
     // Don't apply any ruleset, exit 0 for no differences, exit 1 for any
     // differences, exit 2 for unsuccessful
     if (flags["diff-only"]) {
       try {
-        results = await diffRaml(args.apiSpecBasePath, args.apiSpecNewPath);
+        results = await diffRaml(oldApis, newApis);
         console.log(results);
       } catch (err) {
         this.error(err.message, { exit: 2 });
@@ -91,11 +118,7 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     // Apply ruleset, exit 0 for no breaking changes, exit 1 for breaking
     // changes, exit 2 for unsuccessful
     try {
-      results = await findApiChanges(
-        args.apiSpecBasePath,
-        args.apiSpecNewPath,
-        flags.ruleset
-      );
+      results = await findApiChanges(oldApis, newApis, flags.ruleset);
       console.log(results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
@@ -114,7 +137,6 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
 
   async run(): Promise<void> {
     const input = this.parse(DiffCommand);
-
     return input.flags.dir ? this._diffDirs(input) : this._diffFiles(input);
   }
 }

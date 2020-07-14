@@ -7,7 +7,7 @@
 
 import path from "path";
 import _ from "lodash";
-import { diffRaml, RamlDiff } from "../diff";
+import { diffRaml, RamlDiff } from ".";
 import { ramlToolLogger } from "../common/logger";
 
 /**
