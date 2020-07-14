@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Command, flags } from "@oclif/command";
+import * as Parser from "@oclif/parser";
 
 import { findApiChanges, diffRaml } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
@@ -30,12 +31,18 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
       char: "r",
       description: "Path to ruleset to apply to diff",
       env: "DIFF_RULESET",
-      exclusive: ["diff-only"]
+      exclusive: ["diff-only", "dir"]
     }),
     "diff-only": flags.boolean({
       description:
         "Only show differences without evaluating a ruleset. The exit status in this mode is 0 for no changes, 1 for any difference and 2 when unsuccessful.",
-      default: false
+      default: false,
+      exclusive: ["ruleset", "dir"]
+    }),
+    dir: flags.boolean({
+      description: "",
+      default: false,
+      exclusive: ["ruleset", "diff-only"]
     })
   };
 
@@ -53,9 +60,17 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }
   ];
 
-  async run(): Promise<void> {
-    const { args, flags } = this.parse(DiffCommand);
+  protected async _diffDirs({ args, flags }): Promise<void> {
+    //
+  }
 
+  protected async _diffFiles({
+    args,
+    flags
+  }: Parser.Output<
+    Parser.OutputFlags<typeof DiffCommand.flags>,
+    { [name: string]: string }
+  >): Promise<void> {
     let results: NodeDiff[];
 
     // Don't apply any ruleset, exit 0 for no differences, exit 1 for any
@@ -95,5 +110,11 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }
 
     this.exit();
+  }
+
+  async run(): Promise<void> {
+    const input = this.parse(DiffCommand);
+
+    return input.flags.dir ? this._diffDirs(input) : this._diffFiles(input);
   }
 }
