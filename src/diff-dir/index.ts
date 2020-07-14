@@ -12,9 +12,11 @@
  */
 import path from "path";
 import _ from "lodash";
+import fs from "fs-extra";
+import { Command, flags } from "@oclif/command";
 
 import { diffRaml, RamlDiff } from "../diff";
-import { ramlToolLogger as generatorLogger } from "../common/logger";
+import { ramlToolLogger as logger } from "../common/logger";
 
 /**
  * Extracts all the RAML file names from the specified config file.
@@ -96,7 +98,7 @@ async function diffCommonRamls(
         result.push(diffDetails);
       }
     } catch (error) {
-      generatorLogger.error(`Diff operation for '${raml}' failed:`, error);
+      logger.error(`Diff operation for '${raml}' failed:`, error);
       diffDetails.message = "The operation was unsuccessful";
       result.push(diffDetails);
     }
@@ -143,11 +145,40 @@ export async function diffNewAndArchivedRamlFiles(
   return result.concat(removedRamls, addedRamls);
 }
 
-export default async function diffDirectories() {
-  const result = await diffNewAndArchivedRamlFiles(
-    apiBackupDir,
-    config.inputDir,
-    config.apiConfigFile
-  );
-  return fs.writeJson(diffFile, result);
+export class DiffDirectoriesCommand extends Command {
+  static description = `Compute the difference between two sets of API specs.`;
+  static args = [
+    {
+      name: "oldApis",
+      description:
+        "API config file in the directory containing the original API specs",
+      required: true
+    },
+    {
+      name: "newApis",
+      description:
+        "API config file in the directory containing the new API specs",
+      required: true
+    }
+  ];
+  static flags = {
+    "out-file": flags.string({
+      char: "o",
+      description: "File to store the computed difference"
+    })
+  };
+  async run(): Promise<void> {
+    const { args, flags } = this.parse(DiffDirectoriesCommand);
+    const result = await diffNewAndArchivedRamlFiles(
+      args.oldApis,
+      args.newApis,
+      flags["config-file"]
+    );
+    const outfile = flags["out-file"];
+    if (outfile) {
+      await fs.writeJson(outfile, result);
+    } else {
+      this.log(JSON.stringify(result, null, 2));
+    }
+  }
 }
