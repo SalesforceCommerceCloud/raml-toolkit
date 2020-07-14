@@ -11,7 +11,7 @@ import chaiAsPromised from "chai-as-promised";
 
 import { ApiGroup } from "./apiGroup";
 import { Api } from "./api";
-import { model } from "../../lib";
+import { model } from "..";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
