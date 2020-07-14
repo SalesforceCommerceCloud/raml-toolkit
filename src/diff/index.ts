@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Command, flags } from "@oclif/command";
-import * as Parser from "@oclif/parser";
+import { OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 
 import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
@@ -68,19 +68,12 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }
   ];
 
-  protected async _diffDirs({
-    args,
-    flags
-  }: Parser.Output<
-    Parser.OutputFlags<typeof DiffCommand.flags>,
-    { [name: string]: string }
-  >): Promise<void> {
-    const { oldApis, newApis } = args;
-
-    const result = await diffNewAndArchivedRamlFiles(
-      args.oldApis,
-      args.newApis
-    );
+  protected async _diffDirs(
+    oldApis: string,
+    newApis: string,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<void> {
+    const result = await diffNewAndArchivedRamlFiles(oldApis, newApis);
     const outfile = flags["out-file"];
     if (outfile) {
       await fs.writeJson(outfile, result);
@@ -89,54 +82,61 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     }
   }
 
-  protected async _diffFiles({
-    args,
-    flags
-  }: Parser.Output<
-    Parser.OutputFlags<typeof DiffCommand.flags>,
-    { [name: string]: string }
-  >): Promise<void> {
-    const { oldApis, newApis } = args;
-
-    let results: NodeDiff[];
-
+  protected async _diffFiles(
+    oldApis: string,
+    newApis: string,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<void> {
     // Don't apply any ruleset, exit 0 for no differences, exit 1 for any
     // differences, exit 2 for unsuccessful
-    if (flags["diff-only"]) {
-      try {
-        results = await diffRaml(oldApis, newApis);
-        console.log(results);
-      } catch (err) {
-        this.error(err.message, { exit: 2 });
-      }
+    try {
+      const results = await diffRaml(oldApis, newApis);
+      console.log(results);
       if (results.length > 0) {
         this.exit(1);
       }
-      this.exit();
-    }
-
-    // Apply ruleset, exit 0 for no breaking changes, exit 1 for breaking
-    // changes, exit 2 for unsuccessful
-    try {
-      results = await findApiChanges(oldApis, newApis, flags.ruleset);
-      console.log(results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
 
-    // TODO: Move to logic to the library
-    const hasBreakingChanges = (diff: NodeDiff[]): boolean =>
-      diff.some(n => n.rule?.params?.category === "Breaking");
+    this.exit();
+  }
 
-    if (hasBreakingChanges(results)) {
-      this.error("Breaking changes found.", { exit: 1 });
+  protected async _diffFilesUsingRuleset(
+    oldApis: string,
+    newApis: string,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<void> {
+    // Apply ruleset, exit 0 for no breaking changes, exit 1 for breaking
+    // changes, exit 2 for unsuccessful
+    try {
+      const results = await findApiChanges(oldApis, newApis, flags.ruleset);
+      console.log(results);
+      // TODO: Move to logic to the library
+      const hasBreakingChanges = (diff: NodeDiff[]): boolean =>
+        diff.some(n => n.rule?.params?.category === "Breaking");
+
+      if (hasBreakingChanges(results)) {
+        this.error("Breaking changes found.", { exit: 1 });
+      }
+    } catch (err) {
+      this.error(err.message, { exit: 2 });
     }
 
     this.exit();
   }
 
   async run(): Promise<void> {
-    const input = this.parse(DiffCommand);
-    return input.flags.dir ? this._diffDirs(input) : this._diffFiles(input);
+    const { args, flags } = this.parse(DiffCommand);
+    if (flags.dir) {
+      return this._diffDirs(args.oldApis, args.newApis, flags);
+    } else if (flags["diff-only"]) {
+      return this._diffFiles(args.oldApis, args.newApis, flags);
+    } else if (flags.ruleset) {
+      return this._diffFilesUsingRuleset(args.oldApis, args.newApis, flags);
+    }
+    this.error("One of --dir, --diff-only, or --ruleset must be specified", {
+      exit: 2
+    });
   }
 }
