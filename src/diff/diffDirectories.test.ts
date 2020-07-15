@@ -69,7 +69,6 @@ describe("diffRamlDirectories", () => {
   });
 
   it("should not fail if diffRaml throws an error", async () => {
-    diffRamlStub.reset();
     diffRamlStub.rejects(new Error("Not found"));
     fs.writeJsonSync(leftApiConfigFile, { family1: [apiConfig["family1"][0]] });
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
@@ -86,7 +85,6 @@ describe("diffRamlDirectories", () => {
   });
 
   it("should not return anything for the api if no diff is found", async () => {
-    diffRamlStub.reset();
     diffRamlStub.resolves([]);
     fs.writeJSONSync(leftApiConfigFile, { family1: [apiConfig["family1"][0]] });
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
