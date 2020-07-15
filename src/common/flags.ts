@@ -38,7 +38,8 @@ export const verbosity = flags.build({
 });
 
 /**
- * The oclif help flag builder, but with the default char set to "h".
+ * The oclif help flag builder, with char set to -h, description changed to
+ * start with a capital letter, and hidden by default.
  * @param options - Flag options
  */
 export function help(
@@ -46,6 +47,8 @@ export function help(
 ): ReturnType<typeof flags.help> {
   return flags.help({
     char: "h",
+    description: "Show CLI help",
+    hidden: true,
     ...options
   });
 }
