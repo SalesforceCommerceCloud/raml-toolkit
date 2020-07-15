@@ -55,9 +55,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
 
   it("should return diff on all the apis in api-config.json", async () => {
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(result.length).to.equal(4);
@@ -80,9 +79,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     const error = "The operation was unsuccessful";
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledOnce).to.be.true;
@@ -97,9 +95,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledOnce).to.be.true;
@@ -112,9 +109,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.writeFileSync(rightApiConfigFile, JSON.stringify(apiConfigCopy));
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledThrice).to.be.true;
@@ -129,9 +125,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.writeJsonSync(rightApiConfigFile, { family1: apiConfig["family1"] });
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledTwice).to.be.true;
@@ -147,9 +142,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.writeJsonSync(leftApiConfigFile, apiConfigCopy);
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledThrice).to.be.true;
@@ -164,9 +158,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.writeJsonSync(leftApiConfigFile, { family1: apiConfig["family1"] });
 
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
-      leftDir,
-      rightDir,
-      API_CONFIG_FILE_NAME
+      leftApiConfigFile,
+      rightApiConfigFile
     );
 
     expect(diffRamlStub.calledTwice).to.be.true;
