@@ -252,25 +252,21 @@ describe("raml-toolkit cli diff command", () => {
     .it("does not allow diff only and dir together, exits non-zero");
 
   test
-    .stub(diffDirectories, "diffNewAndArchivedRamlFiles", async () => [])
+    .stub(diffDirectories, "diffRamlDirectories", async () => [])
     .stdout()
     .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
     .exit(0)
     .it("finds no changes between directories and exits zero");
 
   test
-    .stub(
-      diffDirectories,
-      "diffNewAndArchivedRamlFiles",
-      async () => diffDirResult
-    )
+    .stub(diffDirectories, "diffRamlDirectories", async () => diffDirResult)
     .stdout()
     .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
     .exit(1)
     .it("finds changes between directories and exits non-zero");
 
   test
-    .stub(diffDirectories, "diffNewAndArchivedRamlFiles", async () => [])
+    .stub(diffDirectories, "diffRamlDirectories", async () => [])
     .stdout()
     .do(() => cmd.run(["oldApis", "newApis", "--dir", "-o", outFile.name]))
     .exit(0)

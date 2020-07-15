@@ -110,7 +110,7 @@ async function diffCommonRamls(
  * @returns An array of RamlDiff objects containing differences between all the
  * old and new RAML files
  */
-export async function diffNewAndArchivedRamlFiles(
+export async function diffRamlDirectories(
   oldConfigFile: string,
   newConfigFile: string
 ): Promise<RamlDiff[]> {

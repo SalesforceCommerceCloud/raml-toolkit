@@ -14,9 +14,9 @@ import tmp from "tmp";
 import * as diffProcessor from "./diffProcessor";
 import { RamlDiff } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
-import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
+import { diffRamlDirectories } from "./diffDirectories";
 
-describe("diffNewAndArchivedRamlFiles", () => {
+describe("diffRamlDirectories", () => {
   let leftDir: string;
   let rightDir: string;
   let leftApiConfigFile: string;
@@ -51,7 +51,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
   });
 
   it("should return diff on all the apis in api-config.json", async () => {
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -75,7 +75,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
     const error = "The operation was unsuccessful";
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -91,7 +91,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
     fs.writeJSONSync(leftApiConfigFile, { family1: [apiConfig["family1"][0]] });
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -105,7 +105,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
     apiConfigCopy.family2 = [apiConfig["family2"][0]];
     fs.writeFileSync(rightApiConfigFile, JSON.stringify(apiConfigCopy));
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -121,7 +121,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
   it("should report all the apis in the removed apiFamily", async () => {
     fs.writeJsonSync(rightApiConfigFile, { family1: apiConfig["family1"] });
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -138,7 +138,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
     apiConfigCopy.family2 = [apiConfig["family2"][0]];
     fs.writeJsonSync(leftApiConfigFile, apiConfigCopy);
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
@@ -154,7 +154,7 @@ describe("diffNewAndArchivedRamlFiles", () => {
   it("should report apis in the newly added api family", async () => {
     fs.writeJsonSync(leftApiConfigFile, { family1: apiConfig["family1"] });
 
-    const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
+    const result: RamlDiff[] = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );

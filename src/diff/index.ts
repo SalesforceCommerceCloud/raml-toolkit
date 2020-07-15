@@ -8,7 +8,7 @@ import { Command, flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 
-import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
+import { diffRamlDirectories } from "./diffDirectories";
 import {
   defaultRulesPackagePath,
   findApiChanges,
@@ -91,7 +91,7 @@ Exit statuses:
     newApis: string,
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
-    const results = await diffNewAndArchivedRamlFiles(oldApis, newApis);
+    const results = await diffRamlDirectories(oldApis, newApis);
     await this._saveOrLog(flags["out-file"], results);
 
     if (results.length > 0) {
