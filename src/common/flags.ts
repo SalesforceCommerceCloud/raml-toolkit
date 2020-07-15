@@ -54,6 +54,22 @@ export function help(
 }
 
 /**
+ * The oclif version flag builder, with char set to -v, description changed to
+ * start with a capital letter, and hidden by default.
+ * @param options - Flag options
+ */
+export function version(
+  options?: Parameters<typeof flags.version>["0"]
+): ReturnType<typeof flags.version> {
+  return flags.version({
+    char: "v",
+    description: "Show CLI version",
+    hidden: true,
+    ...options
+  });
+}
+
+/**
  * Create a flags object with all common flags set to their default values.
  * @example
  * class ExampleCommand extends Command {
@@ -66,9 +82,11 @@ export function help(
 export function buildAll(): {
   help: ReturnType<typeof help>;
   verbosity: ReturnType<typeof verbosity>;
+  version: ReturnType<typeof version>;
 } {
   return {
     help: help(),
-    verbosity: verbosity()
+    verbosity: verbosity(),
+    version: version()
   };
 }
