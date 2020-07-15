@@ -254,21 +254,21 @@ describe("raml-toolkit cli diff command", () => {
   test
     .stub(diffDirectories, "diffRamlDirectories", async () => [])
     .stdout()
-    .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
+    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
     .exit(0)
     .it("finds no changes between directories and exits zero");
 
   test
     .stub(diffDirectories, "diffRamlDirectories", async () => diffDirResult)
     .stdout()
-    .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
+    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
     .exit(1)
     .it("finds changes between directories and exits non-zero");
 
   test
     .stub(diffDirectories, "diffRamlDirectories", async () => [])
     .stdout()
-    .do(() => cmd.run(["oldApis", "newApis", "--dir", "-o", outFile.name]))
+    .do(() => cmd.run(["baseApis", "newApis", "--dir", "-o", outFile.name]))
     .exit(0)
     .it("stores the result in a file when flag is set", () => {
       expect(outFile.name)

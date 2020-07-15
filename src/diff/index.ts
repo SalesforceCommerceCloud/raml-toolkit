@@ -65,13 +65,13 @@ Exit statuses:
 
   static args = [
     {
-      name: "oldApis",
+      name: "base",
       required: true,
       description:
-        "The old API spec file (ruleset / diff-only mode) or configuration (directory mode)"
+        "The base API spec file (ruleset / diff-only mode) or configuration (directory mode)"
     },
     {
-      name: "newApis",
+      name: "new",
       required: true,
       description:
         "The new API spec file (ruleset / diff-only mode) or configuration (directory mode)"
@@ -87,11 +87,11 @@ Exit statuses:
   }
 
   protected async _diffDirs(
-    oldApis: string,
+    baseApis: string,
     newApis: string,
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
-    const results = await diffRamlDirectories(oldApis, newApis);
+    const results = await diffRamlDirectories(baseApis, newApis);
     await this._saveOrLog(flags["out-file"], results);
 
     if (results.length > 0) {
@@ -100,7 +100,7 @@ Exit statuses:
   }
 
   protected async _diffFiles(
-    oldApis: string,
+    baseApis: string,
     newApis: string,
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
@@ -108,7 +108,7 @@ Exit statuses:
     // differences, exit 2 for unsuccessful
     let results: NodeDiff[];
     try {
-      results = await diffRaml(oldApis, newApis);
+      results = await diffRaml(baseApis, newApis);
       await this._saveOrLog(flags["out-file"], results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
@@ -119,7 +119,7 @@ Exit statuses:
   }
 
   protected async _diffFilesUsingRuleset(
-    oldApis: string,
+    baseApis: string,
     newApis: string,
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
@@ -127,7 +127,7 @@ Exit statuses:
     // changes, exit 2 for unsuccessful
     let results: NodeDiff[];
     try {
-      results = await findApiChanges(oldApis, newApis, flags.ruleset);
+      results = await findApiChanges(baseApis, newApis, flags.ruleset);
       await this._saveOrLog(flags["out-file"], results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
@@ -145,11 +145,11 @@ Exit statuses:
   async run(): Promise<void> {
     const { args, flags } = this.parse(DiffCommand);
     if (flags.dir) {
-      await this._diffDirs(args.oldApis, args.newApis, flags);
+      await this._diffDirs(args.base, args.new, flags);
     } else if (flags["diff-only"]) {
-      await this._diffFiles(args.oldApis, args.newApis, flags);
+      await this._diffFiles(args.base, args.new, flags);
     } else {
-      await this._diffFilesUsingRuleset(args.oldApis, args.newApis, flags);
+      await this._diffFilesUsingRuleset(args.base, args.new, flags);
     }
     this.exit();
   }

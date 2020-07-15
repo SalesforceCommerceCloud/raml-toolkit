@@ -28,21 +28,21 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 **Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
 
 <!-- commands -->
-- [`raml-toolkit diff OLDAPIS NEWAPIS`](#raml-toolkit-diff-oldapis-newapis)
+- [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
 - [`raml-toolkit download`](#raml-toolkit-download)
 - [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
 
-#### `raml-toolkit diff OLDAPIS NEWAPIS`
+#### `raml-toolkit diff BASE NEW`
 
 This command has three modes: ruleset, diff-only, and directory.
 
 ```txt
 USAGE
-  $ raml-toolkit diff OLDAPIS NEWAPIS
+  $ raml-toolkit diff BASE NEW
 
 ARGUMENTS
-  OLDAPIS  The old API spec file (ruleset / diff-only mode) or configuration (directory mode)
-  NEWAPIS  The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
+  BASE  The base API spec file (ruleset / diff-only mode) or configuration (directory mode)
+  NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
   -h, --help               show CLI help
