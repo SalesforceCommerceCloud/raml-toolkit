@@ -80,6 +80,10 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
   ): Promise<void> {
     const results = await diffNewAndArchivedRamlFiles(oldApis, newApis);
     await this._saveOrLog(flags["out-file"], results);
+
+    if (results.length > 0) {
+      this.exit(1);
+    }
   }
 
   protected async _diffFiles(
