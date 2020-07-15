@@ -9,18 +9,28 @@ import { OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 
 import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
-import { findApiChanges, diffRaml } from "./diffProcessor";
+import {
+  defaultRulesPackagePath,
+  findApiChanges,
+  diffRaml
+} from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
 export default class DiffCommand extends Command {
-  static description = `Takes two API spec files as input and outputs the differences.
-By default, a ruleset is applied to determine if changes are breaking. Exit status is:
-  0 - all changes are non-breaking
-  1 - any changes are breaking
-  2 - evaluation could not be completed
+  // Oclif eats the first line of the description, so it's left blank.
+  static description = `
+This command has three modes: ruleset, diff-only, and directory.
+  Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
+  Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
+  Directory mode compares all the files in two directories and determines if there are any differences.
 
-The ruleset flag is used to evaluate a custom ruleset in place of the default rules. The diff-only flag disables evaluation against any ruleset.
-`;
+In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
+In directory mode, the arguments must be API configuration (JSON) files.
+
+Exit statuses:
+  0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
+  1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
+  2 - Evaluation could not be completed`;
 
   static flags = {
     // Add --version flag to show CLI version
@@ -29,18 +39,21 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
     help: flags.help({ char: "h" }),
     ruleset: flags.string({
       char: "r",
-      description: "Path to ruleset to apply to diff",
+      // Oclif by default generated help text with [default: value], but in this
+      // case the default is speciified by the function, not the command. Also,
+      // it is a full path to the file, which would change based on install location.
+      // Displaying the require()-able form is shorter and always the same.
+      description: `[default:${defaultRulesPackagePath}] Path to ruleset to apply to diff`,
       env: "DIFF_RULESET",
       exclusive: ["diff-only", "dir"]
     }),
     "diff-only": flags.boolean({
-      description:
-        "Only show differences without evaluating a ruleset. The exit status in this mode is 0 for no changes, 1 for any difference and 2 when unsuccessful.",
+      description: "Only show differences without evaluating a ruleset",
       default: false,
       exclusive: ["ruleset", "dir"]
     }),
     dir: flags.boolean({
-      description: "",
+      description: "Find the differences for all files in two directories",
       default: false,
       exclusive: ["ruleset", "diff-only"]
     }),
@@ -55,13 +68,13 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
       name: "oldApis",
       required: true,
       description:
-        "The old API spec file (file mode) or configuration (dir mode)"
+        "The old API spec file (ruleset / diff-only mode) or configuration (directory mode)"
     },
     {
       name: "newApis",
       required: true,
       description:
-        "The new API spec file (file mode) or configuration (dir mode)"
+        "The new API spec file (ruleset / diff-only mode) or configuration (directory mode)"
     }
   ];
 

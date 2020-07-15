@@ -13,9 +13,19 @@ import * as path from "path";
 import { applyRules } from "./rulesProcessor";
 import { parseRamlFile } from "../common/parser";
 
+// Path relative to project root
+const defaultRulesBasePath = "resources/diff/rules/defaultRules.json";
+// Full path
 export const defaultRulesPath = path.join(
   __dirname,
-  "../../resources/diff/rules/defaultRules.json"
+  "../../",
+  defaultRulesBasePath
+);
+// Path prefixed with package name, short form usable by require()
+export const defaultRulesPackagePath = path.join(
+  "@commerce-apps/raml-toolkit",
+  path.dirname(defaultRulesBasePath),
+  path.basename(defaultRulesBasePath, ".json")
 );
 
 /**
