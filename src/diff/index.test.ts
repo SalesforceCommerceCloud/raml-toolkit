@@ -9,9 +9,27 @@
 import { expect, test } from "@oclif/test";
 import { writeSync } from "fs";
 import { FileResult, fileSync } from "tmp";
+import { Rule } from "json-rules-engine";
+import chai from "chai";
+import chaiFs from "chai-fs";
 
 import cmd from "../commands/diff";
-import { Rule } from "json-rules-engine";
+import * as diffDirectories from "./diffDirectories";
+
+chai.use(chaiFs);
+
+const diffDirResult = [
+  {
+    file: "file.raml",
+    diff: [
+      {
+        id: "#/web-api/endpoints/test-endpoint",
+        added: {},
+        removed: {}
+      }
+    ]
+  }
+];
 
 const createTempFile = (content: string): FileResult => {
   const tempFile = fileSync();
@@ -79,6 +97,8 @@ const operationRemovedRule = new Rule(
     }
   }`
 );
+
+const outFile = fileSync({ postfix: ".json" });
 
 const operationRemovedRuleset = createTempFile(
   `[${operationRemovedRule.toJSON()}]`
@@ -210,4 +230,53 @@ describe("raml-toolkit cli diff command", () => {
     )
     .exit(2)
     .it("does not allow ruleset and diff only together, exits non-zero");
+
+  test
+    .stdout()
+    .do(() => cmd.run([ramlOld.name, ramlOld.name, "--diff-only", "--dir"]))
+    .exit(2)
+    .it("does not allow diff only and dir together, exits non-zero");
+
+  test
+    .stdout()
+    .do(() =>
+      cmd.run([
+        ramlOld.name,
+        ramlOld.name,
+        "--dir",
+        "--ruleset",
+        operationRemovedRuleset.name
+      ])
+    )
+    .exit(2)
+    .it("does not allow diff only and dir together, exits non-zero");
+
+  test
+    .stub(diffDirectories, "diffNewAndArchivedRamlFiles", async () => [])
+    .stdout()
+    .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
+    .exit(0)
+    .it("finds no changes between directories and exits zero");
+
+  test
+    .stub(
+      diffDirectories,
+      "diffNewAndArchivedRamlFiles",
+      async () => diffDirResult
+    )
+    .stdout()
+    .do(() => cmd.run(["oldApis", "newApis", "--dir"]))
+    .exit(1)
+    .it("finds changes between directories and exits non-zero");
+
+  test
+    .stub(diffDirectories, "diffNewAndArchivedRamlFiles", async () => [])
+    .stdout()
+    .do(() => cmd.run(["oldApis", "newApis", "--dir", "-o", outFile.name]))
+    .exit(0)
+    .it("stores the result in a file when flag is set", () => {
+      expect(outFile.name)
+        .to.be.a.file()
+        .with.content("[]\n");
+    });
 });

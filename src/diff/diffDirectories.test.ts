@@ -56,6 +56,8 @@ describe("diffNewAndArchivedRamlFiles", () => {
       rightApiConfigFile
     );
 
+    require("fs-extra").writeJsonSync(path.join(__dirname, "tmp.json"), result);
+
     expect(result.length).to.equal(4);
     expect(diffRamlStub.callCount).to.equal(4);
     expect(result[0].file).to.equal("api1/api1.raml");
