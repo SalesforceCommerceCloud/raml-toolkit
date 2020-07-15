@@ -46,6 +46,10 @@ describe("diffNewAndArchivedRamlFiles", () => {
     diffRamlStub.resolves(nodeDiffArr);
   });
 
+  after(() => {
+    diffRamlStub.restore();
+  });
+
   it("should return diff on all the apis in api-config.json", async () => {
     const result: RamlDiff[] = await diffNewAndArchivedRamlFiles(
       leftApiConfigFile,
