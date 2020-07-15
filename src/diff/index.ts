@@ -12,8 +12,6 @@ import { diffNewAndArchivedRamlFiles } from "./diffDirectories";
 import { findApiChanges, diffRaml } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
-export { findApiChanges, diffRaml, RamlDiff } from "./diffProcessor";
-export { NodeDiff } from "./jsonDiff";
 export default class DiffCommand extends Command {
   static description = `Takes two API spec files as input and outputs the differences.
 By default, a ruleset is applied to determine if changes are breaking. Exit status is:
