@@ -163,4 +163,14 @@ describe("diffRamlDirectories", () => {
     expect(result[2].message).to.equal("This RAML has been added recently");
     expect(result[3].message).to.equal("This RAML has been added recently");
   });
+
+  it("works with relative paths", async () => {
+    const result: RamlDiff[] = await diffRamlDirectories(
+      path.relative(process.cwd(), leftApiConfigFile),
+      path.relative(process.cwd(), rightApiConfigFile)
+    );
+
+    expect(result.length).to.equal(4);
+    expect(diffRamlStub.callCount).to.equal(4);
+  });
 });

@@ -18,8 +18,9 @@ import { ramlToolLogger } from "../common/logger";
  * @returns An array of `assetId/fileName` for every api in the input file
  */
 export function listRamlsFromConfig(configPath: string): string[] {
+  // path.resolve() is required to ensure configPath is absolute
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const config = require(configPath);
+  const config = require(path.resolve(configPath));
   const ramls = [];
   for (const apiFamily of Object.keys(config)) {
     for (const api of config[apiFamily]) {
