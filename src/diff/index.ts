@@ -89,18 +89,16 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
   ): Promise<void> {
     // Don't apply any ruleset, exit 0 for no differences, exit 1 for any
     // differences, exit 2 for unsuccessful
+    let results: NodeDiff[];
     try {
-      const results = await diffRaml(oldApis, newApis);
-      console.log(results);
-      if (results.length > 0) {
-        this.exit(1);
-      }
+      results = await diffRaml(oldApis, newApis);
       await this._saveOrLog(flags["out-file"], results);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
-
-    this.exit();
+    if (results.length > 0) {
+      this.exit(1);
+    }
   }
 
   protected async _diffFilesUsingRuleset(
@@ -110,35 +108,32 @@ The ruleset flag is used to evaluate a custom ruleset in place of the default ru
   ): Promise<void> {
     // Apply ruleset, exit 0 for no breaking changes, exit 1 for breaking
     // changes, exit 2 for unsuccessful
+    let results: NodeDiff[];
     try {
-      const results = await findApiChanges(oldApis, newApis, flags.ruleset);
+      results = await findApiChanges(oldApis, newApis, flags.ruleset);
       await this._saveOrLog(flags["out-file"], results);
-
-      // TODO: Move to logic to the library
-      const hasBreakingChanges = (diff: NodeDiff[]): boolean =>
-        diff.some(n => n.rule?.params?.category === "Breaking");
-
-      if (hasBreakingChanges(results)) {
-        this.error("Breaking changes found.", { exit: 1 });
-      }
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
 
-    this.exit();
+    // TODO: Move to logic to the library
+    const hasBreakingChanges = (diff: NodeDiff[]): boolean =>
+      diff.some(n => n.rule?.params?.category === "Breaking");
+
+    if (hasBreakingChanges(results)) {
+      this.error("Breaking changes found.", { exit: 1 });
+    }
   }
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(DiffCommand);
     if (flags.dir) {
-      return this._diffDirs(args.oldApis, args.newApis, flags);
+      await this._diffDirs(args.oldApis, args.newApis, flags);
     } else if (flags["diff-only"]) {
-      return this._diffFiles(args.oldApis, args.newApis, flags);
-    } else if (flags.ruleset) {
-      return this._diffFilesUsingRuleset(args.oldApis, args.newApis, flags);
+      await this._diffFiles(args.oldApis, args.newApis, flags);
+    } else {
+      await this._diffFilesUsingRuleset(args.oldApis, args.newApis, flags);
     }
-    this.error("One of --dir, --diff-only, or --ruleset must be specified", {
-      exit: 2
-    });
+    this.exit();
   }
 }
