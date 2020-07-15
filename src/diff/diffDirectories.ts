@@ -33,6 +33,7 @@ export function listRamlsFromConfig(configPath: string): string[] {
 
 /**
  * Compares two arrays and returns their intersection and symmetric difference.
+ * Expects arrays to have no duplicate elements.
  *
  * @param leftArr - One of the arrays being compared
  * @param rightArr - The other array being compared
@@ -40,13 +41,12 @@ export function listRamlsFromConfig(configPath: string): string[] {
  * @returns An array each for all the common, exclusive to left and exclusive to
  * right elements.
  */
-function compareArrays<T>(
+function getCommonAndUniqueElements<T>(
   leftArr: T[],
   rightArr: T[]
 ): {
-  leftOnly: T[];
-  rightOnly: T[];
   common: T[];
+  unique: [T[], T[]];
 } {
   const left = new Set(leftArr);
   const right = new Set(rightArr);
@@ -59,9 +59,8 @@ function compareArrays<T>(
     }
   });
   return {
-    leftOnly: [...left],
-    rightOnly: [...right],
-    common: [...common]
+    common: [...common],
+    unique: [[...left], [...right]]
   };
 }
 
@@ -119,7 +118,7 @@ export async function diffRamlDirectories(
   const newApiDir = path.dirname(newConfigFile);
   const oldRamls = listRamlsFromConfig(oldConfigFile);
   const newRamls = listRamlsFromConfig(newConfigFile);
-  const ramls = compareArrays(oldRamls, newRamls);
+  const ramls = getCommonAndUniqueElements(oldRamls, newRamls);
 
   const result: RamlDiff[] = await diffCommonRamls(
     oldApiDir,
@@ -127,11 +126,11 @@ export async function diffRamlDirectories(
     ramls.common
   );
 
-  const removedRamls: RamlDiff[] = ramls.leftOnly.map(r => ({
+  const removedRamls: RamlDiff[] = ramls.unique[0].map(r => ({
     file: r,
     message: "This RAML has been removed"
   }));
-  const addedRamls: RamlDiff[] = ramls.rightOnly.map(r => ({
+  const addedRamls: RamlDiff[] = ramls.unique[1].map(r => ({
     file: r,
     message: "This RAML has been added recently"
   }));
