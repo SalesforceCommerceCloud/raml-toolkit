@@ -21,32 +21,25 @@ describe("diffNewAndArchivedRamlFiles", () => {
   let rightDir: string;
   let leftApiConfigFile: string;
   let rightApiConfigFile: string;
-  let apiConfig: Record<string, unknown>;
-  let diffRamlStub: sinon.SinonStub;
 
-  const API_CONFIG_FILE_NAME = "api-config.json";
-  const nodeDiffArr: NodeDiff[] = [];
-
-  before(() => {
-    apiConfig = {
-      family1: [
-        { assetId: "api1", fatRaml: { mainFile: "api1.raml" } },
-        { assetId: "api2", fatRaml: { mainFile: "api2.raml" } }
-      ],
-      family2: [
-        { assetId: "api3", fatRaml: { mainFile: "api3.raml" } },
-        { assetId: "api4", fatRaml: { mainFile: "api4.raml" } }
-      ]
-    };
-    nodeDiffArr.push(new NodeDiff("#/web-api/endpoints/test-endpoint"));
-    diffRamlStub = sinon.stub(diffProcessor, "diffRaml");
-  });
+  const apiConfig = {
+    family1: [
+      { assetId: "api1", fatRaml: { mainFile: "api1.raml" } },
+      { assetId: "api2", fatRaml: { mainFile: "api2.raml" } }
+    ],
+    family2: [
+      { assetId: "api3", fatRaml: { mainFile: "api3.raml" } },
+      { assetId: "api4", fatRaml: { mainFile: "api4.raml" } }
+    ]
+  };
+  const nodeDiffArr = [new NodeDiff("#/web-api/endpoints/test-endpoint")];
+  const diffRamlStub = sinon.stub(diffProcessor, "diffRaml");
 
   beforeEach(() => {
     leftDir = tmp.dirSync().name;
     rightDir = tmp.dirSync().name;
-    leftApiConfigFile = path.join(leftDir, API_CONFIG_FILE_NAME);
-    rightApiConfigFile = path.join(rightDir, API_CONFIG_FILE_NAME);
+    leftApiConfigFile = path.join(leftDir, "api-config.json");
+    rightApiConfigFile = path.join(rightDir, "api-config.json");
     fs.writeJsonSync(leftApiConfigFile, apiConfig);
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
     diffRamlStub.reset();
