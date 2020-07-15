@@ -133,6 +133,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
+    "@oclif/parser": "^3.8.5",
     "@oclif/test": "^1.2.5",
     "@types/chai-as-promised": "^7.1.2",
     "@types/chai-fs": "^2.0.2",
