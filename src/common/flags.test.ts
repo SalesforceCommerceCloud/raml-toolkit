@@ -33,6 +33,20 @@ describe("Help flag", () => {
 describe("Verbosity flag", () => {
   //
 });
+describe("Version flag", () => {
+  it("is the default version flag, but cleaner", () => {
+    const flag = commonFlags.version();
+    const expected = {
+      ...oclifFlags.version(),
+      char: "v",
+      description: "Show CLI version",
+      hidden: true
+    };
+    stripParse(flag);
+    stripParse(expected);
+    expect(flag).to.deep.equal(expected);
+  });
+});
 describe("buildAll", () => {
   it("creates an object with all common flags set", () => {
     const built = commonFlags.buildAll();
