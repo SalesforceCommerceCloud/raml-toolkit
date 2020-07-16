@@ -17,7 +17,8 @@ import { ramlToolLogger as logger } from "./logger";
  */
 export const verbosity = flags.build({
   char: "V",
-  description: "Set the level of detail in the output",
+  // Default is manually specified because we want to use numbers but show text
+  description: "[default: info] Set the level of detail in the output",
   env: "RAML_TOOLKIT_VERBOSITY",
   options: Object.keys(logger.levels).map(l => l.toLowerCase()),
   parse(input: string): number {
