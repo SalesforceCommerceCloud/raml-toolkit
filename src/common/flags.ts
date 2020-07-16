@@ -74,12 +74,12 @@ export function version(
  * @example
  * class ExampleCommand extends Command {
  *   static flags = {
- *     ...buildAll(),
+ *     ...allCommonFlags(),
  *     exampleFlag: flags.boolean()
  *   }
  * }
  */
-export function buildAll(): {
+export function allCommonFlags(): {
   help: ReturnType<typeof help>;
   verbosity: ReturnType<typeof verbosity>;
   version: ReturnType<typeof version>;

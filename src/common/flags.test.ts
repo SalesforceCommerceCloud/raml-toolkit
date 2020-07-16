@@ -80,9 +80,9 @@ describe("Version flag", () => {
   });
 });
 
-describe("buildAll", () => {
+describe("allCommonFlags", () => {
   it("creates an object with all common flags set", () => {
-    const built = commonFlags.buildAll();
+    const built = commonFlags.allCommonFlags();
     expect(built).to.have.keys(["help", "verbosity", "version"]);
   });
 });
