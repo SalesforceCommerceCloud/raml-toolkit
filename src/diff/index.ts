@@ -15,6 +15,7 @@ import {
   diffRaml
 } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
+import { allCommonFlags } from "../common/flags";
 
 export class DiffCommand extends Command {
   // Oclif eats the first line of the description, so it's left blank.
@@ -33,14 +34,11 @@ Exit statuses:
   2 - Evaluation could not be completed`;
 
   static flags = {
-    // Add --version flag to show CLI version
-    version: flags.version({ char: "v" }),
-    // Add --help flag to show CLI version
-    help: flags.help({ char: "h" }),
+    ...allCommonFlags(),
     ruleset: flags.string({
       char: "r",
-      // Oclif by default generated help text with [default: value], but in this
-      // case the default is speciified by the function, not the command. Also,
+      // Oclif by default generates help text with [default: value], but in this
+      // case the default is specified by the function, not the command. Also,
       // it is a full path to the file, which would change based on install location.
       // Displaying the require()-able form is shorter and always the same.
       description: `[default:${defaultRulesPackagePath}] Path to ruleset to apply to diff`,
