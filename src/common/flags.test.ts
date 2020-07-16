@@ -6,7 +6,10 @@
  */
 import { expect } from "chai";
 import { flags as oclifFlags } from "@oclif/command";
+import { LogLevelNumbers } from "loglevel";
+
 import * as commonFlags from "./flags";
+import { ramlToolLogger as logger } from "./logger";
 
 /**
  * Deletes the `parse` function from a flag so that deep equality checks pass.
@@ -30,9 +33,38 @@ describe("Help flag", () => {
     expect(flag).to.deep.equal(expected);
   });
 });
+
 describe("Verbosity flag", () => {
-  //
+  let level: LogLevelNumbers;
+  let flag: oclifFlags.IOptionFlag<number>;
+  before(() => {
+    // Save original log level
+    level = logger.getLevel();
+    // Set in before() instead of top so that
+    flag = commonFlags.verbosity();
+  });
+  beforeEach(() => {
+    logger.setLevel(0);
+  });
+  after(() => {
+    // Restore original log level
+    logger.setLevel(level);
+  });
+  it("sets and returns the log level", () => {
+    const level = flag.parse("1", {});
+    expect(logger.getLevel()).to.equal(1);
+    expect(level).to.equal(1);
+  });
+  it("accepts any input accepted by loglevel", () => {
+    const debug = flag.parse("DEBUG", {});
+    expect(logger.getLevel()).to.equal(1);
+    expect(debug).to.equal(1);
+    const info = flag.parse("info", {});
+    expect(logger.getLevel()).to.equal(2);
+    expect(info).to.equal(2);
+  });
 });
+
 describe("Version flag", () => {
   it("is the default version flag, but cleaner", () => {
     const flag = commonFlags.version();
@@ -47,6 +79,7 @@ describe("Version flag", () => {
     expect(flag).to.deep.equal(expected);
   });
 });
+
 describe("buildAll", () => {
   it("creates an object with all common flags set", () => {
     const built = commonFlags.buildAll();
