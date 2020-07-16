@@ -16,7 +16,7 @@ import {
 } from "./diffProcessor";
 import { NodeDiff } from "./jsonDiff";
 
-export default class DiffCommand extends Command {
+export class DiffCommand extends Command {
   // Oclif eats the first line of the description, so it's left blank.
   static description = `
 This command has three modes: ruleset, diff-only, and directory.
