@@ -5,20 +5,13 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
-import {
-  client,
-  model,
-  AMF,
-  Core,
-  MessageStyles,
-  ProfileName
-} from "amf-client-js";
+import { client, model, Core, MessageStyles, ProfileName } from "amf-client-js";
 
 import { parseRamlFile } from "../common/parser";
 import { profilePath } from ".";
 
 export async function validateCustom(
-  model: model.document.BaseUnit,
+  amfModel: model.document.BaseUnit,
   profileFile: string
 ): Promise<client.validate.ValidationReport> {
   let profileName: ProfileName;
@@ -28,7 +21,7 @@ export async function validateCustom(
     // We rethrow to provide a cleaner error message
     throw new Error(err.vw);
   }
-  const report = await Core.validate(model, profileName, MessageStyles.RAML);
+  const report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
   return report;
 }
 

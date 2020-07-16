@@ -28,38 +28,48 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 **Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
 
 <!-- commands -->
-- [`raml-toolkit diff APISPECBASEPATH APISPECNEWPATH`](#raml-toolkit-diff-apispecbasepath-apispecnewpath)
+- [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
 - [`raml-toolkit download`](#raml-toolkit-download)
 - [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
 
-#### `raml-toolkit diff APISPECBASEPATH APISPECNEWPATH`
+#### `raml-toolkit diff BASE NEW`
 
-Takes two API spec files as input and outputs the differences.
+This command has three modes: ruleset, diff-only, and directory.
 
 ```txt
 USAGE
-  $ raml-toolkit diff APISPECBASEPATH APISPECNEWPATH
+  $ raml-toolkit diff BASE NEW
 
 ARGUMENTS
-  APISPECBASEPATH  The base API spec file for the comparison
-  APISPECNEWPATH   The new version of the API spec for comparison against the base version
+  BASE  The base API spec file (ruleset / diff-only mode) or configuration (directory mode)
+  NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
-  -h, --help             show CLI help
-  -r, --ruleset=ruleset  Path to ruleset to apply to diff
-  -v, --version          show CLI version
+  -h, --help               show CLI help
+  -o, --out-file=out-file  File to store the computed difference
 
-  --diff-only            Only show differences without evaluating a ruleset. The exit status in this mode is 0 for no
-                         changes, 1 for any difference and 2 when unsuccessful.
+  -r, --ruleset=ruleset    [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules] Path to ruleset to
+                           apply to diff
+
+  -v, --version            show CLI version
+
+  --diff-only              Only show differences without evaluating a ruleset
+
+  --dir                    Find the differences for all files in two directories
 
 DESCRIPTION
-  By default, a ruleset is applied to determine if changes are breaking. Exit status is:
-     0 - all changes are non-breaking
-     1 - any changes are breaking
-     2 - evaluation could not be completed
+  This command has three modes: ruleset, diff-only, and directory.
+     Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
+     Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
+     Directory mode compares all the files in two directories and determines if there are any differences.
 
-  The ruleset flag is used to evaluate a custom ruleset in place of the default rules. The diff-only flag disables
-  evaluation against any ruleset.
+  In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
+  In directory mode, the arguments must be API configuration (JSON) files.
+
+  Exit statuses:
+     0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
+     1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
+     2 - Evaluation could not be completed
 ```
 
 #### `raml-toolkit download`
