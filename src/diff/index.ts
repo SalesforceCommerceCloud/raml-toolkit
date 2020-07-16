@@ -149,7 +149,6 @@ Exit statuses:
    * @param newApis - Path to a new API spec file
    * @param flags - Parsed CLI flags passed to the command
    */
-
   protected async _diffFilesUsingRuleset(
     baseApis: string,
     newApis: string,
