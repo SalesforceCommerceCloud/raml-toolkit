@@ -24,6 +24,7 @@
     "clean": "rm -rf lib",
     "compile": "tsc -b && echo Compiled",
     "depcheck": "depcheck",
+    "docs": "npm run clean && npm run compile && oclif-dev readme",
     "lint": "npm run lint:dev -- --quiet",
     "lint:dev": "sort-package-json && eslint . --ext .ts --fix",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
@@ -133,6 +134,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
+    "@oclif/parser": "^3.8.5",
     "@oclif/test": "^1.2.5",
     "@types/chai-as-promised": "^7.1.2",
     "@types/chai-fs": "^2.0.2",

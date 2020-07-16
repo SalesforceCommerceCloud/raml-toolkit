@@ -13,9 +13,6 @@ import * as amf from "amf-client-js";
 export { amf };
 export { model } from "amf-client-js";
 
-export { findApiChanges, diffRaml, NodeDiff, RamlDiff } from "./diff";
-export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers } from "./generate";
-
 export * from "./generate";
 
 export {
