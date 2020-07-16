@@ -8,26 +8,34 @@ import { expect } from "chai";
 import { flags as oclifFlags } from "@oclif/command";
 import * as commonFlags from "./flags";
 
+/**
+ * Deletes the `parse` function from a flag so that deep equality checks pass.
+ * @param flag - The flag to modify
+ */
+function stripParse<T extends { parse: Function }>(flag: T): void {
+  delete flag.parse;
+}
+
 describe("Help flag", () => {
-  it("is the default help flag, but with -h enabled", () => {
-    const defaultHelp = oclifFlags.help();
-    const commonHelp = commonFlags.help();
-    expect(commonHelp).to.deep.equal({
-      ...defaultHelp,
-      char: "h"
-    });
+  it("is the default help flag, but cleaner", () => {
+    const flag = commonFlags.help();
+    const expected = {
+      ...oclifFlags.help(),
+      char: "h",
+      description: "Show CLI help",
+      hidden: true
+    };
+    stripParse(flag);
+    stripParse(expected);
+    expect(flag).to.deep.equal(expected);
   });
 });
 describe("Verbosity flag", () => {
   //
 });
-describe("All flags builder", () => {
+describe("buildAll", () => {
   it("creates an object with all common flags set", () => {
     const built = commonFlags.buildAll();
-    // This literally is a copy of the function implementation, probs not a good test
-    expect(built).to.deep.equal({
-      help: commonFlags.help(),
-      verbosity: commonFlags.verbosity()
-    });
+    expect(built).to.have.keys(["help", "verbosity", "version"]);
   });
 });
