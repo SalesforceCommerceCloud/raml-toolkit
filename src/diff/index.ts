@@ -78,7 +78,7 @@ Exit statuses:
     }
   ];
 
-  protected async _saveOrLog(file: string, json: object): Promise<void> {
+  protected async _saveOrLog(json: unknown, file?: string): Promise<void> {
     if (file) {
       await fs.writeJson(file, json);
     } else {
@@ -92,7 +92,7 @@ Exit statuses:
     flags: OutputFlags<typeof DiffCommand.flags>
   ): Promise<void> {
     const results = await diffRamlDirectories(baseApis, newApis);
-    await this._saveOrLog(flags["out-file"], results);
+    await this._saveOrLog(results, flags["out-file"]);
 
     if (results.length > 0) {
       this.exit(1);
@@ -109,7 +109,7 @@ Exit statuses:
     let results: NodeDiff[];
     try {
       results = await diffRaml(baseApis, newApis);
-      await this._saveOrLog(flags["out-file"], results);
+      await this._saveOrLog(results, flags["out-file"]);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -128,7 +128,7 @@ Exit statuses:
     let results: NodeDiff[];
     try {
       results = await findApiChanges(baseApis, newApis, flags.ruleset);
-      await this._saveOrLog(flags["out-file"], results);
+      await this._saveOrLog(results, flags["out-file"]);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
