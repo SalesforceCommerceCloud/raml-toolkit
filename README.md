@@ -45,17 +45,15 @@ ARGUMENTS
   NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
-  -h, --help               show CLI help
-  -o, --out-file=out-file  File to store the computed difference
+  -V, --verbosity=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
+  -o, --out-file=out-file                             File to store the computed difference
 
-  -r, --ruleset=ruleset    [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules] Path to ruleset to
-                           apply to diff
+  -r, --ruleset=ruleset                               [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultR
+                                                      ules] Path to ruleset to apply to diff
 
-  -v, --version            show CLI version
+  --diff-only                                         Only show differences without evaluating a ruleset
 
-  --diff-only              Only show differences without evaluating a ruleset
-
-  --dir                    Find the differences for all files in two directories
+  --dir                                               Find the differences for all files in two directories
 
 DESCRIPTION
   This command has three modes: ruleset, diff-only, and directory.
@@ -81,39 +79,38 @@ USAGE
   $ raml-toolkit download
 
 OPTIONS
-  -D, --deployment=deployment                      [default: .] Deployment status to filter results from Anypoint
-                                                   Exchange
+  -D, --deployment=deployment                         [default: .] Deployment status to filter results from Anypoint
+                                                      Exchange
 
-  -c, --config-file=config-file                    [default: api-config.json] Name of the target file to save the API
-                                                   config
+  -V, --verbosity=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 
-  -d, --dest=dest                                  [default: apis] Directory to download APIs into
+  -c, --config-file=config-file                       [default: api-config.json] Name of the target file to save the API
+                                                      config
 
-  -g, --group-by=group-by                          (required) Category to use to group APIs together
+  -d, --dest=dest                                     [default: apis] Directory to download APIs into
 
-  -h, --help                                       show CLI help
+  -g, --group-by=group-by                             (required) Category to use to group APIs together
 
-  -s, --search=search                              Search query to filter results from Anypoint Exchange
+  -s, --search=search                                 Search query to filter results from Anypoint Exchange
 
-  --deployment-regex-flags=deployment-regex-flags  RegExp flags to specify for advanced deployment matching
+  --deployment-regex-flags=deployment-regex-flags     RegExp flags to specify for advanced deployment matching
 ```
 
 #### `raml-toolkit lint [FILENAME]`
 
-A linting tool for raml for commerce cloud and beyond
+A linting tool for raml for Commerce Cloud and beyond
 
 ```txt
 USAGE
   $ raml-toolkit lint [FILENAME]
 
-OPTIONS
-  -h, --help               show CLI help
-  -p, --profile=(mercury)  (required) profile to apply
-  -v, --version            show CLI version
-  -w, --warnings           Show all the warnings
+ARGUMENTS
+  FILENAME  One or more RAML files to lint
 
-DESCRIPTION
-  FILENAME is one or more RAML files to lint.
+OPTIONS
+  -V, --verbosity=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
+  -p, --profile=(mercury)                             (required) Profile to apply
+  -w, --warnings                                      Show all the warnings
 ```
 <!-- commandsstop -->
 
