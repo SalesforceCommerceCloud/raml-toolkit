@@ -22,10 +22,7 @@ const profiles = fs
   .map(file => file.slice(0, -5)); // Strip .raml extension from file name
 
 export default class LintCommand extends Command {
-  static description = `A linting tool for raml for Commerce Cloud and beyond
-
-FILENAME is one or more RAML files to lint.
-`;
+  static description = `A linting tool for raml for Commerce Cloud and beyond`;
 
   static flags = {
     ...allCommonFlags(),
@@ -44,7 +41,12 @@ FILENAME is one or more RAML files to lint.
     })
   };
 
-  static args = [{ name: "filename" }];
+  static args = [
+    {
+      name: "filename",
+      description: "One or more RAML files to lint"
+    }
+  ];
   // Allow a variable length list of files
   static strict = false;
 
