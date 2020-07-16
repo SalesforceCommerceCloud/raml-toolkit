@@ -78,6 +78,13 @@ Exit statuses:
     }
   ];
 
+  /**
+   * If a file is given, saves data to the file. Otherwise, just logs the data.
+   * The data must be JSON-serializable.
+   *
+   * @param json - The data to save or log
+   * @param file - The file to save to
+   */
   protected async _saveOrLog(json: unknown, file?: string): Promise<void> {
     if (file) {
       await fs.writeJson(file, json);
@@ -86,6 +93,14 @@ Exit statuses:
     }
   }
 
+  /**
+   * Find the differences between two directories containing API spec files.
+   * Only finds differences, does not classify using a ruleset.
+   *
+   * @param baseApis - Path to an API config file in the base directory
+   * @param newApis - Path to an API config file in the new directory
+   * @param flags - Parsed CLI flags passed to the command
+   */
   protected async _diffDirs(
     baseApis: string,
     newApis: string,
@@ -99,6 +114,14 @@ Exit statuses:
     }
   }
 
+  /**
+   * Find the differences between two API specification files. Does not classify
+   * the differences.
+   *
+   * @param baseApis - Path to a base API spec file
+   * @param newApis - Path to a new API spec file
+   * @param flags - Parsed CLI flags passed to the command
+   */
   protected async _diffFiles(
     baseApis: string,
     newApis: string,
@@ -117,6 +140,15 @@ Exit statuses:
       this.exit(1);
     }
   }
+
+  /**
+   * Find the differences between two API specification files and classifies
+   * the changes according to a ruleset.
+   *
+   * @param baseApis - Path to a base API spec file
+   * @param newApis - Path to a new API spec file
+   * @param flags - Parsed CLI flags passed to the command
+   */
 
   protected async _diffFilesUsingRuleset(
     baseApis: string,
