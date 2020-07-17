@@ -34,7 +34,7 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 
 #### `raml-toolkit diff BASE NEW`
 
-This command has three modes: ruleset, diff-only, and directory.
+Compute the difference between two API specifications
 
 ```txt
 USAGE
