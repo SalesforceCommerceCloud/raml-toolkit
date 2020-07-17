@@ -5,10 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {
-  getParameterDataType,
-  getPropertyDataType,
-  getRequestPayloadType,
-  getReturnPayloadType
+  getTypeFromParameter,
+  getTypeFromProperty,
+  getPayloadTypeFromRequest,
+  getReturnTypeFromOperation
 } from "./handlebarsAmfHelpers";
 import { ARRAY_DATA_TYPE, OBJECT_DATA_TYPE } from "./utils";
 import {
@@ -28,13 +28,13 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
     return AMF.init();
   });
 
-  describe("getPropertyDataType", () => {
+  describe("getTypeFromProperty", () => {
     it("returns 'any' on undefined property", () => {
-      expect(getPropertyDataType(undefined)).to.equal("any");
+      expect(getTypeFromProperty(undefined)).to.equal("any");
     });
 
     it("returns 'any' on null property", () => {
-      expect(getPropertyDataType(null)).to.equal("any");
+      expect(getTypeFromProperty(null)).to.equal("any");
     });
 
     it("returns 'boolean' on boolean data type", () => {
@@ -43,7 +43,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
         getScalarType("http://www.w3.org/2001/XMLSchema#boolean")
       );
 
-      expect(getPropertyDataType(property)).to.equal("boolean");
+      expect(getTypeFromProperty(property)).to.equal("boolean");
     });
 
     it("returns 'number' on float data type", () => {
@@ -52,7 +52,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
         getScalarType("http://www.w3.org/2001/XMLSchema#float")
       );
 
-      expect(getPropertyDataType(property)).to.equal("number");
+      expect(getTypeFromProperty(property)).to.equal("number");
     });
 
     it("returns 'boolean' on boolean linked data type", () => {
@@ -61,42 +61,42 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
         getLinkedScalarType("http://www.w3.org/2001/XMLSchema#boolean")
       );
 
-      expect(getPropertyDataType(property)).to.equal("boolean");
+      expect(getTypeFromProperty(property)).to.equal("boolean");
     });
 
     it("returns 'any' on undefined data type", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(getScalarType(undefined));
 
-      expect(getPropertyDataType(property)).to.equal("any");
+      expect(getTypeFromProperty(property)).to.equal("any");
     });
 
     it("returns 'object' on object data type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getObjectType());
 
-      expect(getPropertyDataType(property)).to.equal("object");
+      expect(getTypeFromProperty(property)).to.equal("object");
     });
 
     it("returns 'defined_type' on inherited object type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getInheritedType("defined_type"));
 
-      expect(getPropertyDataType(property)).to.equal("defined_type");
+      expect(getTypeFromProperty(property)).to.equal("defined_type");
     });
 
     it("returns 'defined_type' on linked object type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(getLinkedType("defined_type"));
 
-      expect(getPropertyDataType(property)).to.equal("defined_type");
+      expect(getTypeFromProperty(property)).to.equal("defined_type");
     });
 
     it("returns 'any' on object type that has no details defined", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(new model.domain.AnyShape());
 
-      expect(getPropertyDataType(property)).to.equal("any");
+      expect(getTypeFromProperty(property)).to.equal("any");
     });
 
     it("returns 'Array<string>' on array of strings", () => {
@@ -106,7 +106,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(range);
 
-      expect(getPropertyDataType(property)).to.equal("Array<string>");
+      expect(getTypeFromProperty(property)).to.equal("Array<string>");
     });
 
     it("returns 'Array<defined_type>' on array of linked object types ", () => {
@@ -116,7 +116,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(range);
 
-      expect(getPropertyDataType(property)).to.equal("Array<defined_type>");
+      expect(getTypeFromProperty(property)).to.equal("Array<defined_type>");
     });
 
     it("returns 'Array<string>' on array of linked string types ", () => {
@@ -128,7 +128,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(range);
 
-      expect(getPropertyDataType(property)).to.equal("Array<string>");
+      expect(getTypeFromProperty(property)).to.equal("Array<string>");
     });
 
     it("returns 'Array<defined_type>' on array of inherited objected type", () => {
@@ -140,28 +140,28 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const property: model.domain.PropertyShape = new model.domain.PropertyShape();
       property.withRange(arrType);
 
-      expect(getPropertyDataType(property)).to.equal("Array<defined_type>");
+      expect(getTypeFromProperty(property)).to.equal("Array<defined_type>");
     });
 
     it("returns 'any' on unhandled type", () => {
       const property = new model.domain.PropertyShape();
       property.withRange(new model.domain.PropertyShape());
 
-      expect(getPropertyDataType(property)).to.equal("any");
+      expect(getTypeFromProperty(property)).to.equal("any");
     });
   });
 
-  describe("getParameterDataType", () => {
+  describe("getTypeFromParameter", () => {
     it("returns 'any' on undefined parameter", () => {
-      expect(getParameterDataType(undefined)).to.equal("any");
+      expect(getTypeFromParameter(undefined)).to.equal("any");
     });
 
     it("returns 'any' on null parameter", () => {
-      expect(getParameterDataType(null)).to.equal("any");
+      expect(getTypeFromParameter(null)).to.equal("any");
     });
 
     it("returns 'any' on parameter with undefined schema", () => {
-      expect(getParameterDataType(new model.domain.Parameter())).to.equal(
+      expect(getTypeFromParameter(new model.domain.Parameter())).to.equal(
         "any"
       );
     });
@@ -175,11 +175,11 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
         getScalarType("http://www.w3.org/2001/XMLSchema#boolean")
       );
 
-      expect(getParameterDataType(param)).to.equal("boolean");
+      expect(getTypeFromParameter(param)).to.equal("boolean");
     });
   });
 
-  describe("getReturnPayloadType", () => {
+  describe("getReturnTypeFromOperation", () => {
     const operation: model.domain.Operation = new model.domain.Operation();
 
     beforeEach(() => {
@@ -195,47 +195,47 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const response = operation.responses[0];
       response.payloads[0].schema.withName("schema");
       response.withStatusCode("200");
-      expect(getReturnPayloadType(operation)).to.equal("Object");
+      expect(getReturnTypeFromOperation(operation)).to.equal("Object");
     });
 
     it("returns 'defined_type' on defined_type data type", () => {
       const response: model.domain.Response = operation.responses[0];
       response.withStatusCode("200");
       response.payloads[0].schema.withName("DefinedType");
-      expect(getReturnPayloadType(operation)).to.equal("DefinedType");
+      expect(getReturnTypeFromOperation(operation)).to.equal("DefinedType");
     });
 
     it("returns 'void' on defined_type data type, but with statusCode as 500", () => {
       const response: model.domain.Response = operation.responses[0];
       response.withStatusCode("500");
       response.payloads[0].schema.withName("DefinedType");
-      expect(getReturnPayloadType(operation)).to.equal("void");
+      expect(getReturnTypeFromOperation(operation)).to.equal("void");
     });
 
     it("returns 'void' without responses", () => {
       operation.withResponses([]);
-      expect(getReturnPayloadType(operation)).to.equal("void");
+      expect(getReturnTypeFromOperation(operation)).to.equal("void");
     });
 
     it("returns 'void' data type, with response array but with no response codes", () => {
-      expect(getReturnPayloadType(operation)).to.equal("void");
+      expect(getReturnTypeFromOperation(operation)).to.equal("void");
     });
   });
 
-  describe("getRequestPayloadType", () => {
+  describe("getPayloadTypeFromRequest", () => {
     it("returns 'object' on undefined request model", () => {
-      expect(getRequestPayloadType(undefined)).to.equal(OBJECT_DATA_TYPE);
+      expect(getPayloadTypeFromRequest(undefined)).to.equal(OBJECT_DATA_TYPE);
     });
 
     it("returns 'object' on null request model", () => {
-      expect(getRequestPayloadType(null)).to.equal(OBJECT_DATA_TYPE);
+      expect(getPayloadTypeFromRequest(null)).to.equal(OBJECT_DATA_TYPE);
     });
 
     it("returns type defined for request payload", () => {
       const typeName = "Type1";
       const shape = new model.domain.NodeShape();
       shape.withName(typeName);
-      expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
+      expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
         typeName
       );
     });
@@ -244,14 +244,14 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const shape = new model.domain.NodeShape();
       shape.withName("schema");
 
-      expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
+      expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
         OBJECT_DATA_TYPE
       );
     });
 
     it("returns 'object' when name is undefined", () => {
       const shape = new model.domain.NodeShape();
-      expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
+      expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
         OBJECT_DATA_TYPE
       );
     });
@@ -264,7 +264,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const shape = new model.domain.ArrayShape();
       shape.withItems(arrItem);
 
-      expect(getRequestPayloadType(getRequestPayloadModel(shape))).to.equal(
+      expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
         ARRAY_DATA_TYPE.concat("<")
           .concat(typeName)
           .concat(">")
