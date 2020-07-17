@@ -18,8 +18,8 @@ import { NodeDiff } from "./jsonDiff";
 import { allCommonFlags } from "../common/flags";
 
 export class DiffCommand extends Command {
-  // Oclif eats the first line of the description, so it's left blank.
-  static description = `
+  // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
+  static description = `Compute the difference between two API specifications
 This command has three modes: ruleset, diff-only, and directory.
   Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
   Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
