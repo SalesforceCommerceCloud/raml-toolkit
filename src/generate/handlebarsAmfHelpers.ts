@@ -192,9 +192,7 @@ export const isAdditionalPropertiesAllowed = (
   node: model.domain.NodeShape
 ): boolean => {
   return (
-    node !== undefined &&
-    node.closed !== undefined &&
-    node.closed.value !== undefined &&
+    node?.closed?.value &&
     !node.closed.value()
   );
 };
