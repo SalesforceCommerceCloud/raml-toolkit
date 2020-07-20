@@ -11,6 +11,7 @@ import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
 import tmp from "tmp";
 import { expect } from "chai";
+import { RuleCategory } from "./ruleSet";
 
 const basePath = path.join(__dirname, "../../test/diff");
 
@@ -79,7 +80,8 @@ function buildRule(): Rule {
     event: {
       type: "api-title-change",
       params: {
-        category: "Breaking"
+        category: RuleCategory.BREAKING,
+        changedProperty: "core:name"
       }
     }
   });
