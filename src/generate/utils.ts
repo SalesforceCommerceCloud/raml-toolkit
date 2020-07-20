@@ -19,13 +19,13 @@ export const PRIMITIVE_DATA_TYPE_MAP = {
 };
 
 /**
- * Get responses from the given operation object
+ * Get responses from the given operation object.
  *
- * @param operation - The target operation
+ * @param operation - An AMF operation
  *
  * @returns An array of responses extracted from the given operation
  */
-export const getPayloadResponses = (
+export const getResponsesFromPayload = (
   operation: model.domain.Operation
 ): model.domain.Response[] => {
   const okResponses = [];
@@ -38,9 +38,10 @@ export const getPayloadResponses = (
 };
 
 /**
- * Given a payload, extract the types.
+ * Get types from the given payload.
  *
  * @param payload - Contains schema(s) from which to extract the type(s).
+ *
  * @returns string representation of the data types in the payload
  */
 export const getTypeFromPayload = (payload: model.domain.Payload): string => {
@@ -57,16 +58,24 @@ export const getTypeFromPayload = (payload: model.domain.Payload): string => {
   return payload.schema.name.value();
 };
 
-export const getDataTypeFromMap = (uuidDataType: string): string => {
-  return PRIMITIVE_DATA_TYPE_MAP[uuidDataType]
-    ? PRIMITIVE_DATA_TYPE_MAP[uuidDataType]
+/**
+ * Get data type for the given namespaced data type.
+ *
+ * @param nsDataType - A namespaced datatype e.g. http://www.w3.org/2001/XMLSchema#string
+ *
+ * @returns a regular javascript type
+ */
+export const getDataTypeFromMap = (nsDataType: string): string => {
+  return PRIMITIVE_DATA_TYPE_MAP[nsDataType]
+    ? PRIMITIVE_DATA_TYPE_MAP[nsDataType]
     : DEFAULT_DATA_TYPE;
 };
 
 /**
- * Get data type from ScalarShape
+ * Get data type from a ScalarShape object.
  *
- * @param scalarShape - instance of model.domain.ScalarShape
+ * @param scalarShape - A ScalarShape object
+ *
  * @returns scalar data type if defined otherwise returns a default type
  */
 export const getScalarType = (
@@ -96,9 +105,10 @@ export const getScalarType = (
 };
 
 /**
- * Get data type that is linked/inherited
+ * Get data type that is linked/inherited.
  *
  * @param anyShape - instance of model.domain.AnyShape or its subclass
+ *
  * @returns linked/inherited data type
  */
 export const getLinkedType = (anyShape: model.domain.AnyShape): string => {
@@ -140,6 +150,7 @@ export const getLinkedType = (anyShape: model.domain.AnyShape): string => {
  * Get object type
  *
  * @param anyShape - instance of model.domain.AnyShape or its subclass
+ *
  * @returns object type if defined otherwise returns a default type
  */
 export const getObjectType = (anyShape: model.domain.AnyShape): string => {
@@ -159,20 +170,23 @@ export const getObjectType = (anyShape: model.domain.AnyShape): string => {
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /**
- * Get data type of an element from amf model
+ * Get data type of an element from AMF model.
  *
- * @param dtElement - instance of model.domain.DomainElement or its subclass
+ * @param domainElement - An AMF DomainElement or its subclass
+ *
  * @returns data type if defined otherwise returns a default type
  */
-export const getDataType = (dtElement: model.domain.DomainElement): string => {
+export const getDataType = (
+  domainElement: model.domain.DomainElement
+): string => {
   let dataType: string = undefined;
-  if (dtElement != null) {
-    if (dtElement instanceof model.domain.ScalarShape) {
-      dataType = getScalarType(dtElement);
-    } else if (dtElement instanceof model.domain.ArrayShape) {
-      dataType = getArrayType(dtElement);
-    } else if (dtElement instanceof model.domain.AnyShape) {
-      dataType = getObjectType(dtElement);
+  if (domainElement != null) {
+    if (domainElement instanceof model.domain.ScalarShape) {
+      dataType = getScalarType(domainElement);
+    } else if (domainElement instanceof model.domain.ArrayShape) {
+      dataType = getArrayType(domainElement);
+    } else if (domainElement instanceof model.domain.AnyShape) {
+      dataType = getObjectType(domainElement);
     }
   }
   if (dataType == null) {
@@ -182,9 +196,10 @@ export const getDataType = (dtElement: model.domain.DomainElement): string => {
 };
 
 /**
- * Get type of the array
+ * Get type of the array.
  *
- * @param arrayShape - instance of model.domain.ArrayShape
+ * @param arrayShape - An AMF ArrayShape
+ *
  * @returns array type if defined otherwise returns a default type
  */
 const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
@@ -198,24 +213,30 @@ const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
     .concat(">");
 };
 
-export const getPayloadType = (schema: model.domain.Shape): string => {
-  const name = schema.name.value();
-  if (name == null) {
+/**
+ * Get type of AMF Shape object.
+ *
+ * @param shape - An AMF Shape object
+ *
+ * @returns 'object' if the name property of the Shape is null or 'schema', the
+ * name itself otherwise
+ *
+ */
+export const getTypeFromShape = (shape: model.domain.Shape): string => {
+  const name = shape.name.value();
+  if (name == null || name === "schema") {
     return OBJECT_DATA_TYPE;
   }
-  if (name === "schema") {
-    return OBJECT_DATA_TYPE;
-  } else {
-    return name;
-  }
+
+  return name;
 };
 
 /**
- * Helper to extract the value from the AMF field.
+ * Get value from an AMF field.
  *
  * @param name - The field to extract the value from
  *
- * @returns the string of the value
+ * @returns The string of the value
  */
 export const getValue = <T>(name: model.ValueField<T>): string => {
   let value;
@@ -228,22 +249,23 @@ export const getValue = <T>(name: model.ValueField<T>): string => {
 type propertyFilter = (propertyName: string) => boolean;
 
 /**
- * Get properties of the DTO (inherited and linked) after applying the given filter criteria
+ * Get properties of a node (inherited and linked) after applying the given filter criteria
  *
- * @param dtoTypeModel - AMF model of the dto
- * @param propertyFilter - function to filter properties based on certain criteria
+ * @param node - An AMF node
+ * @param propertyFilter - predicate to be used to filter properties
+ *
  * @returns The filtered list of properties
  */
 export const getFilteredProperties = (
-  dtoTypeModel: model.domain.NodeShape | null | undefined,
+  node: model.domain.NodeShape | null | undefined,
   propertyFilter: propertyFilter
 ): model.domain.PropertyShape[] => {
   const properties: model.domain.PropertyShape[] = [];
   const existingProps: Set<string> = new Set();
 
-  while (dtoTypeModel != null) {
-    if (dtoTypeModel.properties != null && dtoTypeModel.properties.length > 0) {
-      dtoTypeModel.properties.forEach(prop => {
+  while (node != null) {
+    if (node.properties != null && node.properties.length > 0) {
+      node.properties.forEach(prop => {
         if (prop != null) {
           const propName = getValue(prop.name);
           //ignore duplicate props
@@ -258,19 +280,16 @@ export const getFilteredProperties = (
         }
       });
       //Check if there are any inherited properties
-      if (dtoTypeModel.inherits != null && dtoTypeModel.inherits.length > 0) {
-        dtoTypeModel = dtoTypeModel.inherits[0] as model.domain.NodeShape;
+      if (node.inherits != null && node.inherits.length > 0) {
+        node = node.inherits[0] as model.domain.NodeShape;
       } else {
-        dtoTypeModel = null;
+        node = null;
       }
-    } else if (
-      dtoTypeModel.isLink === true &&
-      dtoTypeModel.linkTarget != null
-    ) {
+    } else if (node.isLink === true && node.linkTarget != null) {
       //check if other DTO is linked
-      dtoTypeModel = dtoTypeModel.linkTarget as model.domain.NodeShape;
+      node = node.linkTarget as model.domain.NodeShape;
     } else {
-      dtoTypeModel = null;
+      node = null;
     }
   }
   return properties;
