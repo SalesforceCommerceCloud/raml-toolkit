@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "./ruleSet";
+import { RuleCategory } from "../ruleSet";
 
 /**
  * Holds changes between two API specifications

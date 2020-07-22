@@ -5,9 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as AmfGraphTypes from "./amfGraphTypes";
+import * as AmfGraphTypes from "../amfGraphTypes";
 import { CategorizedChange } from "./categorizedChange";
-import { RuleCategory } from "./ruleSet";
+import { RuleCategory } from "../ruleSet";
 
 /**
  * Class to hold differences of a JSON node
