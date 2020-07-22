@@ -10,11 +10,13 @@ import { RuleCategory } from "./ruleSet";
 import { CategorizedChange } from "./categorizedChange";
 
 function buildNodeChanges(): NodeChanges {
-  const categorizedChange = new CategorizedChange();
-  categorizedChange.ruleName = "r1";
-  categorizedChange.ruleEvent = "title-changed";
-  categorizedChange.category = RuleCategory.BREAKING;
-  categorizedChange.change = ["old-title", "new-title"];
+  const categorizedChange = new CategorizedChange(
+    "r1",
+    "title-changed",
+    RuleCategory.BREAKING,
+    ["old-title", "new-title"]
+  );
+
   const nodeChanges = new NodeChanges("test-id", ["test:type"]);
   nodeChanges.categorizedChanges = [categorizedChange];
   return nodeChanges;
@@ -23,48 +25,29 @@ function buildNodeChanges(): NodeChanges {
 describe("Check for categorized changes in a node", () => {
   it("returns true when there are categorized changes", async () => {
     const nodeChanges = buildNodeChanges();
-    expect(nodeChanges.hasCategorizedChanges()).to.equal(true);
-  });
-
-  it("returns false when the categorized changes are not defined", async () => {
-    const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = undefined;
-    expect(nodeChanges.hasCategorizedChanges()).to.equal(false);
-  });
-
-  it("returns false when the categorized changes are null", async () => {
-    const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = null;
-    expect(nodeChanges.hasCategorizedChanges()).to.equal(false);
+    expect(nodeChanges.hasCategorizedChanges()).to.be.true;
   });
 
   it("returns false when the categorized changes are empty", async () => {
-    const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = [];
-    expect(nodeChanges.hasCategorizedChanges()).to.equal(false);
+    const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+    expect(nodeChanges.hasCategorizedChanges()).to.be.false;
   });
 
   it("returns true when there are breaking changes", async () => {
     const nodeChanges = buildNodeChanges();
-    expect(nodeChanges.hasBreakingChanges()).to.equal(true);
+    expect(nodeChanges.hasBreakingChanges()).to.be.true;
   });
 
   it("returns false when there are no breaking changes", async () => {
     const nodeChanges = buildNodeChanges();
     nodeChanges.categorizedChanges[0].category = RuleCategory.NON_BREAKING;
-    expect(nodeChanges.hasBreakingChanges()).to.equal(false);
+    expect(nodeChanges.hasBreakingChanges()).to.be.false;
   });
 
-  it("returns false for breaking changes when the categorized changes are not defined", async () => {
+  it("returns false for breaking changes when there are no categorized changes", async () => {
     const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = undefined;
-    expect(nodeChanges.hasBreakingChanges()).to.equal(false);
-  });
-
-  it("returns false for breaking changes when the categorized changes are null", async () => {
-    const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = null;
-    expect(nodeChanges.hasBreakingChanges()).to.equal(false);
+    nodeChanges.categorizedChanges = [];
+    expect(nodeChanges.hasBreakingChanges()).to.be.false;
   });
 });
 
@@ -87,17 +70,9 @@ describe("Get number of categorized changes in a node", () => {
     expect(nodeChanges.getIgnoredChangesCount()).to.equal(1);
   });
 
-  it("returns zero when the categorized changes are not defined", async () => {
+  it("returns zero when there are no changes for a given category", async () => {
     const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = undefined;
-    expect(
-      nodeChanges.getChangeCountByCategory(RuleCategory.BREAKING)
-    ).to.equal(0);
-  });
-
-  it("returns zero when the categorized changes are null", async () => {
-    const nodeChanges = buildNodeChanges();
-    nodeChanges.categorizedChanges = null;
+    nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
     expect(
       nodeChanges.getChangeCountByCategory(RuleCategory.BREAKING)
     ).to.equal(0);

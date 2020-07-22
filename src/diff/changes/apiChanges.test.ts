@@ -11,11 +11,12 @@ import { CategorizedChange } from "./categorizedChange";
 import { ApiChanges } from "./apiChanges";
 
 function buildApiChanges(): ApiChanges {
-  const titleChange = new CategorizedChange();
-  titleChange.ruleName = "r1";
-  titleChange.ruleEvent = "title-changed";
-  titleChange.category = RuleCategory.BREAKING;
-  titleChange.change = ["old-title", "new-title"];
+  const titleChange = new CategorizedChange(
+    "r1",
+    "title-changed",
+    RuleCategory.BREAKING,
+    ["old-title", "new-title"]
+  );
   const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
   nodeChanges.categorizedChanges = [titleChange];
 
@@ -24,22 +25,12 @@ function buildApiChanges(): ApiChanges {
 describe("Check for changes in the API", () => {
   it("returns true when there are changes", async () => {
     const apiChanges = buildApiChanges();
-    expect(apiChanges.hasChanges()).to.equal(true);
-  });
-
-  it("returns false when the changes not defined", async () => {
-    const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml", undefined);
-    expect(apiChanges.hasChanges()).to.equal(false);
-  });
-
-  it("returns false when the changes are null", async () => {
-    const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml", null);
-    expect(apiChanges.hasChanges()).to.equal(false);
+    expect(apiChanges.hasChanges()).to.be.true;
   });
 
   it("returns false when the node changes array is empty", async () => {
     const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml", []);
-    expect(apiChanges.hasChanges()).to.equal(false);
+    expect(apiChanges.hasChanges()).to.be.false;
   });
 });
 
@@ -53,14 +44,14 @@ describe("Check for categorized changes in a API", () => {
 
   it("returns true when there are breaking changes", async () => {
     const apiChanges = buildApiChanges();
-    expect(apiChanges.hasBreakingChanges()).to.equal(true);
+    expect(apiChanges.hasBreakingChanges()).to.be.true;
   });
 
   it("returns false when there are no breaking changes", async () => {
     const apiChanges = buildApiChanges();
     apiChanges.nodeChanges[0].categorizedChanges[0].category =
       RuleCategory.NON_BREAKING;
-    expect(apiChanges.hasBreakingChanges()).to.equal(false);
+    expect(apiChanges.hasBreakingChanges()).to.be.false;
   });
 
   it("returns breaking changes count", async () => {

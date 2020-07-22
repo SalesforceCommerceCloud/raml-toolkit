@@ -11,32 +11,32 @@ import { ApiChanges } from "./apiChanges";
  */
 export class ApiCollectionChanges {
   //Map of api name to its changes
-  changes: Map<string, ApiChanges>;
+  changed: Map<string, ApiChanges>;
 
   //Map of api name to its error message
-  failed: Map<string, string>;
+  errored: Map<string, string>;
 
   //array of removed apis
-  removedApis: string[];
+  removed: string[];
 
   //array of added apis
-  addedApis: string[];
+  added: string[];
 
   /**
    * Return true when there are changes in the API collection
    */
   hasChanges(): boolean {
     return (
-      (this.changes != null && this.changes.size > 0) ||
-      (this.removedApis != null && this.removedApis.length > 0) ||
-      (this.addedApis != null && this.addedApis.length > 0)
+      (this.changed != null && this.changed.size > 0) ||
+      (this.removed != null && this.removed.length > 0) ||
+      (this.added != null && this.added.length > 0)
     );
   }
 
   /**
    * Return true if the diff on one or more apis has failed
    */
-  hasFailures(): boolean {
-    return this.failed != null && this.failed.size > 0;
+  hasErrors(): boolean {
+    return this.errored != null && this.errored.size > 0;
   }
 }

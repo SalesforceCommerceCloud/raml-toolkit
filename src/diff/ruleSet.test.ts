@@ -4,11 +4,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import tmp, { fileSync } from "tmp";
+import tmp from "tmp";
 import fs from "fs-extra";
 import { RuleSet } from "./ruleSet";
 import { expect } from "@oclif/test";
-import { Rule } from "json-rules-engine";
+import { Rule, TopLevelCondition } from "json-rules-engine";
 import { DIFF_FACT_ID } from "./rulesProcessor";
 
 /**
@@ -63,7 +63,7 @@ describe("Create RuleSet instance", () => {
     expect(() => new RuleSet("")).to.throw(errMsg);
   });
 
-  it("throws error when the rules file do not exist", async () => {
+  it("throws error when the rules file does not exist", async () => {
     expect(() => new RuleSet("/tmp/no-rules.json")).to.throw(errMsg);
   });
 
@@ -74,8 +74,7 @@ describe("Create RuleSet instance", () => {
 
   it("throws error when the rules are not defined as a json array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
-    const rules = {};
-    fs.writeJSONSync(tmpFile.name, JSON.stringify(rules));
+    fs.writeJSONSync(tmpFile.name, {});
     expect(() => new RuleSet(tmpFile.name)).to.throw(
       "Rules must be defined as a json array"
     );
@@ -83,20 +82,20 @@ describe("Create RuleSet instance", () => {
 
   it("throws error when the rule has empty conditions", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
-    const ruleJson = JSON.parse(buildDefaultRule().toJSON());
-    ruleJson.conditions = {};
+    const ruleJson = buildDefaultRule().toJSON(false);
+    ruleJson.conditions = {} as TopLevelCondition;
     fs.writeJSONSync(tmpFile.name, [ruleJson]);
     expect(() => new RuleSet(tmpFile.name)).to.throw("Error parsing the rule");
   });
 
   it("creates instance of RuleSet with a valid rules file", async () => {
-    const tmpFile = fileSync({ postfix: ".json" });
+    const tmpFile = tmp.fileSync({ postfix: ".json" });
     const rule = buildDefaultRule();
     fs.writeJSONSync(tmpFile.name, [rule.toJSON(false)]);
     const ruleSet = new RuleSet(tmpFile.name);
     //verify template and its content
     expect(ruleSet).to.be.an.instanceof(RuleSet);
-    expect(ruleSet.rules.length).to.equal(1);
+    expect(ruleSet.rules).to.have.lengthOf(1);
     expect(ruleSet.rules[0].toJSON(false)).to.deep.equal(rule.toJSON(false));
   });
 });
@@ -110,6 +109,17 @@ describe("Validate rule properties", () => {
 
     expect(() => new RuleSet(tmpFile.name)).to.throw(
       "Name is required for every rule"
+    );
+  });
+
+  it("throws error when rule params are missing", async () => {
+    const rule = buildDefaultRule();
+    rule.event.params = undefined;
+    const tmpFile = tmp.fileSync({ postfix: ".json" });
+    fs.writeJSONSync(tmpFile.name, [rule.toJSON(false)]);
+
+    expect(() => new RuleSet(tmpFile.name)).to.throw(
+      `Params are required in rule: ${rule.name}`
     );
   });
 
@@ -131,7 +141,7 @@ describe("Validate rule properties", () => {
     fs.writeJSONSync(tmpFile.name, [rule.toJSON(false)]);
 
     expect(() => new RuleSet(tmpFile.name)).to.throw(
-      `Invalid category in rule:  ${rule.name}`
+      `Invalid category in rule: ${rule.name}`
     );
   });
 
@@ -182,19 +192,19 @@ describe("Validate rule properties", () => {
 
 describe("Check for existence of rules", () => {
   it("returns 'false' when there are NO rules", async () => {
-    const tmpFile = fileSync({ postfix: ".json" });
+    const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeJSONSync(tmpFile.name, []);
     const ruleSet = new RuleSet(tmpFile.name);
 
-    expect(ruleSet.hasRules()).to.equal(false);
+    expect(ruleSet.hasRules()).to.be.false;
   });
 
   it("returns 'true' when there are rules", async () => {
-    const tmpFile = fileSync({ postfix: ".json" });
+    const tmpFile = tmp.fileSync({ postfix: ".json" });
     const rule = buildDefaultRule();
     fs.writeJSONSync(tmpFile.name, [rule.toJSON(false)]);
     const ruleSet = new RuleSet(tmpFile.name);
 
-    expect(ruleSet.hasRules()).to.equal(true);
+    expect(ruleSet.hasRules()).to.be.true;
   });
 });

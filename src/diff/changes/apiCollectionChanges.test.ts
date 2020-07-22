@@ -12,72 +12,72 @@ import { ApiCollectionChanges } from "./apiCollectionChanges";
 describe("Check for changes in api collection", () => {
   it("returns true when there are changes", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.changes = new Map();
+    apiCollectionChanges.changed = new Map();
     const nodeChanges = new NodeChanges("test-id", ["test:type"]);
     const apiChanges = new ApiChanges("base.raml", "new.raml", [nodeChanges]);
-    apiCollectionChanges.changes.set("base.raml", apiChanges);
-    expect(apiCollectionChanges.hasChanges()).to.equal(true);
+    apiCollectionChanges.changed.set("base.raml", apiChanges);
+    expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns true when there are removed apis", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.removedApis = ["test.raml"];
-    expect(apiCollectionChanges.hasChanges()).to.equal(true);
+    apiCollectionChanges.removed = ["test.raml"];
+    expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns true when there are added apis", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.addedApis = ["test.raml"];
-    expect(apiCollectionChanges.hasChanges()).to.equal(true);
+    apiCollectionChanges.added = ["test.raml"];
+    expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns false when the changes are not defined", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    expect(apiCollectionChanges.hasChanges()).to.equal(false);
+    expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 
   it("returns false when the changes are null", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.changes = null;
-    apiCollectionChanges.removedApis = null;
-    apiCollectionChanges.addedApis = null;
+    apiCollectionChanges.changed = null;
+    apiCollectionChanges.removed = null;
+    apiCollectionChanges.added = null;
 
-    expect(apiCollectionChanges.hasChanges()).to.equal(false);
+    expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 
   it("returns false when the changes are empty", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.changes = new Map();
-    apiCollectionChanges.removedApis = [];
-    apiCollectionChanges.addedApis = [];
+    apiCollectionChanges.changed = new Map();
+    apiCollectionChanges.removed = [];
+    apiCollectionChanges.added = [];
 
-    expect(apiCollectionChanges.hasChanges()).to.equal(false);
+    expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 });
 
 describe("Check for failures on api collection diff", () => {
   it("returns true when there are failures", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.failed = new Map();
-    apiCollectionChanges.failed.set("test.raml", "test-error");
-    expect(apiCollectionChanges.hasFailures()).to.equal(true);
+    apiCollectionChanges.errored = new Map();
+    apiCollectionChanges.errored.set("test.raml", "test-error");
+    expect(apiCollectionChanges.hasErrors()).to.be.true;
   });
 
   it("returns false when the failures are not defined", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.failed = undefined;
-    expect(apiCollectionChanges.hasFailures()).to.equal(false);
+    apiCollectionChanges.errored = undefined;
+    expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 
   it("returns false when the failures are null", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.failed = null;
-    expect(apiCollectionChanges.hasFailures()).to.equal(false);
+    apiCollectionChanges.errored = null;
+    expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 
   it("returns false when the failures are empty", async () => {
     const apiCollectionChanges = new ApiCollectionChanges();
-    apiCollectionChanges.failed = new Map();
-    expect(apiCollectionChanges.hasFailures()).to.equal(false);
+    apiCollectionChanges.errored = new Map();
+    expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 });

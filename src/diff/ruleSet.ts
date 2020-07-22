@@ -55,11 +55,14 @@ export class RuleSet {
       if (!r.name) {
         throw new Error("Name is required for every rule");
       }
-      if (!r.event.params?.category) {
+      if (!r.event.params) {
+        throw new Error(`Params are required in rule: ${r.name}`);
+      }
+      if (!r.event.params.category) {
         throw new Error(`Category is required in rule: ${r.name}`);
       }
-      if (Object.values(RuleCategory).indexOf(r.event.params.category) === -1) {
-        throw new Error(`Invalid category in rule:  ${r.name}`);
+      if (!Object.values(RuleCategory).includes(r.event.params.category)) {
+        throw new Error(`Invalid category in rule: ${r.name}`);
       }
       //changedProperty is optional only for Ignored changes
       if (

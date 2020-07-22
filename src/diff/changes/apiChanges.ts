@@ -21,11 +21,7 @@ export class ApiChanges {
     public baseApiSpec: string,
     public newApiSpec: string,
     public nodeChanges: NodeChanges[]
-  ) {
-    if (!nodeChanges) {
-      this.nodeChanges = [];
-    }
-  }
+  ) {}
 
   /**
    * Return true if there are changes
@@ -54,9 +50,9 @@ export class ApiChanges {
    */
   getChangeCountByCategory(category: RuleCategory): number {
     let count = 0;
-    this.nodeChanges.forEach(n => {
+    for (const n of this.nodeChanges) {
       count += n.getChangeCountByCategory(category);
-    });
+    }
     return count;
   }
 

@@ -13,10 +13,10 @@ import { RuleCategory } from "./ruleSet";
  * Class to hold differences of a JSON node
  */
 export class NodeChanges {
-  public added?: { [key: string]: unknown } | AmfGraphTypes.Node;
-  public removed?: { [key: string]: unknown } | AmfGraphTypes.Node;
+  public added: { [key: string]: unknown } | AmfGraphTypes.Node;
+  public removed: { [key: string]: unknown } | AmfGraphTypes.Node;
   //categorized changes of the node
-  public categorizedChanges?: CategorizedChange[];
+  public categorizedChanges: CategorizedChange[];
 
   /**
    * Create NodeChanges object
@@ -26,24 +26,22 @@ export class NodeChanges {
   constructor(public id: string, public type: string[]) {
     this.added = {};
     this.removed = {};
+    this.categorizedChanges = [];
   }
 
   /**
    * Returns true when there are categorized changes
    */
   hasCategorizedChanges(): boolean {
-    return (
-      this.categorizedChanges != null && this.categorizedChanges.length > 0
-    );
+    return this.categorizedChanges.length > 0;
   }
 
   /**
    * Returns true when there are breaking changes
    */
   hasBreakingChanges(): boolean {
-    return (
-      this.categorizedChanges != null &&
-      this.categorizedChanges.some(c => c.category === RuleCategory.BREAKING)
+    return this.categorizedChanges.some(
+      c => c.category === RuleCategory.BREAKING
     );
   }
 
@@ -52,12 +50,7 @@ export class NodeChanges {
    * @param category - category of the change
    */
   getChangeCountByCategory(category: RuleCategory): number {
-    let count = this.categorizedChanges?.filter(c => c.category === category)
-      ?.length;
-    if (!count) {
-      count = 0;
-    }
-    return count;
+    return this.categorizedChanges.filter(c => c.category === category).length;
   }
 
   /**
