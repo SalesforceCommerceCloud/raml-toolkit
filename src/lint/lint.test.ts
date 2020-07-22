@@ -58,13 +58,13 @@ describe("#printResults", () => {
     );
   });
 
-  it("outputs results in second branch when results do conform and warnings are true", async () => {
+  it("does not output hidden warning count when warnings are true!", async () => {
     const doc = getHappySpec();
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result, true);
-    return expect(consoleSpy.getCall(0).args[0]).to.have.string(
-      "Level: Warning"
+    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+      "Number of hidden warnings:"
     );
   });
 });

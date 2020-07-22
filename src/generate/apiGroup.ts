@@ -5,19 +5,18 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { Api } from "./api";
-import Name from "./name";
+import { Name } from "./name";
 
 /**
  * A group of API objects. Common transformations of the group name are cached
  * for reference in templates and file paths.
  */
-export class ApiGroup {
-  apis: Api[];
+export class ApiGroup extends Array<Api> {
   name: Name;
 
-  constructor(name = "", apis: Api[] = []) {
+  constructor(apis: Api[] = [], name = "") {
+    super(...apis);
     this.name = new Name(name);
-    this.apis = apis;
   }
 
   /**
@@ -29,8 +28,17 @@ export class ApiGroup {
    */
   static async init(apiSpecFilePaths: string[], name = ""): Promise<ApiGroup> {
     return new ApiGroup(
-      name,
-      await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name)))
+      await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name))),
+      name
     );
+  }
+
+  /**
+   * Searches the group for a particular API by name.
+   *
+   * @param name - Name of the API to return from the collection
+   */
+  get(name: string): Api {
+    return this.find(a => a.name.original === name);
   }
 }

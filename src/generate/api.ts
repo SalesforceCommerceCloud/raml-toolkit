@@ -12,7 +12,7 @@ import {
   getAllDataTypes
 } from "../common/parser";
 
-import Name from "./name";
+import { Name } from "./name";
 
 /**
  * An API represented as an AMF model. Includes the extracted data types
@@ -21,17 +21,15 @@ import Name from "./name";
  */
 export class Api {
   dataTypes: model.domain.CustomDomainProperty[];
-  group: string;
-  model: model.document.Document;
   name: Name;
-  path: string;
 
-  constructor(model, group = "", path = "") {
+  constructor(
+    public model: model.document.Document,
+    public group = "",
+    public path = ""
+  ) {
     this.dataTypes = getAllDataTypes(model);
-    this.group = group;
-    this.model = model;
     this.name = new Name((model.encodes as model.domain.WebApi)?.name.value());
-    this.path = path;
     Object.freeze(this);
   }
 

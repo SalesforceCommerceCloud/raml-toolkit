@@ -10,7 +10,7 @@ import amf from "amf-client-js";
 import path from "path";
 import _ from "lodash";
 
-import { FatRamlResourceLoader } from "../download";
+import { FatRamlResourceLoader } from "./resourceLoaders";
 
 /**
  * Parses a RAML file to an AMF model.

@@ -9,7 +9,7 @@ import _ from "lodash";
 /**
  * Stores a name with common transformations cached for use in templates and file paths.
  */
-export default class Name {
+export class Name {
   original = "";
   kebabCase = "";
   lowerCamelCase = "";

@@ -23,13 +23,99 @@ npm install -g @commerce-apps/raml-toolkit
 
 The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
 
-```bash
+### Commands
+
+**Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
+
+<!-- commands -->
+- [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
+- [`raml-toolkit download`](#raml-toolkit-download)
+- [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
+
+#### `raml-toolkit diff BASE NEW`
+
+This command has three modes: ruleset, diff-only, and directory.
+
+```txt
+USAGE
+  $ raml-toolkit diff BASE NEW
+
+ARGUMENTS
+  BASE  The base API spec file (ruleset / diff-only mode) or configuration (directory mode)
+  NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
+
 OPTIONS
-  -h, --help                                show CLI help
-  -p, --profile=(mercury, other-profile) profile to apply
-  -v, --version                             show CLI version
-  -w, --warnings                   Show all the warnings
+  -h, --help               show CLI help
+  -o, --out-file=out-file  File to store the computed difference
+
+  -r, --ruleset=ruleset    [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules] Path to ruleset to
+                           apply to diff
+
+  -v, --version            show CLI version
+
+  --diff-only              Only show differences without evaluating a ruleset
+
+  --dir                    Find the differences for all files in two directories
+
+DESCRIPTION
+  This command has three modes: ruleset, diff-only, and directory.
+     Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
+     Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
+     Directory mode compares all the files in two directories and determines if there are any differences.
+
+  In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
+  In directory mode, the arguments must be API configuration (JSON) files.
+
+  Exit statuses:
+     0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
+     1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
+     2 - Evaluation could not be completed
 ```
+
+#### `raml-toolkit download`
+
+Download API specification files from Anypoint Exchange
+
+```txt
+USAGE
+  $ raml-toolkit download
+
+OPTIONS
+  -D, --deployment=deployment                      [default: .] Deployment status to filter results from Anypoint
+                                                   Exchange
+
+  -c, --config-file=config-file                    [default: api-config.json] Name of the target file to save the API
+                                                   config
+
+  -d, --dest=dest                                  [default: apis] Directory to download APIs into
+
+  -g, --group-by=group-by                          (required) Category to use to group APIs together
+
+  -h, --help                                       show CLI help
+
+  -s, --search=search                              Search query to filter results from Anypoint Exchange
+
+  --deployment-regex-flags=deployment-regex-flags  RegExp flags to specify for advanced deployment matching
+```
+
+#### `raml-toolkit lint [FILENAME]`
+
+A linting tool for raml for commerce cloud and beyond
+
+```txt
+USAGE
+  $ raml-toolkit lint [FILENAME]
+
+OPTIONS
+  -h, --help               show CLI help
+  -p, --profile=(mercury)  (required) profile to apply
+  -v, --version            show CLI version
+  -w, --warnings           Show all the warnings
+
+DESCRIPTION
+  FILENAME is one or more RAML files to lint.
+```
+<!-- commandsstop -->
 
 ### Jenkins
 
@@ -60,7 +146,7 @@ $ ramlint lint --profile mercury file1.raml file2.raml etc.raml
 
 The response will look something like
 
-```
+```txt
 Model: file://data-products-api-v1.raml
 Profile: mercury
 Conforms? false
@@ -103,25 +189,25 @@ This package also contains the code formerly published under `@commerce-apps/exc
 
 The default profile validates the following rules from the [Mercury API Definition of Done](https://salesforce.quip.com/lHK7ADgscANI)
 
-* `title` MUST be set and not be empty
-* `protocols` MUST be HTTPS
-* `version` MUST be set and follow the pattern /v[0-9]+/
-* API must have a `mediaType` default of application/json
-* `description` MUST be set and not be empty
-* `description` MUST not include the word TODO
-* All resource paths MUST be lowercase (except template parameters)
-* Resource paths MUST not start with symbols
-* All template/URI params MUST be lowerCamelCase
-* Methods MUST have a `displayName` set
-* Method `displayName` MUST be in camelCase
-* Methods MUST have a `description` field set
-* Method `description` MUST NOT contain the word TODO
-* `queryParameters` MUST be camelCase
-* Response codes MUST have a `description`
-* Response codes `description` MUST NOT contain the word TODO
-* There must be exactly one `baseUri`
-* `baseUri` must match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
-* `displayName` must be unique across an API
+- `title` MUST be set and not be empty
+- `protocols` MUST be HTTPS
+- `version` MUST be set and follow the pattern /v[0-9]+/
+- API must have a `mediaType` default of application/json
+- `description` MUST be set and not be empty
+- `description` MUST not include the word TODO
+- All resource paths MUST be lowercase (except template parameters)
+- Resource paths MUST not start with symbols
+- All template/URI params MUST be lowerCamelCase
+- Methods MUST have a `displayName` set
+- Method `displayName` MUST be in camelCase
+- Methods MUST have a `description` field set
+- Method `description` MUST NOT contain the word TODO
+- `queryParameters` MUST be camelCase
+- Response codes MUST have a `description`
+- Response codes `description` MUST NOT contain the word TODO
+- There must be exactly one `baseUri`
+- `baseUri` must match the pattern - `https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}`
+- `displayName` must be unique across an API
 
 ## Contributing
 
@@ -129,15 +215,15 @@ You can read all about our contribution model [here!](./.github/CONTRIBUTING.md)
 
 ## Known issues and limitations
 
-* Currently works only with local files
+- Currently works only with local files
 
 ## Development Resources
 
 Here is an AMF validation example from Mulesoft.  This includes some custom rules you can use for reference when building rules.
 
-* <https://github.com/mulesoft-labs/amf-validation-example>
-* <https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml>
-* <https://github.com/aml-org/amf/tree/develop/documentation/validations>
+- <https://github.com/mulesoft-labs/amf-validation-example>
+- <https://github.com/aml-org/amf/blob/develop/vocabularies/dialects/canonical_webapi.yaml>
+- <https://github.com/aml-org/amf/tree/develop/documentation/validations>
 
 <!-- Markdown link & img dfn's -->
 [circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=f0e669168c5d1538fc0b76ad71e13b2e2251ebd4
