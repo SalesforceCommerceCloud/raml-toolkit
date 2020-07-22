@@ -115,7 +115,7 @@
   },
   "dependencies": {
     "@oclif/command": "^1.6.1",
-    "@oclif/config": "^1.15.1",
+    "@oclif/config": "^1.16.0",
     "amf-client-js": "^4.1.2-0",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
