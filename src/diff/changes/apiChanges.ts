@@ -11,17 +11,17 @@ import { RuleCategory } from "../ruleSet";
  * Holds changes between two API specifications
  */
 export class ApiChanges {
+  //Changes between base and new API specifications
+  public nodeChanges: NodeChanges[];
+
   /**
    * Create ApiChanges object
    * @param baseApiSpec - Base API specification to compare
    * @param newApiSpec - New API specification to compare
-   * @param nodeChanges - Changes between base and new API specifications
    */
-  constructor(
-    public baseApiSpec: string,
-    public newApiSpec: string,
-    public nodeChanges: NodeChanges[]
-  ) {}
+  constructor(public baseApiSpec: string, public newApiSpec: string) {
+    this.nodeChanges = [];
+  }
 
   /**
    * Return true if there are changes

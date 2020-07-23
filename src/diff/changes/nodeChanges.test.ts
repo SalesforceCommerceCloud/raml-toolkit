@@ -22,6 +22,19 @@ function buildNodeChanges(): NodeChanges {
   return nodeChanges;
 }
 
+describe("Create an instance of NodeChanges", () => {
+  it("creates NodeChanges object", async () => {
+    const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+
+    expect(nodeChanges).to.be.an.instanceof(NodeChanges);
+    expect(nodeChanges.id).to.equal("test-id");
+    expect(nodeChanges.type).to.deep.equal(["test:type"]);
+    expect(nodeChanges.added).to.deep.equal({});
+    expect(nodeChanges.removed).to.deep.equal({});
+    expect(nodeChanges.categorizedChanges).to.deep.equal([]);
+  });
+});
+
 describe("Check for categorized changes in a node", () => {
   it("returns true when there are categorized changes", async () => {
     const nodeChanges = buildNodeChanges();

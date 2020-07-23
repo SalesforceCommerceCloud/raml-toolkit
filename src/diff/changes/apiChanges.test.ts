@@ -20,8 +20,22 @@ function buildApiChanges(): ApiChanges {
   const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
   nodeChanges.categorizedChanges = [titleChange];
 
-  return new ApiChanges("base.raml", "new.raml", [nodeChanges]);
+  const apiChanges = new ApiChanges("base.raml", "new.raml");
+  apiChanges.nodeChanges = [nodeChanges];
+  return apiChanges;
 }
+
+describe("Create an instance of ApiChanges", () => {
+  it("creates ApiChanges object", async () => {
+    const apiChanges = new ApiChanges("baseApiSpec", "newApiSpec");
+
+    expect(apiChanges).to.be.an.instanceof(ApiChanges);
+    expect(apiChanges.baseApiSpec).to.equal("baseApiSpec");
+    expect(apiChanges.newApiSpec).to.equal("newApiSpec");
+    expect(apiChanges.nodeChanges).to.deep.equal([]);
+  });
+});
+
 describe("Check for changes in the API", () => {
   it("returns true when there are changes", async () => {
     const apiChanges = buildApiChanges();
@@ -29,7 +43,7 @@ describe("Check for changes in the API", () => {
   });
 
   it("returns false when the node changes array is empty", async () => {
-    const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml", []);
+    const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml");
     expect(apiChanges.hasChanges()).to.be.false;
   });
 });

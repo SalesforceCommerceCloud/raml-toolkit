@@ -23,6 +23,13 @@ export class ApiCollectionChanges {
   added: string[];
 
   /**
+   * Create object to hold changes to two api collections
+   * @param baseApiConfig - Base API config file
+   * @param newApiConfig - New API config file
+   */
+  constructor(public baseApiConfig: string, public newApiConfig: string) {}
+
+  /**
    * Return true when there are changes in the API collection
    */
   hasChanges(): boolean {
