@@ -33,7 +33,7 @@ export async function applyRules(
     ramlToolLogger.info("No differences to apply the rules");
     return diffs;
   }
-  const ruleSet = new RuleSet(rulesPath);
+  const ruleSet = await RuleSet.init(rulesPath);
   if (!ruleSet.hasRules()) {
     ramlToolLogger.info("No rules to apply on the differences");
     return diffs;

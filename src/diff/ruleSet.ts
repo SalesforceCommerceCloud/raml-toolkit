@@ -20,12 +20,21 @@ export enum RuleCategory {
  * Holds rules
  */
 export class RuleSet {
-  public rules: Rule[];
+  constructor(public rules: Rule[]) {
+    /**
+     * Validate properties that are required for amf node diffs
+     */
+    this.validateRuleProperties();
+  }
 
-  constructor(public rulesPath: string) {
+  /**
+   * Initialize rule set from a rules json file
+   * @param rulesPath - Path to rules file
+   */
+  static async init(rulesPath: string): Promise<RuleSet> {
     let ruleJsonArray: unknown;
     try {
-      ruleJsonArray = fs.readJSONSync(rulesPath);
+      ruleJsonArray = await fs.readJSON(rulesPath);
     } catch (error) {
       error.message = `Error parsing the rules file: ${error.message}`;
       throw error;
@@ -36,15 +45,12 @@ export class RuleSet {
     }
 
     try {
-      this.rules = ruleJsonArray.map(r => new Rule(r));
+      const rules = ruleJsonArray.map(r => new Rule(r));
+      return new RuleSet(rules);
     } catch (error) {
       error.message = `Error parsing the rule: ${error.message}`;
       throw error;
     }
-    /**
-     * Validate properties that are required for amf node diffs
-     */
-    this.validateRuleProperties();
   }
 
   /**
