@@ -5,7 +5,6 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import * as AmfGraphTypes from "../amfGraphTypes";
 import { CategorizedChange } from "./categorizedChange";
 import { RuleCategory } from "../ruleSet";
 
@@ -13,8 +12,8 @@ import { RuleCategory } from "../ruleSet";
  * Class to hold differences of a JSON node
  */
 export class NodeChanges {
-  public added: { [key: string]: unknown } | AmfGraphTypes.Node;
-  public removed: { [key: string]: unknown } | AmfGraphTypes.Node;
+  public added: { [key: string]: unknown };
+  public removed: { [key: string]: unknown };
   //categorized changes of the node
   public categorizedChanges: CategorizedChange[];
 
