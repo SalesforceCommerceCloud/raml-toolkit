@@ -6,10 +6,10 @@
  */
 
 import {
-  getPayloadResponses,
+  getResponsesFromPayload,
   getTypeFromPayload,
   getDataType,
-  getPayloadType,
+  getTypeFromShape,
   getFilteredProperties,
   getValue,
   DEFAULT_DATA_TYPE,
@@ -20,14 +20,16 @@ import {
 import { model } from "amf-client-js";
 
 /**
- * Selects the baseUri from an AMF model. TypeScript will not allow access to
- * the data without the proper cast to a WebApi type.
+ * Get the baseUri from an AMF model.
+ *
+ * Note: TypeScript will not allow access to the data without the proper cast to
+ * a WebApi type.
  *
  * @param property - A model from the the AMF parser
  *
  * @returns the base URI of the model
  */
-export const getBaseUri = (
+export const getBaseUriFromDocument = (
   property: model.document.BaseUnitWithEncodesModel
 ): string => {
   return property && property.encodes
@@ -36,11 +38,11 @@ export const getBaseUri = (
 };
 
 /**
- * Checks the node is a type definition.
+ * Check if the specified AMF domain element is a type definition or not.
  *
- * @param domainElement - The node to check
+ * @param domainElement - The domain element to be evaluated
  *
- * @returns true if the node is a type definition, false if not
+ * @returns true if the domain element is a type definition, false if not
  */
 export const isTypeDefinition = (
   domainElement: model.domain.DomainElement
@@ -49,16 +51,16 @@ export const isTypeDefinition = (
 };
 
 /**
- * Find the return type info for an operation.
+ * Get the return type info of an operation.
  *
- * @param operation - The operation to get the return type for
+ * @param operation - An AMF operation
  *
  * @returns a string for the data type returned by the successful operation
  */
-export const getReturnPayloadType = (
+export const getReturnTypeFromOperation = (
   operation: model.domain.Operation
 ): string => {
-  const okResponses = getPayloadResponses(operation);
+  const okResponses = getResponsesFromPayload(operation);
   const dataTypes: string[] = [];
 
   okResponses.forEach(res => {
@@ -77,12 +79,13 @@ export const getReturnPayloadType = (
 };
 
 /**
- * Get data type of a property
+ * Get data type of a property.
  *
- * @param property - instance of model.domain.PropertyShape
- * @returns data type if defined in the property otherwise returns a default type
+ * @param property - An AMF property
+ *
+ * @returns data type, if defined in the property, the default type otherwise
  */
-export const getPropertyDataType = (
+export const getTypeFromProperty = (
   property: model.domain.PropertyShape
 ): string => {
   if (property != null && property.range != null) {
@@ -92,12 +95,13 @@ export const getPropertyDataType = (
 };
 
 /**
- * Get data type of a parameter
+ * Get data type of a parameter.
  *
- * @param param - instance of model.domain.Parameter
- * @returns data type if defined in the parameter otherwise returns a default type
+ * @param param - An AMF parameter
+ *
+ * @returns data type, if defined in the parameter, the default type otherwise
  */
-export const getParameterDataType = (param: model.domain.Parameter): string => {
+export const getTypeFromParameter = (param: model.domain.Parameter): string => {
   if (param != null && param.schema != null) {
     return getDataType(param.schema);
   }
@@ -105,12 +109,13 @@ export const getParameterDataType = (param: model.domain.Parameter): string => {
 };
 
 /**
- * Get type of the request body
+ * Get payload type from the request.
  *
- * @param request - AMF model of the request
+ * @param request - An AMF request
+ *
  * @returns Type of the request body
  */
-export const getRequestPayloadType = (
+export const getPayloadTypeFromRequest = (
   request: model.domain.Request
 ): string => {
   if (
@@ -121,24 +126,25 @@ export const getRequestPayloadType = (
     const payloadSchema: model.domain.Shape = request.payloads[0].schema;
     if (payloadSchema instanceof model.domain.ArrayShape) {
       return ARRAY_DATA_TYPE.concat("<")
-        .concat(getPayloadType(payloadSchema.items))
+        .concat(getTypeFromShape(payloadSchema.items))
         .concat(">");
     }
-    return getPayloadType(payloadSchema);
+    return getTypeFromShape(payloadSchema);
   }
   return OBJECT_DATA_TYPE;
 };
 
 /**
- * Gets all properties of the DTO
+ * Get all the properties of an AMF node.
  *
- * @param dtoTypeModel - AMF model of the dto
- * @returns Array of properties in the dto that are not regular expressions
+ * @param node - An AMF node
+ *
+ * @returns Array of properties in the node that are not regular expressions
  */
 export const getProperties = (
-  dtoTypeModel: model.domain.NodeShape | undefined | null
+  node: model.domain.NodeShape | undefined | null
 ): model.domain.PropertyShape[] => {
-  return getFilteredProperties(dtoTypeModel, propertyName => {
+  return getFilteredProperties(node, propertyName => {
     return !/^([/^]).*.$/.test(propertyName);
   });
 };
@@ -147,10 +153,11 @@ export const getProperties = (
  * Check if the property is defined as required.
  * Required properties have minimum count of at least 1
  * We ignore required additional properties because of the
- * different semantics used in rendering those properties
+ * different semantics used in rendering those properties.
  *
- * @param property -
- * @returns true if the property is required
+ * @param property - An AMF property
+ *
+ * @returns true if the property is required, false otherwise
  */
 export const isRequiredProperty = (
   property: model.domain.PropertyShape
@@ -164,8 +171,9 @@ export const isRequiredProperty = (
  * We ignore optional additional properties which also have minimum count of 0,
  * because of the different semantics used in rendering those properties.
  *
- * @param property -
- * @returns true if the property is optional
+ * @param property - An AMF property
+ *
+ * @returns true if the property is optional, false otherwise
  */
 export const isOptionalProperty = (
   property: model.domain.PropertyShape
@@ -174,19 +182,20 @@ export const isOptionalProperty = (
 };
 
 /**
- * Returns whether additional properties are allowed for a given RAML type.
+ * Check if additional properties are allowed for a given AMF node or not.
  *
- * @param ramlTypeDefinition - Any RAML type definition
+ * @param node - An AMF node
+ *
  * @returns true if additional properties are allowed, false otherwise
  */
 export const isAdditionalPropertiesAllowed = (
-  ramlTypeDefinition: model.domain.NodeShape
+  node: model.domain.NodeShape
 ): boolean => {
   return (
-    ramlTypeDefinition !== undefined &&
-    ramlTypeDefinition.closed !== undefined &&
-    ramlTypeDefinition.closed.value !== undefined &&
-    !ramlTypeDefinition.closed.value()
+    node !== undefined &&
+    node.closed !== undefined &&
+    node.closed.value !== undefined &&
+    !node.closed.value()
   );
 };
 
