@@ -35,8 +35,7 @@
     "test": "npm run test:unit && npm run test:resources",
     "test:debug": "mocha \"src/**/*.test.ts\"",
     "test:resources": "mocha \"resources/**/*.test.ts\"",
-    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml",
-    "version": "oclif-dev readme && git add README.md"
+    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml"
   },
   "lint-staged": {
     "*.ts": [
