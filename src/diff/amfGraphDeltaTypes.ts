@@ -18,17 +18,24 @@ export const JSON_DIFF_PATCH_ARRAY_VALUE = "a";
  * Delta is reported in array format
  * example: [oldValue, newValue, magicalNumber], magicalNumber is used identify removal (0), text diffs(2), movements(3)
  */
-export type PropertyDelta = unknown[];
+export type PropertyDelta =
+  | [unknown] //added
+  | [unknown, unknown] //modified
+  | [unknown, 0, 0] //removed
+  | [string, 0, 2]; //text change when diffing algorithm is applied
 
 /**
  * Type describing the delta of a node property which is an array
  */
 export type ArrayDelta = {
-  //key is the index in original array
-  [key: string]: unknown[];
+  /**
+   * key is the index in original array
+   * ["", number, 3] - [represents the moved item value, suppressed by default,destination index,magical number that indicates "array move" ]
+   */
+  [key: string]: PropertyDelta | ["", number, 3];
 } & {
   //"special property to indicate its an array
-  [JSON_DIFF_PATCH_ARRAY_KEY]: string;
+  [JSON_DIFF_PATCH_ARRAY_KEY]: typeof JSON_DIFF_PATCH_ARRAY_VALUE;
 };
 
 /**
@@ -63,5 +70,5 @@ export type GraphDelta = {
    */
   [key: string]: NodeDelta | AmfGraphTypes.Node[];
 } & {
-  [JSON_DIFF_PATCH_ARRAY_KEY]: string;
+  [JSON_DIFF_PATCH_ARRAY_KEY]: typeof JSON_DIFF_PATCH_ARRAY_VALUE;
 };
