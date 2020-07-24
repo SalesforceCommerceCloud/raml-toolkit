@@ -34,14 +34,14 @@ describe("Help flag", () => {
   });
 });
 
-describe("Verbosity flag", () => {
+describe("Log level flag", () => {
   let level: LogLevelNumbers;
   let flag: oclifFlags.IOptionFlag<number>;
   before(() => {
     // Save original log level
     level = logger.getLevel();
-    // Set in before() instead of top so that
-    flag = commonFlags.verbosity();
+    // Set in before() instead of top so the tests fail but mocha doesn't exit
+    flag = commonFlags.logLevel();
   });
   beforeEach(() => {
     logger.setLevel(0);
@@ -63,6 +63,9 @@ describe("Verbosity flag", () => {
     expect(logger.getLevel()).to.equal(2);
     expect(info).to.equal(2);
   });
+  it("throws on invalid input", () => {
+    expect(() => flag.parse("invalid", {})).to.throw();
+  });
 });
 
 describe("Version flag", () => {
@@ -70,7 +73,6 @@ describe("Version flag", () => {
     const flag = commonFlags.version();
     const expected = {
       ...oclifFlags.version(),
-      char: "v",
       description: "Show CLI version",
       hidden: true
     };
@@ -83,6 +85,6 @@ describe("Version flag", () => {
 describe("allCommonFlags", () => {
   it("creates an object with all common flags set", () => {
     const built = commonFlags.allCommonFlags();
-    expect(built).to.have.keys(["help", "verbosity", "version"]);
+    expect(built).to.have.keys(["help", "log-level", "version"]);
   });
 });

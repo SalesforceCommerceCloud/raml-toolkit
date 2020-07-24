@@ -15,11 +15,10 @@ import { ramlToolLogger as logger } from "./logger";
  * returned by log.getLevel().
  * @param options - Flag options
  */
-export const verbosity = flags.build({
-  char: "V",
-  // Default is manually specified because we want to use numbers but show text
+export const logLevel = flags.build({
+  // Default is manually specified because use numbers, but want to show text
   description: "[default: info] Set the level of detail in the output",
-  env: "RAML_TOOLKIT_VERBOSITY",
+  env: "RAML_TOOLKIT_LOG_LEVEL",
   options: Object.keys(logger.levels).map(l => l.toLowerCase()),
   parse(input: string): number {
     try {
@@ -39,7 +38,7 @@ export const verbosity = flags.build({
 });
 
 /**
- * The oclif help flag builder, with char set to -h, description changed to
+ * The oclif help flag builder, but with char set to -h, description changed to
  * start with a capital letter, and hidden by default.
  * @param options - Flag options
  */
@@ -55,15 +54,14 @@ export function help(
 }
 
 /**
- * The oclif version flag builder, with char set to -v, description changed to
- * start with a capital letter, and hidden by default.
+ * The oclif version flag builder, but with description changed to start with a
+ * capital letter, and hidden by default.
  * @param options - Flag options
  */
 export function version(
   options?: Parameters<typeof flags.version>["0"]
 ): ReturnType<typeof flags.version> {
   return flags.version({
-    char: "v",
     description: "Show CLI version",
     hidden: true,
     ...options
@@ -82,12 +80,12 @@ export function version(
  */
 export function allCommonFlags(): {
   help: ReturnType<typeof help>;
-  verbosity: ReturnType<typeof verbosity>;
+  "log-level": ReturnType<typeof logLevel>;
   version: ReturnType<typeof version>;
 } {
   return {
     help: help(),
-    verbosity: verbosity(),
+    "log-level": logLevel(),
     version: version()
   };
 }
