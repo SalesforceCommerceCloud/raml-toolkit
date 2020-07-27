@@ -10,7 +10,7 @@ import {
   renderSpecAsFile,
   breaksOnlyOneRule,
   conforms
-} from "../../../test/testUtils";
+} from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
 describe("unique display name validation", () => {

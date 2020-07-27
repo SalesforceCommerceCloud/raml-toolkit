@@ -12,8 +12,11 @@ import chaiAsPromised from "chai-as-promised";
 import { Api } from "./api";
 import { model } from "amf-client-js";
 
-const validRamlFile = path.join(__dirname, "../../test/site.raml");
-const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
+const validRamlFile = path.join(__dirname, "../../testResources/site.raml");
+const invalidRamlFile = path.join(
+  __dirname,
+  "../../testResources/search-invalid.raml"
+);
 
 before(() => {
   chai.use(chaiAsPromised);

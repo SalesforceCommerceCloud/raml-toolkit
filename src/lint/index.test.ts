@@ -12,7 +12,7 @@ import {
   getSingleValidFile,
   getSingleInvalidFile,
   getSlightlyInvalidFile
-} from "../../test/testUtils";
+} from "../../testResources/testUtils";
 import { rename } from "fs-extra";
 
 import cmd from "../commands/lint";

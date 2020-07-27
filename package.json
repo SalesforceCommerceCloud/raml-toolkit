@@ -33,9 +33,11 @@
     "snyk-protect": "snyk protect",
     "pretest": "npm run lint && npm run compile && npm run depcheck",
     "test": "npm run test:unit && npm run test:resources",
-    "test:debug": "mocha \"src/**/*.test.ts\"",
+    "test:unit": "mocha \"src/**/*.test.ts\"",
     "test:resources": "mocha \"resources/**/*.test.ts\"",
-    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml"
+    "test:unit:ci": "npm run test:unit -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:resources:ci": "npm run test:resources -- --reporter=xunit --reporter-options output=reports/generator.xml",
+    "test:ci": "nyc npm run test:unit:ci && npm run test:resources:ci"
   },
   "lint-staged": {
     "*.ts": [

@@ -43,8 +43,7 @@ export class DownloadCommand extends Command {
     "group-by": flags.string({
       char: "g",
       description: "Category to use to group APIs together",
-      env: "ANYPOINT_GROUP_BY",
-      required: true
+      env: "ANYPOINT_GROUP_BY"
     }),
     "config-file": flags.string({
       char: "c",
@@ -72,8 +71,8 @@ export class DownloadCommand extends Command {
       new RegExp(flags.deployment, flags["deployment-regex-flags"])
     );
     await download.downloadRestApis(apis, flags.dest);
-    await extractFiles(flags.dest);
-    const apiGroups = groupByCategory(removeRamlLinks(apis), flags["group-by"]);
-    await fs.writeJson(path.join(flags.dest, configFile), apiGroups);
+    // await extractFiles(flags.dest);
+    // const apiGroups = groupByCategory(removeRamlLinks(apis), flags["group-by"]);
+    // await fs.writeJson(path.join(flags.dest, configFile), apiGroups);
   }
 }

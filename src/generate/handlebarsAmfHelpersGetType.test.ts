@@ -18,7 +18,7 @@ import {
   getObjectType,
   getRequestPayloadModel,
   getScalarType
-} from "../../test/generate/handlebarsAmfHelpersTestUtils";
+} from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
 import { expect } from "chai";

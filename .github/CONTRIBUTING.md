@@ -70,7 +70,7 @@ Test files live alongside the source files. Unit tests for `src/commandName/comm
 
 ##### Testing Examples<!-- omit in toc -->
 
-Refer to the mercury [tests](../test/mercury/mercury.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
+Refer to the mercury [tests](../testResources/mercury/mercury.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
 
 ```javascript
 
