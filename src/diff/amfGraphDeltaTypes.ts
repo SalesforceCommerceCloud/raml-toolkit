@@ -9,33 +9,46 @@ import * as AmfGraphTypes from "./amfGraphTypes";
 /**
  * External property, added by jsondiffpath to indicate that the node property is an array
  */
-export const JSON_DIFF_PATCH_ARRAY_KEY = "_t";
-export const JSON_DIFF_PATCH_ARRAY_VALUE = "a";
+export const ARRAY_KEY = "_t";
+export const ARRAY_VALUE = "a";
 
 /**
- * Type describing the delta of a node property
+ * Types describing the delta of a value
  *
  * Delta is reported in array format
  * example: [oldValue, newValue, magicalNumber], magicalNumber is used identify removal (0), text diffs(2), movements(3)
  */
-export type PropertyDelta =
-  | [unknown] //added
-  | [unknown, unknown] //modified
-  | [unknown, 0, 0] //removed
-  | [string, 0, 2]; //text change when diffing algorithm is applied
+export type Added<T> = [T];
+export type Modified<T> = [T, T];
+export type Removed<T> = [T, 0, 0];
+export type Moved<T> = [T, number, 3]; //[represents the moved item value,destination index,magical number indicating "array move" ]
+export type LongTextModified = [string, 0, 2]; //text change when diffing algorithm is applied
 
 /**
- * Type describing the delta of a node property which is an array
+ * Type describing property delta
  */
-export type ArrayDelta = {
+export type PropertyDelta<T> =
+  | Added<T>
+  | Modified<T>
+  | Removed<T>
+  | LongTextModified;
+
+/**
+ * Type describing delta of an array element
+ */
+export type ArrayElementDelta<T> = Added<T> | Removed<T> | Moved<T>;
+
+/**
+ * Type describing the delta of an array
+ */
+export type ArrayDelta<T> = {
   /**
    * key is the index in original array
-   * ["", number, 3] - [represents the moved item value, suppressed by default,destination index,magical number that indicates "array move" ]
    */
-  [key: string]: PropertyDelta | ["", number, 3];
+  [key: string]: ArrayElementDelta<T>;
 } & {
-  //"special property to indicate its an array
-  [JSON_DIFF_PATCH_ARRAY_KEY]: typeof JSON_DIFF_PATCH_ARRAY_VALUE;
+  //special property to indicate its an array
+  [ARRAY_KEY]: typeof ARRAY_VALUE;
 };
 
 /**
@@ -46,17 +59,20 @@ export type ReferenceNodeDelta = {
    * Delta is calculated on flattened JSON-LD structure, property referencing other node will just have its id
    * example delta: {@id:[oldId, newId]}
    */
-  [AmfGraphTypes.JSON_LD_KEY_ID]: [string, string];
+  [AmfGraphTypes.KEY_NODE_ID]: Modified<string>;
 };
 
 /**
- * Type describing the delta of a node
+ * Type describing the delta of node properties
  */
-export type NodeDelta = {
-  [AmfGraphTypes.JSON_LD_KEY_ID]: string;
-  [AmfGraphTypes.JSON_LD_KEY_TYPE]: string[];
+export type NodePropertyDelta = {
+  [AmfGraphTypes.KEY_NODE_ID]: string;
+  [AmfGraphTypes.KEY_NODE_TYPE]: string[];
 } & {
-  [key: string]: PropertyDelta | ArrayDelta | ReferenceNodeDelta;
+  [key: string]:
+    | PropertyDelta<unknown>
+    | ArrayDelta<unknown>
+    | ReferenceNodeDelta;
 };
 
 /**
@@ -65,10 +81,10 @@ export type NodeDelta = {
 export type GraphDelta = {
   /**
    * key: index in the original amf graph (left graph for removed nodes and right graph for added nodes)
-   * value:  NodeDelta - indicate the properties with in a node are changes
+   * value:  Property - indicate the properties with in a node are changes
    *        AmfGraphTypes.Node[]  - indicate a node is added/removed/moved
    */
-  [key: string]: NodeDelta | AmfGraphTypes.Node[];
+  [key: string]: NodePropertyDelta | ArrayElementDelta<AmfGraphTypes.Node>;
 } & {
-  [JSON_DIFF_PATCH_ARRAY_KEY]: typeof JSON_DIFF_PATCH_ARRAY_VALUE;
+  [ARRAY_KEY]: typeof ARRAY_VALUE;
 };
