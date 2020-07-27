@@ -1,5 +1,36 @@
 # CHANGELOG
 
+## 0.4.4
+
+* Added flag to `diff` command that adds the ability to find the difference between directories.
+
+### New Usage
+
+For complete documentation of the `diff` command, see the [README](README.md#raml-toolkit-diff-base-new).
+
+```txt
+NEW USAGE
+  $ raml-toolkit diff --dir BASE NEW
+
+ARGUMENTS
+  BASE  The base API configuration file
+  NEW   The new API configuration file
+
+OPTIONS
+  -o, --out-file=out-file  File to store the computed difference
+
+DESCRIPTION
+  This command has three modes: ruleset, diff-only, and directory.
+     Directory mode compares all the files in two directories and determines if there are any differences.
+
+  In directory mode, the arguments must be API configuration (JSON) files.
+
+  Exit statuses:
+     0 - No differences found
+     1 - Differences found
+     2 - Evaluation could not be completed
+```
+
 ## 0.4.3
 
 * Added `diff` and `download` commands.
