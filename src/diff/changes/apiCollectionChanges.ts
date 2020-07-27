@@ -24,10 +24,10 @@ export class ApiCollectionChanges {
 
   /**
    * Create object to hold changes to two api collections
-   * @param baseApiConfig - Base API config file
-   * @param newApiConfig - New API config file
+   * @param basePath - Base API config file
+   * @param newPath - New API config file
    */
-  constructor(public baseApiConfig: string, public newApiConfig: string) {
+  constructor(public basePath: string, public newPath: string) {
     this.changed = new Map();
     this.errored = new Map();
     this.removed = [];

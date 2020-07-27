@@ -17,8 +17,8 @@ describe("Create an instance of ApiCollectionChanges", () => {
     );
 
     expect(apiCollectionChanges).to.be.an.instanceof(ApiCollectionChanges);
-    expect(apiCollectionChanges.baseApiConfig).to.equal("baseApiConfig");
-    expect(apiCollectionChanges.newApiConfig).to.equal("newApiConfig");
+    expect(apiCollectionChanges.basePath).to.equal("baseApiConfig");
+    expect(apiCollectionChanges.newPath).to.equal("newApiConfig");
   });
 });
 
