@@ -61,18 +61,6 @@ describe("Check for changes in api collection", () => {
     expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 
-  it("returns false when the changes are null", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
-    apiCollectionChanges.changed = null;
-    apiCollectionChanges.removed = null;
-    apiCollectionChanges.added = null;
-
-    expect(apiCollectionChanges.hasChanges()).to.be.false;
-  });
-
   it("returns false when the changes are empty", async () => {
     const apiCollectionChanges = new ApiCollectionChanges(
       "baseApiConfig",
@@ -95,24 +83,6 @@ describe("Check for failures on api collection diff", () => {
     apiCollectionChanges.errored = new Map();
     apiCollectionChanges.errored.set("test.raml", "test-error");
     expect(apiCollectionChanges.hasErrors()).to.be.true;
-  });
-
-  it("returns false when the failures are not defined", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
-    apiCollectionChanges.errored = undefined;
-    expect(apiCollectionChanges.hasErrors()).to.be.false;
-  });
-
-  it("returns false when the failures are null", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
-    apiCollectionChanges.errored = null;
-    expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 
   it("returns false when the failures are empty", async () => {

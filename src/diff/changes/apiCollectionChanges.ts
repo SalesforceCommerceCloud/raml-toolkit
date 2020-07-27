@@ -27,16 +27,19 @@ export class ApiCollectionChanges {
    * @param baseApiConfig - Base API config file
    * @param newApiConfig - New API config file
    */
-  constructor(public baseApiConfig: string, public newApiConfig: string) {}
+  constructor(public baseApiConfig: string, public newApiConfig: string) {
+    this.changed = new Map();
+    this.errored = new Map();
+    this.removed = [];
+    this.added = [];
+  }
 
   /**
    * Return true when there are changes in the API collection
    */
   hasChanges(): boolean {
     return (
-      (this.changed != null && this.changed.size > 0) ||
-      (this.removed != null && this.removed.length > 0) ||
-      (this.added != null && this.added.length > 0)
+      this.changed.size > 0 || this.removed.length > 0 || this.added.length > 0
     );
   }
 
@@ -44,6 +47,6 @@ export class ApiCollectionChanges {
    * Return true if the diff on one or more apis has failed
    */
   hasErrors(): boolean {
-    return this.errored != null && this.errored.size > 0;
+    return this.errored.size > 0;
   }
 }
