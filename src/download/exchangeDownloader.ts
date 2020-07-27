@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-// import "cross-fetch/polyfill";
 
 import fs from "fs-extra";
-import fetch, { Response } from "node-fetch";
+import fetch from "node-fetch";
 import path from "path";
 
 import { getBearer } from "./bearerToken";
@@ -20,6 +19,7 @@ import {
   Categories,
 } from "./exchangeTypes";
 import { ramlToolLogger } from "../common/logger";
+import { extractFile } from "./exchangeDirectoryParser";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange/api/v2";
@@ -29,7 +29,7 @@ const ANYPOINT_BASE_URI_WITHOUT_VERSION =
 export async function downloadRestApi(
   restApi: RestApi,
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
-): Promise<void | Response> {
+): Promise<void> {
   if (!restApi.id) {
     ramlToolLogger.warn(
       `Failed to download '${restApi.name}' RAML as Fat RAML download information is missing.`,
@@ -37,14 +37,20 @@ export async function downloadRestApi(
     );
     return;
   }
-
-  await fs.ensureDir(destinationFolder);
-  const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
-  const response = await fetch(restApi.fatRaml.externalLink);
-  const arrayBuffer = await response.arrayBuffer();
-  await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
-
-  return response;
+  try {
+    await fs.ensureDir(destinationFolder);
+    const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
+    const response = await fetch(restApi.fatRaml.externalLink);
+    const arrayBuffer = await response.arrayBuffer();
+    await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
+    const filepath = await extractFile(zipFilePath);
+    delete restApi.fatRaml;
+    await fs.writeJSON(path.join(filepath, ".metadata.json"), restApi, {
+      spaces: 2,
+    });
+  } catch (err) {
+    ramlToolLogger.error(err);
+  }
 }
 
 export async function downloadRestApis(

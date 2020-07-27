@@ -20,38 +20,48 @@ function getFiles(directory): fs.Dirent[] {
  * @export
  * @param {string} directory Directory we want to download to
  * @param {boolean} [removeFiles=true] Whether to remove the zip files after extraction
- * @returns {Promise<void>} Just a promise to indicate we are done.
+ * @returns {Promise<string>} The extracted file's path
+ */
+export function extractFile(file: string, removeFiles = true): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const filepath = path.join(path.dirname(file), path.basename(file, ".zip"));
+    fs.createReadStream(file).pipe(
+      unzipper
+        .Extract({
+          path: filepath,
+        })
+        .on("error", () =>
+          reject(`Failed to extract ${file}, probably not a zip file`)
+        )
+        .on("close", () => {
+          if (removeFiles) {
+            fs.removeSync(file);
+          }
+          resolve(filepath);
+        })
+    );
+  });
+}
+
+/**
+ * @description Extracts zip files present in the given directory.
+ *   zip files are usually downloaded from Anypoint exchange
+ * @export
+ * @param {string} directory Directory we want to download to
+ * @param {boolean} [removeFiles=true] Whether to remove the zip files after extraction
+ * @returns {Promise<string[]>} A list of extracted file paths
  */
 export function extractFiles(
   directory: string,
   removeFiles = true
-): Promise<void[]> {
+): Promise<string[]> {
   const files = getFiles(directory);
-  const promises: Promise<void>[] = [];
+  const promises: Promise<string>[] = [];
   files
     .filter((file) => file.isFile() && path.extname(file.name) === ".zip")
     .forEach((file) => {
       promises.push(
-        new Promise((resolve, reject) => {
-          fs.createReadStream(
-            path.join(path.resolve(directory), file.name)
-          ).pipe(
-            unzipper
-              .Extract({
-                path: path.join(
-                  path.resolve(directory),
-                  path.basename(file.name, ".zip")
-                ),
-              })
-              .on("error", reject)
-              .on("close", () => {
-                if (removeFiles) {
-                  fs.removeSync(path.join(path.resolve(directory), file.name));
-                }
-                resolve();
-              })
-          );
-        })
+        extractFile(path.join(path.resolve(directory), file.name), removeFiles)
       );
     });
 
