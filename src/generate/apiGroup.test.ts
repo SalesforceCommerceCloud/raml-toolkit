@@ -8,10 +8,10 @@ import path from "path";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { model } from "amf-client-js";
 
 import { ApiGroup } from "./apiGroup";
 import { Api } from "./api";
-import { model } from "..";
 
 const validRamlFile = path.join(__dirname, "../../test/site.raml");
 const invalidRamlFile = path.join(__dirname, "../../test/search-invalid.raml");
