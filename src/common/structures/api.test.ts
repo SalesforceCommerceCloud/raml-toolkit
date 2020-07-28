@@ -9,13 +9,16 @@ import path from "path";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
-import { Api } from "./api";
+import { Api, createApi } from "./api";
 import { model } from "amf-client-js";
 
-const validRamlFile = path.join(__dirname, "../../testResources/site.raml");
+const validRamlFile = path.join(
+  __dirname,
+  "../../../testResources/raml/site/site.raml"
+);
 const invalidRamlFile = path.join(
   __dirname,
-  "../../testResources/search-invalid.raml"
+  "../../../testResources/raml/invalid/search-invalid.raml"
 );
 
 before(() => {
@@ -24,29 +27,27 @@ before(() => {
 
 describe("Test Api class init", () => {
   it("constructs an instance with model and no path", () => {
-    const api = new Api(new model.document.Document());
+    const api = new Api(new model.document.Document(), "apis/test");
     expect(api.dataTypes).to.be.empty;
     expect(api.model).to.deep.equal(new model.document.Document());
     expect(api.name.original).to.be.empty;
-    expect(api.path).to.be.empty;
   });
 });
 
 describe("Test Api class init", () => {
   it("creates an instance from a valid raml file", async () => {
-    const api = await Api.init(validRamlFile);
+    const api = await createApi(validRamlFile);
     expect(api.dataTypes).to.not.be.empty;
     expect(api.model).to.not.be.empty;
     expect(api.name.original).to.equal("Shop API");
     expect(api.name.lowerCamelCase).to.equal("shopApi");
-    expect(api.path).to.equal(validRamlFile);
   });
 
   it("rejects from an invalid raml file", () => {
-    return expect(Api.init(invalidRamlFile)).to.eventually.be.rejected;
+    return expect(createApi(invalidRamlFile)).to.eventually.be.rejected;
   });
 
   it("rejects from an invalid file path", () => {
-    return expect(Api.init("THISISNOTAREALFILE")).to.eventually.be.rejected;
+    return expect(createApi("THISISNOTAREALFILE")).to.eventually.be.rejected;
   });
 });

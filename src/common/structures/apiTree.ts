@@ -9,13 +9,13 @@ import { Name } from "./name";
 import fs from "fs-extra";
 import path from "path";
 
-export class ApiTree {
+export abstract class ApiTree {
   metadata: { [key: string]: any };
 
   constructor(
     public name: Name,
     protected filepath: string,
-    protected children: ApiTree[]
+    public children: ApiTree[]
   ) {
     if (fs.existsSync(path.join(filepath, `.metadata.json`))) {
       this.metadata = fs.readJSONSync(path.join(filepath, `.metadata.json`));

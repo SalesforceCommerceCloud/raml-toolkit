@@ -16,8 +16,9 @@ export async function createApiTree(apiPath: string): Promise<ApiTree> {
     throw `${apiPath} Api path does not exist`;
   }
 
+  // If we have an exchange.json we are loading an API
   if (fs.existsSync(path.join(apiPath, "exchange.json"))) {
-    return createApi(path.join(apiPath, "exchange.json"));
+    return createApi(apiPath);
   }
 
   const promises: Promise<ApiTree>[] = fs

@@ -37,25 +37,34 @@ export class Api extends ApiTree {
  * Create a new Api object from a file. This is static and not a constructor
  * because it is async.
  *
- * @param apiSpecFilePath - the path to an API spec file like RAML to be parsed to AMF
- * @param group - if the API is part of a group, the name of that group
+ * @param filepath - the path to an API spec file like RAML to be parsed to AMF
  */
-export async function createApi(exchangeJsonFile: string): Promise<Api> {
-  if (!fs.existsSync(exchangeJsonFile))
-    throw new Error("No exchange.json, can't load api");
 
-  const exchangeConfig = await fs.readJSON(exchangeJsonFile);
+export async function createApi(filepath: string): Promise<Api> {
+  let entryPoint = "";
+  let directory = "";
+  if (path.extname(filepath) === ".raml" || path.extname(filepath) === ".rml") {
+    entryPoint = filepath;
+    directory = path.basename(filepath);
+  } else if (fs.existsSync(path.join(filepath, "exchange.json"))) {
+    const exchangeConfig = await fs.readJSON(
+      path.join(filepath, "exchange.json")
+    );
 
-  if (!exchangeConfig["main"])
-    throw new Error("No entry point defined in the exchange.json");
+    if (!exchangeConfig["main"]) {
+      throw new Error("No entry point defined in the exchange.json");
+    }
+
+    entryPoint = path.join(filepath, exchangeConfig["main"]);
+    directory = filepath;
+  } else {
+    throw new Error(
+      "No exchange.json or no raml file provided, can't load api"
+    );
+  }
 
   return new Api(
-    resolveApiModel(
-      await parseRamlFile(
-        path.join(path.dirname(exchangeJsonFile), exchangeConfig["main"])
-      ),
-      "editing"
-    ),
-    path.dirname(exchangeJsonFile)
+    resolveApiModel(await parseRamlFile(entryPoint), "editing"),
+    directory
   );
 }

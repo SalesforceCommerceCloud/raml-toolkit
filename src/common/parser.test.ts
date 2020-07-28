@@ -19,10 +19,13 @@ import {
   resolveApiModel
 } from "./parser";
 
-const validRamlFile = path.join(__dirname, "../../testResources/site.raml");
+const validRamlFile = path.join(
+  __dirname,
+  "../../testResources/raml/site/site.raml"
+);
 const invalidRamlFile = path.join(
   __dirname,
-  "../../testResources/search-invalid.raml"
+  "../../testResources/raml/invalid/search-invalid.raml"
 );
 
 before(() => {

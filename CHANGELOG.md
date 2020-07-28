@@ -84,8 +84,6 @@ OPTIONS
 
   -d, --dest=dest                                  [default: apis] Directory to download APIs into
 
-  -g, --group-by=group-by                          (required) Category to use to group APIs together
-
   -h, --help                                       show CLI help
 
   -s, --search=search                              Search query to filter results from Anypoint Exchange
