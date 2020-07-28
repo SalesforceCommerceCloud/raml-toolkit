@@ -10,11 +10,11 @@ import { ApiChanges } from "./apiChanges";
  * Hold the differencing result of API collections
  */
 export class ApiCollectionChanges {
-  //Map of api name to its changes
-  changed: Map<string, ApiChanges>;
+  //holds api name and its changes
+  changed: { [key: string]: ApiChanges };
 
-  //Map of api name to its error message
-  errored: Map<string, string>;
+  //holds api name to its error message
+  errored: { [key: string]: string };
 
   //array of removed apis
   removed: string[];
@@ -28,8 +28,8 @@ export class ApiCollectionChanges {
    * @param newPath - New API config file
    */
   constructor(public basePath: string, public newPath: string) {
-    this.changed = new Map();
-    this.errored = new Map();
+    this.changed = {};
+    this.errored = {};
     this.removed = [];
     this.added = [];
   }
@@ -38,8 +38,11 @@ export class ApiCollectionChanges {
    * Return true when there are changes in the API collection
    */
   hasChanges(): boolean {
-    return (
-      this.changed.size > 0 || this.removed.length > 0 || this.added.length > 0
+    if (this.removed.length > 0 || this.added.length > 0) {
+      return true;
+    }
+    return Object.values(this.changed).some(apiChanges =>
+      apiChanges.hasChanges()
     );
   }
 
@@ -47,6 +50,6 @@ export class ApiCollectionChanges {
    * Return true if the diff on one or more apis has failed
    */
   hasErrors(): boolean {
-    return this.errored.size > 0;
+    return Object.keys(this.errored).length > 0;
   }
 }

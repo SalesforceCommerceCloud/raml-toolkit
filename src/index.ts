@@ -13,6 +13,8 @@ import * as amf from "amf-client-js";
 export { amf };
 export { model } from "amf-client-js";
 
+export * from "./diff";
+
 export * from "./generate";
 
 export {

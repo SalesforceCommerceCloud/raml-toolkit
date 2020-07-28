@@ -15,21 +15,22 @@ import chaiFs from "chai-fs";
 
 import { DiffCommand as cmd } from ".";
 import * as diffDirectories from "./diffDirectories";
+import { NodeChanges } from "./changes/nodeChanges";
+import { ApiChanges } from "./changes/apiChanges";
+import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 
 chai.use(chaiFs);
 
-const diffDirResult = [
-  {
-    file: "file.raml",
-    diff: [
-      {
-        id: "#/web-api/endpoints/test-endpoint",
-        added: {},
-        removed: {}
-      }
-    ]
-  }
-];
+const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+nodeChanges.added = { "core:name": "oldName" };
+nodeChanges.removed = { "core:name": "newName" };
+const apiChanges = new ApiChanges("base/file.raml", "new/file.raml");
+apiChanges.nodeChanges = [nodeChanges];
+const apiCollectionChanges = new ApiCollectionChanges(
+  "baseConfig",
+  "newConfig"
+);
+apiCollectionChanges.changed["file.raml"] = apiChanges;
 
 const createTempFile = (content: string): FileResult => {
   const tempFile = fileSync();
@@ -253,27 +254,39 @@ describe("raml-toolkit cli diff command", () => {
     .it("does not allow diff only and dir together, exits non-zero");
 
   test
-    .stub(diffDirectories, "diffRamlDirectories", async () => [])
+    .stub(
+      diffDirectories,
+      "diffRamlDirectories",
+      async () => new ApiCollectionChanges("baseApis", "newApis")
+    )
     .stdout()
     .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
     .exit(0)
     .it("finds no changes between directories and exits zero");
 
   test
-    .stub(diffDirectories, "diffRamlDirectories", async () => diffDirResult)
+    .stub(
+      diffDirectories,
+      "diffRamlDirectories",
+      async () => apiCollectionChanges
+    )
     .stdout()
     .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
     .exit(1)
     .it("finds changes between directories and exits non-zero");
 
   test
-    .stub(diffDirectories, "diffRamlDirectories", async () => [])
+    .stub(
+      diffDirectories,
+      "diffRamlDirectories",
+      async () => apiCollectionChanges
+    )
     .stdout()
     .do(() => cmd.run(["baseApis", "newApis", "--dir", "-o", outFile.name]))
-    .exit(0)
+    .exit(1)
     .it("stores the result in a file when flag is set", () => {
       expect(outFile.name)
         .to.be.a.file()
-        .with.content("[]\n");
+        .with.content(`${JSON.stringify(apiCollectionChanges)}\n`);
     });
 });

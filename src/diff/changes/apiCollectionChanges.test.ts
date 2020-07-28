@@ -28,10 +28,9 @@ describe("Check for changes in api collection", () => {
       "baseApiConfig",
       "newApiConfig"
     );
-    apiCollectionChanges.changed = new Map();
     const apiChanges = new ApiChanges("base.raml", "new.raml");
     apiChanges.nodeChanges = [new NodeChanges("test-id", ["test:type"])];
-    apiCollectionChanges.changed.set("base.raml", apiChanges);
+    apiCollectionChanges.changed["base.raml"] = apiChanges;
     expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
@@ -66,9 +65,6 @@ describe("Check for changes in api collection", () => {
       "baseApiConfig",
       "newApiConfig"
     );
-    apiCollectionChanges.changed = new Map();
-    apiCollectionChanges.removed = [];
-    apiCollectionChanges.added = [];
 
     expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
@@ -80,8 +76,7 @@ describe("Check for failures on api collection diff", () => {
       "baseApiConfig",
       "newApiConfig"
     );
-    apiCollectionChanges.errored = new Map();
-    apiCollectionChanges.errored.set("test.raml", "test-error");
+    apiCollectionChanges.errored["test.raml"] = "test-error";
     expect(apiCollectionChanges.hasErrors()).to.be.true;
   });
 
@@ -90,7 +85,6 @@ describe("Check for failures on api collection diff", () => {
       "baseApiConfig",
       "newApiConfig"
     );
-    apiCollectionChanges.errored = new Map();
     expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 });
