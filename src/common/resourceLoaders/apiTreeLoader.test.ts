@@ -11,7 +11,6 @@ import { createApiTree } from "./apiTreeLoader";
 import path from "path";
 import tmp from "tmp";
 import fs from "fs-extra";
-import sinon from "sinon";
 import { Name } from "../structures/name";
 
 const validRamlDir = path.join(
@@ -32,10 +31,6 @@ before(() => {
 });
 
 describe("Test createApiTree", () => {
-  beforeEach(() => {
-    sinon.reset();
-  });
-
   it("is created with no children", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
@@ -72,6 +67,16 @@ describe("Test createApiTree", () => {
     expect(testTree.children[0].children[0].name).to.be.deep.equal(
       // The name of the api in the test raml (ensures we've loaded it)
       new Name("Test Raml File")
+    );
+  });
+
+  it("Attempts to create an api tree for a path that doesn't exist", async () => {
+    const tempDir = tmp.dirSync();
+
+    return expect(
+      createApiTree(path.join(tempDir.name, "MISSING"))
+    ).to.eventually.be.rejectedWith(
+      `${path.join(tempDir.name, "MISSING")} Api path does not exist`
     );
   });
 });

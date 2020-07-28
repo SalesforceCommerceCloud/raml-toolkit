@@ -15,6 +15,8 @@ import fs from "fs-extra";
 import sinon from "sinon";
 import { ramlToolLogger } from "../logger";
 
+const sandbox = sinon.createSandbox();
+
 export class TestTree extends ApiTree {
   constructor(filepath: string, children?: ApiTree[]) {
     const name = new Name(path.basename(filepath));
@@ -27,10 +29,9 @@ before(() => {
 });
 
 describe("Test ApiTree", () => {
-  beforeEach(() => {
-    sinon.restore();
+  afterEach(() => {
+    sandbox.restore();
   });
-
   it("is created with no children", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
@@ -85,16 +86,15 @@ describe("Test ApiTree", () => {
       path.join(tempDir.name, "apis", ".metadata.json"),
       "Hmmm, isn't this supposed to be json?"
     );
-
-    const stub = sinon.stub(ramlToolLogger, "warn");
+    const warnStub = sandbox.stub(ramlToolLogger, "warn");
 
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.children).to.be.empty;
     expect(testTree.name).to.be.deep.equal(new Name("apis"));
-    expect(stub.callCount).to.be.equal(1);
+    expect(warnStub.callCount).to.be.equal(1);
     expect(
-      stub.calledWith(
+      warnStub.calledWith(
         `Metadata found, but failed to load for ${path.join(
           tempDir.name,
           "apis"
@@ -109,14 +109,15 @@ describe("Test ApiTree", () => {
 
     await fs.writeFile(path.join(tempDir.name, "apis", ".metadata.json"), "");
 
-    const stub = sinon.stub(ramlToolLogger, "warn");
+    const warnStub = sandbox.stub(ramlToolLogger, "warn");
+
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
 
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.name).to.be.deep.equal(new Name("apis"));
-    expect(stub.callCount).to.be.equal(1);
+    expect(warnStub.callCount).to.be.equal(1);
     expect(
-      stub.calledWith(
+      warnStub.calledWith(
         `Metadata found, but failed to load for ${path.join(
           tempDir.name,
           "apis"
