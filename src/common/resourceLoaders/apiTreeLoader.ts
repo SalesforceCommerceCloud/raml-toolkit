@@ -11,6 +11,11 @@ import { createApi } from "../structures/api";
 import { ApiMetadata } from "../structures/apiMetadata";
 import { ApiTree } from "../structures/apiTree";
 
+/**
+ * Given a directory parse all apis and their metadata in those directories
+ *
+ * @param apiPath - The path to the root of the apis.
+ */
 export async function createApiTree(apiPath: string): Promise<ApiTree> {
   if (!fs.pathExistsSync(apiPath)) {
     throw `${apiPath} Api path does not exist`;

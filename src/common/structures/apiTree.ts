@@ -10,6 +10,10 @@ import fs from "fs-extra";
 import path from "path";
 import { ramlToolLogger } from "../logger";
 
+/*
+ * Api Tree is an abstract class that represents the directory structure of several APIs
+ *
+ */
 export abstract class ApiTree {
   metadata: { [key: string]: unknown };
 

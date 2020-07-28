@@ -9,8 +9,7 @@ import { Name } from "./name";
 import path from "path";
 
 /**
- * A group of API objects. Common transformations of the group name are cached
- * for reference in templates and file paths.
+ * A collection of APIs that contains metadata.
  */
 export class ApiMetadata extends ApiTree {
   constructor(filepath: string, children?: ApiTree[]) {
