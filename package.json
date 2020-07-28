@@ -42,7 +42,6 @@
     "test:resource:ci": "npm run test:resource -- --reporter=xunit --reporter-options output=./reports/resourceTests.xml",
     "cover:unit": "nyc npm run test:unit",
     "cover:unit:ci": "nyc npm run test:unit:ci"
-
   },
   "lint-staged": {
     "*.ts": [
@@ -139,7 +138,6 @@
     "snyk": "^1.355.0",
     "tmp": "^0.2.0",
     "ts-node": "^8.9.1",
-    "typescript": "^3.7.5",
     "unzipper": "^0.10.11"
   },
   "devDependencies": {
@@ -172,7 +170,8 @@
     "prettier": "^1.15.2",
     "sinon": "^9.0.2",
     "sort-package-json": "^1.44.0",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "typescript": "^3.9.7"
   },
   "publishConfig": {
     "access": "public"
