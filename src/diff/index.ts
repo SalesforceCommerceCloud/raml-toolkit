@@ -12,10 +12,6 @@ import { ApiDifferencer } from "./apiDifferencer";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 
-export { ApiDifferencer, ApiChanges, ApiCollectionChanges };
-export { NodeChanges } from "./changes/nodeChanges";
-export { CategorizedChange } from "./changes/categorizedChange";
-
 import { diffRamlDirectories } from "./diffDirectories";
 
 export class DiffCommand extends Command {
