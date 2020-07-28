@@ -26,35 +26,22 @@ const createZip = (): NodeJS.ReadableStream =>
   new JSZip().file("file.raml", "zip content").generateNodeStream();
 
 const API_CONFIG = {
-  Customer: [
-    {
-      id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.7",
-      name: "Shopper Customers",
-      description:
-        "Let customers log in and manage their profiles and product lists.",
-      updatedDate: "2020-02-06T17:55:32.375Z",
-      groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
-      assetId: "shopper-customers",
-      version: "0.0.7",
-      categories: {
-        "CC API Visibility": ["External"],
-        "CC Version Status": ["Beta"],
-        "CC API Family": ["Customer"],
-        "API layer": ["Process"]
-      },
-      fatRaml: {
-        classifier: "fat-raml",
-        packaging: "zip",
-        createdDate: "2020-02-05T21:26:01.199Z",
-        md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
-        sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
-        mainFile: "shopper-customers.raml"
-      }
-    }
-  ]
+  id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.7",
+  name: "Shopper Customers",
+  description:
+    "Let customers log in and manage their profiles and product lists.",
+  updatedDate: "2020-02-06T17:55:32.375Z",
+  groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+  assetId: "shopper-customers",
+  version: "0.0.7",
+  categories: {
+    "CC API Visibility": ["External"],
+    "CC Version Status": ["Beta"],
+    "CC API Family": ["Customer"],
+    "API layer": ["Process"]
+  }
 };
-const API_CONFIG_JSON = JSON.stringify(API_CONFIG);
-const METADATA_CONFIG = JSON.stringify(API_CONFIG[0], null, 2);
+const API_CONFIG_JSON = JSON.stringify(API_CONFIG, null, 2);
 
 /**
  * Sets up environment and interceptors to test the command.
@@ -116,12 +103,12 @@ describe("Download Command", () => {
   });
 
   setup()
-    .do(() => DownloadCommand.run())
+    .do(() => DownloadCommand.run([]))
     .it("downloads APIs", () => {
       expect("apis").to.be.a.directory();
       expect("apis/shopper-customers/.metadata.json")
         .to.be.a.file()
-        .with.content(METADATA_CONFIG);
+        .with.content(API_CONFIG_JSON + "\n");
       expect("apis/shopper-customers").to.be.a.directory();
       expect("apis/shopper-customers/file.raml")
         .to.be.a.file()

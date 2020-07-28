@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-// import "cross-fetch/polyfill";
 
 import fs from "fs-extra";
 import fetch from "node-fetch";
@@ -45,6 +44,7 @@ export async function downloadRestApi(
     const arrayBuffer = await response.arrayBuffer();
     await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
     const filepath = await extractFile(zipFilePath);
+    delete restApi.fatRaml;
     await fs.writeJSON(path.join(filepath, ".metadata.json"), restApi, {
       spaces: 2
     });

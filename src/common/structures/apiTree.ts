@@ -10,7 +10,7 @@ import fs from "fs-extra";
 import path from "path";
 
 export abstract class ApiTree {
-  metadata: { [key: string]: any };
+  metadata: { [key: string]: unknown };
 
   constructor(
     public name: Name,

@@ -7,7 +7,6 @@
 import { ApiTree } from "./apiTree";
 import { Name } from "./name";
 import path from "path";
-import fs from "fs-extra";
 
 /**
  * A group of API objects. Common transformations of the group name are cached

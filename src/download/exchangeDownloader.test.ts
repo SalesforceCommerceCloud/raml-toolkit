@@ -17,7 +17,6 @@ import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../testResources/download/resources/restApiResponseObjects";
 
 import tmp from "tmp";
-import { Response } from "node-fetch";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
