@@ -125,7 +125,7 @@
   },
   "dependencies": {
     "@oclif/command": "^1.6.1",
-    "@oclif/config": "^1.15.1",
+    "@oclif/config": "^1.16.0",
     "amf-client-js": "^4.1.2-0",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
@@ -136,7 +136,7 @@
     "lodash": "^4.17.19",
     "loglevel": "^1.6.8",
     "node-fetch": "^2.6.0",
-    "snyk": "^1.347.1",
+    "snyk": "^1.355.0",
     "tmp": "^0.2.0",
     "ts-node": "^8.9.1",
     "typescript": "^3.7.5",

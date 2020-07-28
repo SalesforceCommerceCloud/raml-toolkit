@@ -10,10 +10,11 @@ import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";
 import { expect } from "chai";
+import { RuleCategory } from "./ruleSet";
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
-describe("Custom operators - hasProperty ", () => {
+describe("Custom operators - hasProperty", () => {
   it("applies rule when the diff object contains given key", async () => {
     let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
@@ -54,7 +55,7 @@ describe("Custom operators - hasProperty ", () => {
   });
 });
 
-describe("Custom operators - hasNoProperty ", () => {
+describe("Custom operators - hasNoProperty", () => {
   it("rule is applied when the diff object does not contain given key", async () => {
     let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
@@ -117,7 +118,8 @@ function buildRule(conditions: TopLevelCondition): Rule {
     event: {
       type: "test-rule",
       params: {
-        category: "Breaking"
+        category: RuleCategory.BREAKING,
+        changedProperty: "core:name"
       }
     }
   });
