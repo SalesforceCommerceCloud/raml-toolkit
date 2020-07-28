@@ -28,7 +28,7 @@ before(() => {
 
 describe("Test ApiTree", () => {
   beforeEach(() => {
-    sinon.reset();
+    sinon.restore();
   });
 
   it("is created with no children", async () => {

@@ -13,7 +13,7 @@ import path from "path";
  * for reference in templates and file paths.
  */
 export class ApiMetadata extends ApiTree {
-  constructor(filepath = "", children: ApiTree[] = []) {
+  constructor(filepath: string, children?: ApiTree[]) {
     const name = new Name(path.basename(filepath));
     super(name, filepath, children);
   }

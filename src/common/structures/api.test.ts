@@ -32,11 +32,16 @@ describe("Test Api class init", () => {
     expect(api.model).to.deep.equal(new model.document.Document());
     expect(api.name.original).to.be.empty;
   });
-});
-
-describe("Test Api class init", () => {
   it("creates an instance from a valid raml file", async () => {
     const api = await createApi(validRamlFile);
+    expect(api.dataTypes).to.not.be.empty;
+    expect(api.model).to.not.be.empty;
+    expect(api.name.original).to.equal("Shop API");
+    expect(api.name.lowerCamelCase).to.equal("shopApi");
+  });
+
+  it("creates an instance from a valid raml directory with exchange.json", async () => {
+    const api = await createApi(path.dirname(validRamlFile));
     expect(api.dataTypes).to.not.be.empty;
     expect(api.model).to.not.be.empty;
     expect(api.name.original).to.equal("Shop API");
