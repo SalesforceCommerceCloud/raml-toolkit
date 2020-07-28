@@ -26,7 +26,8 @@
     "event": {
       "type": "display-name-changed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -57,7 +58,8 @@
     "event": {
       "type": "operation-removed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -88,7 +90,8 @@
     "event": {
       "type": "parameter-removed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -125,7 +128,8 @@
     "event": {
       "type": "required-parameter-added",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   },
@@ -156,7 +160,8 @@
     "event": {
       "type": "version-changed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:version"
       }
     }
   }

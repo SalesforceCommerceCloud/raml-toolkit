@@ -6,16 +6,15 @@
  */
 import {
   Engine,
-  RuleProperties,
   Event,
   Almanac,
   RuleResult,
   EngineResult
 } from "json-rules-engine";
 import { NodeDiff } from "./jsonDiff";
-import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
 import customOperators from "./customOperators";
+import { RuleSet } from "./ruleSet";
 /* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
@@ -34,13 +33,13 @@ export async function applyRules(
     ramlToolLogger.info("No differences to apply the rules");
     return diffs;
   }
-  const rules = loadRulesFile(rulesPath);
-  if (!rules || rules.length == 0) {
+  const ruleSet = await RuleSet.init(rulesPath);
+  if (!ruleSet.hasRules()) {
     ramlToolLogger.info("No rules to apply on the differences");
     return diffs;
   }
   //initialize engine with rules
-  const engine = new Engine(rules);
+  const engine = new Engine(ruleSet.rules);
   //callback function to execute when a rule is passed/evaluates to true
   engine.on("success", successHandler);
   //Add custom operators to use in rules
@@ -57,26 +56,6 @@ export async function applyRules(
   });
   await Promise.all(promises);
   return diffs;
-}
-
-/**
- * Get rules from rules json file
- * @param rulesPath - Path to rules json file
- *
- * @returns Array of rules
- */
-function loadRulesFile(rulesPath: string): RuleProperties[] {
-  let rules: RuleProperties[];
-  try {
-    rules = fs.readJSONSync(rulesPath);
-  } catch (error) {
-    error.message = `Error parsing the rules file: ${error.message}`;
-    throw error;
-  }
-  if (!Array.isArray(rules)) {
-    throw new Error("Rules must be defined as a json array");
-  }
-  return rules;
 }
 
 /**

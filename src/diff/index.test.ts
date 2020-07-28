@@ -92,7 +92,8 @@ const operationRemovedRule = new Rule(
     "event": {
       "type": "operation-removed",
       "params": {
-        "category": "Breaking"
+        "category": "Breaking",
+        "changedProperty": "core:name"
       }
     }
   }`

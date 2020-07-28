@@ -29,52 +29,7 @@ describe("Rules engine when no differences are provided", () => {
   });
 });
 
-describe("Rules engine when rules file is invalid", () => {
-  const errMsg = "Error parsing the rules file";
-  it("throws error when rules file path is undefined", async () => {
-    const diffs = [new NodeDiff("test")];
-    const rulesPath = undefined;
-    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      errMsg
-    );
-  });
-  it("throws error when the rules file path is null", async () => {
-    const diffs = [new NodeDiff("test")];
-    const rulesPath = null;
-    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      errMsg
-    );
-  });
-  it("throws error when the rules file path is empty", async () => {
-    const diffs = [new NodeDiff("test")];
-    const rulesPath = "";
-    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      errMsg
-    );
-  });
-  it("throws error when the rules file do not exist", async () => {
-    const diffs = [new NodeDiff("test")];
-    const rulesPath = "/tmp/no-rules.json";
-    return expect(applyRules(diffs, rulesPath)).to.eventually.be.rejectedWith(
-      errMsg
-    );
-  });
-  it("throws error when the rules file has no valid json", async () => {
-    const tmpFile = tmp.fileSync({ postfix: ".json" });
-    const diffs = [new NodeDiff("test")];
-    return expect(
-      applyRules(diffs, tmpFile.name)
-    ).to.eventually.be.rejectedWith(errMsg);
-  });
-  it("throws error when the rules is not a json array", async () => {
-    const tmpFile = tmp.fileSync({ postfix: ".json" });
-    const rules = {};
-    fs.writeFileSync(tmpFile.name, JSON.stringify(rules));
-    const diffs = [new NodeDiff("test")];
-    return expect(
-      applyRules(diffs, tmpFile.name)
-    ).to.eventually.be.rejectedWith("Rules must be defined as a json array");
-  });
+describe("Rules engine when rules file has no rules", () => {
   it("returns when rules is an empty array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, "[]");
