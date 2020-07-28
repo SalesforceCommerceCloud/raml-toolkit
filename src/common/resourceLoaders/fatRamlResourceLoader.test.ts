@@ -14,7 +14,6 @@ import sinon from "sinon";
 import amf from "amf-client-js";
 
 before(() => {
-  chai.should();
   chai.use(chaiAsPromised);
 });
 

@@ -105,6 +105,10 @@
     "timeout": 5000
   },
   "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "all": true,
     "branches": 85,
     "check-coverage": true,
