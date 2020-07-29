@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { findAmfGraphChanges } from "./jsonDiff";
+import { findGraphChanges } from "./amfGraphDifferencer";
 import { parseRamlFile } from "../common/parser";
 import { ramlToolLogger } from "../common/logger";
 import { ApiChanges } from "./changes/apiChanges";
@@ -46,7 +46,7 @@ export class ApiDifferencer {
       `Finding differences between flattened JSON-LD of ${this.baseApiSpec} and ${this.newApiSpec}`
     );
     const apiChanges = new ApiChanges(this.baseApiSpec, this.newApiSpec);
-    apiChanges.nodeChanges = findAmfGraphChanges(leftGraph, rightGraph);
+    apiChanges.nodeChanges = findGraphChanges(leftGraph, rightGraph);
     return apiChanges;
   }
 
