@@ -6,9 +6,9 @@
  */
 
 import path from "path";
-import _ from "lodash";
-import { diffRaml, RamlDiff } from "./diffProcessor";
 import { ramlToolLogger } from "../common/logger";
+import { ApiDifferencer } from "./apiDifferencer";
+import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 
 /**
  * Extracts all the RAML file names from the specified config file.
@@ -72,68 +72,62 @@ function getCommonAndUniqueElements<T>(
  * @param dir1 - One of the directories with raml files
  * @param dir2 - The other directory with raml files
  * @param commonRamls - List of all the ramls to be compared
+ * @param apiCollectionChanges - Instance of ApiCollectionChanges
  * @returns An array of differences
  */
 async function diffCommonRamls(
   dir1: string,
   dir2: string,
-  commonRamls: string[]
-): Promise<RamlDiff[]> {
-  const result: RamlDiff[] = [];
+  commonRamls: string[],
+  apiCollectionChanges: ApiCollectionChanges
+): Promise<void> {
   for (const raml of commonRamls) {
     const leftRaml = path.join(dir1, raml);
     const rightRaml = path.join(dir2, raml);
-    const diffDetails: RamlDiff = { file: raml };
     try {
-      diffDetails.diff = await diffRaml(leftRaml, rightRaml);
-      if (!_.isEmpty(diffDetails.diff)) {
-        result.push(diffDetails);
-      }
+      const apiDifferencer = new ApiDifferencer(leftRaml, rightRaml);
+      apiCollectionChanges.changed[
+        raml
+      ] = await apiDifferencer.findAndCategorizeChanges();
     } catch (error) {
       ramlToolLogger.error(`Diff operation for '${raml}' failed:`, error);
-      diffDetails.message = "The operation was unsuccessful";
-      result.push(diffDetails);
+      apiCollectionChanges.errored[raml] = error.message;
     }
   }
-
-  return result;
 }
 
 /**
  * Finds differences between the given directories for all the raml files in the
  * provided config.
  *
- * @param oldApiDir - Existing APIs
- * @param newApiDir - Newly downloaded APIs
- * @param configFile - Config file name
+ * @param baseConfigFile - Existing APIs
+ * @param newConfigFile - Newly downloaded APIs
  *
  * @returns An array of RamlDiff objects containing differences between all the
  * old and new RAML files
  */
 export async function diffRamlDirectories(
-  oldConfigFile: string,
+  baseConfigFile: string,
   newConfigFile: string
-): Promise<RamlDiff[]> {
-  const oldApiDir = path.dirname(oldConfigFile);
+): Promise<ApiCollectionChanges> {
+  const baseApiDir = path.dirname(baseConfigFile);
   const newApiDir = path.dirname(newConfigFile);
-  const oldRamls = listRamlsFromConfig(oldConfigFile);
+  const baseRamls = listRamlsFromConfig(baseConfigFile);
   const newRamls = listRamlsFromConfig(newConfigFile);
-  const ramls = getCommonAndUniqueElements(oldRamls, newRamls);
+  const ramls = getCommonAndUniqueElements(baseRamls, newRamls);
 
-  const result: RamlDiff[] = await diffCommonRamls(
-    oldApiDir,
-    newApiDir,
-    ramls.common
+  const apiCollectionChanges = new ApiCollectionChanges(
+    baseConfigFile,
+    newConfigFile
   );
+  await diffCommonRamls(
+    baseApiDir,
+    newApiDir,
+    ramls.common,
+    apiCollectionChanges
+  );
+  apiCollectionChanges.removed = ramls.unique[0];
+  apiCollectionChanges.added = ramls.unique[1];
 
-  const removedRamls: RamlDiff[] = ramls.unique[0].map(r => ({
-    file: r,
-    message: "This RAML has been removed"
-  }));
-  const addedRamls: RamlDiff[] = ramls.unique[1].map(r => ({
-    file: r,
-    message: "This RAML has been added recently"
-  }));
-
-  return result.concat(removedRamls, addedRamls);
+  return apiCollectionChanges;
 }
