@@ -18,6 +18,7 @@ import * as diffDirectories from "./diffDirectories";
 import { NodeChanges } from "./changes/nodeChanges";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
+import { ApiDifferencer } from "./apiDifferencer";
 
 chai.use(chaiFs);
 
@@ -139,6 +140,16 @@ describe("raml-toolkit cli diff command", () => {
   test
     .stdout()
     .stderr()
+    .stub(ApiDifferencer.prototype, "findChanges", async () => {
+      throw new Error("test");
+    })
+    .do(() => cmd.run(["baseSpec", "newSpec", "--diff-only"]))
+    .exit(2)
+    .it("exits non-zero when there is error while finding file changes");
+
+  test
+    .stdout()
+    .stderr()
     .do(() => cmd.run(["this is a bad file path", ramlRemoved.name]))
     .exit(2)
     .it("exits non-zero when first file path is bad");
@@ -252,6 +263,16 @@ describe("raml-toolkit cli diff command", () => {
     )
     .exit(2)
     .it("does not allow diff only and dir together, exits non-zero");
+
+  test
+    .stdout()
+    .stderr()
+    .stub(diffDirectories, "diffRamlDirectories", async () => {
+      throw new Error("test");
+    })
+    .do(() => cmd.run(["baseConfig", "newConfig", "--dir"]))
+    .exit(2)
+    .it("exits non-zero when there is error while finding directory changes");
 
   test
     .stub(
