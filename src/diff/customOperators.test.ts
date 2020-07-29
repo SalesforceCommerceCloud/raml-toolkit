@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeDiff } from "./jsonDiff";
+import { NodeChanges } from "./changes/nodeChanges";
 import { applyRules, DIFF_FACT_ID } from "./rulesProcessor";
 import tmp from "tmp";
 import fs from "fs-extra";
@@ -13,10 +13,29 @@ import { expect } from "chai";
 import { RuleCategory } from "./ruleSet";
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
+/**
+ * Verify that rule is applied on node changes
+ * @param nodeChanges - Node changes
+ * @param rule - Rule that is expected to be applied
+ */
+function verifyRule(nodeChanges: NodeChanges, rule: Rule): void {
+  const categorizedChanges = nodeChanges.categorizedChanges;
+  let changedValues: [unknown, unknown];
+  if (rule.event.params.changedProperty) {
+    changedValues = [
+      nodeChanges.removed[rule.event.params.changedProperty],
+      nodeChanges.added[rule.event.params.changedProperty]
+    ];
+  }
+  expect(categorizedChanges).to.have.length(1);
+  expect(categorizedChanges[0].ruleName).to.equal(rule.name);
+  expect(categorizedChanges[0].ruleEvent).to.equal(rule.event.type);
+  expect(categorizedChanges[0].category).to.equal(rule.event.params.category);
+  expect(categorizedChanges[0].change).to.deep.equal(changedValues);
+}
 
 describe("Custom operators - hasProperty", () => {
   it("applies rule when the diff object contains given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -28,16 +47,14 @@ describe("Custom operators - hasProperty", () => {
       ]
     });
 
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal(rule.name);
-    expect(diffRule.type).to.equal(rule.event.type);
-    expect(diffRule.params).to.deep.equal(rule.event.params);
+    const nodeChanges = await applyRules(
+      [getDefaultNodeChanges()],
+      createRulesFile(rule)
+    );
+    verifyRule(nodeChanges[0], rule);
   });
 
   it("does NOT apply rule when the diff object does not contain given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -49,15 +66,16 @@ describe("Custom operators - hasProperty", () => {
       ]
     });
 
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    expect(diffs[0].rule).to.be.undefined;
+    const nodeChanges = await applyRules(
+      [getDefaultNodeChanges()],
+      createRulesFile(rule)
+    );
+    expect(nodeChanges[0].categorizedChanges).to.have.length(0);
   });
 });
 
 describe("Custom operators - hasNoProperty", () => {
   it("rule is applied when the diff object does not contain given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -69,15 +87,13 @@ describe("Custom operators - hasNoProperty", () => {
       ]
     });
 
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    const diffRule = diffs[0].rule;
-    expect(diffRule.name).to.equal(rule.name);
-    expect(diffRule.type).to.equal(rule.event.type);
-    expect(diffRule.params).to.deep.equal(rule.event.params);
+    const nodeChanges = await applyRules(
+      [getDefaultNodeChanges()],
+      createRulesFile(rule)
+    );
+    verifyRule(nodeChanges[0], rule);
   });
   it("rule is NOT applied when the diff object contains given key", async () => {
-    let diffs: NodeDiff[] = [getDefaultDiff()];
     const rule = buildRule({
       all: [
         {
@@ -89,22 +105,24 @@ describe("Custom operators - hasNoProperty", () => {
       ]
     });
 
-    diffs = await applyRules(diffs, createRulesFile(rule));
-
-    expect(diffs[0].rule).to.be.undefined;
+    const nodeChanges = await applyRules(
+      [getDefaultNodeChanges()],
+      createRulesFile(rule)
+    );
+    expect(nodeChanges[0].categorizedChanges).to.have.length(0);
   });
 });
 
 /**
- * Get a basic difference object
+ * Get a basic node changes object
  */
-function getDefaultDiff(): NodeDiff {
-  return {
-    id: "#/web-api/end-points/resource/get",
-    type: ["apiContract:Operation"],
-    added: { "core:name": "newName" },
-    removed: { "core:name": "oldName" }
-  };
+function getDefaultNodeChanges(): NodeChanges {
+  const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+    "apiContract:Operation"
+  ]);
+  nodeChanges.added = { "core:name": "newName" };
+  nodeChanges.removed = { "core:name": "oldName" };
+  return nodeChanges;
 }
 
 /**

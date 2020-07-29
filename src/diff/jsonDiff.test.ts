@@ -5,305 +5,323 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import {
-  findJsonDiffs,
-  JSON_LD_KEY_GRAPH,
-  JSON_LD_KEY_CONTEXT,
-  addNodeDiff,
-  addNodePropertyDiffs,
-  DiffType,
-  NodeDiff,
-  addNodeArrayPropertyDiffs,
-  getDiffType
+  addArrayDelta,
+  CONTEXT_TYPE,
+  DeltaType,
+  findAmfGraphChanges,
+  parseNodeDelta,
+  parsePropertyDelta
 } from "./jsonDiff";
-
+import * as AmfGraphTypes from "./amfGraphTypes";
 import _ from "lodash";
 import { expect } from "chai";
+import { NodeChanges } from "./changes/nodeChanges";
 
-function buildValidJson(): object {
+function buildValidGraph(): AmfGraphTypes.FlattenedGraph {
   return {
-    [JSON_LD_KEY_GRAPH]: [
-      { "@id": "#/web-api", "core:name": "Test Raml" },
+    [AmfGraphTypes.KEY_GRAPH]: [
       {
-        "@id": "#/web-api/end-points/resource",
+        [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
+        [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
+        "core:name": "Test Raml"
+      },
+      {
+        [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource",
+        [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:endpoint"],
         "apiContract:path": "/resource"
       }
     ],
-    [JSON_LD_KEY_CONTEXT]: { "@base": "test.raml" }
+    [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
   };
 }
 
-describe("Validations of the differencing object", () => {
-  it("throws error when left JSON object is undefined ", async () => {
-    expect(() => findJsonDiffs(undefined, buildValidJson())).to.throw(
-      "Error validating left object: Invalid object"
+describe("Validate flattened AMF graph", () => {
+  it("throws error when base AMF graph is undefined ", async () => {
+    expect(() => findAmfGraphChanges(undefined, buildValidGraph())).to.throw(
+      "Error validating base AMF graph: Invalid object"
     );
   });
 
-  it("throws error when left JSON object is empty ", async () => {
-    expect(() => findJsonDiffs({}, buildValidJson())).to.throw(
-      "Error validating left object: Invalid object"
+  it("throws error when new AMF graph is undefined ", async () => {
+    expect(() => findAmfGraphChanges(buildValidGraph(), undefined)).to.throw(
+      "Error validating new AMF graph: Invalid object"
     );
   });
 
-  it("throws error when right JSON object is undefined ", async () => {
-    expect(() => findJsonDiffs(buildValidJson(), undefined)).to.throw(
-      "Error validating right object: Invalid object"
+  it("throws error when @graph property is null", async () => {
+    const baseGraph = buildValidGraph();
+    baseGraph[AmfGraphTypes.KEY_GRAPH] = null;
+    return expect(() => findAmfGraphChanges(baseGraph, undefined)).to.throw(
+      `Error validating base AMF graph: ${AmfGraphTypes.KEY_GRAPH} property is missing`
     );
   });
 
-  it("throws error when right JSON object is empty ", async () => {
-    expect(() => findJsonDiffs(buildValidJson(), {})).to.throw(
-      "Error validating right object: Invalid object"
-    );
-  });
-
-  it("throws error when the JSON object is missing @graph property ", async () => {
-    const left = buildValidJson();
-    left[JSON_LD_KEY_GRAPH] = null;
-    return expect(() => findJsonDiffs(left, undefined)).to.throw(
-      `Error validating left object: ${JSON_LD_KEY_GRAPH} property is missing`
-    );
-  });
-
-  it("throws error when @graph in JSON object is not an array ", async () => {
-    const left = buildValidJson();
-    left[JSON_LD_KEY_GRAPH] = {};
-    return expect(() => findJsonDiffs(left, undefined)).to.throw(
-      `Error validating left object: ${JSON_LD_KEY_GRAPH} property must be an array of json nodes`
-    );
-  });
-
-  it("throws error when @graph in JSON object is an empty array ", async () => {
-    const left = buildValidJson();
-    left[JSON_LD_KEY_GRAPH] = [];
-    return expect(() => findJsonDiffs(left, undefined)).to.throw(
-      `Error validating left object: ${JSON_LD_KEY_GRAPH} property must be an array of json nodes`
+  it("throws error when @graph property is an empty array ", async () => {
+    const baseGraph = buildValidGraph();
+    baseGraph[AmfGraphTypes.KEY_GRAPH] = [];
+    return expect(() => findAmfGraphChanges(baseGraph, undefined)).to.throw(
+      `Error validating base AMF graph: ${AmfGraphTypes.KEY_GRAPH} property must be an array of json nodes`
     );
   });
 });
 
-describe("Changes to json nodes", () => {
-  it("returns empty differences when left json content is same as right json content", async () => {
-    const diffs = findJsonDiffs(buildValidJson(), buildValidJson());
-    expect(diffs.length).to.equal(0);
+describe("Changes to graph nodes", () => {
+  it("returns empty changes when base graph content is same as new graph content", async () => {
+    const nodeChanges = findAmfGraphChanges(
+      buildValidGraph(),
+      buildValidGraph()
+    );
+    expect(nodeChanges.length).to.equal(0);
   });
 
-  it("returns differences as 'Added' when the nodes are missing in left json", async () => {
-    const left = buildValidJson();
-    const obj = left[JSON_LD_KEY_GRAPH].pop();
+  it("returns changes as 'Added' when the nodes are missing in base graph", async () => {
+    const baseGraph = buildValidGraph();
+    const obj = baseGraph[AmfGraphTypes.KEY_GRAPH].pop();
 
-    const diffs = findJsonDiffs(left, buildValidJson());
+    const nodeChanges = findAmfGraphChanges(baseGraph, buildValidGraph());
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].added).to.deep.equal(obj);
-    expect(_.isEmpty(diffs[0].removed)).to.true;
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].id).to.equal(obj[AmfGraphTypes.KEY_NODE_ID]);
+    expect(nodeChanges[0].type).to.deep.equal(obj[AmfGraphTypes.KEY_NODE_TYPE]);
+    expect(nodeChanges[0].added).to.deep.equal(
+      _.omit(obj, AmfGraphTypes.KEY_NODE_ID, AmfGraphTypes.KEY_NODE_TYPE)
+    );
+    expect(_.isEmpty(nodeChanges[0].removed)).to.true;
   });
 
-  it("returns differences as 'Removed' when the nodes are missing in right json", async () => {
-    const right = buildValidJson();
-    const obj = right[JSON_LD_KEY_GRAPH].pop();
+  it("returns changes as 'Removed' when the nodes are missing in new graph", async () => {
+    const newGraph = buildValidGraph();
+    const obj = newGraph[AmfGraphTypes.KEY_GRAPH].pop();
 
-    const diffs = findJsonDiffs(buildValidJson(), right);
+    const nodeChanges = findAmfGraphChanges(buildValidGraph(), newGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed).to.deep.equal(obj);
-    expect(_.isEmpty(diffs[0].added)).to.true;
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].id).to.equal(obj[AmfGraphTypes.KEY_NODE_ID]);
+    expect(nodeChanges[0].type).to.deep.equal(obj[AmfGraphTypes.KEY_NODE_TYPE]);
+    expect(nodeChanges[0].removed).to.deep.equal(
+      _.omit(obj, AmfGraphTypes.KEY_NODE_ID, AmfGraphTypes.KEY_NODE_TYPE)
+    );
+    expect(_.isEmpty(nodeChanges[0].added)).to.true;
   });
 
   it("Ignores node position/index changes", async () => {
-    const right = buildValidJson();
-    right[JSON_LD_KEY_GRAPH].reverse();
+    const newGraph = buildValidGraph();
+    newGraph[AmfGraphTypes.KEY_GRAPH].reverse();
 
-    const diffs = findJsonDiffs(buildValidJson(), right);
-
-    expect(diffs.length).to.equal(0);
+    const nodeChanges = findAmfGraphChanges(buildValidGraph(), newGraph);
+    expect(nodeChanges.length).to.equal(0);
   });
 
-  it("returns differences in @context node", async () => {
-    const right = buildValidJson();
-    right[JSON_LD_KEY_CONTEXT]["@base"] = "test-updated.raml";
+  it("returns changes in @context node", async () => {
+    const rightGraph = buildValidGraph();
+    rightGraph[AmfGraphTypes.KEY_CONTEXT]["@base"] = "test-updated.raml";
 
-    const diffs = findJsonDiffs(buildValidJson(), right);
+    const nodeChanges = findAmfGraphChanges(buildValidGraph(), rightGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed["@base"]).to.equal("test.raml");
-    expect(diffs[0].added["@base"]).to.equal("test-updated.raml");
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].id).to.equal(AmfGraphTypes.KEY_CONTEXT);
+    expect(nodeChanges[0].type).to.deep.equal(CONTEXT_TYPE);
+    expect(nodeChanges[0].removed["@base"]).to.equal("test.raml");
+    expect(nodeChanges[0].added["@base"]).to.equal("test-updated.raml");
   });
 
-  it("throws error for invalid node difference", async () => {
+  it("throws error for invalid node delta", async () => {
     expect(() =>
-      addNodeDiff([{ "@id": "node1" }, { "@id": "node2" }])
-    ).to.throw("Invalid difference type for node");
+      parseNodeDelta(
+        [
+          {
+            [AmfGraphTypes.KEY_NODE_ID]: "node1",
+            [AmfGraphTypes.KEY_NODE_TYPE]: ["test:type"]
+          }
+        ],
+        DeltaType.MODIFIED
+      )
+    ).to.throw("Invalid delta type for node");
   });
 });
 
-describe("Changes to the properties with in a json node", () => {
+describe("Changes to the properties with in a node", () => {
   it("returns added properties", async () => {
-    const right = buildValidJson();
-    const apiObj = right[JSON_LD_KEY_GRAPH][0];
+    const newGraph = buildValidGraph();
+    const apiObj = newGraph[AmfGraphTypes.KEY_GRAPH][0];
     apiObj["core:version"] = "v1";
 
-    const diffs = findJsonDiffs(buildValidJson(), right);
+    const nodeChanges = findAmfGraphChanges(buildValidGraph(), newGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].added["core:version"]).to.equal("v1");
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].added["core:version"]).to.equal("v1");
   });
 
   it("returns removed properties", async () => {
-    const left = buildValidJson();
-    const apiObj = left[JSON_LD_KEY_GRAPH][0];
+    const baseGraph = buildValidGraph();
+    const apiObj = baseGraph[AmfGraphTypes.KEY_GRAPH][0];
     apiObj["core:version"] = "v1";
 
-    const diffs = findJsonDiffs(left, buildValidJson());
+    const nodeChanges = findAmfGraphChanges(baseGraph, buildValidGraph());
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed["core:version"]).to.equal("v1");
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].removed["core:version"]).to.equal("v1");
   });
 
   it("returns modified properties", async () => {
-    const left = buildValidJson();
-    left[JSON_LD_KEY_GRAPH][0]["core:version"] = "v1";
-    const right = buildValidJson();
-    right[JSON_LD_KEY_GRAPH][0]["core:version"] = "v2";
+    const baseGraph = buildValidGraph();
+    baseGraph[AmfGraphTypes.KEY_GRAPH][0]["core:version"] = "v1";
+    const newGraph = buildValidGraph();
+    newGraph[AmfGraphTypes.KEY_GRAPH][0]["core:version"] = "v2";
 
-    const diffs = findJsonDiffs(left, right);
+    const nodeChanges = findAmfGraphChanges(baseGraph, newGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed["core:version"]).to.equal("v1");
-    expect(diffs[0].added["core:version"]).to.equal("v2");
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].removed["core:version"]).to.equal("v1");
+    expect(nodeChanges[0].added["core:version"]).to.equal("v2");
   });
 
-  it("throws error for invalid node property difference", async () => {
+  it("throws error for invalid node property delta", async () => {
     expect(() =>
-      addNodePropertyDiffs(
+      parsePropertyDelta(
         "prop",
-        [],
-        DiffType.MOVED,
-        new NodeDiff("test-node")
+        ["old", "new"],
+        DeltaType.MOVED,
+        new NodeChanges("test-node", ["test:type"])
       )
-    ).to.throw("Invalid difference type for node property");
-  });
-
-  it("throws error for invalid difference structure", async () => {
-    expect(() => getDiffType([])).to.throw("Invalid difference structure");
+    ).to.throw("Invalid delta type for node property");
   });
 });
 
-describe("Changes to the array properties with in a json node", () => {
+describe("Changes to the array properties with in a node", () => {
   it("returns added array properties", async () => {
-    const left = buildValidJson();
-    const arrayValue = { "@id": "#/web-api/end-points/resource" };
-    left[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = [arrayValue];
-
-    const right = buildValidJson();
-    const newArrayValue = {
-      "@id": "#/web-api/end-points/resource/{resourceId}"
+    const baseGraph = buildValidGraph();
+    const arrayValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource"
     };
-    right[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = [
+    baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
+      arrayValue
+    ];
+
+    const newGraph = buildValidGraph();
+    const newArrayValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}"
+    };
+    newGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
       arrayValue,
       newArrayValue
     ];
 
-    const diffs = findJsonDiffs(left, right);
+    const nodeChanges = findAmfGraphChanges(baseGraph, newGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].added["apiContract:endpoint"]).to.deep.equal([
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].added["apiContract:endpoint"]).to.deep.equal([
       newArrayValue
     ]);
   });
 
   it("returns removed array properties", async () => {
-    const left = buildValidJson();
-    const arrayValue = { "@id": "#/web-api/end-points/resource" };
-    const removedArrayValue = {
-      "@id": "#/web-api/end-points/resource/{resourceId}"
+    const baseGraph = buildValidGraph();
+    const arrayValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource"
     };
-    left[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = [
+    const removedArrayValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}"
+    };
+    baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
       arrayValue,
       removedArrayValue
     ];
 
-    const right = buildValidJson();
-    right[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = [arrayValue];
+    const newGraph = buildValidGraph();
+    newGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [arrayValue];
 
-    const diffs = findJsonDiffs(left, right);
+    const nodeChanges = findAmfGraphChanges(baseGraph, newGraph);
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed["apiContract:endpoint"]).to.deep.equal([
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].removed["apiContract:endpoint"]).to.deep.equal([
       removedArrayValue
     ]);
   });
 
   it("Ignores index/position changes to array property in the node modified array value", async () => {
-    const left = buildValidJson();
+    const baseGraph = buildValidGraph();
     const arr = [
-      { "@id": "#/web-api/end-points/resource" },
+      { [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource" },
       {
-        "@id": "#/web-api/end-points/resource/{resourceId}"
+        [AmfGraphTypes.KEY_NODE_ID]:
+          "#/web-api/end-points/resource/{resourceId}"
       }
     ];
-    left[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = arr;
+    baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = arr;
 
-    const right = buildValidJson();
-    right[JSON_LD_KEY_GRAPH][0]["apiContract:endpoint"] = [...arr].reverse();
+    const newGraph = buildValidGraph();
+    newGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
+      ...arr
+    ].reverse();
 
-    const diffs = findJsonDiffs(left, right);
-    expect(diffs.length).to.equal(0);
+    const nodeChanges = findAmfGraphChanges(baseGraph, newGraph);
+    expect(nodeChanges.length).to.equal(0);
   });
 
-  it("throws error for invalid node array property difference", async () => {
+  it("throws error for invalid node array property delta", async () => {
     expect(() =>
-      addNodeArrayPropertyDiffs(
+      addArrayDelta(
         "prop",
-        [],
-        DiffType.MODIFIED,
-        new NodeDiff("test-node")
+        ["value"],
+        DeltaType.MODIFIED,
+        new NodeChanges("test-node", ["test:type"])
       )
-    ).to.throw("Invalid difference type for node array property");
+    ).to.throw("Invalid delta type for node array property");
   });
 });
 
-describe("Changes to the reference node ID with in a json node", () => {
+describe("Changes to the reference node ID with in a node", () => {
   it("returns modified reference property", async () => {
-    const left = buildValidJson();
-    const oldReferenceValue = { "@id": "#/declarations/securitySchemes/test" };
-    left[JSON_LD_KEY_GRAPH][1]["security:scheme"] = oldReferenceValue;
-
-    const right = buildValidJson();
-    const newReferenceValue = {
-      "@id": "#/declarations/securitySchemes/test-updated"
+    const baseGraph = buildValidGraph();
+    const oldReferenceValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test"
     };
-    right[JSON_LD_KEY_GRAPH][1]["security:scheme"] = newReferenceValue;
+    baseGraph[AmfGraphTypes.KEY_GRAPH][1][
+      "security:scheme"
+    ] = oldReferenceValue;
 
-    const diffs = findJsonDiffs(left, right);
+    const newGraph = buildValidGraph();
+    const newReferenceValue = {
+      [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test-updated"
+    };
+    newGraph[AmfGraphTypes.KEY_GRAPH][1]["security:scheme"] = newReferenceValue;
 
-    expect(diffs.length).to.equal(1);
-    expect(diffs[0].removed["security:scheme"]).to.deep.equal(
+    const nodeChanges = findAmfGraphChanges(baseGraph, newGraph);
+
+    expect(nodeChanges.length).to.equal(1);
+    expect(nodeChanges[0].removed["security:scheme"]).to.deep.equal(
       oldReferenceValue
     );
-    expect(diffs[0].added["security:scheme"]).to.deep.equal(newReferenceValue);
+    expect(nodeChanges[0].added["security:scheme"]).to.deep.equal(
+      newReferenceValue
+    );
   });
 
   it("throws error when the reference property is invalid", async () => {
-    const left = {
-      [JSON_LD_KEY_GRAPH]: [
+    const baseGraph = {
+      [AmfGraphTypes.KEY_GRAPH]: [
         {
-          "@id": "#/web-api",
-          reference: { "@id": "test" }
+          [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
+          [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
+          reference: { [AmfGraphTypes.KEY_NODE_ID]: "ref-node" }
         }
-      ]
+      ],
+      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
     };
-    const right = {
-      [JSON_LD_KEY_GRAPH]: [
+    const newGraph = {
+      [AmfGraphTypes.KEY_GRAPH]: [
         {
-          "@id": "#/web-api",
+          [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
+          [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
           reference: { prop: "test" } //this is invalid, reference should have only @id property
         }
-      ]
+      ],
+      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
     };
 
-    expect(() => findJsonDiffs(left, right)).to.throw(
-      "Invalid difference type for node reference property"
+    expect(() => findAmfGraphChanges(baseGraph, newGraph)).to.throw(
+      "Invalid delta type for node reference property"
     );
   });
 });

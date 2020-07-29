@@ -11,10 +11,10 @@ import path from "path";
 import sinon from "sinon";
 import tmp from "tmp";
 
-import * as diffProcessor from "./diffProcessor";
-import { RamlDiff } from "./diffProcessor";
-import { NodeDiff } from "./jsonDiff";
 import { diffRamlDirectories } from "./diffDirectories";
+import { ApiDifferencer } from "./apiDifferencer";
+import { ApiChanges } from "./changes/apiChanges";
+import { NodeChanges } from "./changes/nodeChanges";
 
 describe("diffRamlDirectories", () => {
   let leftDir: string;
@@ -32,8 +32,22 @@ describe("diffRamlDirectories", () => {
       { assetId: "api4", fatRaml: { mainFile: "api4.raml" } }
     ]
   };
-  const nodeDiffArr = [new NodeDiff("#/web-api/endpoints/test-endpoint")];
-  const diffRamlStub = sinon.stub(diffProcessor, "diffRaml");
+  const nodeChanges = new NodeChanges("#/web-api/endpoints/test-endpoint", [
+    "apiContract:Endpoint"
+  ]);
+  const apiChanges = new ApiChanges("api1/api1.raml", "api2/api2.raml");
+  apiChanges.nodeChanges = [nodeChanges];
+
+  let apiDifferencerStub;
+  before(() => {
+    apiDifferencerStub = sinon.stub(
+      ApiDifferencer.prototype,
+      "findAndCategorizeChanges"
+    );
+  });
+  after(() => {
+    apiDifferencerStub.restore();
+  });
 
   beforeEach(() => {
     leftDir = tmp.dirSync().name;
@@ -42,60 +56,63 @@ describe("diffRamlDirectories", () => {
     rightApiConfigFile = path.join(rightDir, "api-config.json");
     fs.writeJsonSync(leftApiConfigFile, apiConfig);
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
-    diffRamlStub.reset();
-    diffRamlStub.resolves(nodeDiffArr);
-  });
-
-  after(() => {
-    diffRamlStub.restore();
+    apiDifferencerStub.reset();
+    apiDifferencerStub.resolves(apiChanges);
   });
 
   it("should return diff on all the apis in api-config.json", async () => {
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(result.length).to.equal(4);
-    expect(diffRamlStub.callCount).to.equal(4);
-    expect(result[0].file).to.equal("api1/api1.raml");
-    expect(result[1].file).to.equal("api2/api2.raml");
-    expect(result[2].file).to.equal("api3/api3.raml");
-    expect(result[3].file).to.equal("api4/api4.raml");
-    expect(result[0].diff).to.equal(nodeDiffArr);
-    expect(result[1].diff).to.equal(nodeDiffArr);
-    expect(result[2].diff).to.equal(nodeDiffArr);
-    expect(result[3].diff).to.equal(nodeDiffArr);
+    expect(Object.keys(apiCollectionChanges.changed)).to.have.length(4);
+    expect(apiDifferencerStub.callCount).to.equal(4);
+    expect(apiCollectionChanges.changed).to.have.all.keys(
+      "api1/api1.raml",
+      "api2/api2.raml",
+      "api3/api3.raml",
+      "api4/api4.raml"
+    );
+    expect(apiCollectionChanges.changed["api1/api1.raml"]).to.equal(apiChanges);
+    expect(apiCollectionChanges.changed["api2/api2.raml"]).to.equal(apiChanges);
+    expect(apiCollectionChanges.changed["api3/api3.raml"]).to.equal(apiChanges);
+    expect(apiCollectionChanges.changed["api4/api4.raml"]).to.equal(apiChanges);
   });
 
-  it("should not fail if diffRaml throws an error", async () => {
-    diffRamlStub.rejects(new Error("Not found"));
+  it("should not fail if ApiDifferencer throws an error", async () => {
+    const error = new Error("Not found");
+    apiDifferencerStub.rejects(error);
     fs.writeJsonSync(leftApiConfigFile, { family1: [apiConfig["family1"][0]] });
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
-    const error = "The operation was unsuccessful";
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledOnce).to.be.true;
-    expect(result[0].file).to.equal("api1/api1.raml");
-    expect(result[0].message).to.equal(error);
+    expect(apiDifferencerStub.calledOnce).to.be.true;
+    expect(apiCollectionChanges.errored).to.have.all.keys("api1/api1.raml");
+    expect(apiCollectionChanges.errored["api1/api1.raml"]).to.equal(
+      error.message
+    );
   });
 
   it("should not return anything for the api if no diff is found", async () => {
-    diffRamlStub.resolves([]);
+    apiDifferencerStub.resolves(
+      new ApiChanges("api1/api1.raml", "api1/api1.raml")
+    );
     fs.writeJSONSync(leftApiConfigFile, { family1: [apiConfig["family1"][0]] });
     fs.copyFileSync(leftApiConfigFile, rightApiConfigFile);
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledOnce).to.be.true;
-    expect(result.length).to.equal(0);
+    expect(apiDifferencerStub.calledOnce).to.be.true;
+    expect(apiCollectionChanges.hasChanges()).to.be.false;
+    expect(apiCollectionChanges.hasErrors()).to.be.false;
   });
 
   it("should report the removed apis", async () => {
@@ -103,32 +120,28 @@ describe("diffRamlDirectories", () => {
     apiConfigCopy.family2 = [apiConfig["family2"][0]];
     fs.writeFileSync(rightApiConfigFile, JSON.stringify(apiConfigCopy));
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledThrice).to.be.true;
-    expect(result[0].diff).to.equal(nodeDiffArr);
-    expect(result[1].diff).to.equal(nodeDiffArr);
-    expect(result[2].diff).to.equal(nodeDiffArr);
-    expect(result[3].message).to.equal("This RAML has been removed");
-    expect(result[3].diff).to.be.undefined;
+    expect(apiDifferencerStub.calledThrice).to.be.true;
+    expect(apiCollectionChanges.removed).to.have.members(["api4/api4.raml"]);
   });
 
   it("should report all the apis in the removed apiFamily", async () => {
     fs.writeJsonSync(rightApiConfigFile, { family1: apiConfig["family1"] });
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledTwice).to.be.true;
-    expect(result[0].diff).to.equal(nodeDiffArr);
-    expect(result[1].diff).to.equal(nodeDiffArr);
-    expect(result[2].message).to.equal("This RAML has been removed");
-    expect(result[3].message).to.equal("This RAML has been removed");
+    expect(apiDifferencerStub.calledTwice).to.be.true;
+    expect(apiCollectionChanges.removed).to.have.members([
+      "api3/api3.raml",
+      "api4/api4.raml"
+    ]);
   });
 
   it("should report added apis", async () => {
@@ -136,41 +149,37 @@ describe("diffRamlDirectories", () => {
     apiConfigCopy.family2 = [apiConfig["family2"][0]];
     fs.writeJsonSync(leftApiConfigFile, apiConfigCopy);
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledThrice).to.be.true;
-    expect(result[0].diff).to.equal(nodeDiffArr);
-    expect(result[1].diff).to.equal(nodeDiffArr);
-    expect(result[2].diff).to.equal(nodeDiffArr);
-    expect(result[3].message).to.equal("This RAML has been added recently");
-    expect(result[3].diff).to.be.undefined;
+    expect(apiDifferencerStub.calledThrice).to.be.true;
+    expect(apiCollectionChanges.added).to.have.members(["api4/api4.raml"]);
   });
 
   it("should report apis in the newly added api family", async () => {
     fs.writeJsonSync(leftApiConfigFile, { family1: apiConfig["family1"] });
 
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       leftApiConfigFile,
       rightApiConfigFile
     );
 
-    expect(diffRamlStub.calledTwice).to.be.true;
-    expect(result[0].diff).to.equal(nodeDiffArr);
-    expect(result[1].diff).to.equal(nodeDiffArr);
-    expect(result[2].message).to.equal("This RAML has been added recently");
-    expect(result[3].message).to.equal("This RAML has been added recently");
+    expect(apiDifferencerStub.calledTwice).to.be.true;
+    expect(apiCollectionChanges.added).to.have.members([
+      "api3/api3.raml",
+      "api4/api4.raml"
+    ]);
   });
 
   it("works with relative paths", async () => {
-    const result: RamlDiff[] = await diffRamlDirectories(
+    const apiCollectionChanges = await diffRamlDirectories(
       path.relative(process.cwd(), leftApiConfigFile),
       path.relative(process.cwd(), rightApiConfigFile)
     );
 
-    expect(result.length).to.equal(4);
-    expect(diffRamlStub.callCount).to.equal(4);
+    expect(Object.keys(apiCollectionChanges.changed)).to.have.length(4);
+    expect(apiDifferencerStub.callCount).to.equal(4);
   });
 });
