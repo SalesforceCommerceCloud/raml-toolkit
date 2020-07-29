@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeDiff } from "./jsonDiff";
+import { NodeChanges } from "./changes/nodeChanges";
 import { applyRules } from "./rulesProcessor";
 import * as chai from "chai";
 import fs from "fs-extra";
@@ -33,7 +33,7 @@ describe("Rules engine when rules file has no rules", () => {
   it("returns when rules is an empty array", async () => {
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, "[]");
-    let diffs = [new NodeDiff("test")];
+    let diffs = [new NodeChanges("test", ["test:type"])];
     diffs = await applyRules(diffs, tmpFile.name);
     //verify that diff is not modified
     expect(diffs).to.deep.equal(diffs);
