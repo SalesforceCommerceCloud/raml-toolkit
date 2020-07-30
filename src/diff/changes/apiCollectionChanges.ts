@@ -52,4 +52,11 @@ export class ApiCollectionChanges {
   hasErrors(): boolean {
     return Object.keys(this.errored).length > 0;
   }
+
+  /**
+   * Format the changes for printing to console
+   */
+  toString(): string {
+    return ``;
+  }
 }

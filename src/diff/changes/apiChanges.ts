@@ -76,4 +76,11 @@ export class ApiChanges {
   getIgnoredChangesCount(): number {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
   }
+
+  /**
+   * Format the changes for printing to console
+   */
+  toString(): string {
+    return ``;
+  }
 }

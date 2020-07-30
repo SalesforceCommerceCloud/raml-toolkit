@@ -13,6 +13,7 @@ import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
 import { allCommonFlags } from "../common/flags";
+import { ramlToolLogger } from "../common/logger";
 
 export class DiffCommand extends Command {
   // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
@@ -74,17 +75,17 @@ Exit statuses:
   ];
 
   /**
-   * If a file is given, saves data to the file. Otherwise, just logs the data.
-   * The data must be JSON-serializable.
+   * If a file is given, saves the changes to the file as JSON. Otherwise, logs
+   * the changes to console as a formatted string.
    *
-   * @param json - The data to save or log
+   * @param changes - The changes to save or log
    * @param file - The file to save to
    */
-  protected async _saveOrLog(json: unknown, file?: string): Promise<void> {
+  protected async _saveOrLog(changes: unknown, file?: string): Promise<void> {
     if (file) {
-      await fs.writeJson(file, json);
+      await fs.writeJson(file, changes);
     } else {
-      console.log(json);
+      ramlToolLogger.log(changes?.toString());
     }
   }
 
