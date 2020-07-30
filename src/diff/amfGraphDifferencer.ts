@@ -35,7 +35,7 @@ export const CONTEXT_TYPE = ["context"];
  *
  * @returns Array of NodeChanges objects
  */
-export function findAmfGraphChanges(
+export function findGraphChanges(
   baseGraph: AmfGraphTypes.FlattenedGraph,
   newGraph: AmfGraphTypes.FlattenedGraph
 ): NodeChanges[] {
