@@ -65,9 +65,7 @@ describe("downloadRestApi", () => {
 
     const api = _.cloneDeep(REST_API);
 
-    return downloadRestApi(api, tmpDir.name).then(() => {
-      // expect(res.status).to.equal(200);
-    });
+    return expect(downloadRestApi(api)).to.eventually.be.fulfilled;
   });
 
   it("can download a single file even when no download dir is specified", async () => {
@@ -77,9 +75,7 @@ describe("downloadRestApi", () => {
 
     const api = _.cloneDeep(REST_API);
 
-    return downloadRestApi(api).then(() => {
-      // expect(res.status).to.equal(200);
-    });
+    return expect(downloadRestApi(api)).to.eventually.be.fulfilled;
   });
 
   it("should not return anything if Fat RAML information is missing", async () => {
