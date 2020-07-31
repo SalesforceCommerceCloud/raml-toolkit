@@ -1,2 +1,3 @@
 ignores:
-  - dotenv
+  # Include a justification for ignoring!
+  - dotenv # used in ./bin/run, which depcheck can't see
