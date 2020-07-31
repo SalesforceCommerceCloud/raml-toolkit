@@ -26,7 +26,7 @@
     "compile": "tsc -b && echo Compiled",
     "depcheck": "depcheck",
     "docs": "npm run clean && npm run compile && oclif-dev readme",
-    "lint": "eslint . --ext .ts --fix",
+    "lint": "sort-package-json && eslint . --ext .ts --fix",
     "lint:ci": "eslint . --ext .ts --quiet",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
