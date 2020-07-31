@@ -11,12 +11,12 @@ import fs from "fs-extra";
 import { ApiDifferencer } from "./apiDifferencer";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
-
 import { diffRamlDirectories } from "./diffDirectories";
+import { allCommonFlags } from "../common/flags";
 
 export class DiffCommand extends Command {
-  // Oclif eats the first line of the description, so it's left blank.
-  static description = `
+  // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
+  static description = `Compute the difference between two API specifications
 This command has three modes: ruleset, diff-only, and directory.
   Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
   Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
@@ -31,13 +31,10 @@ Exit statuses:
   2 - Evaluation could not be completed`;
 
   static flags = {
-    // Add --version flag to show CLI version
-    version: flags.version({ char: "v" }),
-    // Add --help flag to show CLI version
-    help: flags.help({ char: "h" }),
+    ...allCommonFlags(),
     ruleset: flags.string({
       char: "r",
-      // Oclif by default generated help text with [default: value], but in this
+      // Oclif by default generates help text with [default: value], but in this
       // case the default is specified by the function, not the command. Also,
       // it is a full path to the file, which would change based on install location.
       // Displaying the require()-able form is shorter and always the same.

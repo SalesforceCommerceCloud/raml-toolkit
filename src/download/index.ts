@@ -10,14 +10,13 @@ import { Command, flags } from "@oclif/command";
 import * as download from "./exchangeDownloader";
 import { extractFiles } from "./exchangeDirectoryParser";
 import { groupByCategory, removeRamlLinks } from "./exchangeTools";
+import { allCommonFlags } from "../common/flags";
 
 export class DownloadCommand extends Command {
   static description =
     "Download API specification files from Anypoint Exchange";
   static flags = {
-    help: flags.help({
-      char: "h"
-    }),
+    ...allCommonFlags(),
     search: flags.string({
       char: "s",
       description: "Search query to filter results from Anypoint Exchange",
