@@ -22,20 +22,26 @@
   ],
   "scripts": {
     "clean": "rm -rf lib",
+    "build": "npm run compile",
     "compile": "tsc -b && echo Compiled",
     "depcheck": "depcheck",
     "docs": "npm run clean && npm run compile && oclif-dev readme",
-    "lint": "npm run lint:dev -- --quiet",
-    "lint:dev": "sort-package-json && eslint . --ext .ts --fix",
+    "lint": "eslint . --ext .ts --fix",
+    "lint:ci": "eslint . --ext .ts --quiet",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
     "postpack": "rm -f oclif.manifest.json",
     "prepare": "npm run snyk-protect",
     "snyk-protect": "snyk protect",
     "pretest": "npm run lint && npm run compile && npm run depcheck",
-    "test": "npm run test:unit && npm run test:resources",
-    "test:debug": "mocha \"src/**/*.test.ts\"",
-    "test:resources": "mocha \"resources/**/*.test.ts\"",
-    "test:unit": "nyc mocha \"src/**/*.test.ts\" -- --reporter=xunit --reporter-options output=reports/generator.xml"
+    "pretest:ci": "npm run lint:ci && npm run compile && npm run depcheck",
+    "test": "npm run cover:unit && npm run test:resource",
+    "test:ci": "npm run pretest:ci && npm run cover:unit:ci && npm run test:resource:ci",
+    "test:unit": "mocha \"src/**/*.test.ts\"",
+    "test:unit:ci": "npm run test:unit -- --reporter=xunit --reporter-options output=./reports/unitTests.xml",
+    "test:resource": "mocha \"resources/**/*.test.ts\"",
+    "test:resource:ci": "npm run test:resource -- --reporter=xunit --reporter-options output=./reports/resourceTests.xml",
+    "cover:unit": "nyc npm run test:unit",
+    "cover:unit:ci": "nyc npm run test:unit:ci"
   },
   "lint-staged": {
     "*.ts": [
@@ -98,6 +104,10 @@
     "timeout": 5000
   },
   "nyc": {
+    "reporter": [
+      "lcov",
+      "text"
+    ],
     "all": true,
     "branches": 85,
     "check-coverage": true,

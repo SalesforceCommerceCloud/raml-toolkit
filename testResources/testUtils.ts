@@ -17,8 +17,10 @@ import amf from "amf-client-js";
  * tests pass.
  */
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function getHappySpec(filename = `${__dirname}/mercury.raml`): any {
+export function getHappySpec(
+  filename = `${__dirname}/raml/mercury/mercury.raml`
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
   return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
 }
 

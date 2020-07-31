@@ -1,0 +1,12 @@
+{
+    "main": "mercury.raml",
+    "name": "Valid Api",
+    "classifier": "raml",
+    "tags": [],
+    "groupId": "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+    "backwardsCompatible": false,
+    "assetId": "mercury",
+    "version": "0.1.2",
+    "apiVersion": "v1",
+    "originalFormatVersion": "1.0"
+  }
