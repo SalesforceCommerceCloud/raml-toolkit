@@ -28,7 +28,7 @@ before(() => {
   chai.use(chaiAsPromised);
 });
 
-describe("Test ApiTree", () => {
+describe("ApiTree", () => {
   afterEach(() => {
     sandbox.restore();
   });
@@ -39,7 +39,7 @@ describe("Test ApiTree", () => {
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.children).to.be.empty;
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.name).to.deep.equal(new Name("apis"));
   });
 
   it("is created with children", async () => {
@@ -57,7 +57,7 @@ describe("Test ApiTree", () => {
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.children).to.have.length(2);
     expect(testTree.children).to.deep.equal([child1, child2]);
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.name).to.deep.equal(new Name("apis"));
   });
 
   it("is created with metadata", async () => {
@@ -74,7 +74,7 @@ describe("Test ApiTree", () => {
 
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
 
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.name).to.deep.equal(new Name("apis"));
     expect(testTree.metadata).to.deep.equal(myMetadata);
   });
 
@@ -91,8 +91,8 @@ describe("Test ApiTree", () => {
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.children).to.be.empty;
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
-    expect(warnStub.callCount).to.be.equal(1);
+    expect(testTree.name).to.deep.equal(new Name("apis"));
+    expect(warnStub.callCount).to.equal(1);
     expect(
       warnStub.calledWith(
         `Metadata found, but failed to load for ${path.join(
@@ -103,7 +103,7 @@ describe("Test ApiTree", () => {
     ).to.be.true;
   });
 
-  it("is created with empty metadata (invalid json)", async () => {
+  it("is created from empty metadata file", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
 
@@ -114,8 +114,8 @@ describe("Test ApiTree", () => {
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
 
     expect(testTree.metadata).to.be.undefined;
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
-    expect(warnStub.callCount).to.be.equal(1);
+    expect(testTree.name).to.deep.equal(new Name("apis"));
+    expect(warnStub.callCount).to.equal(1);
     expect(
       warnStub.calledWith(
         `Metadata found, but failed to load for ${path.join(
@@ -126,14 +126,14 @@ describe("Test ApiTree", () => {
     ).to.be.true;
   });
 
-  it("is created with empty metadata (valid json)", async () => {
+  it("is created with empty metadata object", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
 
     await fs.writeJSON(path.join(tempDir.name, "apis", ".metadata.json"), {});
     const testTree = new TestTree(path.join(tempDir.name, "apis"));
 
-    expect(testTree.metadata).to.be.deep.equal({});
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.metadata).to.deep.equal({});
+    expect(testTree.name).to.deep.equal(new Name("apis"));
   });
 });

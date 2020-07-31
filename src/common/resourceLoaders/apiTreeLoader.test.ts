@@ -31,17 +31,17 @@ before(() => {
 });
 
 describe("Test createApiTree", () => {
-  it("is created with no children", async () => {
+  it("creates ApiTree with no children", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
 
     const testTree = await createApiTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
     expect(testTree.children).to.be.empty;
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.name).to.deep.equal(new Name("apis"));
   });
 
-  it("is created with 2 children", async () => {
+  it("creates ApiTree with 2 children", async () => {
     const tempDir = tmp.dirSync();
     await fs.ensureDir(path.join(tempDir.name, "apis"));
     await fs.ensureDir(path.join(tempDir.name, "apis", "child1"));
@@ -49,22 +49,21 @@ describe("Test createApiTree", () => {
 
     const testTree = await createApiTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
-    expect(testTree.children).to.have.length(2);
+    expect(testTree.children).to.have.lengthOf(2);
     expect(testTree.children[0].name).to.deep.equal(new Name("child1"));
     expect(testTree.children[1].name).to.deep.equal(new Name("child2"));
-    expect(testTree.name).to.be.deep.equal(new Name("apis"));
+    expect(testTree.name).to.deep.equal(new Name("apis"));
   });
 
-  it("is created with a child that has an api", async () => {
+  it("creates ApiTree with a child that has an API", async () => {
     const tempDir = tmp.dirSync();
-    await fs.ensureDir(path.join(tempDir.name, "apis"));
     await fs.ensureDir(path.join(tempDir.name, "apis", "child1"));
     await copyMercuryApi(path.join(tempDir.name, "apis", "child1", "mercury"));
     const testTree = await createApiTree(path.join(tempDir.name, "apis"));
     expect(testTree.metadata).to.be.undefined;
-    expect(testTree.children).to.have.length(1);
-    expect(testTree.children[0].children).to.have.length(1);
-    expect(testTree.children[0].children[0].name).to.be.deep.equal(
+    expect(testTree.children).to.have.lengthOf(1);
+    expect(testTree.children[0].children).to.have.lengthOf(1);
+    expect(testTree.children[0].children[0].name).to.deep.equal(
       // The name of the api in the test raml (ensures we've loaded it)
       new Name("Test Raml File")
     );
