@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.4.5
+
+* Added new profile for slas
+* updated to typescript 3.9
+
 ## 0.4.4
 
 * Added flag to `diff` command that adds the ability to find the difference between directories.
