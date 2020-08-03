@@ -14,7 +14,7 @@ import {
   getHappySpec,
   renderSpecAsFile,
   getSingleInvalidFile
-} from "../../test/testUtils";
+} from "../../testResources/testUtils";
 
 const PROFILE = "mercury";
 
