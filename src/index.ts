@@ -9,12 +9,12 @@ export { getBearer } from "./download/bearerToken";
 export { RestApi } from "./download/exchangeTypes";
 export { ramlToolLogger } from "./common/logger";
 
-import * as amf from "amf-client-js";
-export { amf };
+export * as amf from "amf-client-js";
 export { model } from "amf-client-js";
 
 export * from "./generate";
 
+export * as diff from "./diff";
 export {
   getAllDataTypes,
   getApiName,
