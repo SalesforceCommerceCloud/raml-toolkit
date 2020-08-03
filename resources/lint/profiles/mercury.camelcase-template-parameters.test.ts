@@ -11,7 +11,7 @@ import {
   breaksOnlyOneRule,
   renameKey,
   renderSpecAsFile
-} from "../../../test/testUtils";
+} from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
 const TEMPLATE_RULE =

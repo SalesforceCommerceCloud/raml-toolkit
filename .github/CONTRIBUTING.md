@@ -65,12 +65,12 @@ Profiles should be named with clarity to be descriptive of the purpose of that p
 
 #### Testing 
 
-We have provided a test bed for ensuring your custom validations work as expected.  We have profiled a [utils](../test/utils.js) file that provides some utility methods to easily test your profile.  Your test file should have the same name as your profile to clearly relate tests to profiles.
+We have provided a test bed for ensuring your custom validations work as expected.  We have profiled a [utils](../testResources/utils.js) file that provides some utility methods to easily test your profile.  Your test file should have the same name as your profile to clearly relate tests to profiles.
 Test files live alongside the source files. Unit tests for `src/commandName/commandName.ts` should have `src/commandName/commandName.test.ts` or for more complex test suites, `src/commandName/commandName.functionName.test.ts`. Resources should similiarly have tests in the `resources` path. All tests will be run in the CI. They will not be included when published.
 
 ##### Testing Examples<!-- omit in toc -->
 
-Refer to the mercury [tests](../test/mercury/mercury.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
+Refer to the mercury [tests](../testResources/mercury/mercury.js) if you want to get a more complete idea of how tests are written.  Here are some helpful examples:
 
 ```javascript
 
