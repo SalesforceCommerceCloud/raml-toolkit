@@ -164,5 +164,24 @@
         "changedProperty": "core:version"
       }
     }
+  },
+  {
+    "name": "Rule to ignore changes in examples",
+    "conditions": {
+      "any": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Example"
+        }
+      ]
+    },
+    "event": {
+      "type": "example-change",
+      "params": {
+        "category": "Ignored"
+      }
+    }
   }
 ]

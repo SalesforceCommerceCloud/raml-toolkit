@@ -14,6 +14,7 @@ import { RuleCategory } from "../ruleSet";
 export class NodeChanges {
   public added: { [key: string]: unknown };
   public removed: { [key: string]: unknown };
+  public ignored: { [key: string]: unknown };
   //categorized changes of the node
   public categorizedChanges: CategorizedChange[];
 
@@ -25,6 +26,7 @@ export class NodeChanges {
   constructor(public id: string, public type: string[]) {
     this.added = {};
     this.removed = {};
+    this.ignored = {};
     this.categorizedChanges = [];
   }
 
@@ -41,6 +43,15 @@ export class NodeChanges {
   hasBreakingChanges(): boolean {
     return this.categorizedChanges.some(
       c => c.category === RuleCategory.BREAKING
+    );
+  }
+
+  /**
+   * Returns true when there are ignored changes
+   */
+  hasIgnoredChanges(): boolean {
+    return this.categorizedChanges.some(
+      c => c.category === RuleCategory.IGNORED
     );
   }
 
