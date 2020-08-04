@@ -14,7 +14,6 @@ import { RuleCategory } from "../ruleSet";
 export class NodeChanges {
   public added: { [key: string]: unknown };
   public removed: { [key: string]: unknown };
-  public ignored: { [key: string]: unknown };
   //categorized changes of the node
   public categorizedChanges: CategorizedChange[];
 
@@ -26,7 +25,6 @@ export class NodeChanges {
   constructor(public id: string, public type: string[]) {
     this.added = {};
     this.removed = {};
-    this.ignored = {};
     this.categorizedChanges = [];
   }
 

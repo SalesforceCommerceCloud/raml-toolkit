@@ -31,7 +31,7 @@ function verifyRule(
       nodeChanges.added[rule.event.params.changedProperty]
     ];
   }
-  expect(categorizedChanges).to.have.length(countOfChanges);
+  expect(categorizedChanges).to.have.lengthOf(countOfChanges);
   expect(categorizedChanges[0].ruleName).to.equal(rule.name);
   expect(categorizedChanges[0].ruleEvent).to.equal(rule.event.type);
   expect(categorizedChanges[0].category).to.equal(rule.event.params.category);

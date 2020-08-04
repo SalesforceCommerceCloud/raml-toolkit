@@ -31,7 +31,6 @@ describe("Create an instance of NodeChanges", () => {
     expect(nodeChanges.type).to.deep.equal(["test:type"]);
     expect(nodeChanges.added).to.deep.equal({});
     expect(nodeChanges.removed).to.deep.equal({});
-    expect(nodeChanges.ignored).to.deep.equal({});
     expect(nodeChanges.categorizedChanges).to.deep.equal([]);
   });
 });
