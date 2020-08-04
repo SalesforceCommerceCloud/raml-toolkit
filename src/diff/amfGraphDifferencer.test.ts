@@ -222,21 +222,6 @@ describe("Changes to the properties with in a node", () => {
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
     expect(nodeChanges).to.have.length(0);
   });
-
-  it("Excludes node with empty type array", async () => {
-    const baseGraph = buildValidGraph();
-    const baseNode = baseGraph[AmfGraphTypes.KEY_GRAPH][0];
-    baseNode[AmfGraphTypes.KEY_NODE_TYPE] = [];
-    baseNode["core:version"] = "v1";
-
-    const newGraph = buildValidGraph();
-    const newNode = newGraph[AmfGraphTypes.KEY_GRAPH][0];
-    newNode[AmfGraphTypes.KEY_NODE_TYPE] = [];
-    newNode["core:version"] = "v2";
-
-    const nodeChanges = findGraphChanges(baseGraph, newGraph);
-    expect(nodeChanges).to.have.length(0);
-  });
 });
 
 describe("Changes to the array properties with in a node", () => {
