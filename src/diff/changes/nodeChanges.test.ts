@@ -86,7 +86,7 @@ describe("Check for ignored changes in a node", () => {
     nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
     const nonBreakingChange = new CategorizedChange(
       "r2",
-      "non-breaking-changed",
+      "non-breaking-change",
       RuleCategory.NON_BREAKING,
       ["old-non-breaking", "new-non-breaking"]
     );
@@ -102,7 +102,7 @@ describe("Check for ignored changes in a node", () => {
     nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
     const nonBreakingChange = new CategorizedChange(
       "r2",
-      "non-breaking-changed",
+      "non-breaking-change",
       RuleCategory.IGNORED,
       ["old-ignored-change", "new-ignored-change"]
     );
