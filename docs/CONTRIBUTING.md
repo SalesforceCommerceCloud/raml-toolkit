@@ -51,7 +51,8 @@ src
 └─┬ my-command
   ├── helpers.test.ts
   ├── helpers.ts
-  ├── index.test.ts
+  ├── myCommand.test.ts
+  ├── myCommand.ts
   └── index.ts
 ```
 
