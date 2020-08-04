@@ -164,7 +164,6 @@ describe("Examples change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-change");
     expect(changes[0].categorizedChanges).to.be.empty;
   });
 
