@@ -136,7 +136,7 @@ describe("Examples change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-change");
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
     expect(changes[0].categorizedChanges[0].ruleName).to.not.equal(rule.name);
   });
 
@@ -177,7 +177,7 @@ describe("Examples change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-change");
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
     verifyRule(changes[0], rule);
   });
 
@@ -191,7 +191,7 @@ describe("Examples change", () => {
       [nodeChanges, nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-change");
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
     verifyRule(changes[0], rule, 2);
   });
 });

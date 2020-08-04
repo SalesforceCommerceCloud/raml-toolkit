@@ -178,7 +178,7 @@
       ]
     },
     "event": {
-      "type": "example-change",
+      "type": "example-changed",
       "params": {
         "category": "Ignored"
       }
