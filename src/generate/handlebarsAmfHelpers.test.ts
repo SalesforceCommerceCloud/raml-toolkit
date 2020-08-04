@@ -12,7 +12,7 @@ import {
   isRequiredProperty,
   isTypeDefinition
 } from "./handlebarsAmfHelpers";
-import { verifyProperties } from "../../test/generate/handlebarsAmfHelpersTestUtils";
+import { verifyProperties } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
 import { expect } from "chai";

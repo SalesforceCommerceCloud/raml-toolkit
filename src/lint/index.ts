@@ -9,6 +9,7 @@ import fs from "fs";
 import { AMF } from "amf-client-js";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults } from "./lint";
+import { allCommonFlags } from "../common/flags";
 
 export const profilePath = path.join(
   __dirname,
@@ -21,6 +22,34 @@ const profiles = fs
   .map(file => file.slice(0, -5)); // Strip .raml extension from file name
 
 export default class LintCommand extends Command {
+  static description = `A linting tool for raml for Commerce Cloud and beyond`;
+
+  static flags = {
+    ...allCommonFlags(),
+    // Add --profile flag to set the custom profile
+    profile: flags.enum({
+      char: "p",
+      options: profiles,
+      description: "Profile to apply",
+      required: true
+    }),
+    // Add --warnings flag to show warnings
+    warnings: flags.boolean({
+      char: "w",
+      default: false,
+      description: "Show all the warnings"
+    })
+  };
+
+  static args = [
+    {
+      name: "filename",
+      description: "One or more RAML files to lint"
+    }
+  ];
+  // Allow a variable length list of files
+  static strict = false;
+
   async run(): Promise<void> {
     const { argv, flags } = this.parse(LintCommand);
 
@@ -57,32 +86,3 @@ export default class LintCommand extends Command {
     }
   }
 }
-
-LintCommand.description = `A linting tool for raml for commerce cloud and beyond
-
-FILENAME is one or more RAML files to lint.
-`;
-
-LintCommand.flags = {
-  // Add --profile flag to set the custom profile
-  profile: flags.enum({
-    char: "p",
-    options: profiles,
-    description: "profile to apply",
-    required: true
-  }),
-  // Add --warnings flag to show warnings
-  warnings: flags.boolean({
-    char: "w",
-    default: false,
-    description: "Show all the warnings"
-  }),
-  // Add --version flag to show CLI version
-  version: flags.version({ char: "v" }),
-  // Add --help flag to show CLI version
-  help: flags.help({ char: "h" })
-};
-
-LintCommand.args = [{ name: "filename" }];
-// This allows a variable length list of files
-LintCommand.strict = false;

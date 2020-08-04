@@ -13,7 +13,7 @@ import { Rule } from "json-rules-engine";
 import chai from "chai";
 import chaiFs from "chai-fs";
 
-import { DiffCommand as cmd } from ".";
+import { DiffCommand as cmd } from "./diffCommand";
 import * as diffDirectories from "./diffDirectories";
 import { NodeChanges } from "./changes/nodeChanges";
 import { ApiChanges } from "./changes/apiChanges";

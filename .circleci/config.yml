@@ -9,7 +9,7 @@ commands:
       - run: npm run compile
   test:
     steps:
-      - run: npm run test
+      - run: npm run test:ci
       - store_test_results:
           path: reports
 

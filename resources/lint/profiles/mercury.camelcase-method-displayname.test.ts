@@ -6,7 +6,7 @@
  */
 "use strict";
 import * as validator from "../../../src/lint/lint";
-import * as utils from "../../../test/testUtils";
+import * as utils from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
 

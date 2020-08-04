@@ -11,7 +11,7 @@ import {
   breaksOnlyOneRule,
   breaksTheseRules,
   conforms
-} from "../../../test/testUtils";
+} from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
 describe("base uri", () => {

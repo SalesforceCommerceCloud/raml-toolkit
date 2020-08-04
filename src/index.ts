@@ -15,6 +15,9 @@ export { model } from "amf-client-js";
 
 export * from "./generate";
 
+// eslint-disable-next-line prettier/prettier
+export * as diff from "./diff";
+
 export {
   getAllDataTypes,
   getApiName,

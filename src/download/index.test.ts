@@ -14,10 +14,10 @@ import { DownloadCommand } from ".";
 chai.use(chaiFs);
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const assetSearchResults = require("../../test/download/resources/assetSearch.json");
+const assetSearchResults = require("../../testResources/download/resources/assetSearch.json");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const asset = require("../../test/download/resources/getAsset");
+const asset = require("../../testResources/download/resources/getAsset");
 // Use a shorter URL for better readability
 asset.files.find(file => file.classifier === "fat-raml").externalLink =
   "https://short.url/raml.zip";

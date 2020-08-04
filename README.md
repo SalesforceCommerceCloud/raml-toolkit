@@ -34,7 +34,7 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 
 #### `raml-toolkit diff BASE NEW`
 
-This command has three modes: ruleset, diff-only, and directory.
+Compute the difference between two API specifications
 
 ```txt
 USAGE
@@ -45,17 +45,16 @@ ARGUMENTS
   NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
-  -h, --help               show CLI help
-  -o, --out-file=out-file  File to store the computed difference
+  -o, --out-file=out-file                         File to store the computed difference
 
-  -r, --ruleset=ruleset    [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules] Path to ruleset to
-                           apply to diff
+  -r, --ruleset=ruleset                           [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules
+                                                  ] Path to ruleset to apply to diff
 
-  -v, --version            show CLI version
+  --diff-only                                     Only show differences without evaluating a ruleset
 
-  --diff-only              Only show differences without evaluating a ruleset
+  --dir                                           Find the differences for all files in two directories
 
-  --dir                    Find the differences for all files in two directories
+  --log-level=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 
 DESCRIPTION
   This command has three modes: ruleset, diff-only, and directory.
@@ -91,29 +90,28 @@ OPTIONS
 
   -g, --group-by=group-by                          (required) Category to use to group APIs together
 
-  -h, --help                                       show CLI help
-
   -s, --search=search                              Search query to filter results from Anypoint Exchange
 
   --deployment-regex-flags=deployment-regex-flags  RegExp flags to specify for advanced deployment matching
+
+  --log-level=trace|debug|info|warn|error|silent   [default: info] Set the level of detail in the output
 ```
 
 #### `raml-toolkit lint [FILENAME]`
 
-A linting tool for raml for commerce cloud and beyond
+A linting tool for raml for Commerce Cloud and beyond
 
 ```txt
 USAGE
   $ raml-toolkit lint [FILENAME]
 
-OPTIONS
-  -h, --help               show CLI help
-  -p, --profile=(mercury)  (required) profile to apply
-  -v, --version            show CLI version
-  -w, --warnings           Show all the warnings
+ARGUMENTS
+  FILENAME  One or more RAML files to lint
 
-DESCRIPTION
-  FILENAME is one or more RAML files to lint.
+OPTIONS
+  -p, --profile=(mercury)                         (required) Profile to apply
+  -w, --warnings                                  Show all the warnings
+  --log-level=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 ```
 <!-- commandsstop -->
 

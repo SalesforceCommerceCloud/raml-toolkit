@@ -12,7 +12,7 @@ import {
   breaksTheseRules,
   renameKey,
   renderSpecAsFile
-} from "../../../test/testUtils";
+} from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
 const NAME_VALIDATION =
