@@ -14,7 +14,6 @@ export class CategorizedChange {
    * @param ruleName - Name of the rule that is applied/passed
    * @param ruleEvent - Event type defined in the rule
    * @param category - Category defined in the rule. Example: Breaking, Non-Breaking, Ignore
-   * @param ignored - Flag indicating if a change is ignored by the rule
    * @param change - actual value that is changed - [oldValue, newValue]; optional if the rule is ignored
    */
   constructor(
