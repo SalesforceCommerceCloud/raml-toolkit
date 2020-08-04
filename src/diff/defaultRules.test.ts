@@ -126,7 +126,7 @@ describe("Version change", () => {
 });
 
 describe("Examples change", () => {
-  it("does not apply ignore examples rule on a change that has no apiContract:Example change type", async () => {
+  it("does not apply ignore examples rule on a change that has no apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       "apiContract:WebAPI"
     ]);
@@ -140,7 +140,7 @@ describe("Examples change", () => {
     expect(changes[0].categorizedChanges[0].ruleName).to.not.equal(rule.name);
   });
 
-  it("does not apply ignore examples rule on a change that has undefined as the change type", async () => {
+  it("does not apply ignore examples rule on a change that has undefined as the node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       undefined
     ]);
@@ -153,7 +153,7 @@ describe("Examples change", () => {
     expect(changes[0].categorizedChanges).to.be.empty;
   });
 
-  it("does not apply ignore examples rule on a change that has no change type", async () => {
+  it("does not apply ignore examples rule on a change that has no node type", async () => {
     const nodeChanges = new NodeChanges(
       "#/web-api/end-points/resource/get",
       []
@@ -168,7 +168,7 @@ describe("Examples change", () => {
     expect(changes[0].categorizedChanges).to.be.empty;
   });
 
-  it("applies ignore examples rule on a change that includes only one apiContract:Example change type", async () => {
+  it("applies ignore examples rule on a change that includes only one apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       "apiContract:Example"
     ]);
@@ -182,7 +182,7 @@ describe("Examples change", () => {
     verifyRule(changes[0], rule);
   });
 
-  it("applies ignore examples rule changes that includes many apiContract:Example change type", async () => {
+  it("applies ignore examples rule changes that includes many apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       "apiContract:Example"
     ]);
