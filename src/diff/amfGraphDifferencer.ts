@@ -175,9 +175,11 @@ function parseGraphDelta(
  * Returns true if type of amf graph node is defined
  * @param nodeType - Types of amf graph node
  */
-function isNodeTypeDefined(nodeType: string[]): boolean {
+function isNodeTypeDefined(
+  nodeType: string[] | undefined
+): nodeType is string[] {
   //source map nodes may not have type defined
-  return nodeType != null && nodeType.length > 0;
+  return nodeType?.length > 0;
 }
 
 /**
@@ -192,7 +194,7 @@ function parseNodePropDelta(
   nodeId: string,
   nodeType: string[],
   nodeDelta: AmfGraphDeltaTypes.NodePropertyDelta
-): NodeChanges {
+): NodeChanges | undefined {
   if (!isNodeTypeDefined(nodeType)) {
     ramlToolLogger.debug(
       `Ignoring changes to the node with no type: ${nodeId}`
@@ -283,7 +285,7 @@ export function getDeltaType<T>(
 export function parseNodeDelta(
   delta: AmfGraphDeltaTypes.ArrayElementDelta<AmfGraphTypes.Node>,
   deltaType: DeltaType
-): NodeChanges {
+): NodeChanges | undefined {
   const node = delta[0];
   const id = node[AmfGraphTypes.KEY_NODE_ID];
   const type = node[AmfGraphTypes.KEY_NODE_TYPE];

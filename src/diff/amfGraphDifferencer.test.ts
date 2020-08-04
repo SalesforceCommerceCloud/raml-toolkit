@@ -68,7 +68,7 @@ describe("Validate flattened AMF graph", () => {
 describe("Changes to graph nodes", () => {
   it("returns empty changes when base graph content is same as new graph content", async () => {
     const nodeChanges = findGraphChanges(buildValidGraph(), buildValidGraph());
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 
   it("returns changes as 'Added' when the nodes are missing in base graph", async () => {
@@ -77,7 +77,7 @@ describe("Changes to graph nodes", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, buildValidGraph());
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].id).to.equal(obj[AmfGraphTypes.KEY_NODE_ID]);
     expect(nodeChanges[0].type).to.deep.equal(obj[AmfGraphTypes.KEY_NODE_TYPE]);
     expect(nodeChanges[0].added).to.deep.equal(
@@ -92,7 +92,7 @@ describe("Changes to graph nodes", () => {
 
     const nodeChanges = findGraphChanges(buildValidGraph(), newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].id).to.equal(obj[AmfGraphTypes.KEY_NODE_ID]);
     expect(nodeChanges[0].type).to.deep.equal(obj[AmfGraphTypes.KEY_NODE_TYPE]);
     expect(nodeChanges[0].removed).to.deep.equal(
@@ -106,7 +106,7 @@ describe("Changes to graph nodes", () => {
     newGraph[AmfGraphTypes.KEY_GRAPH].reverse();
 
     const nodeChanges = findGraphChanges(buildValidGraph(), newGraph);
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 
   it("returns changes in @context node", async () => {
@@ -115,7 +115,7 @@ describe("Changes to graph nodes", () => {
 
     const nodeChanges = findGraphChanges(buildValidGraph(), rightGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].id).to.equal(AmfGraphTypes.KEY_CONTEXT);
     expect(nodeChanges[0].type).to.deep.equal(CONTEXT_TYPE);
     expect(nodeChanges[0].removed["@base"]).to.equal("test.raml");
@@ -145,7 +145,7 @@ describe("Changes to graph nodes", () => {
     newGraph[AmfGraphTypes.KEY_GRAPH].pop();
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 
   it("Excludes node with empty type array", async () => {
@@ -157,7 +157,7 @@ describe("Changes to graph nodes", () => {
     newGraph[AmfGraphTypes.KEY_GRAPH].pop();
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 });
 
@@ -169,7 +169,7 @@ describe("Changes to the properties with in a node", () => {
 
     const nodeChanges = findGraphChanges(buildValidGraph(), newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].added["core:version"]).to.equal("v1");
   });
 
@@ -180,7 +180,7 @@ describe("Changes to the properties with in a node", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, buildValidGraph());
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].removed["core:version"]).to.equal("v1");
   });
 
@@ -192,7 +192,7 @@ describe("Changes to the properties with in a node", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].removed["core:version"]).to.equal("v1");
     expect(nodeChanges[0].added["core:version"]).to.equal("v2");
   });
@@ -220,7 +220,7 @@ describe("Changes to the properties with in a node", () => {
     newNode["core:version"] = "v2";
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 });
 
@@ -245,7 +245,7 @@ describe("Changes to the array properties with in a node", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].added["apiContract:endpoint"]).to.deep.equal([
       newArrayValue
     ]);
@@ -269,7 +269,7 @@ describe("Changes to the array properties with in a node", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].removed["apiContract:endpoint"]).to.deep.equal([
       removedArrayValue
     ]);
@@ -292,7 +292,7 @@ describe("Changes to the array properties with in a node", () => {
     ].reverse();
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
-    expect(nodeChanges).to.have.length(0);
+    expect(nodeChanges).to.have.lengthOf(0);
   });
 
   it("throws error for invalid node array property delta", async () => {
@@ -325,7 +325,7 @@ describe("Changes to the reference node ID with in a node", () => {
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
 
-    expect(nodeChanges).to.have.length(1);
+    expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].removed["security:scheme"]).to.deep.equal(
       oldReferenceValue
     );
