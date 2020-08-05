@@ -1,6 +1,6 @@
 [
   {
-    "name": "Rule to detect display name changes",
+    "name": "Display Name Changed",
     "conditions": {
       "all": [
         {
@@ -32,7 +32,7 @@
     }
   },
   {
-    "name": "Rule to detect operation removal",
+    "name": "Operation Removed",
     "conditions": {
       "all": [
         {
@@ -64,7 +64,7 @@
     }
   },
   {
-    "name": "Rule to detect parameter removal",
+    "name": "Parameter Removed",
     "conditions": {
       "all": [
         {
@@ -96,7 +96,7 @@
     }
   },
   {
-    "name": "Rule to detect required parameter addition",
+    "name": "Parameter Added",
     "conditions": {
       "all": [
         {
@@ -134,7 +134,7 @@
     }
   },
   {
-    "name": "Rule to detect version change",
+    "name": "Version Changed",
     "conditions": {
       "all": [
         {
@@ -166,7 +166,7 @@
     }
   },
   {
-    "name": "Rule to ignore changes in examples",
+    "name": "Example Changed",
     "conditions": {
       "any": [
         {
