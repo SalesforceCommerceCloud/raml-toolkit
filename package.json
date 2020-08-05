@@ -165,7 +165,6 @@
     "eslint-config-prettier": "^6.4.0",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "flatted": "^3.0.4",
     "jszip": "^3.2.2",
     "lint-staged": "^8.1.0",
     "mocha": "^7.0.1",
