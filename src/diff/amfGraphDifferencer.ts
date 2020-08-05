@@ -172,6 +172,17 @@ function parseGraphDelta(
 }
 
 /**
+ * Returns true if type of amf graph node is defined
+ * @param nodeType - Types of amf graph node
+ */
+function isNodeTypeDefined(
+  nodeType: string[] | undefined
+): nodeType is string[] {
+  //source map nodes may not have type defined
+  return nodeType?.length > 0;
+}
+
+/**
  * Parse delta of the node properties
  * @param nodeId - ID of the node
  * @param nodeType - Type of the node
@@ -183,7 +194,13 @@ function parseNodePropDelta(
   nodeId: string,
   nodeType: string[],
   nodeDelta: AmfGraphDeltaTypes.NodePropertyDelta
-): NodeChanges {
+): NodeChanges | undefined {
+  if (!isNodeTypeDefined(nodeType)) {
+    ramlToolLogger.debug(
+      `Ignoring changes to the node with no type: ${nodeId}`
+    );
+    return undefined;
+  }
   let nodeChanges = new NodeChanges(nodeId, nodeType);
   //ignore node id and type
   const keys = Object.keys(nodeDelta).filter(
@@ -268,14 +285,18 @@ export function getDeltaType<T>(
 export function parseNodeDelta(
   delta: AmfGraphDeltaTypes.ArrayElementDelta<AmfGraphTypes.Node>,
   deltaType: DeltaType
-): NodeChanges {
-  let nodeChanges;
+): NodeChanges | undefined {
   const node = delta[0];
   const id = node[AmfGraphTypes.KEY_NODE_ID];
   const type = node[AmfGraphTypes.KEY_NODE_TYPE];
+  if (!isNodeTypeDefined(type)) {
+    ramlToolLogger.debug(`Ignoring changes to the node with no type: ${id}`);
+    return undefined;
+  }
   ramlToolLogger.debug(
     `Parsing delta of node: ${id}, delta type: ${DeltaType[deltaType]}`
   );
+  let nodeChanges;
   //Id and type are already set, so exclude them
   const nodeProps = _.omit(
     node,
