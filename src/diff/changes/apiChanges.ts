@@ -31,9 +31,16 @@ export class ApiChanges {
   }
 
   /**
+   * Return true if there are categorized changes
+   */
+  hasCategorizedChanges(): boolean {
+    return this.nodeChanges.some(n => n.hasCategorizedChanges());
+  }
+
+  /**
    * Get nodes that has categorized changes
    */
-  getCategorizedChanges(): NodeChanges[] {
+  getNodesWithCategorizedChanges(): NodeChanges[] {
     return this.nodeChanges.filter(n => n.hasCategorizedChanges());
   }
 
@@ -78,9 +85,54 @@ export class ApiChanges {
   }
 
   /**
-   * Format the changes for printing to console
+   * Format the changes as a string for printing to console
+   *
+   * @param extraIndent - Number of levels the headings should be nested
    */
-  toString(): string {
-    return ``;
+  toString(extraIndent = 0): string {
+    // Ensure passed value is a non-negative number
+    extraIndent = Math.max(0, extraIndent) || 0;
+    /**
+     * Indents the first non-empty line by the sum of the amounts passed to this
+     * function and the outer function. Also appends a newline.
+     * @param baseIndent Base amount to indent
+     * @param str String to indent
+     * @returns The indented string
+     */
+    const indent = (baseIndent: number, str: string): string =>
+      str.replace(/^\n*/, "$&" + " ".repeat(baseIndent + extraIndent)) + "\n";
+
+    const categories = new Set(Object.values(RuleCategory));
+    const changedNodes = this.getNodesWithCategorizedChanges();
+    let out = "";
+
+    for (const node of changedNodes) {
+      out += indent(0, `Node: ${node.id}`);
+
+      for (const cc of node.categorizedChanges) {
+        // TODO: When Ignored is no longer allowed as a CategorizedChange, || [] can be removed
+        const change = (cc.change || [])
+          // `change.change` is a tuple, but some rules only set a single value
+          .filter(v => v !== undefined)
+          .join(" → ");
+        out += indent(2, `[${cc.category}] ${cc.ruleName}: ${change}`);
+      }
+    }
+
+    if (changedNodes.length > 0) {
+      // TODO: When Ignored is no longer allowed as a CategorizedChange, the
+      // count still needs to be in the summary
+      out += indent(0, `\nSummary`);
+      for (const category of categories) {
+        const count = this.getChangeCountByCategory(category);
+        if (count > 0) {
+          out += indent(2, `${count} ${category} Changes`);
+        }
+      }
+    } else {
+      out += indent(0, `No changes.`);
+    }
+
+    return out;
   }
 }
