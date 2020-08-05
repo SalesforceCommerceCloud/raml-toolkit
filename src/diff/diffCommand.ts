@@ -13,7 +13,6 @@ import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
 import { allCommonFlags } from "../common/flags";
-import { ramlToolLogger } from "../common/logger";
 
 export class DiffCommand extends Command {
   // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
@@ -56,6 +55,12 @@ Exit statuses:
     "out-file": flags.string({
       char: "o",
       description: "File to store the computed difference"
+    }),
+    format: flags.enum({
+      char: "f",
+      description:
+        "Format of the output. Defaults to JSON if --out-file is specified, otherwise text.",
+      options: ["json", "text"]
     })
   };
 
@@ -75,17 +80,31 @@ Exit statuses:
   ];
 
   /**
-   * If a file is given, saves the changes to the file as JSON. Otherwise, logs
-   * the changes to console as a formatted string.
+   * If a file is given, saves the changes to the file, as JSON by default.
+   * Otherwise, logs the changes to console, as text by default.
    *
    * @param changes - The changes to save or log
-   * @param file - The file to save to
+   * @param flags - Parsed CLI flags passed to the command
    */
-  protected async _saveOrLog(changes: unknown, file?: string): Promise<void> {
+  protected async _saveOrLog(
+    changes: ApiChanges | ApiCollectionChanges,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<void> {
+    const file = flags["out-file"];
     if (file) {
-      await fs.writeJson(file, changes);
+      // If file is given, default to JSON format unless text is specified
+      if (flags.format === "text") {
+        await fs.writeFile(file, changes.toString());
+      } else {
+        await fs.writeJson(file, changes);
+      }
     } else {
-      ramlToolLogger.log(changes?.toString());
+      // If file is not given, default to text unless JSON is specified
+      if (flags.format === "json") {
+        this.log(JSON.stringify(changes, null, 2));
+      } else {
+        this.log(changes.toString());
+      }
     }
   }
 
@@ -105,7 +124,7 @@ Exit statuses:
     let apiCollectionChanges: ApiCollectionChanges;
     try {
       apiCollectionChanges = await diffRamlDirectories(baseApis, newApis);
-      await this._saveOrLog(apiCollectionChanges, flags["out-file"]);
+      await this._saveOrLog(apiCollectionChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -133,7 +152,7 @@ Exit statuses:
     try {
       const apiDifferencer = new ApiDifferencer(baseApis, newApis);
       apiChanges = await apiDifferencer.findChanges();
-      await this._saveOrLog(apiChanges, flags["out-file"]);
+      await this._saveOrLog(apiChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -162,7 +181,7 @@ Exit statuses:
     const apiDifferencer = new ApiDifferencer(baseApis, newApis);
     try {
       apiChanges = await apiDifferencer.findAndCategorizeChanges(flags.ruleset);
-      await this._saveOrLog(apiChanges, flags["out-file"]);
+      await this._saveOrLog(apiChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
