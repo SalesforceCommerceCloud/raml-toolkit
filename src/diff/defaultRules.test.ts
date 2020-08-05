@@ -18,7 +18,11 @@ const defaultRules = fs.readJSONSync(ApiDifferencer.DEFAULT_RULES_PATH);
  * @param nodeChanges - Node changes
  * @param rule - Rule that is expected to be applied
  */
-function verifyRule(nodeChanges: NodeChanges, rule: Rule): void {
+function verifyRule(
+  nodeChanges: NodeChanges,
+  rule: Rule,
+  countOfChanges = 1
+): void {
   const categorizedChanges = nodeChanges.categorizedChanges;
   let changedValues: [unknown, unknown];
   if (rule.event.params.changedProperty) {
@@ -27,7 +31,7 @@ function verifyRule(nodeChanges: NodeChanges, rule: Rule): void {
       nodeChanges.added[rule.event.params.changedProperty]
     ];
   }
-  expect(categorizedChanges).to.have.length(1);
+  expect(categorizedChanges).to.have.lengthOf(countOfChanges);
   expect(categorizedChanges[0].ruleName).to.equal(rule.name);
   expect(categorizedChanges[0].ruleEvent).to.equal(rule.event.type);
   expect(categorizedChanges[0].category).to.equal(rule.event.params.category);
@@ -118,5 +122,76 @@ describe("Version change", () => {
     );
     const rule = defaultRules.find(r => r.event.type === "version-changed");
     verifyRule(changes[0], rule);
+  });
+});
+
+describe("Examples change", () => {
+  it("does not apply ignore examples rule on a change that has no apiContract:Example node type", async () => {
+    const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+      "apiContract:WebAPI"
+    ]);
+    nodeChanges.added = { "core:version": "v2" };
+    nodeChanges.removed = { "core:version": "v1" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    expect(changes[0].categorizedChanges[0].ruleName).to.not.equal(rule.name);
+  });
+
+  it("does not apply ignore examples rule on a change that has undefined as the node type", async () => {
+    const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+      undefined
+    ]);
+    nodeChanges.added = { "core:version": "v2" };
+    nodeChanges.removed = { "core:version": "v1" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    expect(changes[0].categorizedChanges).to.be.empty;
+  });
+
+  it("does not apply ignore examples rule on a change that has no node type", async () => {
+    const nodeChanges = new NodeChanges(
+      "#/web-api/end-points/resource/get",
+      []
+    );
+    nodeChanges.added = { "core:version": "v2" };
+    nodeChanges.removed = { "core:version": "v1" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    expect(changes[0].categorizedChanges).to.be.empty;
+  });
+
+  it("applies ignore examples rule on a change that includes only one apiContract:Example node type", async () => {
+    const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+      "apiContract:Example"
+    ]);
+    nodeChanges.added = { "core:description": "Old example" };
+    nodeChanges.removed = { "core:description": "New example" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    verifyRule(changes[0], rule);
+  });
+
+  it("applies ignore examples rule changes that includes many apiContract:Example node type", async () => {
+    const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+      "apiContract:Example"
+    ]);
+    nodeChanges.added = { "core:description": "Old example" };
+    nodeChanges.removed = { "core:description": "New example" };
+    const changes = await applyRules(
+      [nodeChanges, nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    verifyRule(changes[0], rule, 2);
   });
 });

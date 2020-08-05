@@ -45,6 +45,15 @@ export class NodeChanges {
   }
 
   /**
+   * Returns true when there are ignored changes
+   */
+  hasIgnoredChanges(): boolean {
+    return this.categorizedChanges.some(
+      c => c.category === RuleCategory.IGNORED
+    );
+  }
+
+  /**
    * Get the number of changes by category
    * @param category - category of the change
    */
