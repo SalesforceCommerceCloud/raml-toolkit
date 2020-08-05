@@ -64,6 +64,55 @@ describe("Check for categorized changes in a node", () => {
   });
 });
 
+describe("Check for ignored changes in a node", () => {
+  it("returns false when there are no ignored changes", async () => {
+    const nodeChanges = buildNodeChanges();
+    expect(nodeChanges.hasCategorizedChanges()).to.be.true;
+    expect(nodeChanges.hasIgnoredChanges()).to.be.false;
+    expect(nodeChanges.getIgnoredChangesCount()).to.equal(0);
+  });
+
+  it("returns true when there exists only one ignored change", async () => {
+    const nodeChanges = buildNodeChanges();
+    nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
+    expect(nodeChanges.hasCategorizedChanges()).to.be.true;
+    expect(nodeChanges.hasIgnoredChanges()).to.be.true;
+    expect(nodeChanges.getIgnoredChangesCount()).to.equal(1);
+  });
+
+  it("returns true when there is an ignored change and a non breaking change", async () => {
+    const nodeChanges = buildNodeChanges();
+    nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
+    const nonBreakingChange = new CategorizedChange(
+      "r2",
+      "non-breaking-change",
+      RuleCategory.NON_BREAKING,
+      ["old-non-breaking", "new-non-breaking"]
+    );
+    nodeChanges.categorizedChanges.push(nonBreakingChange);
+    expect(nodeChanges.hasCategorizedChanges()).to.be.true;
+    expect(nodeChanges.hasIgnoredChanges()).to.be.true;
+    expect(nodeChanges.hasBreakingChanges()).to.be.false;
+    expect(nodeChanges.getIgnoredChangesCount()).to.equal(1);
+  });
+
+  it("returns true when there multiple ignored changes", async () => {
+    const nodeChanges = buildNodeChanges();
+    nodeChanges.categorizedChanges[0].category = RuleCategory.IGNORED;
+    const nonBreakingChange = new CategorizedChange(
+      "r2",
+      "non-breaking-change",
+      RuleCategory.IGNORED,
+      ["old-ignored-change", "new-ignored-change"]
+    );
+    nodeChanges.categorizedChanges.push(nonBreakingChange);
+    expect(nodeChanges.hasCategorizedChanges()).to.be.true;
+    expect(nodeChanges.hasIgnoredChanges()).to.be.true;
+    expect(nodeChanges.hasBreakingChanges()).to.be.false;
+    expect(nodeChanges.getIgnoredChangesCount()).to.equal(2);
+  });
+});
+
 describe("Get number of categorized changes in a node", () => {
   it("returns breaking changes count", async () => {
     const nodeChanges = buildNodeChanges();
