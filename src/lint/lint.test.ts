@@ -72,7 +72,7 @@ describe("#printResults", () => {
 describe("#validateCustom", () => {
   let testModel: model.document.Document;
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     await AMF.init();
     testModel = new model.document.Document();
   });
