@@ -11,7 +11,7 @@ import {
   renameKey,
   conforms,
   breaksOnlyOneRule,
-  renderSpecAsFile
+  renderSpecAsFile,
 } from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
@@ -23,7 +23,7 @@ describe("no literal question marks in property name tests", () => {
   let properties;
   let datatypeProperties;
 
-  beforeEach(function() {
+  beforeEach(function () {
     doc = getHappySpec();
     properties =
       doc["/resource"]["/{resourceId}"].get.responses["200"].body[

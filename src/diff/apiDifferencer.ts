@@ -40,7 +40,7 @@ export class ApiDifferencer {
   async findChanges(): Promise<ApiChanges> {
     const [leftGraph, rightGraph] = await Promise.all([
       this.generateGraph(this.baseApiSpec),
-      this.generateGraph(this.newApiSpec)
+      this.generateGraph(this.newApiSpec),
     ]);
     ramlToolLogger.info(
       `Finding differences between flattened JSON-LD of ${this.baseApiSpec} and ${this.newApiSpec}`

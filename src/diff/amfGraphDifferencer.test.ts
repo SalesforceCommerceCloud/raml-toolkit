@@ -10,7 +10,7 @@ import {
   DeltaType,
   findGraphChanges,
   parseNodeDelta,
-  parsePropertyDelta
+  parsePropertyDelta,
 } from "./amfGraphDifferencer";
 import * as AmfGraphTypes from "./amfGraphTypes";
 import _ from "lodash";
@@ -23,15 +23,15 @@ function buildValidGraph(): AmfGraphTypes.FlattenedGraph {
       {
         [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
         [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
-        "core:name": "Test Raml"
+        "core:name": "Test Raml",
       },
       {
         [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource",
         [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:endpoint"],
-        "apiContract:path": "/resource"
-      }
+        "apiContract:path": "/resource",
+      },
     ],
-    [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
+    [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" },
   };
 }
 
@@ -128,8 +128,8 @@ describe("Changes to graph nodes", () => {
         [
           {
             [AmfGraphTypes.KEY_NODE_ID]: "node1",
-            [AmfGraphTypes.KEY_NODE_TYPE]: ["test:type"]
-          }
+            [AmfGraphTypes.KEY_NODE_TYPE]: ["test:type"],
+          },
         ],
         DeltaType.MODIFIED
       )
@@ -228,40 +228,40 @@ describe("Changes to the array properties with in a node", () => {
   it("returns added array properties", async () => {
     const baseGraph = buildValidGraph();
     const arrayValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource"
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource",
     };
     baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
-      arrayValue
+      arrayValue,
     ];
 
     const newGraph = buildValidGraph();
     const newArrayValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}"
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}",
     };
     newGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
       arrayValue,
-      newArrayValue
+      newArrayValue,
     ];
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
 
     expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].added["apiContract:endpoint"]).to.deep.equal([
-      newArrayValue
+      newArrayValue,
     ]);
   });
 
   it("returns removed array properties", async () => {
     const baseGraph = buildValidGraph();
     const arrayValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource"
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource",
     };
     const removedArrayValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}"
+      [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource/{resourceId}",
     };
     baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
       arrayValue,
-      removedArrayValue
+      removedArrayValue,
     ];
 
     const newGraph = buildValidGraph();
@@ -271,7 +271,7 @@ describe("Changes to the array properties with in a node", () => {
 
     expect(nodeChanges).to.have.lengthOf(1);
     expect(nodeChanges[0].removed["apiContract:endpoint"]).to.deep.equal([
-      removedArrayValue
+      removedArrayValue,
     ]);
   });
 
@@ -281,14 +281,14 @@ describe("Changes to the array properties with in a node", () => {
       { [AmfGraphTypes.KEY_NODE_ID]: "#/web-api/end-points/resource" },
       {
         [AmfGraphTypes.KEY_NODE_ID]:
-          "#/web-api/end-points/resource/{resourceId}"
-      }
+          "#/web-api/end-points/resource/{resourceId}",
+      },
     ];
     baseGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = arr;
 
     const newGraph = buildValidGraph();
     newGraph[AmfGraphTypes.KEY_GRAPH][0]["apiContract:endpoint"] = [
-      ...arr
+      ...arr,
     ].reverse();
 
     const nodeChanges = findGraphChanges(baseGraph, newGraph);
@@ -311,7 +311,7 @@ describe("Changes to the reference node ID with in a node", () => {
   it("returns modified reference property", async () => {
     const baseGraph = buildValidGraph();
     const oldReferenceValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test"
+      [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test",
     };
     baseGraph[AmfGraphTypes.KEY_GRAPH][1][
       "security:scheme"
@@ -319,7 +319,8 @@ describe("Changes to the reference node ID with in a node", () => {
 
     const newGraph = buildValidGraph();
     const newReferenceValue = {
-      [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test-updated"
+      [AmfGraphTypes.KEY_NODE_ID]:
+        "#/declarations/securitySchemes/test-updated",
     };
     newGraph[AmfGraphTypes.KEY_GRAPH][1]["security:scheme"] = newReferenceValue;
 
@@ -340,20 +341,20 @@ describe("Changes to the reference node ID with in a node", () => {
         {
           [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
           [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
-          reference: { [AmfGraphTypes.KEY_NODE_ID]: "ref-node" }
-        }
+          reference: { [AmfGraphTypes.KEY_NODE_ID]: "ref-node" },
+        },
       ],
-      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
+      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" },
     };
     const newGraph = {
       [AmfGraphTypes.KEY_GRAPH]: [
         {
           [AmfGraphTypes.KEY_NODE_ID]: "#/web-api",
           [AmfGraphTypes.KEY_NODE_TYPE]: ["apiContract:WebAPI"],
-          reference: { prop: "test" } //this is invalid, reference should have only @id property
-        }
+          reference: { prop: "test" }, //this is invalid, reference should have only @id property
+        },
       ],
-      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" }
+      [AmfGraphTypes.KEY_CONTEXT]: { "@base": "test.raml" },
     };
 
     expect(() => findGraphChanges(baseGraph, newGraph)).to.throw(

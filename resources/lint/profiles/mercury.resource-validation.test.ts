@@ -11,7 +11,7 @@ import {
   conforms,
   breaksTheseRules,
   renameKey,
-  renderSpecAsFile
+  renderSpecAsFile,
 } from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";

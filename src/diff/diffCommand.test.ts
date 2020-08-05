@@ -112,7 +112,7 @@ describe("raml-toolkit cli diff command", () => {
     .stdout()
     .do(() => cmd.run(["--version"]))
     .exit(0)
-    .it("checks that the version string starts with the app name", ctx => {
+    .it("checks that the version string starts with the app name", (ctx) => {
       expect(ctx.stdout).to.contain("@commerce-apps/raml-toolkit");
     });
 
@@ -197,7 +197,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlOld.name,
         "--ruleset",
-        operationRemovedRuleset.name
+        operationRemovedRuleset.name,
       ])
     )
     .exit(0)
@@ -211,7 +211,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlAdded.name,
         "--ruleset",
-        operationRemovedRuleset.name
+        operationRemovedRuleset.name,
       ])
     )
     .exit(0)
@@ -224,7 +224,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         ramlRemoved.name,
         "--ruleset",
-        operationRemovedRuleset.name
+        operationRemovedRuleset.name,
       ])
     )
     .exit(1)
@@ -238,7 +238,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         "--diff-only",
         "--ruleset",
-        operationRemovedRuleset.name
+        operationRemovedRuleset.name,
       ])
     )
     .exit(2)
@@ -258,7 +258,7 @@ describe("raml-toolkit cli diff command", () => {
         ramlOld.name,
         "--dir",
         "--ruleset",
-        operationRemovedRuleset.name
+        operationRemovedRuleset.name,
       ])
     )
     .exit(2)

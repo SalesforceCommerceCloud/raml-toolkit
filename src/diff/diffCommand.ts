@@ -40,22 +40,22 @@ Exit statuses:
       // Displaying the require()-able form is shorter and always the same.
       description: `[default:${ApiDifferencer.DEFAULT_RULES_PACKAGE_PATH}] Path to ruleset to apply to diff`,
       env: "DIFF_RULESET",
-      exclusive: ["diff-only", "dir"]
+      exclusive: ["diff-only", "dir"],
     }),
     "diff-only": flags.boolean({
       description: "Only show differences without evaluating a ruleset",
       default: false,
-      exclusive: ["ruleset", "dir"]
+      exclusive: ["ruleset", "dir"],
     }),
     dir: flags.boolean({
       description: "Find the differences for all files in two directories",
       default: false,
-      exclusive: ["ruleset", "diff-only"]
+      exclusive: ["ruleset", "diff-only"],
     }),
     "out-file": flags.string({
       char: "o",
-      description: "File to store the computed difference"
-    })
+      description: "File to store the computed difference",
+    }),
   };
 
   static args = [
@@ -63,14 +63,14 @@ Exit statuses:
       name: "base",
       required: true,
       description:
-        "The base API spec file (ruleset / diff-only mode) or configuration (directory mode)"
+        "The base API spec file (ruleset / diff-only mode) or configuration (directory mode)",
     },
     {
       name: "new",
       required: true,
       description:
-        "The new API spec file (ruleset / diff-only mode) or configuration (directory mode)"
-    }
+        "The new API spec file (ruleset / diff-only mode) or configuration (directory mode)",
+    },
   ];
 
   /**

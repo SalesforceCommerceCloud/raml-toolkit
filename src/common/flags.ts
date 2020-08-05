@@ -19,7 +19,7 @@ export const logLevel = flags.build({
   // Default is manually specified because use numbers, but want to show text
   description: "[default: info] Set the level of detail in the output",
   env: "RAML_TOOLKIT_LOG_LEVEL",
-  options: Object.keys(logger.levels).map(l => l.toLowerCase()),
+  options: Object.keys(logger.levels).map((l) => l.toLowerCase()),
   parse(input: string): number {
     try {
       const int = parseInt(input, 10);
@@ -34,7 +34,7 @@ export const logLevel = flags.build({
       );
     }
     return logger.getLevel();
-  }
+  },
 });
 
 /**
@@ -49,7 +49,7 @@ export function help(
     char: "h",
     description: "Show CLI help",
     hidden: true,
-    ...options
+    ...options,
   });
 }
 
@@ -64,7 +64,7 @@ export function version(
   return flags.version({
     description: "Show CLI version",
     hidden: true,
-    ...options
+    ...options,
   });
 }
 
@@ -86,6 +86,6 @@ export function allCommonFlags(): {
   return {
     help: help(),
     "log-level": logLevel(),
-    version: version()
+    version: version(),
   };
 }

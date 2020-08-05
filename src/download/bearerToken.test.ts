@@ -20,9 +20,9 @@ describe("Test Auth", () => {
       .post("/accounts/login", { username: "user", password: "pass" })
       .reply(200, {
         // eslint-disable-next-line @typescript-eslint/camelcase
-        access_token: "AUTH_TOKEN_HERE"
+        access_token: "AUTH_TOKEN_HERE",
       });
-    return getBearer("user", "pass").then(s => {
+    return getBearer("user", "pass").then((s) => {
       expect(s).to.equals("AUTH_TOKEN_HERE");
     });
   });

@@ -15,7 +15,6 @@ export { model } from "amf-client-js";
 
 export * from "./generate";
 
-// eslint-disable-next-line prettier/prettier
 export * as diff from "./diff";
 
 export {
@@ -23,5 +22,5 @@ export {
   getApiName,
   getNormalizedName,
   parseRamlFile,
-  resolveApiModel
+  resolveApiModel,
 } from "./common/parser";
