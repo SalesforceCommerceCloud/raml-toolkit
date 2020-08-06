@@ -37,7 +37,7 @@ describe("Test RAML differencing", () => {
       tmpFile.name
     );
     const categorizedChanges = apiChanges.nodeChanges.find(
-      nodeChanges => nodeChanges.id === "#/web-api"
+      (nodeChanges) => nodeChanges.id === "#/web-api"
     ).categorizedChanges;
 
     expect(apiChanges.hasChanges()).to.be.true;
@@ -55,7 +55,7 @@ describe("Test RAML differencing", () => {
     const apiChanges = await apiDifferencer.findAndCategorizeChanges();
     expect(apiChanges.hasChanges()).to.equal(true);
     const categorizedChanges = apiChanges.nodeChanges.find(
-      nodeChanges => nodeChanges.id === "#/web-api"
+      (nodeChanges) => nodeChanges.id === "#/web-api"
     ).categorizedChanges;
 
     expect(categorizedChanges).to.have.length(1);
@@ -75,28 +75,28 @@ function buildRule(): Rule {
           fact: DIFF_FACT_ID,
           path: "$.type",
           operator: "contains",
-          value: "apiContract:WebAPI"
+          value: "apiContract:WebAPI",
         },
         {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasProperty",
-          value: "core:name"
+          value: "core:name",
         },
         {
           fact: DIFF_FACT_ID,
           path: "$.removed",
           operator: "hasProperty",
-          value: "core:name"
-        }
-      ]
+          value: "core:name",
+        },
+      ],
     },
     event: {
       type: "api-title-change",
       params: {
         category: RuleCategory.BREAKING,
-        changedProperty: "core:name"
-      }
-    }
+        changedProperty: "core:name",
+      },
+    },
   });
 }

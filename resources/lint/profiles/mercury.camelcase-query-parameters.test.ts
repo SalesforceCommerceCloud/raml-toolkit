@@ -11,7 +11,7 @@ import {
   renameKey,
   conforms,
   breaksOnlyOneRule,
-  renderSpecAsFile
+  renderSpecAsFile,
 } from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
@@ -21,7 +21,7 @@ describe("camelcase query parameters test", () => {
   let doc;
   let parameters;
 
-  beforeEach(function() {
+  beforeEach(function () {
     doc = getHappySpec();
     parameters = doc["/resource"]["/{resourceId}"].get.queryParameters;
   });

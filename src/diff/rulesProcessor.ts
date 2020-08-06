@@ -9,7 +9,7 @@ import {
   Event,
   Almanac,
   RuleResult,
-  EngineResult
+  EngineResult,
 } from "json-rules-engine";
 import { CategorizedChange } from "./changes/categorizedChange";
 import { NodeChanges } from "./changes/nodeChanges";
@@ -44,7 +44,7 @@ export async function applyRules(
   //callback function to execute when a rule is passed/evaluates to true
   engine.on("success", successHandler);
   //Add custom operators to use in rules
-  customOperators.map(o => engine.addOperator(o));
+  customOperators.map((o) => engine.addOperator(o));
 
   /**
    * run rules on nodeChanges
@@ -52,7 +52,7 @@ export async function applyRules(
    * Result from the engine run is processed by the callback, the success handler. So the "EngineResult" returned by the runEngine function is ignored here.
    * Also callback has access to RuleResult which has all the details of the rule that is applied whereas EngineResult do not
    */
-  const promises = nodeChanges.map(diff => {
+  const promises = nodeChanges.map((diff) => {
     return runEngine(engine, diff);
   });
   await Promise.all(promises);
@@ -79,7 +79,7 @@ async function successHandler(
   if (event.params.changedProperty) {
     changedValues = [
       nodeChanges.removed[event.params.changedProperty],
-      nodeChanges.added[event.params.changedProperty]
+      nodeChanges.added[event.params.changedProperty],
     ];
   }
   nodeChanges.categorizedChanges.push(

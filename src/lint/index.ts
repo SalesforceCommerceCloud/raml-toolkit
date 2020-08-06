@@ -18,8 +18,8 @@ export const profilePath = path.join(
 
 const profiles = fs
   .readdirSync(profilePath)
-  .filter(file => path.extname(file).toLowerCase() === ".raml")
-  .map(file => file.slice(0, -5)); // Strip .raml extension from file name
+  .filter((file) => path.extname(file).toLowerCase() === ".raml")
+  .map((file) => file.slice(0, -5)); // Strip .raml extension from file name
 
 export default class LintCommand extends Command {
   static description = `A linting tool for raml for Commerce Cloud and beyond`;
@@ -31,21 +31,21 @@ export default class LintCommand extends Command {
       char: "p",
       options: profiles,
       description: "Profile to apply",
-      required: true
+      required: true,
     }),
     // Add --warnings flag to show warnings
     warnings: flags.boolean({
       char: "w",
       default: false,
-      description: "Show all the warnings"
-    })
+      description: "Show all the warnings",
+    }),
   };
 
   static args = [
     {
       name: "filename",
-      description: "One or more RAML files to lint"
-    }
+      description: "One or more RAML files to lint",
+    },
   ];
   // Allow a variable length list of files
   static strict = false;
@@ -65,7 +65,7 @@ export default class LintCommand extends Command {
     await AMF.init();
     for (const arg of argv) {
       promises.push(
-        validateFile(arg, flags.profile).then(results => {
+        validateFile(arg, flags.profile).then((results) => {
           if (results.conforms === false) {
             exitCode += 1;
           }
@@ -74,14 +74,14 @@ export default class LintCommand extends Command {
       );
     }
 
-    await Promise.all(promises).catch(e => {
+    await Promise.all(promises).catch((e) => {
       console.error(e.message);
       exitCode += 1;
     });
 
     if (exitCode !== 0) {
       this.error(`Validation for ${exitCode} file(s) failed.`, {
-        exit: exitCode
+        exit: exitCode,
       });
     }
   }

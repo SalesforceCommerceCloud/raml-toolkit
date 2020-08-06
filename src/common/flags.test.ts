@@ -26,7 +26,7 @@ describe("Help flag", () => {
       ...oclifFlags.help(),
       char: "h",
       description: "Show CLI help",
-      hidden: true
+      hidden: true,
     };
     stripParse(flag);
     stripParse(expected);
@@ -74,7 +74,7 @@ describe("Version flag", () => {
     const expected = {
       ...oclifFlags.version(),
       description: "Show CLI version",
-      hidden: true
+      hidden: true,
     };
     stripParse(flag);
     stripParse(expected);

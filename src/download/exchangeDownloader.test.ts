@@ -11,7 +11,7 @@ import {
   getVersionByDeployment,
   getSpecificApi,
   getAsset,
-  search
+  search,
 } from "./exchangeDownloader";
 import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../testResources/download/resources/restApiResponseObjects";
@@ -49,9 +49,9 @@ const REST_API: RestApi = {
     externalLink: "https://somewhere/fatraml.zip",
     packaging: "zip",
     createdDate: "today",
-    mainFile: "api.raml"
+    mainFile: "api.raml",
   },
-  version: "1.0.0"
+  version: "1.0.0",
 };
 
 describe("downloadRestApi", () => {
@@ -60,9 +60,7 @@ describe("downloadRestApi", () => {
   it("can download a single file", async () => {
     const tmpDir = tmp.dirSync();
 
-    nock("https://somewhere")
-      .get("/fatraml.zip")
-      .reply(200);
+    nock("https://somewhere").get("/fatraml.zip").reply(200);
 
     const api = _.cloneDeep(REST_API);
 
@@ -72,9 +70,7 @@ describe("downloadRestApi", () => {
   });
 
   it("can download a single file even when no download dir is specified", async () => {
-    nock("https://somewhere")
-      .get("/fatraml.zip")
-      .reply(200);
+    nock("https://somewhere").get("/fatraml.zip").reply(200);
 
     const api = _.cloneDeep(REST_API);
 
@@ -106,7 +102,7 @@ describe("downloadRestApis", () => {
     scope.get("/fatraml.zip").reply(200);
     scope.get("/fatraml2.zip").reply(200);
 
-    return downloadRestApis(apis, tmpDir.name).then(res => {
+    return downloadRestApis(apis, tmpDir.name).then((res) => {
       expect(res).to.equal(tmpDir.name);
     });
   });
@@ -121,13 +117,13 @@ describe("downloadRestApis", () => {
     scope.get("/fatraml.zip").reply(200);
     scope.get("/fatraml2.zip").reply(200);
 
-    return downloadRestApis(apis).then(res => {
+    return downloadRestApis(apis).then((res) => {
       expect(res).to.equal("download");
     });
   });
 
   it("should not do anything when an empty list is passed", async () => {
-    return downloadRestApis([]).then(res => {
+    return downloadRestApis([]).then((res) => {
       expect(res).to.equal("download");
     });
   });
@@ -143,7 +139,7 @@ describe("searchExchange", () => {
       .get("/assets?search=searchString&types=rest-api")
       .reply(200, assetSearchResults);
 
-    return searchExchange("AUTH_TOKEN", "searchString").then(res => {
+    return searchExchange("AUTH_TOKEN", "searchString").then((res) => {
       expect(res).to.deep.equal(searchAssetApiResultObject);
     });
   });
@@ -179,7 +175,7 @@ describe("getSpecificApi", () => {
         "API layer": ["Process"],
         "CC API Visibility": ["External"],
         "CC Version Status": ["Beta"],
-        "CC API Family": ["Customer"]
+        "CC API Family": ["Customer"],
       },
       fatRaml: {
         classifier: "fat-raml",
@@ -189,8 +185,8 @@ describe("getSpecificApi", () => {
         createdDate: "2020-01-22T03:25:00.200Z",
         md5: "3ce41ea699c8be4446909f172cfac317",
         sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
-        mainFile: "shopper-customers.raml"
-      }
+        mainFile: "shopper-customers.raml",
+      },
     });
   });
 
@@ -328,8 +324,8 @@ describe("search", () => {
     // Intercept searchExchange request
     nock("https://anypoint.mulesoft.com/exchange/api/v2", {
       reqheaders: {
-        Authorization: "Bearer AUTH_TOKEN"
-      }
+        Authorization: "Bearer AUTH_TOKEN",
+      },
     })
       .get("/assets?search=searchString")
       .reply(200, [assetSearchResults[0]]);
@@ -356,7 +352,7 @@ describe("search", () => {
           "API layer": ["Process"],
           "CC API Visibility": ["External"],
           "CC Version Status": ["Beta"],
-          "CC API Family": ["Customer"]
+          "CC API Family": ["Customer"],
         },
         fatRaml: {
           classifier: "fat-raml",
@@ -366,9 +362,9 @@ describe("search", () => {
           createdDate: "2020-01-22T03:25:00.200Z",
           md5: "3ce41ea699c8be4446909f172cfac317",
           sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
-          mainFile: "shopper-customers.raml"
-        }
-      }
+          mainFile: "shopper-customers.raml",
+        },
+      },
     ]);
   });
 
@@ -388,7 +384,7 @@ describe("search", () => {
           "API layer": ["Process"],
           "CC API Family": ["Product"],
           "CC Version Status": ["Beta"],
-          "CC API Visibility": ["External"]
+          "CC API Visibility": ["External"],
         },
         fatRaml: {
           classifier: "fat-raml",
@@ -396,9 +392,9 @@ describe("search", () => {
           createdDate: null,
           md5: null,
           sha1: null,
-          mainFile: "shop-products-categories-api-v1.raml"
-        }
-      }
+          mainFile: "shop-products-categories-api-v1.raml",
+        },
+      },
     ]);
   });
 
@@ -425,7 +421,7 @@ describe("search", () => {
           "CC API Visibility": ["External"],
           "CC Version Status": ["Beta"],
           "CC API Family": ["Customer"],
-          "API layer": ["Process"]
+          "API layer": ["Process"],
         },
         fatRaml: {
           classifier: "fat-raml",
@@ -435,9 +431,9 @@ describe("search", () => {
           createdDate: "2020-02-05T21:26:01.199Z",
           md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
           sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
-          mainFile: "shopper-customers.raml"
-        }
-      }
+          mainFile: "shopper-customers.raml",
+        },
+      },
     ]);
   });
 });

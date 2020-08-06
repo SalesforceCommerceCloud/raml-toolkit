@@ -56,7 +56,7 @@ export function breaksTheseRules(
 ): void {
   assert.equal(result.conforms, false, result.toString());
   assert.sameMembers(
-    result.results.map(r => r.validationId),
+    result.results.map((r) => r.validationId),
     rules,
     result.toString()
   );

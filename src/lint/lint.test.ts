@@ -13,7 +13,7 @@ import { printResults, validateFile, validateCustom } from "./lint";
 import {
   getHappySpec,
   renderSpecAsFile,
-  getSingleInvalidFile
+  getSingleInvalidFile,
 } from "../../testResources/testUtils";
 
 const PROFILE = "mercury";

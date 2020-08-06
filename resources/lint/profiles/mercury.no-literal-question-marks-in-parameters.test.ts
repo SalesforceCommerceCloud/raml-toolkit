@@ -11,7 +11,7 @@ import {
   renameKey,
   conforms,
   breaksTheseRules,
-  renderSpecAsFile
+  renderSpecAsFile,
 } from "../../../testResources/testUtils";
 
 const PROFILE = "mercury";
@@ -25,7 +25,7 @@ describe("no literal question marks in query parameters tests", () => {
   let doc;
   let parameters;
 
-  beforeEach(function() {
+  beforeEach(function () {
     doc = getHappySpec();
     parameters = doc["/resource"]["/{resourceId}"].get.queryParameters;
   });

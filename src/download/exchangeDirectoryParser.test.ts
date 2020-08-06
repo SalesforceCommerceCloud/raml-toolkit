@@ -20,7 +20,7 @@ async function createZipFile(
 ): Promise<void> {
   const zip = new JSZip();
 
-  return new Promise(resolve =>
+  return new Promise((resolve) =>
     zip
       .file("exchange.json", "{}")
       .generateNodeStream({ type: "nodebuffer", streamFiles: true })

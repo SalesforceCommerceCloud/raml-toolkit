@@ -25,15 +25,15 @@ describe("diffRamlDirectories", () => {
   const apiConfig = {
     family1: [
       { assetId: "api1", fatRaml: { mainFile: "api1.raml" } },
-      { assetId: "api2", fatRaml: { mainFile: "api2.raml" } }
+      { assetId: "api2", fatRaml: { mainFile: "api2.raml" } },
     ],
     family2: [
       { assetId: "api3", fatRaml: { mainFile: "api3.raml" } },
-      { assetId: "api4", fatRaml: { mainFile: "api4.raml" } }
-    ]
+      { assetId: "api4", fatRaml: { mainFile: "api4.raml" } },
+    ],
   };
   const nodeChanges = new NodeChanges("#/web-api/endpoints/test-endpoint", [
-    "apiContract:Endpoint"
+    "apiContract:Endpoint",
   ]);
   const apiChanges = new ApiChanges("api1/api1.raml", "api2/api2.raml");
   apiChanges.nodeChanges = [nodeChanges];
@@ -140,7 +140,7 @@ describe("diffRamlDirectories", () => {
     expect(apiDifferencerStub.calledTwice).to.be.true;
     expect(apiCollectionChanges.removed).to.have.members([
       "api3/api3.raml",
-      "api4/api4.raml"
+      "api4/api4.raml",
     ]);
   });
 
@@ -169,7 +169,7 @@ describe("diffRamlDirectories", () => {
     expect(apiDifferencerStub.calledTwice).to.be.true;
     expect(apiCollectionChanges.added).to.have.members([
       "api3/api3.raml",
-      "api4/api4.raml"
+      "api4/api4.raml",
     ]);
   });
 

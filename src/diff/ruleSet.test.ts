@@ -27,29 +27,29 @@ function buildDefaultRule(): Rule {
           fact: DIFF_FACT_ID,
           path: "$.type",
           operator: "contains",
-          value: "apiContract:WebAPI"
+          value: "apiContract:WebAPI",
         },
         {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasProperty",
-          value: "core:name"
+          value: "core:name",
         },
         {
           fact: DIFF_FACT_ID,
           path: "$.removed",
           operator: "hasProperty",
-          value: "core:name"
-        }
-      ]
+          value: "core:name",
+        },
+      ],
     },
     event: {
       type: "api-title-change",
       params: {
         category: "Breaking",
-        changedProperty: "core:name"
-      }
-    }
+        changedProperty: "core:name",
+      },
+    },
   });
 }
 

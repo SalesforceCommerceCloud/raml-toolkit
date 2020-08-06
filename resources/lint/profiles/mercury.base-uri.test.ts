@@ -10,7 +10,7 @@ import {
   renderSpecAsFile,
   breaksOnlyOneRule,
   breaksTheseRules,
-  conforms
+  conforms,
 } from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 

@@ -10,7 +10,7 @@ import {
   isAdditionalPropertiesAllowed,
   isOptionalProperty,
   isRequiredProperty,
-  isTypeDefinition
+  isTypeDefinition,
 } from "./handlebarsAmfHelpers";
 import { verifyProperties } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
 

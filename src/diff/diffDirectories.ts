@@ -51,7 +51,7 @@ function getCommonAndUniqueElements<T>(
   const left = new Set(leftArr);
   const right = new Set(rightArr);
   const common = new Set<T>();
-  left.forEach(val => {
+  left.forEach((val) => {
     if (right.has(val)) {
       left.delete(val);
       right.delete(val);
@@ -60,7 +60,7 @@ function getCommonAndUniqueElements<T>(
   });
   return {
     common: [...common],
-    unique: [[...left], [...right]]
+    unique: [[...left], [...right]],
   };
 }
 

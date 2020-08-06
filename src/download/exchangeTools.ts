@@ -20,7 +20,7 @@ export function groupByCategory(
   groupBy: string,
   allowUnclassified = true
 ): { [key: string]: RestApi[] } {
-  return _.groupBy(apis, api => {
+  return _.groupBy(apis, (api) => {
     // Categories are actually a list.
     // We are just going to use whatever the first one is for now
     if (api.categories && groupBy in api.categories) {
@@ -42,7 +42,7 @@ export function groupByCategory(
  */
 export function removeRamlLinks(apis: RestApi[]): RestApi[] {
   const apiCopy = _.cloneDeep(apis);
-  apiCopy.forEach(apiEntry => {
+  apiCopy.forEach((apiEntry) => {
     delete apiEntry.fatRaml.externalLink;
   });
   return apiCopy;

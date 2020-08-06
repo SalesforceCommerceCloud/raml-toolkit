@@ -9,7 +9,7 @@ import { model } from "amf-client-js";
 import {
   resolveApiModel,
   parseRamlFile,
-  getAllDataTypes
+  getAllDataTypes,
 } from "../common/parser";
 
 import { Name } from "./name";

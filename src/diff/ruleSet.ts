@@ -13,7 +13,7 @@ import fs from "fs-extra";
 export enum RuleCategory {
   BREAKING = "Breaking",
   NON_BREAKING = "Non-Breaking",
-  IGNORED = "Ignored"
+  IGNORED = "Ignored",
 }
 
 /**
@@ -45,7 +45,7 @@ export class RuleSet {
     }
 
     try {
-      const rules = ruleJsonArray.map(r => new Rule(r));
+      const rules = ruleJsonArray.map((r) => new Rule(r));
       return new RuleSet(rules);
     } catch (error) {
       error.message = `Error parsing the rule: ${error.message}`;
@@ -57,7 +57,7 @@ export class RuleSet {
    * Validate properties of the rule required for the Diff
    */
   validateRuleProperties(): void {
-    this.rules.forEach(r => {
+    this.rules.forEach((r) => {
       if (!r.name) {
         throw new Error("Name is required for every rule");
       }
