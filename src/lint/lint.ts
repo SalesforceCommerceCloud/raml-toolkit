@@ -24,7 +24,7 @@ export async function validateCustom(
       throw new Error(`Custom profile ${profileFile} does not exist`);
     }
     // An unexpected error was generated, throw a clean version of it.
-    throw new Error(err.Yw);
+    throw new Error(message);
   }
   const report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
   return report;
