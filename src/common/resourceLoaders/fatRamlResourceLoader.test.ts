@@ -131,7 +131,7 @@ describe("Fat raml resource loader fetch tests", () => {
     fatRamlResourceLoader = new FatRamlResourceLoader("file:///workingDir");
     fatRamlResourceLoader.fsAdapter = sinon.stub({
       // eslint-disable-next-line @typescript-eslint/no-empty-function
-      readFileSync: () => {}
+      readFileSync: () => {},
     });
   });
 
@@ -148,7 +148,7 @@ describe("Fat raml resource loader fetch tests", () => {
     fatRamlResourceLoader.fsAdapter.readFileSync.returns("content");
     return fatRamlResourceLoader
       .fetch("test/exchange_modules/resource.json")
-      .then(function(s) {
+      .then(function (s) {
         sinon.assert.calledWith(
           fatRamlResourceLoader.fsAdapter.readFileSync,
           "/workingDir/exchange_modules/resource.json"
@@ -168,7 +168,7 @@ describe("Fat raml resource loader fetch tests", () => {
       .fetch(
         "first_level/exchange_modules/second_level/exchange_modules/resource.json"
       )
-      .then(function(s) {
+      .then(function (s) {
         sinon.assert.calledWith(
           fatRamlResourceLoader.fsAdapter.readFileSync,
           "/workingDir/exchange_modules/resource.json"
@@ -178,7 +178,7 @@ describe("Fat raml resource loader fetch tests", () => {
   });
 
   it("Rejected for undefined resource paths", () => {
-    return fatRamlResourceLoader.fetch(undefined).catch(function(err) {
+    return fatRamlResourceLoader.fetch(undefined).catch(function (err) {
       sinon.assert.notCalled(fatRamlResourceLoader.fsAdapter.readFileSync);
       return expect(err.toString()).to.eql(
         "amf.client.resource.ResourceNotFound: Resource cannot be found: undefined"
@@ -187,7 +187,7 @@ describe("Fat raml resource loader fetch tests", () => {
   });
 
   it("Rejected for undefined resource paths", () => {
-    return fatRamlResourceLoader.fetch(null).catch(function(err) {
+    return fatRamlResourceLoader.fetch(null).catch(function (err) {
       sinon.assert.notCalled(fatRamlResourceLoader.fsAdapter.readFileSync);
       return expect(err.toString()).to.eql(
         "amf.client.resource.ResourceNotFound: Resource cannot be found: null"
@@ -201,7 +201,7 @@ describe("Fat raml resource loader fetch tests", () => {
     );
     return fatRamlResourceLoader
       .fetch("exchange_modules/resource.json")
-      .catch(function(err) {
+      .catch(function (err) {
         sinon.assert.calledWith(
           fatRamlResourceLoader.fsAdapter.readFileSync,
           sinon.match.string
@@ -213,7 +213,7 @@ describe("Fat raml resource loader fetch tests", () => {
   });
 
   it("Rejected for resource paths not starting with 'exchange_modules/'", () => {
-    return fatRamlResourceLoader.fetch("test").catch(function(err) {
+    return fatRamlResourceLoader.fetch("test").catch(function (err) {
       sinon.assert.notCalled(fatRamlResourceLoader.fsAdapter.readFileSync);
       return expect(err.toString()).to.eql(
         "amf.client.resource.ResourceNotFound: Resource cannot be found: test"

@@ -81,9 +81,7 @@ describe("Render template", () => {
     const data = { name: "Test rendering" };
     const dest = "/tmp/rendered_testing.ts";
     await template.render(data, dest);
-    expect(dest)
-      .to.be.a.file()
-      .with.content(data.name);
+    expect(dest).to.be.a.file().with.content(data.name);
   });
 
   it("renders template with default handlebars environment", async () => {
@@ -98,9 +96,7 @@ describe("Render template", () => {
     await template.render(data, renderedFile.name);
 
     //verify the rendered content
-    expect(renderedFile.name)
-      .to.be.a.file()
-      .with.content(data.name);
+    expect(renderedFile.name).to.be.a.file().with.content(data.name);
   });
 
   it("renders template with the given handlebars environment", async () => {
@@ -110,7 +106,7 @@ describe("Render template", () => {
     writeFileSync(tmpFile.name, templateContent);
     //Creates an isolated Handlebars environment.
     const customHb = Handlebars.create();
-    customHb.registerHelper("changeName", name => {
+    customHb.registerHelper("changeName", (name) => {
       return `Testing custom handlebars - ${name}`;
     });
     const template = new Template(tmpFile.name, customHb);

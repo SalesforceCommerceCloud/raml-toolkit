@@ -28,7 +28,7 @@ function verifyRule(
   if (rule.event.params.changedProperty) {
     changedValues = [
       nodeChanges.removed[rule.event.params.changedProperty],
-      nodeChanges.added[rule.event.params.changedProperty]
+      nodeChanges.added[rule.event.params.changedProperty],
     ];
   }
   expect(categorizedChanges).to.have.lengthOf(countOfChanges);
@@ -41,7 +41,7 @@ function verifyRule(
 describe("Display name change", () => {
   it("applies display name change rule", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Operation"
+      "apiContract:Operation",
     ]);
     nodeChanges.added = { "core:name": "newName" };
     nodeChanges.removed = { "core:name": "oldName" };
@@ -50,7 +50,7 @@ describe("Display name change", () => {
       ApiDifferencer.DEFAULT_RULES_PATH
     );
     const rule = defaultRules.find(
-      r => r.event.type === "display-name-changed"
+      (r) => r.event.type === "display-name-changed"
     );
     verifyRule(changes[0], rule);
   });
@@ -59,7 +59,7 @@ describe("Display name change", () => {
 describe("Operation removal", () => {
   it("applies operation removed rule", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Operation"
+      "apiContract:Operation",
     ]);
     nodeChanges.added = {};
     nodeChanges.removed = { "core:name": "oldName" };
@@ -67,7 +67,7 @@ describe("Operation removal", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "operation-removed");
+    const rule = defaultRules.find((r) => r.event.type === "operation-removed");
     verifyRule(changes[0], rule);
   });
 });
@@ -75,7 +75,7 @@ describe("Operation removal", () => {
 describe("Parameter removal", () => {
   it("applies parameter removed rule", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Parameter"
+      "apiContract:Parameter",
     ]);
     nodeChanges.added = {};
     nodeChanges.removed = { "core:name": "oldName" };
@@ -83,7 +83,7 @@ describe("Parameter removal", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "parameter-removed");
+    const rule = defaultRules.find((r) => r.event.type === "parameter-removed");
     verifyRule(changes[0], rule);
   });
 });
@@ -91,11 +91,11 @@ describe("Parameter removal", () => {
 describe("Required parameter addition", () => {
   it("applies required parameter added rule", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Parameter"
+      "apiContract:Parameter",
     ]);
     nodeChanges.added = {
       "core:name": "newName",
-      "apiContract:required": true
+      "apiContract:required": true,
     };
     nodeChanges.removed = {};
     const changes = await applyRules(
@@ -103,7 +103,7 @@ describe("Required parameter addition", () => {
       ApiDifferencer.DEFAULT_RULES_PATH
     );
     const rule = defaultRules.find(
-      r => r.event.type === "required-parameter-added"
+      (r) => r.event.type === "required-parameter-added"
     );
     verifyRule(changes[0], rule);
   });
@@ -112,7 +112,7 @@ describe("Required parameter addition", () => {
 describe("Version change", () => {
   it("applies version change rule", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:WebAPI"
+      "apiContract:WebAPI",
     ]);
     nodeChanges.added = { "core:version": "v2" };
     nodeChanges.removed = { "core:version": "v1" };
@@ -120,7 +120,7 @@ describe("Version change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "version-changed");
+    const rule = defaultRules.find((r) => r.event.type === "version-changed");
     verifyRule(changes[0], rule);
   });
 });
@@ -128,7 +128,7 @@ describe("Version change", () => {
 describe("Examples change", () => {
   it("does not apply ignore examples rule on a change that has no apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:WebAPI"
+      "apiContract:WebAPI",
     ]);
     nodeChanges.added = { "core:version": "v2" };
     nodeChanges.removed = { "core:version": "v1" };
@@ -136,13 +136,13 @@ describe("Examples change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    const rule = defaultRules.find((r) => r.event.type === "example-changed");
     expect(changes[0].categorizedChanges[0].ruleName).to.not.equal(rule.name);
   });
 
   it("does not apply ignore examples rule on a change that has undefined as the node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      undefined
+      undefined,
     ]);
     nodeChanges.added = { "core:version": "v2" };
     nodeChanges.removed = { "core:version": "v1" };
@@ -169,7 +169,7 @@ describe("Examples change", () => {
 
   it("applies ignore examples rule on a change that includes only one apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Example"
+      "apiContract:Example",
     ]);
     nodeChanges.added = { "core:description": "Old example" };
     nodeChanges.removed = { "core:description": "New example" };
@@ -177,13 +177,13 @@ describe("Examples change", () => {
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    const rule = defaultRules.find((r) => r.event.type === "example-changed");
     verifyRule(changes[0], rule);
   });
 
   it("applies ignore examples rule changes that includes many apiContract:Example node type", async () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-      "apiContract:Example"
+      "apiContract:Example",
     ]);
     nodeChanges.added = { "core:description": "Old example" };
     nodeChanges.removed = { "core:description": "New example" };
@@ -191,7 +191,7 @@ describe("Examples change", () => {
       [nodeChanges, nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
-    const rule = defaultRules.find(r => r.event.type === "example-changed");
+    const rule = defaultRules.find((r) => r.event.type === "example-changed");
     verifyRule(changes[0], rule, 2);
   });
 });

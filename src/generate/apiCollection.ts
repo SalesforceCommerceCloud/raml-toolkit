@@ -36,6 +36,6 @@ export class ApiCollection extends Array<ApiGroup> {
    * @param name - Name of the API group to return from the collection
    */
   get(name: string): ApiGroup {
-    return this.find(g => g.name.original === name);
+    return this.find((g) => g.name.original === name);
   }
 }

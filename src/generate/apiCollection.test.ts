@@ -32,7 +32,7 @@ describe("Test ApiCollection class init", () => {
 
   it("creates an instance from a valid raml file", async () => {
     const collection = await ApiCollection.init({
-      "Group One": [validRamlFile]
+      "Group One": [validRamlFile],
     });
     expect(collection.get("Group One")).to.not.be.empty;
     expect(collection.get("Group One")[0].model).to.not.be.empty;
@@ -42,24 +42,18 @@ describe("Test ApiCollection class init", () => {
 
   it("creates an instance from two valid raml files in one group", async () => {
     const collection = await ApiCollection.init({
-      "Group One": [validRamlFile, validRamlFile]
+      "Group One": [validRamlFile, validRamlFile],
     });
-    expect(collection.get("Group One"))
-      .to.be.an("array")
-      .with.lengthOf(2);
+    expect(collection.get("Group One")).to.be.an("array").with.lengthOf(2);
   });
 
   it("creates an instance from two valid raml files in two groups", async () => {
     const collection = await ApiCollection.init({
       "Group One": [validRamlFile],
-      "Group Two": [validRamlFile]
+      "Group Two": [validRamlFile],
     });
-    expect(collection.get("Group One"))
-      .to.be.an("array")
-      .with.lengthOf(1);
-    expect(collection.get("Group Two"))
-      .to.be.an("array")
-      .with.lengthOf(1);
+    expect(collection.get("Group One")).to.be.an("array").with.lengthOf(1);
+    expect(collection.get("Group Two")).to.be.an("array").with.lengthOf(1);
   });
 
   it("rejects from an invalid raml file", () => {

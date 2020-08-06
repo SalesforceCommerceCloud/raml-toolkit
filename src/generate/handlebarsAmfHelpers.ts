@@ -14,7 +14,7 @@ import {
   getValue,
   DEFAULT_DATA_TYPE,
   ARRAY_DATA_TYPE,
-  OBJECT_DATA_TYPE
+  OBJECT_DATA_TYPE,
 } from "./utils";
 
 import { model } from "amf-client-js";
@@ -63,7 +63,7 @@ export const getReturnTypeFromOperation = (
   const okResponses = getResponsesFromPayload(operation);
   const dataTypes: string[] = [];
 
-  okResponses.forEach(res => {
+  okResponses.forEach((res) => {
     if (res.payloads.length > 0) {
       dataTypes.push(getTypeFromPayload(res.payloads[0]));
     } else {
@@ -144,7 +144,7 @@ export const getPayloadTypeFromRequest = (
 export const getProperties = (
   node: model.domain.NodeShape | undefined | null
 ): model.domain.PropertyShape[] => {
-  return getFilteredProperties(node, propertyName => {
+  return getFilteredProperties(node, (propertyName) => {
     return !/^([/^]).*.$/.test(propertyName);
   });
 };

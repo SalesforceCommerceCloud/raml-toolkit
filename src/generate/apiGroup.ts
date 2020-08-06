@@ -28,7 +28,7 @@ export class ApiGroup extends Array<Api> {
    */
   static async init(apiSpecFilePaths: string[], name = ""): Promise<ApiGroup> {
     return new ApiGroup(
-      await Promise.all(apiSpecFilePaths.map(p => Api.init(p, name))),
+      await Promise.all(apiSpecFilePaths.map((p) => Api.init(p, name))),
       name
     );
   }
@@ -39,6 +39,6 @@ export class ApiGroup extends Array<Api> {
    * @param name - Name of the API to return from the collection
    */
   get(name: string): Api {
-    return this.find(a => a.name.original === name);
+    return this.find((a) => a.name.original === name);
   }
 }

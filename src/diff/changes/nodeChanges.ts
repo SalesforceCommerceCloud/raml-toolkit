@@ -40,7 +40,7 @@ export class NodeChanges {
    */
   hasBreakingChanges(): boolean {
     return this.categorizedChanges.some(
-      c => c.category === RuleCategory.BREAKING
+      (c) => c.category === RuleCategory.BREAKING
     );
   }
 
@@ -49,7 +49,7 @@ export class NodeChanges {
    */
   hasIgnoredChanges(): boolean {
     return this.categorizedChanges.some(
-      c => c.category === RuleCategory.IGNORED
+      (c) => c.category === RuleCategory.IGNORED
     );
   }
 
@@ -58,7 +58,8 @@ export class NodeChanges {
    * @param category - category of the change
    */
   getChangeCountByCategory(category: RuleCategory): number {
-    return this.categorizedChanges.filter(c => c.category === category).length;
+    return this.categorizedChanges.filter((c) => c.category === category)
+      .length;
   }
 
   /**

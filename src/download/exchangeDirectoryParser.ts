@@ -10,7 +10,7 @@ import unzipper from "unzipper";
 
 function getFiles(directory): fs.Dirent[] {
   return fs.readdirSync(path.join(directory), {
-    withFileTypes: true
+    withFileTypes: true,
   });
 }
 
@@ -29,8 +29,8 @@ export function extractFiles(
   const files = getFiles(directory);
   const promises: Promise<void>[] = [];
   files
-    .filter(file => file.isFile() && path.extname(file.name) === ".zip")
-    .forEach(file => {
+    .filter((file) => file.isFile() && path.extname(file.name) === ".zip")
+    .forEach((file) => {
       promises.push(
         new Promise((resolve, reject) => {
           fs.createReadStream(
@@ -41,7 +41,7 @@ export function extractFiles(
                 path: path.join(
                   path.resolve(directory),
                   path.basename(file.name, ".zip")
-                )
+                ),
               })
               .on("error", reject)
               .on("close", () => {
