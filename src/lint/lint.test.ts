@@ -85,4 +85,10 @@ describe("#validateCustom", () => {
       `Custom profile ${customProfile} does not exist`
     );
   });
+  it("uses unsupported schema", () => {
+    const customProfile = "uri://MISSINGFILE";
+    return expect(
+      validateCustom(testModel, customProfile)
+    ).to.be.eventually.rejectedWith(`Unsupported`);
+  });
 });
