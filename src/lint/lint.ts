@@ -19,7 +19,12 @@ export async function validateCustom(
     profileName = await Core.loadValidationProfile(profileFile);
   } catch (err) {
     // We rethrow to provide a cleaner error message
-    throw new Error(err.vw);
+    const message: string = err.Yw;
+    if (message.includes("no such file or directory")) {
+      throw new Error(`Custom profile ${profileFile} does not exist`);
+    }
+    // An unexpected error was generated, throw a clean version of it.
+    throw new Error(message);
   }
   const report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
   return report;

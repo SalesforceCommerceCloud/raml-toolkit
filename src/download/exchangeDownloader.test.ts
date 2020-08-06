@@ -278,7 +278,7 @@ describe("getAsset", () => {
       .get("/8888888/test-get-asset")
       .reply(200, { data: "json response" });
 
-    expect(
+    return expect(
       getAsset("AUTH_TOKEN", "8888888/test-get-asset")
     ).to.eventually.deep.equal({ data: "json response" });
   });
@@ -288,8 +288,8 @@ describe("getAsset", () => {
       .get("/8888888/get-asset-404")
       .reply(404, "Not Found");
 
-    expect(getAsset("AUTH_TOKEN", "8888888/get-asset-404")).to.eventually.be
-      .undefined;
+    return expect(getAsset("AUTH_TOKEN", "8888888/get-asset-404")).to.eventually
+      .be.undefined;
   });
 });
 
@@ -327,7 +327,7 @@ describe("search", () => {
         Authorization: "Bearer AUTH_TOKEN",
       },
     })
-      .get("/assets?search=searchString")
+      .get("/assets?search=searchString&types=rest-api")
       .reply(200, [assetSearchResults[0]]);
   });
 
@@ -338,7 +338,9 @@ describe("search", () => {
       .get("/shop-products-categories-api-v1/0.0.1")
       .reply(200, getAssetWithVersion);
 
-    expect(search("searchString", /production/i)).to.eventually.deep.equal([
+    return expect(
+      search("searchString", /production/i)
+    ).to.eventually.deep.equal([
       {
         id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1",
         name: "Shopper Customers",
@@ -370,7 +372,9 @@ describe("search", () => {
 
   it("works when an asset does not exist", () => {
     scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
-    expect(search("searchString", /unused regex/)).to.eventually.deep.equal([
+    return expect(
+      search("searchString", /unused regex/)
+    ).to.eventually.deep.equal([
       {
         id: null,
         name: "Shopper Products",
@@ -405,7 +409,7 @@ describe("search", () => {
       .get("/shop-products-categories-api-v1/0.0.7")
       .reply(200, getAssetWithoutVersion);
 
-    expect(
+    return expect(
       search("searchString", /nothing should match/)
     ).to.eventually.deep.equal([
       {
@@ -426,8 +430,7 @@ describe("search", () => {
         fatRaml: {
           classifier: "fat-raml",
           packaging: "zip",
-          externalLink:
-            "https://exchange2-asset-manager-kprod.s3.amazonaws.com/893f605e-10e2-423a-bdb4-f952f56eb6d8/37bb0c576a8e98746ba998dc42c926007d96229de7566b04d555f0d83f05368a.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20200206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200206T192402Z&X-Amz-Expires=86400&X-Amz-Signature=0345e90e7e437e539b21f8a6d0fab74e711dde1131ccc6419782302dbd337954&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dshopper-customers-0.0.7-raml.zip",
+          externalLink: "https://short.url/raml.zip",
           createdDate: "2020-02-05T21:26:01.199Z",
           md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
           sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",

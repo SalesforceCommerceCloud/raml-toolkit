@@ -33,11 +33,13 @@ before(() => {
 });
 
 describe("Test RAML file", () => {
-  it("Test invalid RAML file", () =>
-    expect(parseRamlFile(invalidRamlFile)).to.eventually.be.rejected);
+  it("Test invalid RAML file", () => {
+    return expect(parseRamlFile(invalidRamlFile)).to.eventually.be.rejected;
+  });
 
-  it("Test valid RAML file", () =>
-    expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty);
+  it("Test valid RAML file", () => {
+    return expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty;
+  });
 });
 
 describe("Get Data types", () => {
