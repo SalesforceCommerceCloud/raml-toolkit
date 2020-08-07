@@ -45,7 +45,7 @@ Exit statuses:
     "diff-only": flags.boolean({
       description: "Only show differences without evaluating a ruleset",
       default: false,
-      exclusive: ["ruleset", "dir"]
+      exclusive: ["ruleset", "dir", "format"]
     }),
     dir: flags.boolean({
       description: "Find the differences for all files in two directories",
@@ -100,7 +100,7 @@ Exit statuses:
       }
     } else {
       // If file is not given, default to text unless JSON is specified
-      if (flags.format === "json") {
+      if (flags.format === "json" || flags["diff-only"]) {
         this.log(JSON.stringify(changes, null, 2));
       } else {
         this.log(changes.toString());
