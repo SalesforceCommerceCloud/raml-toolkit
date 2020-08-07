@@ -186,7 +186,7 @@ Exit statuses:
       this.error(err.message, { exit: 2 });
     }
     if (apiChanges.hasBreakingChanges()) {
-      this.error("Breaking changes found.", { exit: 1 });
+      this.exit(1);
     }
   }
 
