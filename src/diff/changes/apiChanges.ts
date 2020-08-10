@@ -133,6 +133,6 @@ export class ApiChanges {
       out += indent(0, `No changes.`);
     }
 
-    return out;
+    return out.trimRight(); // Last newline is unnecessary
   }
 }

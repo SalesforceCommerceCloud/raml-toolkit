@@ -117,6 +117,6 @@ export class ApiCollectionChanges {
       out += indent(0, `No changes found.`);
     }
 
-    return out;
+    return out.trimRight(); // Last newline is unnecessary
   }
 }
