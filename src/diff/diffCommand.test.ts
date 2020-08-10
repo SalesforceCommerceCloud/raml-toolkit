@@ -7,7 +7,7 @@
 "use strict";
 
 import { expect, test } from "@oclif/test";
-import { writeSync } from "fs";
+import { writeSync } from "fs-extra";
 import { FileResult, fileSync } from "tmp";
 import { Rule } from "json-rules-engine";
 import chai from "chai";
@@ -100,8 +100,6 @@ const operationRemovedRule = new Rule(
     }
   }`
 );
-
-const outFile = fileSync({ postfix: ".json" });
 
 const operationRemovedRuleset = createTempFile(
   `[${operationRemovedRule.toJSON()}]`
@@ -303,10 +301,11 @@ describe("raml-toolkit cli diff command", () => {
       async () => apiCollectionChanges
     )
     .stdout()
-    .do(() => cmd.run(["baseApis", "newApis", "--dir", "-o", outFile.name]))
+    .add("file", () => fileSync({ postfix: ".json" }))
+    .do(ctx => cmd.run(["baseApis", "newApis", "--dir", "-o", ctx.file.name]))
     .exit(1)
-    .it("stores the result in a file when flag is set", () => {
-      expect(outFile.name)
+    .it("stores the result in a file when flag is set", ctx => {
+      expect(ctx.file.name)
         .to.be.a.file()
         .with.content(`${JSON.stringify(apiCollectionChanges)}\n`);
     });
