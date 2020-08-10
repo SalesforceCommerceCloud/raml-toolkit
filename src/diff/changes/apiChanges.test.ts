@@ -51,7 +51,7 @@ describe("Check for changes in the API", () => {
 describe("Check for categorized changes in a API", () => {
   it("returns categorized changes", async () => {
     const apiChanges = buildApiChanges();
-    expect(apiChanges.getCategorizedChanges()).to.deep.equal(
+    expect(apiChanges.getNodesWithCategorizedChanges()).to.deep.equal(
       apiChanges.nodeChanges
     );
   });
