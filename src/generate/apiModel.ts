@@ -107,8 +107,7 @@ export class ApiModel extends ApiMetadata {
    */
   public async init(updateName = true): Promise<void> {
     await this.loadModel(updateName);
-    const promises = this.children.map((child) => child.init());
-    await Promise.all(promises);
+    await super.init();
   }
 
   /**
