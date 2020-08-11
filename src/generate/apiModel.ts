@@ -43,7 +43,7 @@ export class ApiModel extends ApiMetadata {
   constructor(
     name: string,
     filepath: string,
-    children: ApiMetadata[] = ([] = [])
+    children: ApiMetadata[] = []
   ) {
     super(name, filepath, children);
     if (
