@@ -25,6 +25,7 @@
 `src/index.ts` - contains package exports. Becomes lib/index.js and is the entrypoint.
 `src/common/*.ts` - functions that are shared by more than one command such as logger and RAML parser.
 `src/{commandName}/` - folders, named after commands whenever possible, to contain logic needed for commands and index.ts for oclif.
+`src/{commandName}/index.ts` - contains exports for the functionality provided by the command.
 `src/commands/*.ts` - oclif requires a particular file structure to find commands. It needs a folder configured in the package.json where there is a filename for each command. This folder contains one file per command that exports the matching command.
 `resources/**` - location of data like lint profiles and diff rulesets. This is included when published.
 `lib/` - oclif uses this as the tsc output. This should always be generated and is published.

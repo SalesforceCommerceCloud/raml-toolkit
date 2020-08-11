@@ -47,6 +47,11 @@ export async function downloadRestApi(
   return response;
 }
 
+/**
+ * Download the API specifications
+ * @param restApi - Metadata of the API
+ * @param destinationFolder - Destination directory for the download
+ */
 export async function downloadRestApis(
   restApi: RestApi[],
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER

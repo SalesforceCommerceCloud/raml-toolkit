@@ -9,7 +9,7 @@ import JSZip from "jszip";
 import tmp from "tmp";
 import chai from "chai";
 import chaiFs from "chai-fs";
-import { DownloadCommand } from ".";
+import { DownloadCommand } from "./downloadCommand";
 
 chai.use(chaiFs);
 
@@ -196,6 +196,7 @@ describe("Download Command", () => {
     });
 
   test
+    .env({ ANYPOINT_USERNAME: "user", ANYPOINT_PASSWORD: "pass" })
     .do(() =>
       DownloadCommand.run([
         `--config-file=/path/to/api-config.json`,
@@ -207,6 +208,7 @@ describe("Download Command", () => {
     .it("forbids specifying a path for config file name");
 
   test
+    .env({ ANYPOINT_USERNAME: "user", ANYPOINT_PASSWORD: "pass" })
     .do(() => DownloadCommand.run([]))
     .exit(2)
     .it("requires --group-by flag to be set");
