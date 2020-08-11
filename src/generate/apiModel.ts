@@ -32,9 +32,20 @@ export class ApiModel extends ApiMetadata {
   metadata: RestApi;
   main: string;
   path: string;
-
-  constructor(filepath: string) {
-    super(path.basename(filepath), filepath, undefined);
+  /**
+   *Creates an instance of ApiModel.
+   * @param {string} name - Name of the model
+   * @param {string} filepath - Root path of the api with an exchange.json OR raml file to read in.
+   * @param {ApiMetadata[]} [children=([] = [])] - NYI - Any children that the API might have,
+   *    unused, here for consistency with parent
+   * @memberof ApiModel
+   */
+  constructor(
+    name: string,
+    filepath: string,
+    children: ApiMetadata[] = ([] = [])
+  ) {
+    super(name, filepath, children);
     if (
       path.extname(filepath) === ".raml" ||
       path.extname(filepath) === ".rml"
@@ -49,9 +60,6 @@ export class ApiModel extends ApiMetadata {
         path.join(filepath, "exchange.json")
       );
 
-      if (!exchangeConfig["main"]) {
-        throw new Error("No entry point defined in the exchange.json");
-      }
       this.main = exchangeConfig["main"];
       this.path = filepath;
     } else {
@@ -60,9 +68,10 @@ export class ApiModel extends ApiMetadata {
       );
     }
   }
-
-  // Sometimes the API title differs from the exchange title.
-  // The RAML is the source of truth and should take precedence.
+  /**
+   * @description - Updates the name identifier of the class if it differs from the one initially provided
+   * @memberof ApiModel
+   */
   public updateName(): void {
     if (!this.model) {
       throw new Error("Cannot update the name before the model is loaded");
@@ -72,25 +81,45 @@ export class ApiModel extends ApiMetadata {
     );
   }
 
-  public async loadModel(): Promise<void> {
+  /**
+   * @description - Load the API model into memory
+   * @param {boolean} [updateName=true] - Update the name of the class to the title of the api document
+   * @returns {Promise<void>} - An empty promise to ensure completion
+   * @memberof ApiModel
+   */
+  public async loadModel(updateName = true): Promise<void> {
     const tmpModel = await parseRamlFile(path.join(this.path, this.main));
 
     // The model needs to be cloned because resolveApiModel messes with the dataTypes.
     this.dataTypes = getAllDataTypes(_.cloneDeep(tmpModel));
-
     this.model = resolveApiModel(tmpModel, "editing");
-  }
 
-  public async init(updateName = true): Promise<void> {
-    await this.loadModel();
     if (updateName) {
       this.updateName();
     }
+  }
+
+  /**
+   * @description Initializes the model since you can't have a constructor return a promise
+   * @param {boolean} [updateName=true] - If the filename is different from the model name should we update the name to be the model name?
+   * @returns {Promise<void>} - Empty promise to ensure it is finished before returning
+   * @memberof ApiModel
+   */
+  public async init(updateName = true): Promise<void> {
+    await this.loadModel(updateName);
     const promises = this.children.map((child) => child.init());
     await Promise.all(promises);
   }
 
-  public async render(): Promise<void> {
+  /**
+   * @description - Renders all the templates provided to this class
+   * NOTE:  allowProtoPropertiesByDefault and allowProtoMethodsByDefault
+   *        are passed due to how AMF models are represented in memory
+   *
+   * @returns {Promise<void>}
+   * @memberof ApiModel
+   */
+  public async renderThis(): Promise<void> {
     if (!this.model) {
       await this.loadModel();
     }

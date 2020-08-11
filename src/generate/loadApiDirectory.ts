@@ -11,9 +11,12 @@ import { ApiMetadata } from "./apiMetadata";
 import { ApiModel } from "./apiModel";
 
 /**
- * Given a directory parse all apis and their metadata in those directories
+ * @description - Given a directory and recursively parse all apis and their metadata in those directories
+ * NOTE: This exists outside ApiMetadata and ApiModel to prevent circular dependencies.
  *
- * @param apiPath - The path to the root of the apis.
+ * @export
+ * @param {string} apiPath - The path to the root of the apis.
+ * @returns {ApiMetadata} - The created node for the tree
  */
 export function loadApiDirectory(apiPath: string): ApiMetadata {
   if (!fs.pathExistsSync(apiPath)) {
@@ -22,7 +25,7 @@ export function loadApiDirectory(apiPath: string): ApiMetadata {
 
   // If we have an exchange.json we are loading an API
   if (fs.existsSync(path.join(apiPath, "exchange.json"))) {
-    return new ApiModel(apiPath);
+    return new ApiModel(path.basename(apiPath), apiPath);
   }
 
   const children = fs

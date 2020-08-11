@@ -12,6 +12,7 @@ import path from "path";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Name } from "../common/structures/name";
+import { ApiModel } from "./apiModel";
 
 const validRamlDir = path.join(__dirname, "../../testResources/raml/mercury");
 
@@ -30,7 +31,7 @@ describe("Test loadApiDirectory", () => {
     await fs.ensureDir(path.join(tempDir.name, "apis"));
 
     const testTree = loadApiDirectory(path.join(tempDir.name, "apis"));
-    expect(testTree.metadata).to.be.undefined;
+    expect(testTree.metadata).to.be.deep.equal({});
     expect(testTree.children).to.be.empty;
     expect(testTree.name).to.deep.equal(new Name("apis"));
   });
@@ -42,7 +43,7 @@ describe("Test loadApiDirectory", () => {
     await fs.ensureDir(path.join(tempDir.name, "apis", "child2"));
 
     const testTree = loadApiDirectory(path.join(tempDir.name, "apis"));
-    expect(testTree.metadata).to.be.undefined;
+    expect(testTree.metadata).to.be.deep.equal({});
     expect(testTree.children).to.have.lengthOf(2);
     expect(testTree.children[0].name).to.deep.equal(new Name("child1"));
     expect(testTree.children[1].name).to.deep.equal(new Name("child2"));
@@ -54,13 +55,32 @@ describe("Test loadApiDirectory", () => {
     await fs.ensureDir(path.join(tempDir.name, "apis", "child1"));
     await copyMercuryApi(path.join(tempDir.name, "apis", "child1", "mercury"));
     const testTree = loadApiDirectory(path.join(tempDir.name, "apis"));
-    expect(testTree.metadata).to.be.undefined;
+    expect(testTree.metadata).to.be.deep.equal({});
     expect(testTree.children).to.have.lengthOf(1);
     expect(testTree.children[0].children).to.have.lengthOf(1);
     expect(testTree.children[0].children[0].name).to.deep.equal(
       // The name of the api in the test raml (ensures we've loaded it)
       new Name("mercury")
     );
+  });
+
+  it("creates ApiTree with a child that has an API and can init it", async () => {
+    const tempDir = tmp.dirSync();
+    await fs.ensureDir(path.join(tempDir.name, "apis", "child1"));
+    await copyMercuryApi(path.join(tempDir.name, "apis", "child1", "mercury"));
+    const testTree = loadApiDirectory(path.join(tempDir.name, "apis"));
+    expect(testTree.metadata).to.be.deep.equal({});
+    expect(testTree.children).to.have.lengthOf(1);
+    expect(testTree.children[0].children).to.have.lengthOf(1);
+    expect(testTree.children[0].children[0].name).to.deep.equal(
+      // The name of the api in the test raml (ensures we've loaded it)
+      new Name("mercury")
+    );
+    expect((testTree.children[0].children[0] as ApiModel).model).to.be
+      .undefined;
+    await testTree.init();
+    expect((testTree.children[0].children[0] as ApiModel).model).not.to.be
+      .undefined;
   });
 
   it("Attempts to create an api tree for a path that doesn't exist", async () => {

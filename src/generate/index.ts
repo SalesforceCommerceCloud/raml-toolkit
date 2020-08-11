@@ -8,15 +8,6 @@
 export { Template } from "./template";
 
 import * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
-import {
-  HandlebarsWithAmfHelpers,
-  registerPartial,
-  registerHelper,
-} from "./handlebarsConfig";
+import { HandlebarsWithAmfHelpers, registerPartial } from "./handlebarsConfig";
 
-export {
-  handlebarsAmfHelpers,
-  HandlebarsWithAmfHelpers,
-  registerPartial,
-  registerHelper,
-};
+export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers, registerPartial };
