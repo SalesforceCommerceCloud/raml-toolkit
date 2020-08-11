@@ -4,9 +4,9 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { RestApi } from "../../../src/";
+import { download } from "../../../src/";
 
-export const searchAssetApiResultObject: RestApi[] = [
+export const searchAssetApiResultObject: download.RestApi[] = [
   {
     id:
       "893f605e-10e2-423a-bdb4-f952f56eb6d8/shop-products-categories-api-v1/0.0.1",

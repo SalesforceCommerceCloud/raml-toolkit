@@ -7,7 +7,5 @@
 
 export { Template } from "./template";
 
-import * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
-import { HandlebarsWithAmfHelpers, registerPartial } from "./handlebarsConfig";
-
-export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers, registerPartial };
+export * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
+export { HandlebarsWithAmfHelpers, registerPartial } from "./handlebarsConfig";
