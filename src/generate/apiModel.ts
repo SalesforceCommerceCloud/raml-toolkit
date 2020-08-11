@@ -40,11 +40,7 @@ export class ApiModel extends ApiMetadata {
    *    unused, here for consistency with parent
    * @memberof ApiModel
    */
-  constructor(
-    name: string,
-    filepath: string,
-    children: ApiMetadata[] = []
-  ) {
+  constructor(name: string, filepath: string, children: ApiMetadata[] = []) {
     super(name, filepath, children);
     if (
       path.extname(filepath) === ".raml" ||
