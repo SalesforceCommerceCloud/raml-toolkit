@@ -30,8 +30,8 @@ nodeChanges.removed = { "core:name": "newName" };
 nodeChanges.categorizedChanges = [
   new CategorizedChange("Test Rule", "Test Event", RuleCategory.BREAKING, [
     "old",
-    "new"
-  ])
+    "new",
+  ]),
 ];
 const apiChanges = new ApiChanges("base/file.raml", "new/file.raml");
 apiChanges.nodeChanges = [nodeChanges];
@@ -310,9 +310,9 @@ describe("raml-toolkit cli diff command", () => {
     )
     .stdout()
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do(ctx => cmd.run(["baseApis", "newApis", "--dir", "-o", ctx.file.name]))
+    .do((ctx) => cmd.run(["baseApis", "newApis", "--dir", "-o", ctx.file.name]))
     .exit(1)
-    .it("stores changes as JSON when file flag is set", ctx => {
+    .it("stores changes as JSON when file flag is set", (ctx) => {
       expect(ctx.file.name)
         .to.be.a.file()
         .with.content(`${JSON.stringify(apiCollectionChanges)}\n`);
@@ -323,7 +323,7 @@ describe("raml-toolkit cli diff command", () => {
     .stdout()
     .do(() => cmd.run(["baseApis", "newApis", "--log-level=silent"]))
     .exit(1)
-    .it("logs changes to console as text when file flag is unset", ctx => {
+    .it("logs changes to console as text when file flag is unset", (ctx) => {
       expect(ctx.stdout).to.equal(`${apiChanges}\n`);
     });
 
@@ -332,7 +332,7 @@ describe("raml-toolkit cli diff command", () => {
     .stdout()
     .do(() => cmd.run(["base", "new", "-f", "json", "--log-level=silent"]))
     .exit(1)
-    .it("logs changes to console as JSON when format flag is set", ctx => {
+    .it("logs changes to console as JSON when format flag is set", (ctx) => {
       expect(JSON.parse(ctx.stdout)).to.deep.equal(apiChanges);
     });
 
@@ -340,19 +340,17 @@ describe("raml-toolkit cli diff command", () => {
     .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
     .stdout()
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do(ctx => cmd.run(["base", "new", "-f", "text", "-o", ctx.file.name]))
+    .do((ctx) => cmd.run(["base", "new", "-f", "text", "-o", ctx.file.name]))
     .exit(1)
-    .it("stores changes as text when file and format flags are set", ctx => {
-      expect(ctx.file.name)
-        .to.be.a.file()
-        .with.content(`${apiChanges}`);
+    .it("stores changes as text when file and format flags are set", (ctx) => {
+      expect(ctx.file.name).to.be.a.file().with.content(`${apiChanges}`);
     });
 
   test
     .stderr({ print: true })
     .stdout({ print: true })
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do(ctx =>
+    .do((ctx) =>
       cmd.run(["base", "new", "--diff-only", "-f", "json", "-o", ctx.file.name])
     )
     .exit(2)

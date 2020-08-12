@@ -61,7 +61,7 @@ Exit statuses:
       description:
         "Format of the output. Defaults to JSON if --out-file is specified, otherwise text.",
       options: ["json", "text"],
-    })
+    }),
   };
 
   static args = [
