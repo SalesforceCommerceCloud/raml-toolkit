@@ -6,6 +6,7 @@
  */
 import { NodeChanges } from "./nodeChanges";
 import { RuleCategory } from "../ruleSet";
+import _ from "lodash";
 
 /**
  * Holds changes between two API specifications
@@ -82,6 +83,17 @@ export class ApiChanges {
    */
   getIgnoredChangesCount(): number {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
+  }
+
+  getCategorizedChangeSummary(): Record<RuleCategory, number> {
+    const summaries = this.nodeChanges.map(node => {
+      return node.getCategorizedChangeSummary();
+    });
+    return _.mergeWith(
+      {},
+      ...summaries,
+      (a: number | undefined, b: number): number => (a || 0) + b
+    );
   }
 
   /**

@@ -81,4 +81,15 @@ export class NodeChanges {
   getIgnoredChangesCount(): number {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
   }
+
+  getCategorizedChangeSummary(): Record<RuleCategory, number> {
+    const summary = {};
+    for (const category of Object.values(RuleCategory)) {
+      summary[category] = 0;
+    }
+    for (const change of this.categorizedChanges) {
+      summary[change.category] += 1;
+    }
+    return summary as Record<RuleCategory, number>;
+  }
 }

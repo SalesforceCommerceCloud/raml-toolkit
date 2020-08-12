@@ -5,6 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { ApiChanges } from "./apiChanges";
+import { RuleCategory } from "../ruleSet";
+import _ from "lodash";
+
 /**
  * Hold the differencing result of API collections
  */
@@ -50,6 +53,17 @@ export class ApiCollectionChanges {
    */
   hasErrors(): boolean {
     return Object.keys(this.errored).length > 0;
+  }
+
+  getCategorizedChangeSummary(): Record<RuleCategory, number> {
+    const summaries = Object.values(this.changed).map(api => {
+      return api.getCategorizedChangeSummary();
+    });
+    return _.mergeWith(
+      {},
+      ...summaries,
+      (a: number | undefined, b: number): number => (a || 0) + b
+    );
   }
 
   /**
