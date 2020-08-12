@@ -10,7 +10,7 @@ import fs from "fs-extra";
 import path from "path";
 import { ramlToolLogger } from "../common/logger";
 import { TemplateDelegate } from "handlebars";
-import { HandlebarsWithAmfHelpers as Handlebars } from "../generate/index";
+import { HandlebarsWithAmfHelpers as Handlebars } from "./";
 
 /**
  * @description - A collection of APIs that contains metadata.

@@ -7,8 +7,8 @@
 
 import fs from "fs-extra";
 import path from "path";
-import { ApiMetadata } from "./apiMetadata";
-import { ApiModel } from "./apiModel";
+import { ApiMetadata } from "./";
+import { ApiModel } from "./";
 
 /**
  * @description - Given a directory and recursively parse all apis and their metadata in those directories

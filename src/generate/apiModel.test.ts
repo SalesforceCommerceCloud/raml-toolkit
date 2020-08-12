@@ -12,7 +12,7 @@ import chaiFs from "chai-fs";
 
 import fs from "fs-extra";
 
-import { ApiModel } from "./apiModel";
+import { ApiModel } from "./";
 import { Name } from "../common/structures/name";
 import tmp from "tmp";
 import sinon from "sinon";

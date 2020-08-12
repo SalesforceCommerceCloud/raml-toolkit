@@ -13,12 +13,12 @@ import {
 } from "../common/parser";
 
 import { Name } from "../common/structures/name";
-import { ApiMetadata } from "./apiMetadata";
 import { RestApi } from "../download/exchangeTypes";
 import path from "path";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
 import _ from "lodash";
+import { ApiMetadata } from "./";
 
 /**
  * An API represented as an AMF model. Includes the extracted data types

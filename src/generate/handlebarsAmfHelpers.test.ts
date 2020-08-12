@@ -4,18 +4,21 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {
+import { handlebarsAmfHelpers } from "./";
+
+import { verifyProperties } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
+
+import { model, AMF } from "amf-client-js";
+import { expect } from "chai";
+
+const {
   getBaseUriFromDocument,
   getProperties,
   isAdditionalPropertiesAllowed,
   isOptionalProperty,
   isRequiredProperty,
   isTypeDefinition,
-} from "./handlebarsAmfHelpers";
-import { verifyProperties } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
-
-import { model, AMF } from "amf-client-js";
-import { expect } from "chai";
+} = handlebarsAmfHelpers;
 
 describe("HandlebarsAmfHelpers", () => {
   before(() => {

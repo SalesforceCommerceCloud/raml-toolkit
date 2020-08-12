@@ -9,3 +9,7 @@ export { Template } from "./template";
 
 export * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
 export { HandlebarsWithAmfHelpers, registerPartial } from "./handlebarsConfig";
+
+export { ApiMetadata } from "./apiMetadata";
+export { ApiModel } from "./apiModel";
+export { loadApiDirectory } from "./loadApiDirectory";

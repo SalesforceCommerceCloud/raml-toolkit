@@ -7,7 +7,7 @@
 import path from "path";
 
 import { expect } from "chai";
-import { registerPartial, HandlebarsWithAmfHelpers } from "./index";
+import { registerPartial, HandlebarsWithAmfHelpers } from "./";
 
 const handlebarTemplate = path.join(
   __dirname,

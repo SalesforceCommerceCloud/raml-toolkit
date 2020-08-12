@@ -8,7 +8,7 @@ import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
 
 import { Name } from "../common/structures/name";
-import { ApiMetadata } from "./apiMetadata";
+import { ApiMetadata } from "./";
 import path from "path";
 import tmp from "tmp";
 import fs from "fs-extra";

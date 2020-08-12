@@ -6,13 +6,13 @@
  */
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { ApiModel } from "./apiModel";
 
-import { loadApiDirectory } from "./loadApiDirectory";
+import { loadApiDirectory } from "./";
 import path from "path";
 import tmp from "tmp";
 import fs from "fs-extra";
 import { Name } from "../common/structures/name";
-import { ApiModel } from "./apiModel";
 
 const validRamlDir = path.join(__dirname, "../../testResources/raml/mercury");
 
