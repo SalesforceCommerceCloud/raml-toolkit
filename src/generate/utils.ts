@@ -15,7 +15,7 @@ export const PRIMITIVE_DATA_TYPE_MAP = {
   "http://www.w3.org/2001/XMLSchema#integer": "number",
   "http://www.w3.org/2001/XMLSchema#double": "number",
   "http://www.w3.org/2001/XMLSchema#float": "number",
-  "http://www.w3.org/2001/XMLSchema#boolean": "boolean"
+  "http://www.w3.org/2001/XMLSchema#boolean": "boolean",
 };
 
 /**
@@ -50,7 +50,7 @@ export const getTypeFromPayload = (payload: model.domain.Payload): string => {
   }
   if ((payload.schema as model.domain.UnionShape).anyOf !== undefined) {
     const union: string[] = [];
-    (payload.schema as model.domain.UnionShape).anyOf.forEach(element => {
+    (payload.schema as model.domain.UnionShape).anyOf.forEach((element) => {
       union.push(element.name.value());
     });
     return union.join(" | ");
@@ -208,9 +208,7 @@ const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
     if (arrayShape.inherits != null && arrayShape.inherits.length > 0)
       arrItem = (arrayShape.inherits[0] as model.domain.ArrayShape).items;
   }
-  return ARRAY_DATA_TYPE.concat("<")
-    .concat(getDataType(arrItem))
-    .concat(">");
+  return ARRAY_DATA_TYPE.concat("<").concat(getDataType(arrItem)).concat(">");
 };
 
 /**
@@ -265,7 +263,7 @@ export const getFilteredProperties = (
 
   while (node != null) {
     if (node.properties != null && node.properties.length > 0) {
-      node.properties.forEach(prop => {
+      node.properties.forEach((prop) => {
         if (prop != null) {
           const propName = getValue(prop.name);
           //ignore duplicate props

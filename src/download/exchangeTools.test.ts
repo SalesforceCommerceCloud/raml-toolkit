@@ -7,7 +7,7 @@
 import {
   groupByCategory,
   removeRamlLinks,
-  removeVersionSpecificInformation
+  removeVersionSpecificInformation,
 } from "./exchangeTools";
 import { RestApi } from "./exchangeTypes";
 
@@ -27,54 +27,54 @@ describe("Test groupByCategory method", () => {
       name: "Test API",
       groupId: "8888888",
       assetId: "test-api",
-      version: "1.0.0"
+      version: "1.0.0",
     },
     {
       id: "8888888/test-api-2/1.0.0",
       name: "Test API 2",
       groupId: "8888888",
       assetId: "test-api-2",
-      version: "1.0.0"
+      version: "1.0.0",
     },
     {
       id: "8888888/test-api-3/1.0.0",
       name: "Test API 3",
       groupId: "8888888",
       assetId: "test-api-3",
-      version: "1.0.0"
+      version: "1.0.0",
     },
     {
       id: "8888888/test-api-4/1.0.0",
       name: "Test API 4",
       groupId: "8888888",
       assetId: "test-api-4",
-      version: "1.0.0"
-    }
+      version: "1.0.0",
+    },
   ];
 
   it("Group Apis with all same category", () => {
     const safeApisObject = _.cloneDeep(apis);
-    safeApisObject.forEach(api => {
+    safeApisObject.forEach((api) => {
       api.categories = {
-        "Api Family": ["something"]
+        "Api Family": ["something"],
       };
     });
 
     expect(groupByCategory(safeApisObject, "Api Family")).to.deep.equal({
-      something: safeApisObject
+      something: safeApisObject,
     });
   });
 
   it("Group Apis with all same category w/o allowing unclassified", () => {
     const safeApisObject = _.cloneDeep(apis);
-    safeApisObject.forEach(api => {
+    safeApisObject.forEach((api) => {
       api.categories = {
-        "Api Family": ["something"]
+        "Api Family": ["something"],
       };
     });
 
     expect(groupByCategory(safeApisObject, "Api Family", false)).to.deep.equal({
-      something: safeApisObject
+      something: safeApisObject,
     });
   });
 
@@ -82,21 +82,21 @@ describe("Test groupByCategory method", () => {
     const safeApisObject = _.cloneDeep(apis);
 
     safeApisObject[0].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[1].categories = {
-      "Api Family": ["bar"]
+      "Api Family": ["bar"],
     };
     safeApisObject[2].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[3].categories = {
-      "Api Family": ["bar"]
+      "Api Family": ["bar"],
     };
 
     expect(groupByCategory(safeApisObject, "Api Family")).to.deep.equal({
       foo: [safeApisObject[0], safeApisObject[2]],
-      bar: [safeApisObject[1], safeApisObject[3]]
+      bar: [safeApisObject[1], safeApisObject[3]],
     });
   });
 
@@ -104,23 +104,23 @@ describe("Test groupByCategory method", () => {
     const safeApisObject = _.cloneDeep(apis);
 
     safeApisObject[0].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[1].categories = {
-      "Api Family": ["bar"]
+      "Api Family": ["bar"],
     };
     safeApisObject[2].categories = {
-      "Api Family": ["see"]
+      "Api Family": ["see"],
     };
     safeApisObject[3].categories = {
-      "Api Family": ["dog"]
+      "Api Family": ["dog"],
     };
 
     expect(groupByCategory(safeApisObject, "Api Family")).to.deep.equal({
       foo: [safeApisObject[0]],
       bar: [safeApisObject[1]],
       see: [safeApisObject[2]],
-      dog: [safeApisObject[3]]
+      dog: [safeApisObject[3]],
     });
   });
 
@@ -128,20 +128,20 @@ describe("Test groupByCategory method", () => {
     const safeApisObject = _.cloneDeep(apis);
 
     safeApisObject[0].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[2].categories = {
-      "Api Family": ["see"]
+      "Api Family": ["see"],
     };
     safeApisObject[3].categories = {
-      "Api Family": ["dog"]
+      "Api Family": ["dog"],
     };
 
     expect(groupByCategory(safeApisObject, "Api Family")).to.deep.equal({
       foo: [safeApisObject[0]],
       see: [safeApisObject[2]],
       dog: [safeApisObject[3]],
-      unclassified: [safeApisObject[1]]
+      unclassified: [safeApisObject[1]],
     });
   });
 
@@ -149,15 +149,15 @@ describe("Test groupByCategory method", () => {
     const safeApisObject = _.cloneDeep(apis);
 
     safeApisObject[0].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[2].categories = {};
 
     safeApisObject[2].categories = {
-      "Api Family": ["see"]
+      "Api Family": ["see"],
     };
     safeApisObject[3].categories = {
-      "Api Family": ["dog"]
+      "Api Family": ["dog"],
     };
 
     expect(() => groupByCategory(safeApisObject, "Api Family", false)).to.throw(
@@ -169,24 +169,24 @@ describe("Test groupByCategory method", () => {
     const safeApisObject = _.cloneDeep(apis);
 
     safeApisObject[0].categories = {
-      "Api Family": ["foo"]
+      "Api Family": ["foo"],
     };
     safeApisObject[2].categories = {
-      "CC Api Family": ["bar"]
+      "CC Api Family": ["bar"],
     };
 
     safeApisObject[2].categories = {
-      "Api Family": ["see"]
+      "Api Family": ["see"],
     };
     safeApisObject[3].categories = {
-      "Api Family": ["dog"]
+      "Api Family": ["dog"],
     };
 
     expect(groupByCategory(safeApisObject, "Api Family")).to.deep.equal({
       foo: [safeApisObject[0]],
       see: [safeApisObject[2]],
       dog: [safeApisObject[3]],
-      unclassified: [safeApisObject[1]]
+      unclassified: [safeApisObject[1]],
     });
   });
 });
@@ -204,8 +204,8 @@ const REST_APIS: RestApi[] = [
       externalLink: "https://somewhere/fatraml.zip",
       packaging: "zip",
       createdDate: "today",
-      mainFile: "api.raml"
-    }
+      mainFile: "api.raml",
+    },
   },
   {
     id: "8888888/test-api2/1.0.0",
@@ -219,27 +219,27 @@ const REST_APIS: RestApi[] = [
       externalLink: "https://somewhere/fatraml2.zip",
       packaging: "zip",
       createdDate: "today",
-      mainFile: "api.raml"
-    }
-  }
+      mainFile: "api.raml",
+    },
+  },
 ];
 
 describe("removeRamlLinks", () => {
   it("should remove fat RAML external links for all the apis", () => {
     const apis = _.cloneDeep(REST_APIS);
     removeRamlLinks(apis).forEach(
-      api => expect(api.fatRaml.externalLink).to.be.undefined
+      (api) => expect(api.fatRaml.externalLink).to.be.undefined
     );
   });
 
   it("should not fail if the RAML does not have externalLink fields", () => {
     const apis = _.cloneDeep(REST_APIS);
-    apis.forEach(apiEntry => {
+    apis.forEach((apiEntry) => {
       delete apiEntry.fatRaml.externalLink;
     });
 
     removeRamlLinks(apis).forEach(
-      api => expect(api.fatRaml.externalLink).to.be.undefined
+      (api) => expect(api.fatRaml.externalLink).to.be.undefined
     );
   });
 

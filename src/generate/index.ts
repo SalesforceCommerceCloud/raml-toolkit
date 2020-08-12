@@ -9,6 +9,5 @@ export { ApiGroup } from "./apiGroup";
 export { ApiCollection } from "./apiCollection";
 export { Template } from "./template";
 
-import * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
-import { HandlebarsWithAmfHelpers } from "./handlebarsConfig";
-export { handlebarsAmfHelpers, HandlebarsWithAmfHelpers };
+export * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
+export { HandlebarsWithAmfHelpers } from "./handlebarsConfig";

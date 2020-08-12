@@ -15,7 +15,7 @@ describe("camelcase method displayname tests", () => {
     "http://a.ml/vocabularies/data#camelcase-method-displayname";
   let doc;
 
-  beforeEach(function() {
+  beforeEach(function () {
     doc = utils.getHappySpec();
   });
 

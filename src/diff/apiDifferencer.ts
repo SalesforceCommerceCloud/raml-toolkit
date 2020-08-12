@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { findGraphChanges } from "./amfGraphDifferencer";
-import { parseRamlFile } from "../common/parser";
+import { parseRamlFile } from "../common/amfParser";
 import { ramlToolLogger } from "../common/logger";
 import { ApiChanges } from "./changes/apiChanges";
 import { applyRules } from "./rulesProcessor";
@@ -40,7 +40,7 @@ export class ApiDifferencer {
   async findChanges(): Promise<ApiChanges> {
     const [leftGraph, rightGraph] = await Promise.all([
       this.generateGraph(this.baseApiSpec),
-      this.generateGraph(this.newApiSpec)
+      this.generateGraph(this.newApiSpec),
     ]);
     ramlToolLogger.info(
       `Finding differences between flattened JSON-LD of ${this.baseApiSpec} and ${this.newApiSpec}`

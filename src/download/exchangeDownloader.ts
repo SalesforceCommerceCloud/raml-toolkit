@@ -17,7 +17,7 @@ import {
   RestApi,
   FileInfo,
   RawCategories,
-  Categories
+  Categories,
 } from "./exchangeTypes";
 import { ramlToolLogger } from "../common/logger";
 
@@ -47,25 +47,32 @@ export async function downloadRestApi(
   return response;
 }
 
+/**
+ * Download the API specifications
+ * @param restApi - Metadata of the API
+ * @param destinationFolder - Destination directory for the download
+ */
 export async function downloadRestApis(
   restApi: RestApi[],
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
 ): Promise<string> {
-  const downloads = restApi.map(api => downloadRestApi(api, destinationFolder));
+  const downloads = restApi.map((api) =>
+    downloadRestApi(api, destinationFolder)
+  );
   await Promise.all(downloads);
   return destinationFolder;
 }
 
 function mapCategories(categories: RawCategories[]): Categories {
   const cats: Categories = {};
-  categories.forEach(category => {
+  categories.forEach((category) => {
     cats[category.key] = category.value;
   });
   return cats;
 }
 
 function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
-  const found = files.find(file => file.classifier === classifier);
+  const found = files.find((file) => file.classifier === classifier);
   // There are extra properties we don't want (downloadURL, isGenerated), so we
   // create a new object that excludes them
   return {
@@ -75,7 +82,7 @@ function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
     createdDate: found.createdDate,
     md5: found.md5,
     sha1: found.sha1,
-    mainFile: found.mainFile
+    mainFile: found.mainFile,
   };
 }
 
@@ -89,7 +96,7 @@ function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
     assetId: apiResponse.assetId,
     version: apiResponse.version,
     categories: mapCategories(apiResponse.categories),
-    fatRaml: getFileByClassifier(apiResponse.files, "fat-raml")
+    fatRaml: getFileByClassifier(apiResponse.files, "fat-raml"),
   };
 }
 
@@ -110,8 +117,8 @@ export async function getAsset(
 ): Promise<void | RawRestApi> {
   const res = await fetch(`${ANYPOINT_BASE_URI}/assets/${assetId}`, {
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
   if (!res.ok) {
     ramlToolLogger.warn(
@@ -139,14 +146,14 @@ export async function searchExchange(
     `${ANYPOINT_BASE_URI}/assets?search=${searchString}&types=rest-api`,
     {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     }
   )
-    .then(res => res.json())
-    .then(restApis => {
+    .then((res) => res.json())
+    .then((restApis) => {
       const apis: RestApi[] = [];
-      restApis.forEach(restApi => {
+      restApis.forEach((restApi) => {
         apis.push(convertResponseToRestApi(restApi));
       });
       return apis;
@@ -175,7 +182,7 @@ export async function getVersionByDeployment(
     return;
   }
   let version = null;
-  asset.instances.forEach(instance => {
+  asset.instances.forEach((instance) => {
     if (
       instance.environmentName &&
       deployment.test(instance.environmentName) &&
@@ -229,7 +236,7 @@ export async function search(
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
-  const promises = apis.map(async api => {
+  const promises = apis.map(async (api) => {
     const version = await getVersionByDeployment(token, api, deployment);
     return version
       ? getSpecificApi(token, api.groupId, api.assetId, version)

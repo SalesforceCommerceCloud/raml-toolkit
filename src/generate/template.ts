@@ -49,7 +49,7 @@ export class Template {
         //Parts of the AMF model use prototype properties and methods, we need to make those available to Handlebars
         this.handlebars.compile(this.content)(context, {
           allowProtoPropertiesByDefault: true,
-          allowProtoMethodsByDefault: true
+          allowProtoMethodsByDefault: true,
         })
       );
     } catch (error) {

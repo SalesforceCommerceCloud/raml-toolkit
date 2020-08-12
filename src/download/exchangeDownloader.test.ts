@@ -11,7 +11,7 @@ import {
   getVersionByDeployment,
   getSpecificApi,
   getAsset,
-  search
+  search,
 } from "./exchangeDownloader";
 import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../testResources/download/resources/restApiResponseObjects";
@@ -49,9 +49,9 @@ const REST_API: RestApi = {
     externalLink: "https://somewhere/fatraml.zip",
     packaging: "zip",
     createdDate: "today",
-    mainFile: "api.raml"
+    mainFile: "api.raml",
   },
-  version: "1.0.0"
+  version: "1.0.0",
 };
 
 describe("downloadRestApi", () => {
@@ -60,9 +60,7 @@ describe("downloadRestApi", () => {
   it("can download a single file", async () => {
     const tmpDir = tmp.dirSync();
 
-    nock("https://somewhere")
-      .get("/fatraml.zip")
-      .reply(200);
+    nock("https://somewhere").get("/fatraml.zip").reply(200);
 
     const api = _.cloneDeep(REST_API);
 
@@ -72,9 +70,7 @@ describe("downloadRestApi", () => {
   });
 
   it("can download a single file even when no download dir is specified", async () => {
-    nock("https://somewhere")
-      .get("/fatraml.zip")
-      .reply(200);
+    nock("https://somewhere").get("/fatraml.zip").reply(200);
 
     const api = _.cloneDeep(REST_API);
 
@@ -106,7 +102,7 @@ describe("downloadRestApis", () => {
     scope.get("/fatraml.zip").reply(200);
     scope.get("/fatraml2.zip").reply(200);
 
-    return downloadRestApis(apis, tmpDir.name).then(res => {
+    return downloadRestApis(apis, tmpDir.name).then((res) => {
       expect(res).to.equal(tmpDir.name);
     });
   });
@@ -121,13 +117,13 @@ describe("downloadRestApis", () => {
     scope.get("/fatraml.zip").reply(200);
     scope.get("/fatraml2.zip").reply(200);
 
-    return downloadRestApis(apis).then(res => {
+    return downloadRestApis(apis).then((res) => {
       expect(res).to.equal("download");
     });
   });
 
   it("should not do anything when an empty list is passed", async () => {
-    return downloadRestApis([]).then(res => {
+    return downloadRestApis([]).then((res) => {
       expect(res).to.equal("download");
     });
   });
@@ -143,7 +139,7 @@ describe("searchExchange", () => {
       .get("/assets?search=searchString&types=rest-api")
       .reply(200, assetSearchResults);
 
-    return searchExchange("AUTH_TOKEN", "searchString").then(res => {
+    return searchExchange("AUTH_TOKEN", "searchString").then((res) => {
       expect(res).to.deep.equal(searchAssetApiResultObject);
     });
   });
@@ -179,7 +175,7 @@ describe("getSpecificApi", () => {
         "API layer": ["Process"],
         "CC API Visibility": ["External"],
         "CC Version Status": ["Beta"],
-        "CC API Family": ["Customer"]
+        "CC API Family": ["Customer"],
       },
       fatRaml: {
         classifier: "fat-raml",
@@ -189,8 +185,8 @@ describe("getSpecificApi", () => {
         createdDate: "2020-01-22T03:25:00.200Z",
         md5: "3ce41ea699c8be4446909f172cfac317",
         sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
-        mainFile: "shopper-customers.raml"
-      }
+        mainFile: "shopper-customers.raml",
+      },
     });
   });
 
@@ -282,7 +278,7 @@ describe("getAsset", () => {
       .get("/8888888/test-get-asset")
       .reply(200, { data: "json response" });
 
-    expect(
+    return expect(
       getAsset("AUTH_TOKEN", "8888888/test-get-asset")
     ).to.eventually.deep.equal({ data: "json response" });
   });
@@ -292,8 +288,8 @@ describe("getAsset", () => {
       .get("/8888888/get-asset-404")
       .reply(404, "Not Found");
 
-    expect(getAsset("AUTH_TOKEN", "8888888/get-asset-404")).to.eventually.be
-      .undefined;
+    return expect(getAsset("AUTH_TOKEN", "8888888/get-asset-404")).to.eventually
+      .be.undefined;
   });
 });
 
@@ -328,10 +324,10 @@ describe("search", () => {
     // Intercept searchExchange request
     nock("https://anypoint.mulesoft.com/exchange/api/v2", {
       reqheaders: {
-        Authorization: "Bearer AUTH_TOKEN"
-      }
+        Authorization: "Bearer AUTH_TOKEN",
+      },
     })
-      .get("/assets?search=searchString")
+      .get("/assets?search=searchString&types=rest-api")
       .reply(200, [assetSearchResults[0]]);
   });
 
@@ -342,7 +338,9 @@ describe("search", () => {
       .get("/shop-products-categories-api-v1/0.0.1")
       .reply(200, getAssetWithVersion);
 
-    expect(search("searchString", /production/i)).to.eventually.deep.equal([
+    return expect(
+      search("searchString", /production/i)
+    ).to.eventually.deep.equal([
       {
         id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1",
         name: "Shopper Customers",
@@ -356,7 +354,7 @@ describe("search", () => {
           "API layer": ["Process"],
           "CC API Visibility": ["External"],
           "CC Version Status": ["Beta"],
-          "CC API Family": ["Customer"]
+          "CC API Family": ["Customer"],
         },
         fatRaml: {
           classifier: "fat-raml",
@@ -366,15 +364,17 @@ describe("search", () => {
           createdDate: "2020-01-22T03:25:00.200Z",
           md5: "3ce41ea699c8be4446909f172cfac317",
           sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
-          mainFile: "shopper-customers.raml"
-        }
-      }
+          mainFile: "shopper-customers.raml",
+        },
+      },
     ]);
   });
 
   it("works when an asset does not exist", () => {
     scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
-    expect(search("searchString", /unused regex/)).to.eventually.deep.equal([
+    return expect(
+      search("searchString", /unused regex/)
+    ).to.eventually.deep.equal([
       {
         id: null,
         name: "Shopper Products",
@@ -388,7 +388,7 @@ describe("search", () => {
           "API layer": ["Process"],
           "CC API Family": ["Product"],
           "CC Version Status": ["Beta"],
-          "CC API Visibility": ["External"]
+          "CC API Visibility": ["External"],
         },
         fatRaml: {
           classifier: "fat-raml",
@@ -396,9 +396,9 @@ describe("search", () => {
           createdDate: null,
           md5: null,
           sha1: null,
-          mainFile: "shop-products-categories-api-v1.raml"
-        }
-      }
+          mainFile: "shop-products-categories-api-v1.raml",
+        },
+      },
     ]);
   });
 
@@ -409,7 +409,7 @@ describe("search", () => {
       .get("/shop-products-categories-api-v1/0.0.7")
       .reply(200, getAssetWithoutVersion);
 
-    expect(
+    return expect(
       search("searchString", /nothing should match/)
     ).to.eventually.deep.equal([
       {
@@ -425,19 +425,18 @@ describe("search", () => {
           "CC API Visibility": ["External"],
           "CC Version Status": ["Beta"],
           "CC API Family": ["Customer"],
-          "API layer": ["Process"]
+          "API layer": ["Process"],
         },
         fatRaml: {
           classifier: "fat-raml",
           packaging: "zip",
-          externalLink:
-            "https://exchange2-asset-manager-kprod.s3.amazonaws.com/893f605e-10e2-423a-bdb4-f952f56eb6d8/37bb0c576a8e98746ba998dc42c926007d96229de7566b04d555f0d83f05368a.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20200206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200206T192402Z&X-Amz-Expires=86400&X-Amz-Signature=0345e90e7e437e539b21f8a6d0fab74e711dde1131ccc6419782302dbd337954&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dshopper-customers-0.0.7-raml.zip",
+          externalLink: "https://short.url/raml.zip",
           createdDate: "2020-02-05T21:26:01.199Z",
           md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
           sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
-          mainFile: "shopper-customers.raml"
-        }
-      }
+          mainFile: "shopper-customers.raml",
+        },
+      },
     ]);
   });
 });

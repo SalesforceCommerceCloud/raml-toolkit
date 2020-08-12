@@ -39,7 +39,7 @@ export class ApiChanges {
   }
 
   /**
-   * Get nodes that has categorized changes
+   * Get nodes that have categorized changes
    */
   getNodesWithCategorizedChanges(): NodeChanges[] {
     return this.nodeChanges.filter(n => n.hasCategorizedChanges());
@@ -49,7 +49,7 @@ export class ApiChanges {
    * Return true if there are breaking changes
    */
   hasBreakingChanges(): boolean {
-    return this.nodeChanges.some(n => n.hasBreakingChanges());
+    return this.nodeChanges.some((n) => n.hasBreakingChanges());
   }
 
   /**

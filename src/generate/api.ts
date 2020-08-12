@@ -9,8 +9,8 @@ import { model } from "amf-client-js";
 import {
   resolveApiModel,
   parseRamlFile,
-  getAllDataTypes
-} from "../common/parser";
+  getAllDataTypes,
+} from "../common/amfParser";
 
 import { Name } from "./name";
 

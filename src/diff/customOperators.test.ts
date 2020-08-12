@@ -24,7 +24,7 @@ function verifyRule(nodeChanges: NodeChanges, rule: Rule): void {
   if (rule.event.params.changedProperty) {
     changedValues = [
       nodeChanges.removed[rule.event.params.changedProperty],
-      nodeChanges.added[rule.event.params.changedProperty]
+      nodeChanges.added[rule.event.params.changedProperty],
     ];
   }
   expect(categorizedChanges).to.have.length(1);
@@ -42,9 +42,9 @@ describe("Custom operators - hasProperty", () => {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasProperty",
-          value: "core:name"
-        }
-      ]
+          value: "core:name",
+        },
+      ],
     });
 
     const nodeChanges = await applyRules(
@@ -61,9 +61,9 @@ describe("Custom operators - hasProperty", () => {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasProperty",
-          value: "core:desc"
-        }
-      ]
+          value: "core:desc",
+        },
+      ],
     });
 
     const nodeChanges = await applyRules(
@@ -82,9 +82,9 @@ describe("Custom operators - hasNoProperty", () => {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasNoProperty",
-          value: "core:desc"
-        }
-      ]
+          value: "core:desc",
+        },
+      ],
     });
 
     const nodeChanges = await applyRules(
@@ -100,9 +100,9 @@ describe("Custom operators - hasNoProperty", () => {
           fact: DIFF_FACT_ID,
           path: "$.added",
           operator: "hasNoProperty",
-          value: "core:name"
-        }
-      ]
+          value: "core:name",
+        },
+      ],
     });
 
     const nodeChanges = await applyRules(
@@ -118,7 +118,7 @@ describe("Custom operators - hasNoProperty", () => {
  */
 function getDefaultNodeChanges(): NodeChanges {
   const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
-    "apiContract:Operation"
+    "apiContract:Operation",
   ]);
   nodeChanges.added = { "core:name": "newName" };
   nodeChanges.removed = { "core:name": "oldName" };
@@ -137,9 +137,9 @@ function buildRule(conditions: TopLevelCondition): Rule {
       type: "test-rule",
       params: {
         category: RuleCategory.BREAKING,
-        changedProperty: "core:name"
-      }
-    }
+        changedProperty: "core:name",
+      },
+    },
   });
 }
 

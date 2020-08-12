@@ -8,12 +8,12 @@
 import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
-import { model } from "amf-client-js";
+import { model, AMF } from "amf-client-js";
 import { printResults, validateFile, validateCustom } from "./lint";
 import {
   getHappySpec,
   renderSpecAsFile,
-  getSingleInvalidFile
+  getSingleInvalidFile,
 } from "../../testResources/testUtils";
 
 const PROFILE = "mercury";
@@ -72,13 +72,23 @@ describe("#printResults", () => {
 describe("#validateCustom", () => {
   let testModel: model.document.Document;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    await AMF.init();
     testModel = new model.document.Document();
   });
 
   it("missing validation profile", () => {
-    expect(
-      validateCustom(testModel, "file://MISSINGFILE")
-    ).to.be.eventually.rejectedWith("No registered runtime validator");
+    const customProfile = "file://MISSINGFILE";
+    return expect(
+      validateCustom(testModel, customProfile)
+    ).to.be.eventually.rejectedWith(
+      `Custom profile ${customProfile} does not exist`
+    );
+  });
+  it("uses unsupported schema", () => {
+    const customProfile = "uri://MISSINGFILE";
+    return expect(
+      validateCustom(testModel, customProfile)
+    ).to.be.eventually.rejectedWith(`Unsupported`);
   });
 });

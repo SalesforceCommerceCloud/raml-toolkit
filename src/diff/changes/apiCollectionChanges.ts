@@ -43,7 +43,7 @@ export class ApiCollectionChanges {
     if (this.removed.length > 0 || this.added.length > 0) {
       return true;
     }
-    return Object.values(this.changed).some(apiChanges =>
+    return Object.values(this.changed).some((apiChanges) =>
       apiChanges.hasChanges()
     );
   }

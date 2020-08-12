@@ -8,7 +8,7 @@ import {
   getTypeFromParameter,
   getTypeFromProperty,
   getPayloadTypeFromRequest,
-  getReturnTypeFromOperation
+  getReturnTypeFromOperation,
 } from "./handlebarsAmfHelpers";
 import { ARRAY_DATA_TYPE, OBJECT_DATA_TYPE } from "./utils";
 import {
@@ -17,7 +17,7 @@ import {
   getLinkedType,
   getObjectType,
   getRequestPayloadModel,
-  getScalarType
+  getScalarType,
 } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
@@ -265,9 +265,7 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       shape.withItems(arrItem);
 
       expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
-        ARRAY_DATA_TYPE.concat("<")
-          .concat(typeName)
-          .concat(">")
+        ARRAY_DATA_TYPE.concat("<").concat(typeName).concat(">")
       );
     });
   });

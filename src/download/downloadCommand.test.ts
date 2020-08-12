@@ -9,7 +9,7 @@ import JSZip from "jszip";
 import tmp from "tmp";
 import chai from "chai";
 import chaiFs from "chai-fs";
-import { DownloadCommand } from ".";
+import { DownloadCommand } from "./downloadCommand";
 
 chai.use(chaiFs);
 
@@ -19,7 +19,7 @@ const assetSearchResults = require("../../testResources/download/resources/asset
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const asset = require("../../testResources/download/resources/getAsset");
 // Use a shorter URL for better readability
-asset.files.find(file => file.classifier === "fat-raml").externalLink =
+asset.files.find((file) => file.classifier === "fat-raml").externalLink =
   "https://short.url/raml.zip";
 
 const createZip = (): NodeJS.ReadableStream =>
@@ -40,7 +40,7 @@ const API_CONFIG = {
         "CC API Visibility": ["External"],
         "CC Version Status": ["Beta"],
         "CC API Family": ["Customer"],
-        "API layer": ["Process"]
+        "API layer": ["Process"],
       },
       fatRaml: {
         classifier: "fat-raml",
@@ -48,10 +48,10 @@ const API_CONFIG = {
         createdDate: "2020-02-05T21:26:01.199Z",
         md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
         sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
-        mainFile: "shopper-customers.raml"
-      }
-    }
-  ]
+        mainFile: "shopper-customers.raml",
+      },
+    },
+  ],
 };
 const API_CONFIG_JSON = JSON.stringify(API_CONFIG);
 
@@ -62,21 +62,21 @@ const API_CONFIG_JSON = JSON.stringify(API_CONFIG);
  */
 function setup({
   search = "",
-  version = "0.0.1"
+  version = "0.0.1",
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } = {}): any {
   return (
     test
       .env({ ANYPOINT_USERNAME: "user", ANYPOINT_PASSWORD: "pass" })
       // Intercept getBearer request
-      .nock("https://anypoint.mulesoft.com", scope =>
+      .nock("https://anypoint.mulesoft.com", (scope) =>
         scope
           .post("/accounts/login", { username: "user", password: "pass" })
           // eslint-disable-next-line @typescript-eslint/camelcase
           .reply(200, { access_token: "AUTH_TOKEN" })
       )
       // Intercept searchExchange request
-      .nock("https://anypoint.mulesoft.com/exchange/api/v2", scope =>
+      .nock("https://anypoint.mulesoft.com/exchange/api/v2", (scope) =>
         scope
           .get(`/assets?search=${encodeURIComponent(search)}&types=rest-api`)
           .reply(200, [assetSearchResults[0]])
@@ -84,7 +84,7 @@ function setup({
       // Intercept search requests
       .nock(
         "https://anypoint.mulesoft.com/exchange/api/v2/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8",
-        scope =>
+        (scope) =>
           scope
             .get("/shop-products-categories-api-v1")
             .reply(200, asset)
@@ -92,7 +92,7 @@ function setup({
             .reply(200, asset)
       )
       // Intercept downloadRestApis request
-      .nock("https://short.url", scope =>
+      .nock("https://short.url", (scope) =>
         scope.get("/raml.zip").reply(200, createZip())
       )
   );
@@ -144,7 +144,7 @@ describe("Download Command", () => {
       DownloadCommand.run([
         "--group-by=category",
         "--group-by",
-        "CC API Family"
+        "CC API Family",
       ])
     )
     .it("accepts a configurable category for grouping APIs");
@@ -159,7 +159,7 @@ describe("Download Command", () => {
         .with.deep.contents([
           "api-config.json",
           "shopper-customers",
-          "shopper-customers/file.raml"
+          "shopper-customers/file.raml",
         ]);
     });
 
@@ -168,7 +168,7 @@ describe("Download Command", () => {
       DownloadCommand.run([
         `--dest=${tmpOtherDir}`,
         "--group-by",
-        "CC API Family"
+        "CC API Family",
       ])
     )
     .it("accepts a configurable target directory (absolute)", () => {
@@ -177,7 +177,7 @@ describe("Download Command", () => {
         .with.deep.contents([
           "api-config.json",
           "shopper-customers",
-          "shopper-customers/file.raml"
+          "shopper-customers/file.raml",
         ]);
     });
 
@@ -186,7 +186,7 @@ describe("Download Command", () => {
       DownloadCommand.run([
         "--config-file=test-file.json",
         "--group-by",
-        "CC API Family"
+        "CC API Family",
       ])
     )
     .it("accepts a configurable config file name", () => {
@@ -196,17 +196,19 @@ describe("Download Command", () => {
     });
 
   test
+    .env({ ANYPOINT_USERNAME: "user", ANYPOINT_PASSWORD: "pass" })
     .do(() =>
       DownloadCommand.run([
         `--config-file=/path/to/api-config.json`,
         "--group-by",
-        "CC API Family"
+        "CC API Family",
       ])
     )
     .exit(2)
     .it("forbids specifying a path for config file name");
 
   test
+    .env({ ANYPOINT_USERNAME: "user", ANYPOINT_PASSWORD: "pass" })
     .do(() => DownloadCommand.run([]))
     .exit(2)
     .it("requires --group-by flag to be set");
@@ -214,7 +216,7 @@ describe("Download Command", () => {
   test
     .env({
       ANYPOINT_USERNAME: undefined,
-      ANYPOINT_PASSWORD: undefined
+      ANYPOINT_PASSWORD: undefined,
     })
     .do(() => DownloadCommand.run(["--group-by", "CC API Family"]))
     .exit(2)

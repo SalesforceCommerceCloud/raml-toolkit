@@ -57,12 +57,14 @@
     },
     "plugins": [
       "@typescript-eslint",
-      "header"
+      "header",
+      "@fintechstudios/eslint-plugin-chai-as-promised"
     ],
     "extends": [
       "plugin:@typescript-eslint/recommended",
       "prettier/@typescript-eslint",
-      "plugin:prettier/recommended"
+      "plugin:prettier/recommended",
+      "plugin:@fintechstudios/chai-as-promised/recommended"
     ],
     "rules": {
       "max-lines": [
@@ -141,6 +143,7 @@
     "unzipper": "^0.10.11"
   },
   "devDependencies": {
+    "@fintechstudios/eslint-plugin-chai-as-promised": "^3.0.2",
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/parser": "^3.8.5",
     "@oclif/test": "^1.2.5",
@@ -167,7 +170,7 @@
     "mocha": "^7.0.1",
     "nock": "^12.0.2",
     "nyc": "^15.0.0",
-    "prettier": "^1.15.2",
+    "prettier": "^2.0.5",
     "sinon": "^9.0.2",
     "sort-package-json": "^1.44.0",
     "tslib": "^1.10.0",

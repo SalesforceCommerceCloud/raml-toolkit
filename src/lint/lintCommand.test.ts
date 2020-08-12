@@ -11,7 +11,7 @@ import { expect, test } from "@oclif/test";
 import {
   getSingleValidFile,
   getSingleInvalidFile,
-  getSlightlyInvalidFile
+  getSlightlyInvalidFile,
 } from "../../testResources/testUtils";
 import { rename } from "fs-extra";
 
@@ -26,14 +26,14 @@ describe("raml-toolkit cli", () => {
     .stdout()
     .do(() => cmd.run(["--version"]))
     .exit(0)
-    .it("checks that the version string starts with the app name", ctx => {
+    .it("checks that the version string starts with the app name", (ctx) => {
       expect(ctx.stdout).to.contain("@commerce-apps/raml-toolkit");
     });
 
   test
     .stdout()
     .stderr()
-    .do(function() {
+    .do(function () {
       return cmd.run([getSingleValidFile()]);
     })
     .exit(2)
@@ -42,14 +42,14 @@ describe("raml-toolkit cli", () => {
   test
     .stdout()
     .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
-    .it("validates a single valid file and reports that it conforms", ctx => {
+    .it("validates a single valid file and reports that it conforms", (ctx) => {
       expect(ctx.stdout).to.contain(successString);
     });
 
   test
     .stdout()
     .do(() => cmd.run(["--profile", MERCURY_PROFILE, getSingleValidFile()]))
-    .it("validates a single valid file and reports that it conforms", ctx => {
+    .it("validates a single valid file and reports that it conforms", (ctx) => {
       expect(ctx.stdout).to.contain(successString);
       expect(ctx.stdout).to.contain("Number of hidden warnings:");
     });
@@ -61,12 +61,12 @@ describe("raml-toolkit cli", () => {
         "--profile",
         MERCURY_PROFILE,
         getSingleValidFile(),
-        "--warnings"
+        "--warnings",
       ])
     )
     .it(
       "validates a single valid file and reports that it conforms, without hidden warnings",
-      ctx => {
+      (ctx) => {
         expect(ctx.stdout).to.contain(successString);
         expect(ctx.stdout).to.not.contain("Number of hidden warnings:");
       }
@@ -87,7 +87,7 @@ describe("raml-toolkit cli", () => {
     .it(
       "validates a single valid file with a space in the name" +
         " and reports that it conforms",
-      ctx => {
+      (ctx) => {
         expect(ctx.stdout).to.contain(successString);
       }
     );
@@ -113,10 +113,10 @@ describe("raml-toolkit cli", () => {
         "--profile",
         MERCURY_PROFILE,
         getSingleValidFile(),
-        getSingleValidFile()
+        getSingleValidFile(),
       ])
     )
-    .it("validates two valid files and reports that it conforms", ctx => {
+    .it("validates two valid files and reports that it conforms", (ctx) => {
       expect(ctx.stdout).to.contain(successString);
     });
 
@@ -128,7 +128,7 @@ describe("raml-toolkit cli", () => {
         "--profile",
         MERCURY_PROFILE,
         getSingleValidFile(),
-        getSingleInvalidFile()
+        getSingleInvalidFile(),
       ])
     )
     .exit(1)
@@ -142,7 +142,7 @@ describe("raml-toolkit cli", () => {
         "--profile",
         MERCURY_PROFILE,
         getSingleValidFile(),
-        getSlightlyInvalidFile()
+        getSlightlyInvalidFile(),
       ])
     )
     .exit(1)
@@ -159,7 +159,7 @@ describe("raml-toolkit cli", () => {
     .stdout()
     .do(() => cmd.run(["--help"]))
     .exit(0)
-    .it("does not include TypeScript files in profile", ctx => {
+    .it("does not include TypeScript files in profile", (ctx) => {
       expect(ctx.stdout).to.not.include(".ts");
     });
 });

@@ -12,15 +12,15 @@ export function getBearer(username: string, password: string): Promise<string> {
   return fetch(MULESOFT_LOGIN, {
     method: "post",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({
       username: username,
-      password: password
-    })
+      password: password,
+    }),
   }).then((response: Response) => {
     if (response.ok) {
-      return response.json().then(json => json["access_token"]);
+      return response.json().then((json) => json["access_token"]);
     }
 
     switch (response.status) {

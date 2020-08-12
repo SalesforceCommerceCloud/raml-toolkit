@@ -65,10 +65,10 @@ export const verifyProperties = (
 ): void => {
   expect(actualProps).to.be.length(expectedProps.length);
   const expectedPropNames: Set<string> = new Set();
-  expectedProps.forEach(prop => {
+  expectedProps.forEach((prop) => {
     expectedPropNames.add(prop.name.value());
   });
-  actualProps.forEach(prop => {
+  actualProps.forEach((prop) => {
     expect(expectedPropNames.has(prop.name.value())).to.be.true;
   });
 };

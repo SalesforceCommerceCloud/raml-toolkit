@@ -16,8 +16,8 @@ import {
   getAllDataTypes,
   getApiName,
   parseRamlFile,
-  resolveApiModel
-} from "./parser";
+  resolveApiModel,
+} from "./amfParser";
 
 const validRamlFile = path.join(
   __dirname,
@@ -33,18 +33,20 @@ before(() => {
 });
 
 describe("Test RAML file", () => {
-  it("Test invalid RAML file", () =>
-    expect(parseRamlFile(invalidRamlFile)).to.eventually.be.rejected);
+  it("Test invalid RAML file", () => {
+    return expect(parseRamlFile(invalidRamlFile)).to.eventually.be.rejected;
+  });
 
-  it("Test valid RAML file", () =>
-    expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty);
+  it("Test valid RAML file", () => {
+    return expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty;
+  });
 });
 
 describe("Get Data types", () => {
   it("Test valid RAML file", async () => {
     const baseUnit = await parseRamlFile(validRamlFile);
     const dataTypes = getAllDataTypes(baseUnit);
-    const dataTypeNames = dataTypes.map(entry => entry.name.value());
+    const dataTypeNames = dataTypes.map((entry) => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
       "ClassA",
@@ -54,7 +56,7 @@ describe("Get Data types", () => {
       "search_request",
       "password_change_request",
       "sort",
-      "result_page"
+      "result_page",
     ]);
   });
 
@@ -63,7 +65,7 @@ describe("Get Data types", () => {
     const mainModel = await parseRamlFile(validRamlFile);
     mainModel.withReferences([refModel]);
     const dataTypes = getAllDataTypes(mainModel);
-    const dataTypeNames = dataTypes.map(entry => entry.name.value());
+    const dataTypeNames = dataTypes.map((entry) => entry.name.value());
     return expect(dataTypeNames).to.deep.equal([
       "product_search_result",
       "ClassA",
@@ -73,7 +75,7 @@ describe("Get Data types", () => {
       "search_request",
       "password_change_request",
       "sort",
-      "result_page"
+      "result_page",
     ]);
   });
 });

@@ -20,7 +20,7 @@ export enum DeltaType {
   REMOVED,
   MODIFIED,
   TEXT_DIFF,
-  MOVED
+  MOVED,
 }
 
 /**
@@ -59,12 +59,12 @@ export function findGraphChanges(
       // detect items moved inside the array (otherwise they will be registered as remove+add). This flag defaults to true if not specified
       detectMove: true,
       // include the value of items moved so that we can have node ids in the diffs. This flag defaults to false if not specified
-      includeValueOnMove: true
+      includeValueOnMove: true,
     },
     textDiff: {
       // minimum string length (baseGraph and newGraph sides) to use text diff algorithm: google-diff-match-patch. Default value if not specified is 60
-      minLength: 6000
-    }
+      minLength: 6000,
+    },
   });
   //add plugin to include ID of the node in the delta
   jsonDiff.processor.pipes.diff.before("collectChildren", addNodeInfo);
@@ -150,9 +150,9 @@ function parseGraphDelta(
   const graphChanges: NodeChanges[] = [];
   //Ignore the property added by jsondiffpath to indicate an array
   const keys = Object.keys(graphDelta).filter(
-    key => key !== AmfGraphDeltaTypes.ARRAY_KEY
+    (key) => key !== AmfGraphDeltaTypes.ARRAY_KEY
   );
-  keys.forEach(key => {
+  keys.forEach((key) => {
     const nodeDelta = graphDelta[key];
     let nodeChanges;
     if (_.isArray(nodeDelta)) {
@@ -204,10 +204,10 @@ function parseNodePropDelta(
   let nodeChanges = new NodeChanges(nodeId, nodeType);
   //ignore node id and type
   const keys = Object.keys(nodeDelta).filter(
-    key =>
+    (key) =>
       key !== AmfGraphTypes.KEY_NODE_ID && key !== AmfGraphTypes.KEY_NODE_TYPE
   );
-  keys.forEach(key => {
+  keys.forEach((key) => {
     const value = nodeDelta[key];
     if (_.isArray(value)) {
       parsePropertyDelta(
@@ -376,9 +376,9 @@ export function parseArrayDelta(
   nodeChanges: NodeChanges
 ): void {
   const indexKeys = Object.keys(delta).filter(
-    key => key !== AmfGraphDeltaTypes.ARRAY_KEY
+    (key) => key !== AmfGraphDeltaTypes.ARRAY_KEY
   );
-  indexKeys.forEach(k => {
+  indexKeys.forEach((k) => {
     //Since this is flattened graph array value is either a string or a object with an id referencing other object in the graph
     const arrValue = delta[k];
     const deltaType = getDeltaType(arrValue);
@@ -445,10 +445,10 @@ function parseReferenceNodeDelta(
   switch (deltaType) {
     case DeltaType.MODIFIED:
       nodeChanges.removed[nodeProperty] = {
-        [AmfGraphTypes.KEY_NODE_ID]: deltaValues[0]
+        [AmfGraphTypes.KEY_NODE_ID]: deltaValues[0],
       };
       nodeChanges.added[nodeProperty] = {
-        [AmfGraphTypes.KEY_NODE_ID]: deltaValues[1]
+        [AmfGraphTypes.KEY_NODE_ID]: deltaValues[1],
       };
       break;
     case DeltaType.TEXT_DIFF:
@@ -464,14 +464,14 @@ function parseReferenceNodeDelta(
 /**
  * jsondiffpatch plugin to add node ID and type to the node delta
  */
-const addNodeInfo = function(context): void {
+const addNodeInfo = function (context): void {
   if (
     context.leftType === "object" &&
     typeof context.left[AmfGraphTypes.KEY_NODE_ID] !== "undefined"
   ) {
     const changed = !!_.find(
       context.children,
-      childContext => childContext.result
+      (childContext) => childContext.result
     );
     if (changed) {
       context.setResult({
@@ -482,7 +482,7 @@ const addNodeInfo = function(context): void {
          */
         [AmfGraphTypes.KEY_NODE_ID]: context.right[AmfGraphTypes.KEY_NODE_ID],
         [AmfGraphTypes.KEY_NODE_TYPE]:
-          context.right[AmfGraphTypes.KEY_NODE_TYPE]
+          context.right[AmfGraphTypes.KEY_NODE_TYPE],
       });
     }
   }
