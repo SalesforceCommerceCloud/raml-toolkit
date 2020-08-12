@@ -10,7 +10,7 @@ import {
   resolveApiModel,
   parseRamlFile,
   getAllDataTypes,
-} from "../common/parser";
+} from "../common/amfParser";
 
 import { Name } from "./name";
 

@@ -17,7 +17,7 @@ import {
   getApiName,
   parseRamlFile,
   resolveApiModel,
-} from "./parser";
+} from "./amfParser";
 
 const validRamlFile = path.join(
   __dirname,

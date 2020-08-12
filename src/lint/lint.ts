@@ -6,7 +6,7 @@
  */
 import path from "path";
 import { client, model, Core, MessageStyles, ProfileName } from "amf-client-js";
-import { parseRamlFile } from "../common/parser";
+import { parseRamlFile } from "../common/amfParser";
 
 export const PROFILE_PATH = path.join(
   __dirname,
