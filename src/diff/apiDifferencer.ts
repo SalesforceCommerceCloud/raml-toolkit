@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { findGraphChanges } from "./amfGraphDifferencer";
-import { parseRamlFile } from "../common/parser";
+import { parseRamlFile } from "../common/amfParser";
 import { ramlToolLogger } from "../common/logger";
 import { ApiChanges } from "./changes/apiChanges";
 import { applyRules } from "./rulesProcessor";
