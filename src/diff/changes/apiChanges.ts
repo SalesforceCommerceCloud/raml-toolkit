@@ -35,14 +35,14 @@ export class ApiChanges {
    * Return true if there are categorized changes
    */
   hasCategorizedChanges(): boolean {
-    return this.nodeChanges.some(n => n.hasCategorizedChanges());
+    return this.nodeChanges.some((n) => n.hasCategorizedChanges());
   }
 
   /**
    * Get nodes that have categorized changes
    */
   getNodesWithCategorizedChanges(): NodeChanges[] {
-    return this.nodeChanges.filter(n => n.hasCategorizedChanges());
+    return this.nodeChanges.filter((n) => n.hasCategorizedChanges());
   }
 
   /**
@@ -86,7 +86,7 @@ export class ApiChanges {
   }
 
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
-    const summaries = this.nodeChanges.map(node => {
+    const summaries = this.nodeChanges.map((node) => {
       return node.getCategorizedChangeSummary();
     });
     return _.mergeWith(
@@ -114,35 +114,41 @@ export class ApiChanges {
     const indent = (baseIndent: number, str: string): string =>
       str.replace(/^\n*/, "$&" + " ".repeat(baseIndent + extraIndent)) + "\n";
 
-    const categories = new Set(Object.values(RuleCategory));
     const changedNodes = this.getNodesWithCategorizedChanges();
+
+    if (changedNodes.length === 0) {
+      return "No changes.";
+    }
+
     let out = "";
 
     for (const node of changedNodes) {
-      out += indent(0, `Node: ${node.id}`);
+      out += indent(0, `\nNode: ${node.id}`);
 
-      for (const cc of node.categorizedChanges) {
-        // TODO: When Ignored is no longer allowed as a CategorizedChange, || [] can be removed
-        const change = (cc.change || [])
-          // `change.change` is a tuple, but some rules only set a single value
-          .filter(v => v !== undefined)
-          .join(" → ");
-        out += indent(2, `[${cc.category}] ${cc.ruleName}: ${change}`);
+      const grouped = node.groupChangesByCategory();
+      // IGNORED category gets special treatment
+      const ignored = grouped[RuleCategory.IGNORED].length;
+      if (ignored) {
+        out += indent(2, `${RuleCategory.IGNORED} Changes: ${ignored}`);
+      } else {
+        // Strip newline so first category does not have extra whitespace
+        out = out.slice(0, -1);
       }
-    }
+      delete grouped[RuleCategory.IGNORED];
 
-    if (changedNodes.length > 0) {
-      // TODO: When Ignored is no longer allowed as a CategorizedChange, the
-      // count still needs to be in the summary
-      out += indent(0, `\nSummary`);
-      for (const category of categories) {
-        const count = this.getChangeCountByCategory(category);
-        if (count > 0) {
-          out += indent(2, `${count} ${category} Changes`);
+      for (const [cat, changes] of Object.entries(grouped)) {
+        if (changes.length > 0) {
+          const header = `${cat} Changes: ${changes.length}`;
+          out += indent(2, `\n${header}`);
+          out += indent(2, "─".repeat(header.length));
+
+          for (const c of changes) {
+            // `c.change` is a tuple, but some rules only set a single value
+            const value = c.change.filter((v) => v !== undefined).join(" → ");
+            out += indent(2, `${c.ruleName}: ${value}`);
+          }
         }
       }
-    } else {
-      out += indent(0, `No changes.`);
     }
 
     return out.trimRight(); // Last newline is unnecessary

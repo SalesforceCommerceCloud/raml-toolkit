@@ -56,7 +56,7 @@ export class ApiCollectionChanges {
   }
 
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
-    const summaries = Object.values(this.changed).map(api => {
+    const summaries = Object.values(this.changed).map((api) => {
       return api.getCategorizedChangeSummary();
     });
     return _.mergeWith(
@@ -86,26 +86,41 @@ export class ApiCollectionChanges {
 
     let out = "";
 
-    const changedEntries = Object.entries(this.changed).filter(([, api]) =>
-      api.hasCategorizedChanges()
-    );
-    for (const [name, api] of changedEntries) {
-      out += indent(0, `\nAPI Changed: ${name}`);
-      out += api.toString(2);
+    const changedEntries = Object.entries(this.changed).filter(([, api]) => {
+      return api.hasCategorizedChanges();
+    });
+    if (changedEntries.length > 0) {
+      out += indent(0, "\nAPIs Changed");
+      out += indent(0, "────────────");
+      for (const [name, api] of changedEntries) {
+        const header = `File: ${name}`;
+        out += indent(2, `\n${header}`);
+        out += indent(2, "─".repeat(header.length));
+        out += api.toString(4);
+        out += "\n";
+      }
     }
 
-    for (const name of this.added) {
-      out += indent(0, `\nAPI Added: ${name}`);
+    if (this.added.length) {
+      out += indent(0, "\nAPIs Added");
+      out += indent(0, "──────────");
+      for (const name of this.added) {
+        out += indent(2, name);
+      }
     }
 
-    for (const name of this.removed) {
-      out += indent(0, `\nAPI Removed: ${name}`);
+    if (this.removed.length) {
+      out += indent(0, "\nAPIs Removed");
+      out += indent(0, "────────────");
+      for (const name of this.removed) {
+        out += indent(2, name);
+      }
     }
 
     const erroredEntries = Object.entries(this.errored);
     for (const [name, error] of erroredEntries) {
-      out += indent(0, `\nFailed to parse API: ${name}`);
-      out += indent(2, error);
+      out += `\n\nFailed to parse API: ${name}`;
+      out += error;
     }
 
     if (
@@ -114,21 +129,28 @@ export class ApiCollectionChanges {
       changedEntries.length ||
       erroredEntries.length
     ) {
-      out += indent(0, `\nSummary`);
+      out += indent(0, "\nSummary");
+      out += indent(0, "───────");
+      if (changedEntries.length) {
+        out += indent(2, `Changed APIs: ${changedEntries.length}`);
+        const summary = this.getCategorizedChangeSummary();
+        for (const [category, count] of Object.entries(summary)) {
+          if (count > 0) {
+            out += indent(4, `- ${category} Changes: ${count}`);
+          }
+        }
+      }
       if (this.added.length) {
-        out += indent(2, `${this.added.length} APIs added`);
+        out += indent(2, `Added APIs: ${this.added.length}`);
       }
       if (this.removed.length) {
-        out += indent(2, `${this.removed.length} APIs removed`);
-      }
-      if (changedEntries.length) {
-        out += indent(2, `${changedEntries.length} APIs changed`);
+        out += indent(2, `Removed APIs: ${this.removed.length}`);
       }
       if (erroredEntries.length) {
-        out += indent(2, `${erroredEntries.length} parsing errors`);
+        out += indent(2, `Parsing Errors: ${erroredEntries.length}`);
       }
     } else {
-      out += indent(0, `No changes found.`);
+      out += indent(0, "No changes found.");
     }
 
     return out.trimRight(); // Last newline is unnecessary
