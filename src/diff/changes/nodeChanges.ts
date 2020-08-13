@@ -93,4 +93,15 @@ export class NodeChanges {
     }
     return summary as Record<RuleCategory, number>;
   }
+
+  groupChangesByCategory(): Record<RuleCategory, CategorizedChange[]> {
+    const groups = {};
+    for (const category of Object.values(RuleCategory)) {
+      groups[category] = [];
+    }
+    for (const change of this.categorizedChanges) {
+      groups[change.category].push(change);
+    }
+    return groups as Record<RuleCategory, CategorizedChange[]>;
+  }
 }
