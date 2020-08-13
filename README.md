@@ -6,8 +6,13 @@ A collection of raml tools for commerce cloud and beyond
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Commands](#commands)
+    - [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
+    - [`raml-toolkit download`](#raml-toolkit-download)
+    - [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
   - [Jenkins](#jenkins)
   - [From your local machine](#from-your-local-machine)
+  - [Exchange Connector](#exchange-connector)
 - [SDK Ready for Mercury](#sdk-ready-for-mercury)
 - [Contributing](#contributing)
 - [Known issues and limitations](#known-issues-and-limitations)
@@ -87,8 +92,8 @@ OPTIONS
                                                    config
 
   -d, --dest=dest                                  [default: apis] Directory to download APIs into
-
-  -g, --group-by=group-by                          (required) Category to use to group APIs together
+  
+  -h, --help                                       show CLI help
 
   -s, --search=search                              Search query to filter results from Anypoint Exchange
 
