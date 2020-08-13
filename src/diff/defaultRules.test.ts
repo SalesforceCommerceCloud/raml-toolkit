@@ -171,8 +171,8 @@ describe("Examples change", () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       "apiContract:Example",
     ]);
-    nodeChanges.added = { "core:description": "Old example" };
-    nodeChanges.removed = { "core:description": "New example" };
+    nodeChanges.added = { "test:example": "Old example" };
+    nodeChanges.removed = { "test:example": "New example" };
     const changes = await applyRules(
       [nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
@@ -185,13 +185,53 @@ describe("Examples change", () => {
     const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
       "apiContract:Example",
     ]);
-    nodeChanges.added = { "core:description": "Old example" };
-    nodeChanges.removed = { "core:description": "New example" };
+    nodeChanges.added = { "test:example": "Old example" };
+    nodeChanges.removed = { "test:example": "New example" };
     const changes = await applyRules(
       [nodeChanges, nodeChanges],
       ApiDifferencer.DEFAULT_RULES_PATH
     );
     const rule = defaultRules.find((r) => r.event.type === "example-changed");
     verifyRule(changes[0], rule, 2);
+  });
+});
+
+describe("Description change", () => {
+  it("applies rule when description is added", async () => {
+    const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+    nodeChanges.added = { "core:description": "New description" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(
+      (r) => r.event.type === "description-changed"
+    );
+    verifyRule(changes[0], rule);
+  });
+  it("applies rule when description is removed", async () => {
+    const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+    nodeChanges.removed = { "core:description": "Old description" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(
+      (r) => r.event.type === "description-changed"
+    );
+    verifyRule(changes[0], rule);
+  });
+  it("applies rule when description is modified", async () => {
+    const nodeChanges = new NodeChanges("test-id", ["test:type"]);
+    nodeChanges.added = { "core:description": "New description" };
+    nodeChanges.removed = { "core:description": "Old description" };
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find(
+      (r) => r.event.type === "description-changed"
+    );
+    verifyRule(changes[0], rule);
   });
 });

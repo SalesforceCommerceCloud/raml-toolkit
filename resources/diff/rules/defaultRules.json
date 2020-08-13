@@ -183,5 +183,30 @@
         "category": "Ignored"
       }
     }
+  },
+  {
+    "name": "Description changed",
+    "conditions": {
+      "any": [
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:description"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:description"
+        }
+      ]
+    },
+    "event": {
+      "type": "description-changed",
+      "params": {
+        "category": "Ignored"
+      }
+    }
   }
 ]
