@@ -1,6 +1,6 @@
 [
   {
-    "name": "Rule to detect display name changes",
+    "name": "Detect display name changes in endpoint operations",
     "conditions": {
       "all": [
         {
@@ -32,7 +32,7 @@
     }
   },
   {
-    "name": "Rule to detect operation removal",
+    "name": "Detect removal of an endpoint operation",
     "conditions": {
       "all": [
         {
@@ -64,7 +64,7 @@
     }
   },
   {
-    "name": "Rule to detect parameter removal",
+    "name": "Detect removal of a parameter",
     "conditions": {
       "all": [
         {
@@ -96,7 +96,7 @@
     }
   },
   {
-    "name": "Rule to detect required parameter addition",
+    "name": "Detect addition of a required parameter",
     "conditions": {
       "all": [
         {
@@ -134,7 +134,7 @@
     }
   },
   {
-    "name": "Rule to detect version change",
+    "name": "Detect change in API version",
     "conditions": {
       "all": [
         {
@@ -166,7 +166,7 @@
     }
   },
   {
-    "name": "Rule to ignore changes in examples",
+    "name": "Ignore all changes in examples",
     "conditions": {
       "any": [
         {
@@ -179,6 +179,31 @@
     },
     "event": {
       "type": "example-changed",
+      "params": {
+        "category": "Ignored"
+      }
+    }
+  },
+  {
+    "name": "Ignore description changes in all nodes",
+    "conditions": {
+      "any": [
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:description"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasProperty",
+          "value": "core:description"
+        }
+      ]
+    },
+    "event": {
+      "type": "description-changed",
       "params": {
         "category": "Ignored"
       }
