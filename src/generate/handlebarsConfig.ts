@@ -7,10 +7,18 @@
 
 import * as helpers from "./handlebarsAmfHelpers";
 import Handlebars from "handlebars";
+import fs from "fs-extra";
 
 const HandlebarsWithAmfHelpers = Handlebars.create();
 for (const helper of Object.keys(helpers)) {
   HandlebarsWithAmfHelpers.registerHelper(helper, helpers[helper]);
+}
+
+export function registerPartial(name: string, partialPath: string): void {
+  const partial = HandlebarsWithAmfHelpers.compile(
+    fs.readFileSync(partialPath, "utf8")
+  );
+  HandlebarsWithAmfHelpers.registerPartial(name, partial);
 }
 
 export { HandlebarsWithAmfHelpers };

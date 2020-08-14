@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import fs from "fs-extra";
-import { HandlebarsWithAmfHelpers } from "./handlebarsConfig";
+import { HandlebarsWithAmfHelpers } from "./";
 
 /**
  * Holds a template and renders the template with the given data
