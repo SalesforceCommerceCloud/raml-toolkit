@@ -85,6 +85,9 @@ export class ApiChanges {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
   }
 
+  /**
+   * Gets the number of changes in each category
+   */
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
     const summaries = this.nodeChanges.map((node) => {
       return node.getCategorizedChangeSummary();

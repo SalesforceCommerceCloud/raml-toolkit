@@ -55,6 +55,9 @@ export class ApiCollectionChanges {
     return Object.keys(this.errored).length > 0;
   }
 
+  /**
+   * Gets the number of changes in each category
+   */
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
     const summaries = Object.values(this.changed).map((api) => {
       return api.getCategorizedChangeSummary();

@@ -83,6 +83,9 @@ export class NodeChanges {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
   }
 
+  /**
+   * Gets the number of changes in each category
+   */
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
     const summary = {};
     for (const category of Object.values(RuleCategory)) {
