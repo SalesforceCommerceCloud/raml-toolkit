@@ -123,31 +123,29 @@ export class ApiChanges {
     let out = "";
 
     for (const node of changedNodes) {
-      out += indent(0, `\nNode: ${node.id}`);
+      let block = "";
 
-      const grouped = node.groupChangesByCategory();
-      // IGNORED category gets special treatment
-      const ignored = grouped[RuleCategory.IGNORED].length;
-      if (ignored) {
-        out += indent(2, `${RuleCategory.IGNORED} Changes: ${ignored}`);
-      } else {
-        // Strip newline so first category does not have extra whitespace
-        out = out.slice(0, -1);
-      }
-      delete grouped[RuleCategory.IGNORED];
-
-      for (const [cat, changes] of Object.entries(grouped)) {
-        if (changes.length > 0) {
-          const header = `${cat} Changes: ${changes.length}`;
-          out += indent(2, `\n${header}`);
-          out += indent(2, "─".repeat(header.length));
-
-          for (const c of changes) {
-            // `c.change` is a tuple, but some rules only set a single value
-            const value = c.change.filter((v) => v !== undefined).join(" → ");
-            out += indent(2, `${c.ruleName}: ${value}`);
-          }
+      for (const change of node.categorizedChanges) {
+        if (change.category !== RuleCategory.IGNORED) {
+          // `change.change` is a tuple, but some rules only set a single value
+          const val = change.change.filter((v) => v !== undefined).join(" → ");
+          block += indent(2, `[${change.category}] ${change.ruleName}: ${val}`);
         }
+      }
+
+      if (block !== "") {
+        // At least one change was not ignored
+        out += indent(0, `\nNode: ${node.id}`);
+        out += block;
+      }
+    }
+
+    out += indent(0, "\nAPI Summary");
+    out += indent(0, "───────────");
+    const summary = this.getCategorizedChangeSummary();
+    for (const [category, count] of Object.entries(summary)) {
+      if (count) {
+        out += indent(2, `${category} Changes: ${count}`);
       }
     }
 
