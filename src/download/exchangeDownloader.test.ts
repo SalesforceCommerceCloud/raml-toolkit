@@ -17,7 +17,6 @@ import { RestApi } from "./exchangeTypes";
 import { searchAssetApiResultObject } from "../../testResources/download/resources/restApiResponseObjects";
 
 import tmp from "tmp";
-import { Response } from "node-fetch";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -64,9 +63,7 @@ describe("downloadRestApi", () => {
 
     const api = _.cloneDeep(REST_API);
 
-    return downloadRestApi(api, tmpDir.name).then((res: Response) => {
-      expect(res.status).to.equal(200);
-    });
+    return expect(downloadRestApi(api, tmpDir.name)).to.eventually.be.fulfilled;
   });
 
   it("can download a single file even when no download dir is specified", async () => {
@@ -74,9 +71,7 @@ describe("downloadRestApi", () => {
 
     const api = _.cloneDeep(REST_API);
 
-    return downloadRestApi(api).then((res: Response) => {
-      expect(res.status).to.equal(200);
-    });
+    return expect(downloadRestApi(api)).to.eventually.be.fulfilled;
   });
 
   it("should not return anything if Fat RAML information is missing", async () => {
