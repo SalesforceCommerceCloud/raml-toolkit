@@ -1,5 +1,13 @@
 # CHANGELOG
 
+
+## 0.5.0
+
+* *NEW FEATURE* Added CLI commands to download raml files directly from exchange
+* *NEW FEATURE* Added ability to render templates from an API model 
+* Exports have been reorganized to match associated CLI commands
+* Added additional ignore rules and other enhancements to the difftool to ensure a better signal to noise ratio.
+
 ## 0.4.5
 
 * Added new profile for slas
