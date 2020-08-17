@@ -9,16 +9,13 @@ import { NodeChanges } from "./nodeChanges";
 import { RuleCategory } from "../ruleSet";
 import { CategorizedChange } from "./categorizedChange";
 
-function buildNodeChanges(): NodeChanges {
-  const categorizedChange = new CategorizedChange(
-    "r1",
-    "title-changed",
-    RuleCategory.BREAKING,
-    ["old-title", "new-title"]
-  );
+function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
+  return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
+}
 
-  const nodeChanges = new NodeChanges("test-id", ["test:type"]);
-  nodeChanges.categorizedChanges = [categorizedChange];
+function buildNodeChanges(categories = [RuleCategory.BREAKING]): NodeChanges {
+  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
+  nodeChanges.categorizedChanges = categories.map(buildCategorizedChange);
   return nodeChanges;
 }
 
@@ -138,5 +135,31 @@ describe("Get number of categorized changes in a node", () => {
     expect(
       nodeChanges.getChangeCountByCategory(RuleCategory.BREAKING)
     ).to.equal(0);
+  });
+});
+
+describe("Summary of node changes by category", () => {
+  it("returns all categories as zero with no changes", () => {
+    const nodeChanges = buildNodeChanges([]);
+    const summary = nodeChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 0,
+      [RuleCategory.IGNORED]: 0,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns the total number of changes in each category", () => {
+    const nodeChanges = buildNodeChanges([
+      RuleCategory.BREAKING,
+      RuleCategory.BREAKING,
+      RuleCategory.IGNORED,
+    ]);
+    const summary = nodeChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 1,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
   });
 });

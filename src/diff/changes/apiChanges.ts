@@ -89,11 +89,12 @@ export class ApiChanges {
    * Gets the number of changes in each category
    */
   getCategorizedChangeSummary(): Record<RuleCategory, number> {
+    const base = Object.values(RuleCategory).map((c) => [c, 0]);
     const summaries = this.nodeChanges.map((node) => {
       return node.getCategorizedChangeSummary();
     });
     return _.mergeWith(
-      {},
+      _.fromPairs(base),
       ...summaries,
       (a: number | undefined, b: number): number => (a || 0) + b
     );

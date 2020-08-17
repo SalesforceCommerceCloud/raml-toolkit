@@ -10,18 +10,19 @@ import { RuleCategory } from "../ruleSet";
 import { CategorizedChange } from "./categorizedChange";
 import { ApiChanges } from "./apiChanges";
 
-function buildApiChanges(): ApiChanges {
-  const titleChange = new CategorizedChange(
-    "r1",
-    "title-changed",
-    RuleCategory.BREAKING,
-    ["old-title", "new-title"]
-  );
-  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
-  nodeChanges.categorizedChanges = [titleChange];
+function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
+  return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
+}
 
+function buildNodeChanges(categories = [RuleCategory.BREAKING]): NodeChanges {
+  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
+  nodeChanges.categorizedChanges = categories.map(buildCategorizedChange);
+  return nodeChanges;
+}
+
+function buildApiChanges(categories = [[RuleCategory.BREAKING]]): ApiChanges {
   const apiChanges = new ApiChanges("base.raml", "new.raml");
-  apiChanges.nodeChanges = [nodeChanges];
+  apiChanges.nodeChanges = categories.map(buildNodeChanges);
   return apiChanges;
 }
 
@@ -62,9 +63,7 @@ describe("Check for categorized changes in a API", () => {
   });
 
   it("returns false when there are no breaking changes", async () => {
-    const apiChanges = buildApiChanges();
-    apiChanges.nodeChanges[0].categorizedChanges[0].category =
-      RuleCategory.NON_BREAKING;
+    const apiChanges = buildApiChanges([[RuleCategory.NON_BREAKING]]);
     expect(apiChanges.hasBreakingChanges()).to.be.false;
   });
 
@@ -74,16 +73,50 @@ describe("Check for categorized changes in a API", () => {
   });
 
   it("returns non-breaking changes count", async () => {
-    const apiChanges = buildApiChanges();
-    apiChanges.nodeChanges[0].categorizedChanges[0].category =
-      RuleCategory.NON_BREAKING;
+    const apiChanges = buildApiChanges([[RuleCategory.NON_BREAKING]]);
     expect(apiChanges.getNonBreakingChangesCount()).to.equal(1);
   });
 
   it("returns ignored changes count", async () => {
-    const apiChanges = buildApiChanges();
-    apiChanges.nodeChanges[0].categorizedChanges[0].category =
-      RuleCategory.IGNORED;
+    const apiChanges = buildApiChanges([[RuleCategory.IGNORED]]);
     expect(apiChanges.getIgnoredChangesCount()).to.equal(1);
+  });
+});
+
+describe("Summary of API changes by category", () => {
+  it("returns all categories as zero with no changes", () => {
+    const apiChanges = buildApiChanges([]);
+    const summary = apiChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 0,
+      [RuleCategory.IGNORED]: 0,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns a summary for a single changed node", () => {
+    const apiChanges = buildApiChanges([
+      [RuleCategory.BREAKING, RuleCategory.IGNORED, RuleCategory.BREAKING],
+    ]);
+    const summary = apiChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 1,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns a summary for multiple changed nodes", () => {
+    const apiChanges = buildApiChanges([
+      [RuleCategory.BREAKING, RuleCategory.IGNORED],
+      [RuleCategory.BREAKING, RuleCategory.NON_BREAKING],
+      [RuleCategory.IGNORED],
+    ]);
+    const summary = apiChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 2,
+      [RuleCategory.NON_BREAKING]: 1,
+    });
   });
 });

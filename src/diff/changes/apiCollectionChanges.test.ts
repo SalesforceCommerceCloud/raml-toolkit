@@ -8,13 +8,36 @@ import { expect } from "chai";
 import { NodeChanges } from "./nodeChanges";
 import { ApiChanges } from "./apiChanges";
 import { ApiCollectionChanges } from "./apiCollectionChanges";
+import { CategorizedChange } from "./categorizedChange";
+import { RuleCategory } from "../ruleSet";
+
+function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
+  return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
+}
+
+function buildNodeChanges(categories = [RuleCategory.BREAKING]): NodeChanges {
+  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
+  nodeChanges.categorizedChanges = categories.map(buildCategorizedChange);
+  return nodeChanges;
+}
+
+function buildApiChanges(categories = [[RuleCategory.BREAKING]]): ApiChanges {
+  const apiChanges = new ApiChanges("base.raml", "new.raml");
+  apiChanges.nodeChanges = categories.map(buildNodeChanges);
+  return apiChanges;
+}
+
+function buildApiCollectionChanges(
+  changed?: ApiCollectionChanges["changed"]
+): ApiCollectionChanges {
+  const changes = new ApiCollectionChanges("baseApiConfig", "newApiConfig");
+  changes.changed = changed || {};
+  return changes;
+}
 
 describe("Create an instance of ApiCollectionChanges", () => {
   it("creates ApiCollectionChanges object", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
 
     expect(apiCollectionChanges).to.be.an.instanceof(ApiCollectionChanges);
     expect(apiCollectionChanges.basePath).to.equal("baseApiConfig");
@@ -24,67 +47,88 @@ describe("Create an instance of ApiCollectionChanges", () => {
 
 describe("Check for changes in api collection", () => {
   it("returns true when there are changes", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
-    const apiChanges = new ApiChanges("base.raml", "new.raml");
-    apiChanges.nodeChanges = [new NodeChanges("test-id", ["test:type"])];
-    apiCollectionChanges.changed["base.raml"] = apiChanges;
+    const apiCollectionChanges = buildApiCollectionChanges();
+    apiCollectionChanges.changed["base.raml"] = buildApiChanges();
     expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns true when there are removed apis", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
     apiCollectionChanges.removed = ["test.raml"];
     expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns true when there are added apis", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
     apiCollectionChanges.added = ["test.raml"];
     expect(apiCollectionChanges.hasChanges()).to.be.true;
   });
 
   it("returns false when the changes are not defined", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
     expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 
   it("returns false when the changes are empty", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
-
+    const apiCollectionChanges = buildApiCollectionChanges();
     expect(apiCollectionChanges.hasChanges()).to.be.false;
   });
 });
 
 describe("Check for failures on api collection diff", () => {
   it("returns true when there are failures", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
     apiCollectionChanges.errored["test.raml"] = "test-error";
     expect(apiCollectionChanges.hasErrors()).to.be.true;
   });
 
   it("returns false when the failures are empty", async () => {
-    const apiCollectionChanges = new ApiCollectionChanges(
-      "baseApiConfig",
-      "newApiConfig"
-    );
+    const apiCollectionChanges = buildApiCollectionChanges();
     expect(apiCollectionChanges.hasErrors()).to.be.false;
+  });
+});
+
+describe("Summary of API changes by category", () => {
+  it("returns all categories as zero with no changes", () => {
+    const apiCollectionChanges = buildApiCollectionChanges();
+    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 0,
+      [RuleCategory.IGNORED]: 0,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns a summary for a single changed APIs", () => {
+    const apiCollectionChanges = buildApiCollectionChanges({
+      "test.raml": buildApiChanges([
+        [RuleCategory.IGNORED, RuleCategory.BREAKING, RuleCategory.BREAKING],
+      ]),
+    });
+    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 1,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns a summary for multiple changed APIs", () => {
+    const apiCollectionChanges = buildApiCollectionChanges({
+      "breaking.raml": buildApiChanges([[RuleCategory.BREAKING]]),
+      "ignored.raml": buildApiChanges([
+        [RuleCategory.IGNORED],
+        [RuleCategory.IGNORED],
+      ]),
+      "mixed.raml": buildApiChanges([
+        [RuleCategory.BREAKING, RuleCategory.NON_BREAKING],
+      ]),
+    });
+    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 2,
+      [RuleCategory.NON_BREAKING]: 1,
+    });
   });
 });
