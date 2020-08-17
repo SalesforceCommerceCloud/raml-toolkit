@@ -4,12 +4,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import {
+
+import { handlebarsAmfHelpers } from "./";
+
+const {
   getTypeFromParameter,
   getTypeFromProperty,
   getPayloadTypeFromRequest,
   getReturnTypeFromOperation,
-} from "./handlebarsAmfHelpers";
+} = handlebarsAmfHelpers;
+
 import { ARRAY_DATA_TYPE, OBJECT_DATA_TYPE } from "./utils";
 import {
   getInheritedType,
