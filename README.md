@@ -50,6 +50,9 @@ ARGUMENTS
   NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
+  -f, --format=(json|text)                        Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise text.
+
   -o, --out-file=out-file                         File to store the computed difference
 
   -r, --ruleset=ruleset                           [default:@commerce-apps/raml-toolkit/resources/diff/rules/defaultRules
@@ -88,12 +91,7 @@ OPTIONS
   -D, --deployment=deployment                      [default: .] Deployment status to filter results from Anypoint
                                                    Exchange
 
-  -c, --config-file=config-file                    [default: api-config.json] Name of the target file to save the API
-                                                   config
-
   -d, --dest=dest                                  [default: apis] Directory to download APIs into
-  
-  -h, --help                                       show CLI help
 
   -s, --search=search                              Search query to filter results from Anypoint Exchange
 
@@ -114,7 +112,7 @@ ARGUMENTS
   FILENAME  One or more RAML files to lint
 
 OPTIONS
-  -p, --profile=(mercury)                         (required) Profile to apply
+  -p, --profile=(mercury|slas)                    (required) Profile to apply
   -w, --warnings                                  Show all the warnings
   --log-level=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 ```
