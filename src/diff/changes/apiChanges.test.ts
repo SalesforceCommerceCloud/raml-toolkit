@@ -10,12 +10,19 @@ import { RuleCategory } from "../ruleSet";
 import { CategorizedChange } from "./categorizedChange";
 import { ApiChanges } from "./apiChanges";
 
-function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
-  return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
+function buildCategorizedChange(
+  c = RuleCategory.BREAKING,
+  id = 0
+): CategorizedChange {
+  const rule = `${c} Rule ${id}`;
+  return new CategorizedChange(rule, "title-changed", c, ["old", "new"]);
 }
 
-function buildNodeChanges(categories = [RuleCategory.BREAKING]): NodeChanges {
-  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
+function buildNodeChanges(
+  categories = [RuleCategory.BREAKING],
+  id = 0
+): NodeChanges {
+  const nodeChanges = new NodeChanges(`test-id-${id}`, ["type:title"]);
   nodeChanges.categorizedChanges = categories.map(buildCategorizedChange);
   return nodeChanges;
 }
@@ -44,7 +51,7 @@ describe("Check for changes in the API", () => {
   });
 
   it("returns false when the node changes array is empty", async () => {
-    const apiChanges = new ApiChanges("baseApi.raml", "newApi.raml");
+    const apiChanges = buildApiChanges([]);
     expect(apiChanges.hasChanges()).to.be.false;
   });
 });
@@ -118,5 +125,81 @@ describe("Summary of API changes by category", () => {
       [RuleCategory.IGNORED]: 2,
       [RuleCategory.NON_BREAKING]: 1,
     });
+  });
+});
+
+describe("ApiChanges console-formatted string", () => {
+  let apiChanges: ApiChanges;
+  let text: string;
+
+  before(() => {
+    apiChanges = buildApiChanges([
+      [RuleCategory.BREAKING, RuleCategory.IGNORED],
+      [RuleCategory.NON_BREAKING, RuleCategory.BREAKING],
+      [RuleCategory.IGNORED],
+    ]);
+    text = apiChanges.toString();
+  });
+
+  it("says no changes when there are no changes", () => {
+    const noChanges = buildApiChanges([]);
+    expect(noChanges.toString()).to.equal("No changes.");
+  });
+
+  it("can be indented", () => {
+    const indented = apiChanges.toString(2);
+    for (const line of indented.split(/\n+/)) {
+      if (line !== "") expect(line).to.match(/^  /); // Starts with 2 spaces
+    }
+  });
+
+  it("lists changed node IDs", () => {
+    expect(text)
+      .to.include("test-id-0")
+      .and.to.include("test-id-1")
+      .and.not.include("test-id-2"); // Only has ignored changes
+  });
+
+  it("lists modified values", () => {
+    // splitting is the cleanest way I can think of to count occurrences
+    expect(text.split("old → new")).to.have.lengthOf(4);
+  });
+
+  it("lists category for each non-ignored change", () => {
+    // splitting is the cleanest way I can think of to count occurrences
+    expect(text.split("[Breaking]")).to.have.lengthOf(3);
+    expect(text.split("[Non-Breaking]")).to.have.lengthOf(2);
+    expect(text).to.not.include("[Ignored]");
+  });
+
+  it("lists non-ignored rule IDs", () => {
+    expect(text)
+      .to.include("Breaking Rule 0")
+      .and.include("Non-Breaking Rule 0")
+      .and.include("Breaking Rule 1");
+  });
+
+  it("omits ignored rule IDs", () => {
+    expect(text)
+      .to.not.include("Ignored Rule 0")
+      .and.not.include("Ignored Rule 1");
+  });
+
+  it("lists all categories and counts in the summary", () => {
+    expect(text)
+      .to.include("Breaking Changes: 2")
+      .and.include("Non-Breaking Changes: 1")
+      .and.include("Ignored Changes: 2");
+  });
+
+  it("omits unused categories from summary", () => {
+    const noIgnored = buildApiChanges([
+      [RuleCategory.BREAKING],
+      [RuleCategory.NON_BREAKING],
+    ]);
+    expect(noIgnored.toString())
+      .to.include("Breaking Changes: 1")
+      .and.include("Non-Breaking Changes: 1")
+      .and.not.include("Ignored Changes:");
   });
 });

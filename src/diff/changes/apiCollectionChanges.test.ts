@@ -132,3 +132,98 @@ describe("Summary of API changes by category", () => {
     });
   });
 });
+
+describe("ApiCollectionChanges console formatted string", () => {
+  let apiCollectionChanges: ApiCollectionChanges;
+  let text: string;
+
+  before(() => {
+    apiCollectionChanges = buildApiCollectionChanges({
+      "breaking-change.raml": buildApiChanges([[RuleCategory.BREAKING]]),
+      "ignored-change.raml": buildApiChanges([
+        [RuleCategory.IGNORED],
+        [RuleCategory.IGNORED],
+      ]),
+      "mixed-changes.raml": buildApiChanges([
+        [RuleCategory.BREAKING, RuleCategory.NON_BREAKING],
+      ]),
+    });
+    apiCollectionChanges.added = ["added.raml"];
+    apiCollectionChanges.removed = ["removed.raml"];
+    apiCollectionChanges.errored = {
+      "errored.raml": "Something bad happened!",
+    };
+    text = apiCollectionChanges.toString();
+  });
+
+  it("says no changes when there are no changes", () => {
+    const noChanges = buildApiCollectionChanges();
+    expect(noChanges.toString()).to.equal("No changes found.");
+  });
+
+  it("can be indented", () => {
+    const indented = apiCollectionChanges.toString(2);
+    for (const line of indented.split(/\n+/)) {
+      if (line !== "") expect(line).to.match(/^  /); // Starts with 2 spaces
+    }
+  });
+
+  it("lists all added APIs", () => {
+    expect(text).to.include("added.raml");
+  });
+
+  it("lists all removed APIs", () => {
+    expect(text).to.include("removed.raml");
+  });
+
+  it("lists all changed APIs", () => {
+    expect(text)
+      .to.include("File: breaking-change.raml")
+      .and.include("File: ignored-change.raml")
+      .and.include("File: mixed-changes.raml");
+  });
+
+  it("lists APIs with only ignored changes", () => {
+    expect(text).to.include("File: ignored-change.raml");
+  });
+
+  it("lists all errored APIs and error messages", () => {
+    expect(text).to.include("errored.raml: Something bad happened!");
+  });
+
+  it("lists all differences and counts in the summary", () => {
+    expect(text)
+      .to.include("APIs Changed: 3")
+      .and.include("APIs Added: 1")
+      .and.include("APIs Removed: 1")
+      .and.include("Parsing Errors: 1");
+  });
+
+  it("lists all rule categories and counts in the summary", () => {
+    expect(text)
+      // "- " prefix included to distinguish from changed API summaries
+      .to.include("- Breaking Changes: 2")
+      .and.include("- Non-Breaking Changes: 1")
+      .and.include("- Ignored Changes: 2");
+  });
+
+  it("omits unused differences from the summary", () => {
+    const addedOnly = buildApiCollectionChanges();
+    addedOnly.added = ["added.raml"];
+    expect(addedOnly.toString())
+      .to.include("APIs Added: 1")
+      .and.not.include("APIs Removed:")
+      .and.not.include("APIs Changed:")
+      .and.not.include("Parsing Errors:");
+  });
+
+  it("omits unused rule categories from the summary", () => {
+    const breakingChangesOnly = buildApiCollectionChanges({
+      "changed.raml": buildApiChanges(),
+    });
+    expect(breakingChangesOnly.toString())
+      .to.include("- Breaking Changes: 1")
+      .and.not.include("- Non-Breaking Changes:")
+      .and.not.include("- Ignored Changes:");
+  });
+});
