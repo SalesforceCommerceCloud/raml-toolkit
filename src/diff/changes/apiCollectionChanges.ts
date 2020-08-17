@@ -122,9 +122,12 @@ export class ApiCollectionChanges {
     }
 
     const erroredEntries = Object.entries(this.errored);
-    for (const [name, error] of erroredEntries) {
-      out += `\n\nFailed to parse API: ${name}`;
-      out += error;
+    if (erroredEntries.length) {
+      out += indent(0, "\nParsing Errors");
+      out += indent(0, "──────────────");
+      for (const [name, error] of erroredEntries) {
+        out += indent(2, `${name}: ${error}`);
+      }
     }
 
     if (
@@ -136,7 +139,7 @@ export class ApiCollectionChanges {
       out += indent(0, "\nSummary");
       out += indent(0, "───────");
       if (changedEntries.length) {
-        out += indent(2, `Changed APIs: ${changedEntries.length}`);
+        out += indent(2, `APIs Changed: ${changedEntries.length}`);
         const summary = this.getCategorizedChangeSummary();
         for (const [category, count] of Object.entries(summary)) {
           if (count > 0) {
@@ -145,10 +148,10 @@ export class ApiCollectionChanges {
         }
       }
       if (this.added.length) {
-        out += indent(2, `Added APIs: ${this.added.length}`);
+        out += indent(2, `APIs Added: ${this.added.length}`);
       }
       if (this.removed.length) {
-        out += indent(2, `Removed APIs: ${this.removed.length}`);
+        out += indent(2, `APIs Removed: ${this.removed.length}`);
       }
       if (erroredEntries.length) {
         out += indent(2, `Parsing Errors: ${erroredEntries.length}`);
