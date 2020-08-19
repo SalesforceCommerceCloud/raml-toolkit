@@ -57,9 +57,9 @@ export class ApiCollectionChanges {
   /**
    * Gets the number of changes in each category
    */
-  getCategorizedChangeSummary(): CategorySummary {
+  getCategorySummary(): CategorySummary {
     return Object.values(this.changed).reduce((summary, api) => {
-      const apiSummary = api.getCategorizedChangeSummary();
+      const apiSummary = api.getCategorySummary();
       Object.entries(apiSummary).forEach(([category, count]) => {
         summary[category] += count;
       });
@@ -137,7 +137,7 @@ export class ApiCollectionChanges {
       out += indent(0, "───────");
       if (changedEntries.length) {
         out += indent(2, `APIs Changed: ${changedEntries.length}`);
-        const summary = this.getCategorizedChangeSummary();
+        const summary = this.getCategorySummary();
         for (const [category, count] of Object.entries(summary)) {
           if (count > 0) {
             out += indent(4, `- ${category} Changes: ${count}`);

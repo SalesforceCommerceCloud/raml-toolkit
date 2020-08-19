@@ -91,7 +91,7 @@ describe("Check for failures on api collection diff", () => {
 describe("Summary of API changes by category", () => {
   it("returns all categories as zero with no changes", () => {
     const apiCollectionChanges = buildApiCollectionChanges();
-    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    const summary = apiCollectionChanges.getCategorySummary();
     expect(summary).to.deep.equal({
       [RuleCategory.BREAKING]: 0,
       [RuleCategory.IGNORED]: 0,
@@ -105,7 +105,7 @@ describe("Summary of API changes by category", () => {
         [RuleCategory.IGNORED, RuleCategory.BREAKING, RuleCategory.BREAKING],
       ]),
     });
-    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    const summary = apiCollectionChanges.getCategorySummary();
     expect(summary).to.deep.equal({
       [RuleCategory.BREAKING]: 2,
       [RuleCategory.IGNORED]: 1,
@@ -124,7 +124,7 @@ describe("Summary of API changes by category", () => {
         [RuleCategory.BREAKING, RuleCategory.NON_BREAKING],
       ]),
     });
-    const summary = apiCollectionChanges.getCategorizedChangeSummary();
+    const summary = apiCollectionChanges.getCategorySummary();
     expect(summary).to.deep.equal({
       [RuleCategory.BREAKING]: 2,
       [RuleCategory.IGNORED]: 2,

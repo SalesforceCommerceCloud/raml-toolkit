@@ -141,7 +141,7 @@ describe("Get number of categorized changes in a node", () => {
 describe("Summary of node changes by category", () => {
   it("returns all categories as zero with no changes", () => {
     const nodeChanges = buildNodeChanges([]);
-    const summary = nodeChanges.getCategorizedChangeSummary();
+    const summary = nodeChanges.getCategorySummary();
     expect(summary).to.deep.equal({
       [RuleCategory.BREAKING]: 0,
       [RuleCategory.IGNORED]: 0,
@@ -155,7 +155,7 @@ describe("Summary of node changes by category", () => {
       RuleCategory.BREAKING,
       RuleCategory.IGNORED,
     ]);
-    const summary = nodeChanges.getCategorizedChangeSummary();
+    const summary = nodeChanges.getCategorySummary();
     expect(summary).to.deep.equal({
       [RuleCategory.BREAKING]: 2,
       [RuleCategory.IGNORED]: 1,

@@ -90,7 +90,7 @@ export class NodeChanges {
   /**
    * Gets the number of changes in each category
    */
-  getCategorizedChangeSummary(): CategorySummary {
+  getCategorySummary(): CategorySummary {
     const summary = createCategorySummary();
     this.categorizedChanges.forEach((change) => {
       summary[change.category] += 1;
