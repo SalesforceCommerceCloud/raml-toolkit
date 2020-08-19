@@ -1,0 +1,57 @@
+{{#if hasChanges}}
+{{#if changed}}
+APIs Changed
+────────────
+{{#each changed}}
+
+  File: {{{name}}}
+  ─────
+    {{> ApiChanges:console apiChanges}}
+{{/each}}
+{{/if}}
+
+{{#if added}}
+APIs Added
+──────────
+{{#each added as |api|}}
+  {{{api}}}
+{{/each}}
+{{/if}}
+
+{{#if removed}}
+APIs Removed
+────────────
+{{#each removed as |api|}}
+  {{{api}}}
+{{/each}}
+{{/if}}
+
+{{#if errored}}
+Parsing Errors
+──────────────
+{{#each errored}}
+  {{{name}}}: {{{error}}}
+{{/each}}
+{{/if}}
+Summary
+───────
+{{#if changed}}
+  APIs Changed: {{{changed.length}}}
+  {{#each categorySummary as |count category|}}
+    {{#if count}}
+    - {{{category}}} Changes: {{{count}}}
+    {{/if}}
+  {{/each}}
+{{/if}}
+{{#if added}}
+  APIs Added: {{{added.length}}}
+{{/if}}
+{{#if removed}}
+  APIs Removed: {{{removed.length}}}
+{{/if}}
+{{#if errored}}
+  Parsing Errors: {{{errored.length}}}
+{{/if}}
+{{else}}
+No changes.
+{{/if}}

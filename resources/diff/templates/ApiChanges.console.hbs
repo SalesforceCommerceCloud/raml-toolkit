@@ -1,0 +1,23 @@
+{{#if nodeChanges}}
+{{#each nodeChanges}}
+{{#if categorizedChanges}}
+
+Node: {{{nodeId}}}
+{{#each categorizedChanges}}
+  [{{{category}}}] {{{ruleName}}}
+  {{~#if change.single}}: {{{change.single}}}{{/if}}
+  {{~#if change.multiple}}: {{{change.multiple.[0]}}} → {{{change.multiple.[1]}}}{{/if}}
+{{/each}}
+{{/if}}
+{{/each}}
+
+API Summary
+───────────
+{{#each apiSummary as |count category|}}
+{{#if count}}
+  {{{category}}} Changes: {{{count}}}
+{{/if}}
+{{/each}}
+{{else}}
+No changes.
+{{/if}}

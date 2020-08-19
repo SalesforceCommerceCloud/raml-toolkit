@@ -7,6 +7,18 @@
 import { RuleCategory } from "../ruleCategory";
 
 /**
+ * CategorizedChange data in a format more easily consumed by Handlebars templates
+ */
+export type CategorizedChangeTemplateData = {
+  ruleName: string;
+  category: RuleCategory;
+  change: {
+    single?: unknown;
+    multiple?: [unknown, unknown];
+  };
+};
+
+/**
  * Holds node change that is categorized by rules
  */
 export class CategorizedChange {
@@ -25,5 +37,27 @@ export class CategorizedChange {
     if (category !== RuleCategory.IGNORED && !change) {
       throw new Error("Changed values are required");
     }
+  }
+
+  /**
+   * Returns data in a format more easily consumed by Handlebars templates
+   */
+  getTemplateData(): CategorizedChangeTemplateData {
+    const change: CategorizedChangeTemplateData["change"] = {};
+    if (this.change) {
+      // Handlebars cannot use methods or boolean logic, so a workaround for
+      // detecting single/multiple/no associated values is to make it explicit
+      const values = this.change.filter((v) => v !== undefined);
+      if (values.length === 2) {
+        change.multiple = values as [unknown, unknown];
+      } else if (values.length === 1) {
+        change.single = values[0];
+      }
+    }
+    return {
+      change,
+      category: this.category,
+      ruleName: this.ruleName,
+    };
   }
 }

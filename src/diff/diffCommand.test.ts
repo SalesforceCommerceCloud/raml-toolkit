@@ -324,7 +324,7 @@ describe("raml-toolkit cli diff command", () => {
     .do(() => cmd.run(["baseApis", "newApis", "--log-level=silent"]))
     .exit(1)
     .it("logs changes to console as text when file flag is unset", (ctx) => {
-      expect(ctx.stdout).to.equal(`${apiChanges}\n`);
+      expect(ctx.stdout).to.equal(`${apiChanges.toConsoleString()}\n`);
     });
 
   test
@@ -343,7 +343,9 @@ describe("raml-toolkit cli diff command", () => {
     .do((ctx) => cmd.run(["base", "new", "-f", "text", "-o", ctx.file.name]))
     .exit(1)
     .it("stores changes as text when file and format flags are set", (ctx) => {
-      expect(ctx.file.name).to.be.a.file().with.content(`${apiChanges}`);
+      expect(ctx.file.name)
+        .to.be.a.file()
+        .with.content(apiChanges.toConsoleString());
     });
 
   test

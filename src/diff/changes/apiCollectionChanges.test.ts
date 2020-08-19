@@ -153,19 +153,12 @@ describe("ApiCollectionChanges console formatted string", () => {
     apiCollectionChanges.errored = {
       "errored.raml": "Something bad happened!",
     };
-    text = apiCollectionChanges.toString();
+    text = apiCollectionChanges.toConsoleString();
   });
 
   it("says no changes when there are no changes", () => {
     const noChanges = buildApiCollectionChanges();
-    expect(noChanges.toString()).to.equal("No changes found.");
-  });
-
-  it("can be indented", () => {
-    const indented = apiCollectionChanges.toString(2);
-    for (const line of indented.split(/\n+/)) {
-      if (line !== "") expect(line).to.match(/^  /); // Starts with 2 spaces
-    }
+    expect(noChanges.toConsoleString()).to.equal("No changes.\n");
   });
 
   it("lists all added APIs", () => {
@@ -210,7 +203,7 @@ describe("ApiCollectionChanges console formatted string", () => {
   it("omits unused differences from the summary", () => {
     const addedOnly = buildApiCollectionChanges();
     addedOnly.added = ["added.raml"];
-    expect(addedOnly.toString())
+    expect(addedOnly.toConsoleString())
       .to.include("APIs Added: 1")
       .and.not.include("APIs Removed:")
       .and.not.include("APIs Changed:")
@@ -221,7 +214,7 @@ describe("ApiCollectionChanges console formatted string", () => {
     const breakingChangesOnly = buildApiCollectionChanges({
       "changed.raml": buildApiChanges(),
     });
-    expect(breakingChangesOnly.toString())
+    expect(breakingChangesOnly.toConsoleString())
       .to.include("- Breaking Changes: 1")
       .and.not.include("- Non-Breaking Changes:")
       .and.not.include("- Ignored Changes:");

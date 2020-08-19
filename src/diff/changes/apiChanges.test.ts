@@ -138,19 +138,12 @@ describe("ApiChanges console-formatted string", () => {
       [RuleCategory.NON_BREAKING, RuleCategory.BREAKING],
       [RuleCategory.IGNORED],
     ]);
-    text = apiChanges.toString();
+    text = apiChanges.toConsoleString();
   });
 
   it("says no changes when there are no changes", () => {
     const noChanges = buildApiChanges([]);
-    expect(noChanges.toString()).to.equal("No changes.");
-  });
-
-  it("can be indented", () => {
-    const indented = apiChanges.toString(2);
-    for (const line of indented.split(/\n+/)) {
-      if (line !== "") expect(line).to.match(/^  /); // Starts with 2 spaces
-    }
+    expect(noChanges.toConsoleString()).to.equal("No changes.\n");
   });
 
   it("lists changed node IDs", () => {
@@ -197,7 +190,7 @@ describe("ApiChanges console-formatted string", () => {
       [RuleCategory.BREAKING],
       [RuleCategory.NON_BREAKING],
     ]);
-    expect(noIgnored.toString())
+    expect(noIgnored.toConsoleString())
       .to.include("Breaking Changes: 1")
       .and.include("Non-Breaking Changes: 1")
       .and.not.include("Ignored Changes:");

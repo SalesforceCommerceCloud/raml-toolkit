@@ -5,12 +5,24 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { CategorizedChange } from "./categorizedChange";
+import {
+  CategorizedChange,
+  CategorizedChangeTemplateData,
+} from "./categorizedChange";
 import {
   RuleCategory,
   createCategorySummary,
   CategorySummary,
 } from "../ruleCategory";
+
+/**
+ * NodeChanges data in a format more easily consumed by Handlebars templates
+ */
+export type NodeChangesTemplateData = {
+  nodeId: string;
+  categorizedChanges: CategorizedChangeTemplateData[];
+  nodeSummary: CategorySummary;
+};
 
 /**
  * Class to hold differences of a JSON node
@@ -96,5 +108,21 @@ export class NodeChanges {
       summary[change.category] += 1;
     });
     return summary;
+  }
+
+  /**
+   * Returns data in a format more easily consumed by Handlebars templates
+   */
+  getTemplateData(): NodeChangesTemplateData {
+    // Handlebars cannot do equality checks (without a helper), so a workaround
+    // is to just filter out the values we don't want here
+    const changes = this.categorizedChanges
+      .filter((cc) => cc.category !== RuleCategory.IGNORED)
+      .map((cc) => cc.getTemplateData());
+    return {
+      nodeId: this.id,
+      categorizedChanges: changes,
+      nodeSummary: this.getCategorySummary(),
+    };
   }
 }
