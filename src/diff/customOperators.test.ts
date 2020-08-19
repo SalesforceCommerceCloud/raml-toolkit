@@ -10,7 +10,7 @@ import tmp from "tmp";
 import fs from "fs-extra";
 import { Rule, TopLevelCondition } from "json-rules-engine";
 import { expect } from "chai";
-import { RuleCategory } from "./ruleSet";
+import { RuleCategory } from "./ruleCategory";
 
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /**

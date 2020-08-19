@@ -9,7 +9,7 @@ import { NodeChanges } from "./nodeChanges";
 import { ApiChanges } from "./apiChanges";
 import { ApiCollectionChanges } from "./apiCollectionChanges";
 import { CategorizedChange } from "./categorizedChange";
-import { RuleCategory } from "../ruleSet";
+import { RuleCategory } from "../ruleCategory";
 
 function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
   return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);

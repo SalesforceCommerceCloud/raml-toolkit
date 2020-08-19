@@ -6,15 +6,7 @@
  */
 import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
-
-/**
- * Category to define in rule
- */
-export enum RuleCategory {
-  BREAKING = "Breaking",
-  NON_BREAKING = "Non-Breaking",
-  IGNORED = "Ignored",
-}
+import { RuleCategory } from "./ruleCategory";
 
 /**
  * Holds rules

@@ -6,7 +6,7 @@
  */
 import { expect } from "chai";
 import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "../ruleSet";
+import { RuleCategory } from "../ruleCategory";
 import { CategorizedChange } from "./categorizedChange";
 import { ApiChanges } from "./apiChanges";
 

@@ -5,8 +5,11 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "../ruleSet";
-import _ from "lodash";
+import {
+  RuleCategory,
+  createCategorySummary,
+  CategorySummary,
+} from "../ruleCategory";
 
 /**
  * Holds changes between two API specifications
@@ -88,16 +91,14 @@ export class ApiChanges {
   /**
    * Gets the number of changes in each category
    */
-  getCategorizedChangeSummary(): Record<RuleCategory, number> {
-    const base = Object.values(RuleCategory).map((c) => [c, 0]);
-    const summaries = this.nodeChanges.map((node) => {
-      return node.getCategorizedChangeSummary();
-    });
-    return _.mergeWith(
-      _.fromPairs(base),
-      ...summaries,
-      (a: number | undefined, b: number): number => (a || 0) + b
-    );
+  getCategorizedChangeSummary(): CategorySummary {
+    return this.nodeChanges.reduce((summary, node) => {
+      const nodeSummary = node.getCategorizedChangeSummary();
+      Object.entries(nodeSummary).forEach(([category, count]) => {
+        summary[category] += count;
+      });
+      return summary;
+    }, createCategorySummary());
   }
 
   /**

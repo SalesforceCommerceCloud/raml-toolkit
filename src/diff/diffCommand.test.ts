@@ -20,7 +20,7 @@ import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { ApiDifferencer } from "./apiDifferencer";
 import { CategorizedChange } from "./changes/categorizedChange";
-import { RuleCategory } from "./ruleSet";
+import { RuleCategory } from "./ruleCategory";
 
 chai.use(chaiFs);
 

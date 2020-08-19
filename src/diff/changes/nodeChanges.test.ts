@@ -6,7 +6,7 @@
  */
 import { expect } from "@oclif/test";
 import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "../ruleSet";
+import { RuleCategory } from "../ruleCategory";
 import { CategorizedChange } from "./categorizedChange";
 
 function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {

@@ -6,7 +6,11 @@
  */
 
 import { CategorizedChange } from "./categorizedChange";
-import { RuleCategory } from "../ruleSet";
+import {
+  RuleCategory,
+  createCategorySummary,
+  CategorySummary,
+} from "../ruleCategory";
 
 /**
  * Class to hold differences of a JSON node
@@ -86,14 +90,11 @@ export class NodeChanges {
   /**
    * Gets the number of changes in each category
    */
-  getCategorizedChangeSummary(): Record<RuleCategory, number> {
-    const summary = {};
-    for (const category of Object.values(RuleCategory)) {
-      summary[category] = 0;
-    }
-    for (const change of this.categorizedChanges) {
+  getCategorizedChangeSummary(): CategorySummary {
+    const summary = createCategorySummary();
+    this.categorizedChanges.forEach((change) => {
       summary[change.category] += 1;
-    }
-    return summary as Record<RuleCategory, number>;
+    });
+    return summary;
   }
 }

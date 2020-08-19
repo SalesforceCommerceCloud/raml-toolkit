@@ -11,7 +11,7 @@ import { Rule } from "json-rules-engine";
 import fs from "fs-extra";
 import tmp from "tmp";
 import { expect } from "chai";
-import { RuleCategory } from "./ruleSet";
+import { RuleCategory } from "./ruleCategory";
 
 const basePath = path.join(__dirname, "../../testResources/diff");
 
