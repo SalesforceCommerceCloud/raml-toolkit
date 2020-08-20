@@ -56,7 +56,7 @@ describe("Check for changes in the API", () => {
   });
 });
 
-describe("Check for categorized changes in a API", () => {
+describe("Checks for categorized changes in a API", () => {
   it("returns categorized changes", async () => {
     const apiChanges = buildApiChanges();
     expect(apiChanges.getNodesWithCategorizedChanges()).to.deep.equal(
@@ -87,6 +87,16 @@ describe("Check for categorized changes in a API", () => {
   it("returns ignored changes count", async () => {
     const apiChanges = buildApiChanges([[RuleCategory.IGNORED]]);
     expect(apiChanges.getIgnoredChangesCount()).to.equal(1);
+  });
+
+  it("returns boolean indicating whether there are categorized changes", () => {
+    const hasChanges = buildApiChanges();
+    expect(hasChanges.hasCategorizedChanges()).to.be.true;
+    const noChanges = buildApiChanges([]);
+    expect(noChanges.hasCategorizedChanges()).to.be.false;
+    const uncategorizedChanges = buildApiChanges();
+    uncategorizedChanges.nodeChanges[0].categorizedChanges = [];
+    expect(uncategorizedChanges.hasCategorizedChanges()).to.be.false;
   });
 });
 
