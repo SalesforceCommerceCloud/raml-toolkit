@@ -6,7 +6,7 @@
  */
 import { expect } from "chai";
 import { default as Handlebars } from "handlebars";
-import { Formatter } from "./diff/formatter";
+import { Formatter } from "./formatter";
 
 describe("Formatter interface", () => {
   it("constructor creates a new instance", () => {
