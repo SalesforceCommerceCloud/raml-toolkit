@@ -15,6 +15,13 @@ import {
 // Handlebars doesn't export the type, so we have to extract it
 type CompileOptions = Parameters<typeof Handlebars.compile>["1"];
 
+export type TemplateCache<T = object> = Map<string, TemplateDelegate<T>>;
+
+export type FormatterOptions = {
+  handlebars?: typeof Handlebars;
+  templates?: TemplateCache;
+};
+
 export class Formatter<TemplateData extends object> {
   /**
    * Directory containing all default templates
@@ -30,17 +37,20 @@ export class Formatter<TemplateData extends object> {
   /**
    * Template cache available for all Formatter instances to use
    */
-  static readonly templates = new Map<string, TemplateDelegate>();
+  static readonly templates: TemplateCache = new Map();
+
+  readonly handlebars: typeof Handlebars;
+  readonly templates: TemplateCache;
 
   /**
    * Create a Formatter instance
    * @param handlebars - Custom handlebars instance
    * @param templates - Custom template cache
    */
-  constructor(
-    public readonly handlebars = new.target.handlebars,
-    public readonly templates = new.target.templates
-  ) {}
+  constructor(options?: FormatterOptions) {
+    this.handlebars = options?.handlebars || new.target.handlebars;
+    this.templates = options?.templates || new.target.templates;
+  }
 
   /**
    * Register a Handlebars partial from a file
@@ -94,7 +104,7 @@ export class Formatter<TemplateData extends object> {
    * @param compileOptions - Handlebars compiler options
    * @param runtimeOptions - Handlebars runtime options
    */
-  public render(
+  render(
     template: string,
     data: TemplateData,
     compileOptions?: CompileOptions,
