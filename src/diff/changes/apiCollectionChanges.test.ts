@@ -7,7 +7,10 @@
 import { expect } from "chai";
 import { NodeChanges } from "./nodeChanges";
 import { ApiChanges } from "./apiChanges";
-import { ApiCollectionChanges } from "./apiCollectionChanges";
+import {
+  ApiCollectionChanges,
+  ApiCollectionChangesTemplateData,
+} from "./apiCollectionChanges";
 import { CategorizedChange } from "./categorizedChange";
 import { RuleCategory } from "../ruleCategory";
 
@@ -133,12 +136,42 @@ describe("Summary of API changes by category", () => {
   });
 });
 
+describe("ApiCollectionChanges template data format", () => {
+  let templateData: ApiCollectionChangesTemplateData;
+
+  before("getTemplateData", () => {
+    const apiCollectionChanges = buildApiCollectionChanges({
+      "changed.raml": buildApiChanges([[RuleCategory.BREAKING]]),
+    });
+    apiCollectionChanges.added = ["added.raml"];
+    apiCollectionChanges.removed = ["removed.raml"];
+    apiCollectionChanges.errored = {
+      "errored.raml": "Something bad happened!",
+    };
+    templateData = apiCollectionChanges.getTemplateData();
+  });
+
+  it("includes all change types and summary", () => {
+    expect(templateData.added).to.deep.equal(["added.raml"]);
+    expect(templateData.removed).to.deep.equal(["removed.raml"]);
+    expect(templateData.errored).to.deep.equal([
+      { name: "errored.raml", error: "Something bad happened!" },
+    ]);
+    // Avoiding .deep.equal here to avoid implicitly testing ApiChanges as well
+    expect(templateData.changed).to.be.an("array").with.lengthOf(1);
+    expect(templateData.changed[0]).to.have.keys("name", "apiChanges");
+    expect(templateData.hasChanges).to.be.true;
+    expect(templateData.categorySummary).to.have.keys(
+      Object.values(RuleCategory)
+    );
+  });
+});
+
 describe("ApiCollectionChanges console formatted string", () => {
-  let apiCollectionChanges: ApiCollectionChanges;
   let text: string;
 
-  before(() => {
-    apiCollectionChanges = buildApiCollectionChanges({
+  before("toConsoleString", () => {
+    const apiCollectionChanges = buildApiCollectionChanges({
       "breaking-change.raml": buildApiChanges([[RuleCategory.BREAKING]]),
       "ignored-change.raml": buildApiChanges([
         [RuleCategory.IGNORED],

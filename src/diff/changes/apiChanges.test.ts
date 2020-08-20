@@ -8,7 +8,7 @@ import { expect } from "chai";
 import { NodeChanges } from "./nodeChanges";
 import { RuleCategory } from "../ruleCategory";
 import { CategorizedChange } from "./categorizedChange";
-import { ApiChanges } from "./apiChanges";
+import { ApiChanges, ApiChangesTemplateData } from "./apiChanges";
 
 function buildCategorizedChange(
   c = RuleCategory.BREAKING,
@@ -128,12 +128,29 @@ describe("Summary of API changes by category", () => {
   });
 });
 
+describe("ApiChanges template data format", () => {
+  let templateData: ApiChangesTemplateData;
+
+  before("getTemplateData", () => {
+    const apiChanges = buildApiChanges([
+      [RuleCategory.BREAKING, RuleCategory.IGNORED],
+      [RuleCategory.NON_BREAKING, RuleCategory.BREAKING],
+      [RuleCategory.IGNORED],
+    ]);
+    templateData = apiChanges.getTemplateData();
+  });
+
+  it("has changes and a summary", () => {
+    expect(templateData.apiSummary).to.have.keys(Object.values(RuleCategory));
+    expect(templateData.nodeChanges).to.be.an("array");
+  });
+});
+
 describe("ApiChanges console-formatted string", () => {
-  let apiChanges: ApiChanges;
   let text: string;
 
-  before(() => {
-    apiChanges = buildApiChanges([
+  before("toConsoleString", () => {
+    const apiChanges = buildApiChanges([
       [RuleCategory.BREAKING, RuleCategory.IGNORED],
       [RuleCategory.NON_BREAKING, RuleCategory.BREAKING],
       [RuleCategory.IGNORED],

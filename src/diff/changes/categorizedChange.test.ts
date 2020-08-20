@@ -8,7 +8,7 @@ import { expect } from "@oclif/test";
 import { RuleCategory } from "../ruleCategory";
 import { CategorizedChange } from "./categorizedChange";
 
-describe("Create an instance of CategorizedChange", () => {
+describe("CategorizedChange constructor", () => {
   it("creates a breaking change", async () => {
     const change = new CategorizedChange(
       "r1",
@@ -39,5 +39,64 @@ describe("Create an instance of CategorizedChange", () => {
     expect(
       () => new CategorizedChange("r1", "rule-event", RuleCategory.BREAKING)
     ).to.throw("Changed values are required");
+  });
+});
+
+describe("CategorizedChange template data format", () => {
+  it("has a name, category, and change", () => {
+    const change = new CategorizedChange(
+      "r1",
+      "rule-event",
+      RuleCategory.IGNORED
+    );
+    const templateData = change.getTemplateData();
+    expect(templateData).to.deep.equal({
+      ruleName: "r1",
+      category: RuleCategory.IGNORED,
+      change: {},
+    });
+  });
+
+  it("indicates a single value when change only has a new value", () => {
+    const change = new CategorizedChange(
+      "Something Added",
+      "addition",
+      RuleCategory.BREAKING,
+      [undefined, "added value"]
+    );
+    const templateData = change.getTemplateData();
+    expect(templateData.change).to.deep.equal({ single: "added value" });
+  });
+
+  it("indicates a single value when a change only has an old value", () => {
+    const change = new CategorizedChange(
+      "Something Removed",
+      "removatron-5000",
+      RuleCategory.NON_BREAKING,
+      ["deleted value", undefined]
+    );
+    const templateData = change.getTemplateData();
+    expect(templateData.change).to.deep.equal({ single: "deleted value" });
+  });
+
+  it("indicates multiple values when a change has an old and new value", () => {
+    const change = new CategorizedChange(
+      "Haircut",
+      "haircut",
+      RuleCategory.BREAKING,
+      ["long", "short"]
+    );
+    const templateData = change.getTemplateData();
+    expect(templateData.change).to.deep.equal({ multiple: ["long", "short"] });
+  });
+
+  it("indicates no values when a change has no values (is ignored)", () => {
+    const change = new CategorizedChange(
+      "Ignore Me",
+      "who cares?",
+      RuleCategory.IGNORED
+    );
+    const templateData = change.getTemplateData();
+    expect(templateData.change).to.deep.equal({});
   });
 });

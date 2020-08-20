@@ -163,3 +163,28 @@ describe("Summary of node changes by category", () => {
     });
   });
 });
+
+describe("NodeChanges template data format", () => {
+  it("includes ID, name, and summary", () => {
+    const nodeChanges = buildNodeChanges();
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.nodeId).to.equal("test-id-1");
+    expect(templateData.nodeSummary).to.have.keys(Object.values(RuleCategory));
+    expect(templateData.categorizedChanges).to.be.an("array").with.lengthOf(1);
+  });
+
+  it("excludes ignored changes from the changes list", () => {
+    const nodeChanges = buildNodeChanges([RuleCategory.IGNORED]);
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.categorizedChanges).to.deep.equal([]);
+  });
+
+  it("includes ignored changes in the summary", () => {
+    const nodeChanges = buildNodeChanges([RuleCategory.IGNORED]);
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.nodeSummary).to.haveOwnProperty(
+      RuleCategory.IGNORED,
+      1
+    );
+  });
+});
