@@ -96,7 +96,7 @@
     }
   },
   {
-    "name": "Parameter Added",
+    "name": "Required Parameter Added",
     "conditions": {
       "all": [
         {
@@ -134,7 +134,7 @@
     }
   },
   {
-    "name": "Version Changed",
+    "name": "API Version Changed",
     "conditions": {
       "all": [
         {
@@ -185,7 +185,7 @@
     }
   },
   {
-    "name": "Ignore description changes in all nodes",
+    "name": "Description Changed",
     "conditions": {
       "any": [
         {
