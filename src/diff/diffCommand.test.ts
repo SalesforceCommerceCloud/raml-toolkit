@@ -340,7 +340,7 @@ describe("raml-toolkit cli diff command", () => {
     .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
     .stdout()
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do((ctx) => cmd.run(["base", "new", "-f", "text", "-o", ctx.file.name]))
+    .do((ctx) => cmd.run(["base", "new", "-f", "console", "-o", ctx.file.name]))
     .exit(1)
     .it("stores changes as text when file and format flags are set", (ctx) => {
       expect(ctx.file.name)

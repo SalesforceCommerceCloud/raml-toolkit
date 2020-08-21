@@ -50,8 +50,8 @@ ARGUMENTS
   NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
 
 OPTIONS
-  -f, --format=(json|text)                        Format of the output. Defaults to JSON if --out-file is specified,
-                                                  otherwise text.
+  -f, --format=(json|console)                        Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise console text.
 
   -o, --out-file=out-file                         File to store the computed difference
 

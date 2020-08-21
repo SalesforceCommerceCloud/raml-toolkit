@@ -60,7 +60,7 @@ Exit statuses:
       char: "f",
       description:
         "Format of the output. Defaults to JSON if --out-file is specified, otherwise text.",
-      options: ["json", "text"],
+      options: ["json", "console"],
     }),
   };
 
@@ -93,8 +93,7 @@ Exit statuses:
     const file = flags["out-file"];
     if (file) {
       // If file is given, default to JSON format unless text is specified
-      if (flags.format === "text") {
-        await fs.writeFile(file, changes.toConsoleString());
+      if (flags.format === "console") {
       } else {
         await fs.writeJson(file, changes);
       }
