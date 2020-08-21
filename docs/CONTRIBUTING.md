@@ -89,3 +89,7 @@ test
 ### Updating the README
 
 To update the README when adding or changing a command, simply run `npx oclif-dev readme`. This will automatically update the text, but it will also change the headings to the incorrect level. Be sure to change them back before committing the updates.
+
+### Adding a new diff output format
+
+[Handlebars](http://handlebarsjs.com/) is used as the templating engine. Output for the diff command is generated from files in `resources/diff/templates`. The naming convention for template files is `ClassName.type.hbs`. For example, the file for the `ApiChanges` console format is `ApiChanges.console.hbs`.  Once created, the format will automatically be available via the specified class's `toFormattedString` method. To allow the format to be used via the CLI, add it to the list for the `format` flag in [diffCommand.ts](../src/diff/diffCommand.ts).
