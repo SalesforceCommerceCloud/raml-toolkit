@@ -124,12 +124,22 @@ export class ApiChanges {
   }
 
   /**
-   * Format the changes for printing to console
+   * Render the changes as a formatted string
+   * @param format Name of format to use
+   * @see DiffCommand for a list of supported formats
    */
-  toConsoleString(): string {
-    return ApiChanges.formatter.render(
-      path.join(Formatter.TEMPLATES_DIR, "ApiChanges.console.hbs"),
-      this.getTemplateData()
-    );
+  toFormattedString(format: string): string {
+    try {
+      if (format === "json") {
+        return JSON.stringify(this);
+      }
+      return ApiChanges.formatter.render(
+        path.join(Formatter.TEMPLATES_DIR, `ApiChanges.${format}.hbs`),
+        this.getTemplateData()
+      );
+    } catch (err) {
+      err.message = `Could not render format "${format}": ${err.message}`;
+      throw err;
+    }
   }
 }

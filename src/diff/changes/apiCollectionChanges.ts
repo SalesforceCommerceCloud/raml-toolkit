@@ -108,16 +108,41 @@ export class ApiCollectionChanges {
       categorySummary: this.getCategorySummary(),
     };
   }
+
   /**
-   * Format the changes as a string for printing to console
+   * Render the changes as a formatted string
+   * @param format - Name of the format to use
+   * @param apiChangesFormat - The format to use for individual API changes, if
+   * necessary for the given API collection format. If not required, must be
+   * explicitly set to `null`.
+   * @see DiffCommand for a list of supported formats
    */
-  toConsoleString(): string {
-    ApiCollectionChanges.formatter.registerPartial(
-      path.join(Formatter.TEMPLATES_DIR, "ApiChanges.console.hbs")
-    );
-    return ApiCollectionChanges.formatter.render(
-      path.join(Formatter.TEMPLATES_DIR, "ApiCollectionChanges.console.hbs"),
-      this.getTemplateData()
-    );
+  toFormattedString(
+    format: string,
+    apiChangesFormat: string | null = format
+  ): string {
+    try {
+      if (format === "json") {
+        return JSON.stringify(this);
+      }
+      if (apiChangesFormat) {
+        ApiCollectionChanges.formatter.registerPartial(
+          path.join(
+            Formatter.TEMPLATES_DIR,
+            `ApiChanges.${apiChangesFormat}.hbs`
+          )
+        );
+      }
+      return ApiCollectionChanges.formatter.render(
+        path.join(
+          Formatter.TEMPLATES_DIR,
+          `ApiCollectionChanges.${format}.hbs`
+        ),
+        this.getTemplateData()
+      );
+    } catch (err) {
+      err.message = `Could not render format "${format}": ${err.message}`;
+      throw err;
+    }
   }
 }

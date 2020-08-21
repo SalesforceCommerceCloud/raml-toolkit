@@ -94,6 +94,7 @@ Exit statuses:
     if (file) {
       // If file is given, default to JSON format unless text is specified
       if (flags.format === "console") {
+        await fs.writeFile(file, changes.toFormattedString("console"));
       } else {
         await fs.writeJson(file, changes);
       }
@@ -102,7 +103,7 @@ Exit statuses:
       if (flags.format === "json" || flags["diff-only"]) {
         this.log(JSON.stringify(changes, null, 2));
       } else {
-        this.log(changes.toConsoleString());
+        this.log(changes.toFormattedString("console"));
       }
     }
   }
