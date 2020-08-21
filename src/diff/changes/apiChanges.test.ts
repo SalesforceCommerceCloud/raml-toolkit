@@ -156,6 +156,26 @@ describe("ApiChanges template data format", () => {
   });
 });
 
+describe("ApiChanges string formatter", () => {
+  const apiChanges = buildApiChanges();
+
+  it("returns JSON when specified", () => {
+    expect(apiChanges.toFormattedString("json")).to.equal(
+      `${JSON.stringify(apiChanges)}`
+    );
+  });
+
+  it("returns a console format", () => {
+    expect(apiChanges.toFormattedString("console")).to.be.a("string");
+  });
+
+  it("throws when a format is invalid", () => {
+    expect(() => apiChanges.toFormattedString("invalid format")).to.throw(
+      'Could not render format "invalid format":'
+    );
+  });
+});
+
 describe("ApiChanges console-formatted string", () => {
   let text: string;
 

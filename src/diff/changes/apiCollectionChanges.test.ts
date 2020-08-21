@@ -13,6 +13,7 @@ import {
 } from "./apiCollectionChanges";
 import { CategorizedChange } from "./categorizedChange";
 import { RuleCategory } from "../ruleCategory";
+import sinon from "sinon";
 
 function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
   return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
@@ -164,6 +165,32 @@ describe("ApiCollectionChanges template data format", () => {
     expect(templateData.categorySummary).to.have.keys(
       Object.values(RuleCategory)
     );
+  });
+});
+
+describe("ApiCollectionChanges string formatter", () => {
+  const apiCollectionChanges = buildApiCollectionChanges();
+
+  it("returns JSON when specified", () => {
+    expect(apiCollectionChanges.toFormattedString("json")).to.equal(
+      `${JSON.stringify(apiCollectionChanges)}`
+    );
+  });
+
+  it("returns a console format", () => {
+    expect(apiCollectionChanges.toFormattedString("console")).to.be.a("string");
+  });
+
+  it("throws when a format is invalid", () => {
+    expect(() =>
+      apiCollectionChanges.toFormattedString("invalid format", "console")
+    ).to.throw('Could not render format "invalid format":');
+  });
+
+  it("throws when format for ApiChanges partial is invalid", () => {
+    expect(() =>
+      apiCollectionChanges.toFormattedString("console", "partial invalid")
+    ).to.throw('Could not register partial for format "partial invalid":');
   });
 });
 

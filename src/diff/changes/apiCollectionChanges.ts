@@ -121,10 +121,10 @@ export class ApiCollectionChanges {
     format: string,
     apiChangesFormat: string | null = format
   ): string {
+    if (format === "json") {
+      return JSON.stringify(this);
+    }
     try {
-      if (format === "json") {
-        return JSON.stringify(this);
-      }
       if (apiChangesFormat) {
         ApiCollectionChanges.formatter.registerPartial(
           path.join(
@@ -133,6 +133,11 @@ export class ApiCollectionChanges {
           )
         );
       }
+    } catch (err) {
+      err.message = `Could not register partial for format "${apiChangesFormat}": ${err.message}`;
+      throw err;
+    }
+    try {
       return ApiCollectionChanges.formatter.render(
         path.join(
           Formatter.TEMPLATES_DIR,
