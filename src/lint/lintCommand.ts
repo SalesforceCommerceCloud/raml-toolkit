@@ -31,7 +31,7 @@ export default class LintCommand extends Command {
     // Add --warnings flag to show warnings
     warnings: flags.boolean({
       char: "w",
-      default: false,
+      default: true,
       description: "Show all the warnings",
     }),
   };

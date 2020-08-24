@@ -1,0 +1,43 @@
+#%Validation Profile 1.0
+# org: API-Stewardship/sf.aip.dev
+# contact: rpolk@salesforce.com
+# slack: https://platformcloud.slack.com/archives/G011LS1M34J
+profile: aip
+extends: RAML
+disabled:
+  - amf-parser.WebAPI-mediaType-datatype
+violation:
+  #TODO: dupes w/mercury
+  - must-lowercase-paths
+  - must-tls-everywhere
+warning:
+  #TODO: conflicts w/mercury
+  - should-json-representation
+validations:
+  must-lowercase-paths:
+    message: >
+      URI Paths MUST be lowercase
+      (see:  https://git.soma.salesforce.com/pages/API-Stewardship/sf.aip.dev/2000 )
+    targetClass: apiContract.EndPoint
+    propertyConstraints:
+      apiContract.path:
+        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/{[^}]+}))+$
+ 
+  must-tls-everywhere:
+    message: >
+      TLS MUST be used everywhere
+      (see:  https://git.soma.salesforce.com/pages/API-Stewardship/sf.aip.dev/5000 )
+    targetClass: apiContract.WebAPI
+    propertyConstraints:
+      apiContract.scheme:
+        in: [https,HTTPS]
+        minCount: 1
+  should-json-representation:
+    message: >
+      JSON SHOULD be used as the representation type
+      (see:  https://git.soma.salesforce.com/pages/API-Stewardship/sf.aip.dev/5000 )
+    targetClass: apiContract.WebAPI
+    propertyConstraints:
+      apiContract.accepts:
+        in: ["application/json"]
+        minCount: 1
