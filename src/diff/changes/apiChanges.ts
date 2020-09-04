@@ -4,13 +4,28 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "../ruleSet";
+import path from "path";
+import { NodeChanges, NodeChangesTemplateData } from "./nodeChanges";
+import {
+  RuleCategory,
+  createCategorySummary,
+  CategorySummary,
+} from "../ruleCategory";
+import { Formatter } from "../formatter";
+
+/**
+ * ApiChanges data in a format more easily consumed by Handlebars templates
+ */
+export type ApiChangesTemplateData = {
+  nodeChanges: NodeChangesTemplateData[];
+  apiSummary: CategorySummary;
+};
 
 /**
  * Holds changes between two API specifications
  */
 export class ApiChanges {
+  protected static formatter = new Formatter<ApiChangesTemplateData>();
   //Changes between base and new API specifications
   public nodeChanges: NodeChanges[];
 
@@ -31,9 +46,16 @@ export class ApiChanges {
   }
 
   /**
-   * Get nodes that has categorized changes
+   * Return true if there are categorized changes
    */
-  getCategorizedChanges(): NodeChanges[] {
+  hasCategorizedChanges(): boolean {
+    return this.nodeChanges.some((n) => n.hasCategorizedChanges());
+  }
+
+  /**
+   * Get nodes that have categorized changes
+   */
+  getNodesWithCategorizedChanges(): NodeChanges[] {
     return this.nodeChanges.filter((n) => n.hasCategorizedChanges());
   }
 
@@ -75,5 +97,49 @@ export class ApiChanges {
    */
   getIgnoredChangesCount(): number {
     return this.getChangeCountByCategory(RuleCategory.IGNORED);
+  }
+
+  /**
+   * Gets the number of changes in each category
+   */
+  getCategorySummary(): CategorySummary {
+    return this.nodeChanges.reduce((summary, node) => {
+      const nodeSummary = node.getCategorySummary();
+      Object.entries(nodeSummary).forEach(([category, count]) => {
+        summary[category] += count;
+      });
+      return summary;
+    }, createCategorySummary());
+  }
+
+  /**
+   * Returns data in a format more easily consumed by Handlebars templates
+   */
+  getTemplateData(): ApiChangesTemplateData {
+    const nodeChanges = this.getNodesWithCategorizedChanges();
+    return {
+      nodeChanges: nodeChanges.map((nc) => nc.getTemplateData()),
+      apiSummary: this.getCategorySummary(),
+    };
+  }
+
+  /**
+   * Render the changes as a formatted string
+   * @param format Name of format to use
+   * @see DiffCommand for a list of supported formats
+   */
+  toFormattedString(format: string): string {
+    try {
+      if (format === "json") {
+        return JSON.stringify(this);
+      }
+      return ApiChanges.formatter.render(
+        path.join(Formatter.TEMPLATES_DIR, `ApiChanges.${format}.hbs`),
+        this.getTemplateData()
+      );
+    } catch (err) {
+      err.message = `Could not render format "${format}": ${err.message}`;
+      throw err;
+    }
   }
 }

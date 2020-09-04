@@ -1,6 +1,6 @@
 [
   {
-    "name": "Detect display name changes in endpoint operations",
+    "name": "Display Name Changed",
     "conditions": {
       "all": [
         {
@@ -32,7 +32,7 @@
     }
   },
   {
-    "name": "Detect removal of an endpoint operation",
+    "name": "Operation Removed",
     "conditions": {
       "all": [
         {
@@ -64,7 +64,7 @@
     }
   },
   {
-    "name": "Detect removal of a parameter",
+    "name": "Parameter Removed",
     "conditions": {
       "all": [
         {
@@ -96,7 +96,7 @@
     }
   },
   {
-    "name": "Detect addition of a required parameter",
+    "name": "Required Parameter Added",
     "conditions": {
       "all": [
         {
@@ -134,7 +134,7 @@
     }
   },
   {
-    "name": "Detect change in API version",
+    "name": "API Version Changed",
     "conditions": {
       "all": [
         {
@@ -166,7 +166,7 @@
     }
   },
   {
-    "name": "Ignore all changes in examples",
+    "name": "Example Changed",
     "conditions": {
       "any": [
         {
@@ -185,7 +185,7 @@
     }
   },
   {
-    "name": "Ignore description changes in all nodes",
+    "name": "Description Changed",
     "conditions": {
       "any": [
         {

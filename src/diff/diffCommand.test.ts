@@ -7,7 +7,7 @@
 "use strict";
 
 import { expect, test } from "@oclif/test";
-import { writeSync } from "fs";
+import { writeSync } from "fs-extra";
 import { FileResult, fileSync } from "tmp";
 import { Rule } from "json-rules-engine";
 import chai from "chai";
@@ -19,12 +19,20 @@ import { NodeChanges } from "./changes/nodeChanges";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { ApiDifferencer } from "./apiDifferencer";
+import { CategorizedChange } from "./changes/categorizedChange";
+import { RuleCategory } from "./ruleCategory";
 
 chai.use(chaiFs);
 
 const nodeChanges = new NodeChanges("test-id", ["test:type"]);
 nodeChanges.added = { "core:name": "oldName" };
 nodeChanges.removed = { "core:name": "newName" };
+nodeChanges.categorizedChanges = [
+  new CategorizedChange("Test Rule", "Test Event", RuleCategory.BREAKING, [
+    "old",
+    "new",
+  ]),
+];
 const apiChanges = new ApiChanges("base/file.raml", "new/file.raml");
 apiChanges.nodeChanges = [nodeChanges];
 const apiCollectionChanges = new ApiCollectionChanges(
@@ -100,8 +108,6 @@ const operationRemovedRule = new Rule(
     }
   }`
 );
-
-const outFile = fileSync({ postfix: ".json" });
 
 const operationRemovedRuleset = createTempFile(
   `[${operationRemovedRule.toJSON()}]`
@@ -303,11 +309,54 @@ describe("raml-toolkit cli diff command", () => {
       async () => apiCollectionChanges
     )
     .stdout()
-    .do(() => cmd.run(["baseApis", "newApis", "--dir", "-o", outFile.name]))
+    .add("file", () => fileSync({ postfix: ".json" }))
+    .do((ctx) => cmd.run(["baseApis", "newApis", "--dir", "-o", ctx.file.name]))
     .exit(1)
-    .it("stores the result in a file when flag is set", () => {
-      expect(outFile.name)
+    .it("stores changes as JSON when file flag is set", (ctx) => {
+      expect(ctx.file.name)
         .to.be.a.file()
         .with.content(`${JSON.stringify(apiCollectionChanges)}\n`);
     });
+
+  test
+    .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
+    .stdout()
+    .do(() => cmd.run(["baseApis", "newApis", "--log-level=silent"]))
+    .exit(1)
+    .it("logs changes to console as text when file flag is unset", (ctx) => {
+      expect(ctx.stdout).to.equal(
+        `${apiChanges.toFormattedString("console")}\n`
+      );
+    });
+
+  test
+    .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
+    .stdout()
+    .do(() => cmd.run(["base", "new", "-f", "json", "--log-level=silent"]))
+    .exit(1)
+    .it("logs changes to console as JSON when format flag is set", (ctx) => {
+      expect(JSON.parse(ctx.stdout)).to.deep.equal(apiChanges);
+    });
+
+  test
+    .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
+    .stdout()
+    .add("file", () => fileSync({ postfix: ".json" }))
+    .do((ctx) => cmd.run(["base", "new", "-f", "console", "-o", ctx.file.name]))
+    .exit(1)
+    .it("stores changes as text when file and format flags are set", (ctx) => {
+      expect(ctx.file.name)
+        .to.be.a.file()
+        .with.content(apiChanges.toFormattedString("console"));
+    });
+
+  test
+    .stderr({ print: true })
+    .stdout({ print: true })
+    .add("file", () => fileSync({ postfix: ".json" }))
+    .do((ctx) =>
+      cmd.run(["base", "new", "--diff-only", "-f", "json", "-o", ctx.file.name])
+    )
+    .exit(2)
+    .it("does not allow format to be specified for diff only");
 });

@@ -6,19 +6,16 @@
  */
 import { expect } from "@oclif/test";
 import { NodeChanges } from "./nodeChanges";
-import { RuleCategory } from "../ruleSet";
+import { RuleCategory } from "../ruleCategory";
 import { CategorizedChange } from "./categorizedChange";
 
-function buildNodeChanges(): NodeChanges {
-  const categorizedChange = new CategorizedChange(
-    "r1",
-    "title-changed",
-    RuleCategory.BREAKING,
-    ["old-title", "new-title"]
-  );
+function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
+  return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);
+}
 
-  const nodeChanges = new NodeChanges("test-id", ["test:type"]);
-  nodeChanges.categorizedChanges = [categorizedChange];
+function buildNodeChanges(categories = [RuleCategory.BREAKING]): NodeChanges {
+  const nodeChanges = new NodeChanges("test-id-1", ["type:title"]);
+  nodeChanges.categorizedChanges = categories.map(buildCategorizedChange);
   return nodeChanges;
 }
 
@@ -138,5 +135,56 @@ describe("Get number of categorized changes in a node", () => {
     expect(
       nodeChanges.getChangeCountByCategory(RuleCategory.BREAKING)
     ).to.equal(0);
+  });
+});
+
+describe("Summary of node changes by category", () => {
+  it("returns all categories as zero with no changes", () => {
+    const nodeChanges = buildNodeChanges([]);
+    const summary = nodeChanges.getCategorySummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 0,
+      [RuleCategory.IGNORED]: 0,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+
+  it("returns the total number of changes in each category", () => {
+    const nodeChanges = buildNodeChanges([
+      RuleCategory.BREAKING,
+      RuleCategory.BREAKING,
+      RuleCategory.IGNORED,
+    ]);
+    const summary = nodeChanges.getCategorySummary();
+    expect(summary).to.deep.equal({
+      [RuleCategory.BREAKING]: 2,
+      [RuleCategory.IGNORED]: 1,
+      [RuleCategory.NON_BREAKING]: 0,
+    });
+  });
+});
+
+describe("NodeChanges template data format", () => {
+  it("includes ID, name, and summary", () => {
+    const nodeChanges = buildNodeChanges();
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.nodeId).to.equal("test-id-1");
+    expect(templateData.nodeSummary).to.have.keys(Object.values(RuleCategory));
+    expect(templateData.categorizedChanges).to.be.an("array").with.lengthOf(1);
+  });
+
+  it("excludes ignored changes from the changes list", () => {
+    const nodeChanges = buildNodeChanges([RuleCategory.IGNORED]);
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.categorizedChanges).to.deep.equal([]);
+  });
+
+  it("includes ignored changes in the summary", () => {
+    const nodeChanges = buildNodeChanges([RuleCategory.IGNORED]);
+    const templateData = nodeChanges.getTemplateData();
+    expect(templateData.nodeSummary).to.haveOwnProperty(
+      RuleCategory.IGNORED,
+      1
+    );
   });
 });

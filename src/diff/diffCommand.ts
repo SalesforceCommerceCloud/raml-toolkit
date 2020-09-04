@@ -45,7 +45,7 @@ Exit statuses:
     "diff-only": flags.boolean({
       description: "Only show differences without evaluating a ruleset",
       default: false,
-      exclusive: ["ruleset", "dir"],
+      exclusive: ["ruleset", "dir", "format"],
     }),
     dir: flags.boolean({
       description: "Find the differences for all files in two directories",
@@ -55,6 +55,12 @@ Exit statuses:
     "out-file": flags.string({
       char: "o",
       description: "File to store the computed difference",
+    }),
+    format: flags.enum({
+      char: "f",
+      description:
+        "Format of the output. Defaults to JSON if --out-file is specified, otherwise text.",
+      options: ["json", "console"],
     }),
   };
 
@@ -74,17 +80,31 @@ Exit statuses:
   ];
 
   /**
-   * If a file is given, saves data to the file. Otherwise, just logs the data.
-   * The data must be JSON-serializable.
+   * If a file is given, saves the changes to the file, as JSON by default.
+   * Otherwise, logs the changes to console, as text by default.
    *
-   * @param json - The data to save or log
-   * @param file - The file to save to
+   * @param changes - The changes to save or log
+   * @param flags - Parsed CLI flags passed to the command
    */
-  protected async _saveOrLog(json: unknown, file?: string): Promise<void> {
+  protected async _saveOrLog(
+    changes: ApiChanges | ApiCollectionChanges,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<void> {
+    const file = flags["out-file"];
     if (file) {
-      await fs.writeJson(file, json);
+      // If file is given, default to JSON format unless text is specified
+      if (flags.format === "console") {
+        await fs.writeFile(file, changes.toFormattedString("console"));
+      } else {
+        await fs.writeJson(file, changes);
+      }
     } else {
-      console.log(json);
+      // If file is not given, default to text unless JSON is specified
+      if (flags.format === "json" || flags["diff-only"]) {
+        this.log(JSON.stringify(changes, null, 2));
+      } else {
+        this.log(changes.toFormattedString("console"));
+      }
     }
   }
 
@@ -104,7 +124,7 @@ Exit statuses:
     let apiCollectionChanges: ApiCollectionChanges;
     try {
       apiCollectionChanges = await diffRamlDirectories(baseApis, newApis);
-      await this._saveOrLog(apiCollectionChanges, flags["out-file"]);
+      await this._saveOrLog(apiCollectionChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -132,7 +152,7 @@ Exit statuses:
     try {
       const apiDifferencer = new ApiDifferencer(baseApis, newApis);
       apiChanges = await apiDifferencer.findChanges();
-      await this._saveOrLog(apiChanges, flags["out-file"]);
+      await this._saveOrLog(apiChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
@@ -161,12 +181,12 @@ Exit statuses:
     const apiDifferencer = new ApiDifferencer(baseApis, newApis);
     try {
       apiChanges = await apiDifferencer.findAndCategorizeChanges(flags.ruleset);
-      await this._saveOrLog(apiChanges, flags["out-file"]);
+      await this._saveOrLog(apiChanges, flags);
     } catch (err) {
       this.error(err.message, { exit: 2 });
     }
     if (apiChanges.hasBreakingChanges()) {
-      this.error("Breaking changes found.", { exit: 1 });
+      this.exit(1);
     }
   }
 
