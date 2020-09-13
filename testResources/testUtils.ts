@@ -11,17 +11,40 @@ import yaml from "js-yaml";
 import _ from "lodash";
 import amf from "amf-client-js";
 import { expect } from "chai";
+import sinon from "sinon";
+
+const VALIDATION_PROFILE_PATH = path.resolve(
+  __dirname,
+  "../resources/lint/profiles/mercury.raml"
+);
+const SPEC_PROFILE_PATH = path.join(__dirname, "raml/mercury/mercury.raml");
+let lvpStub: sinon.SinonStub;
 
 /**
- * Each test starts with loading a known good template and then tweaking it for
- * the test case. If you make changes to the template, make sure all of the
- * tests pass.
+ * Stubs `Core.loadValidationProfile` so it caches the result for the mercury
+ * validation profile. (Behavior is unmodified for other profiles.) This is
+ * primarily so that you can edit the file without disrupting tests while
+ * they're running (and it also makes the tests slightly faster).
+ * IMPORTANT: Multiple files load the profile, so placing it in this helper is
+ * the easiest way to ensure that the stub is only created once. However, as a
+ * consequence, the cached profile is used for *all* tests, and the method can't
+ * be stubbed in other tests in the same suite.
  */
-
-const DEFAULT_PROFILE_PATH = path.join(__dirname, "raml/mercury/mercury.raml");
+before(async () => {
+  await amf.AMF.init();
+  const lvp = amf.Core.loadValidationProfile;
+  const profilePath = `file://${VALIDATION_PROFILE_PATH}`;
+  const profile = await amf.Core.loadValidationProfile(profilePath);
+  lvpStub = sinon.stub(amf.Core, "loadValidationProfile");
+  // By default, don't modify behavior
+  lvpStub.callsFake(lvp);
+  // Return the existing profile instead of loading a new one from the same file
+  lvpStub.withArgs(profilePath).resolves(profile);
+});
+after(() => lvpStub.restore());
 
 export function getHappySpec(
-  filename = DEFAULT_PROFILE_PATH
+  filename = SPEC_PROFILE_PATH
 ): Record<string, unknown> {
   return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
 }
