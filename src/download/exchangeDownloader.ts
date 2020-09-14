@@ -23,8 +23,8 @@ import { extractFile } from "./exchangeDirectoryParser";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
-const ANYPOINT_BASE_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
-const ANYPOINT_BASE_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
+const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
+const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
 
 export async function downloadRestApi(
   restApi: RestApi,
@@ -121,7 +121,7 @@ export async function getAsset(
   accessToken: string,
   assetId: string
 ): Promise<void | RawRestApi> {
-  const res = await fetch(`${ANYPOINT_BASE_URI_V1}/assets/${assetId}`, {
+  const res = await fetch(`${ANYPOINT_API_URI_V1}/assets/${assetId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -129,7 +129,7 @@ export async function getAsset(
   if (!res.ok) {
     ramlToolLogger.warn(
       `Failed to get information about ${assetId} from exchange: ${res.status} - ${res.statusText}`,
-      `Please get it manually from ${ANYPOINT_BASE_URI_V1}/assets/${assetId} and update the relevant details in apis/api-config.json`
+      `Please get it manually from ${ANYPOINT_API_URI_V1}/assets/${assetId} and update the relevant details in apis/api-config.json`
     );
     return;
   }
@@ -149,7 +149,7 @@ export async function searchExchange(
   searchString: string
 ): Promise<RestApi[]> {
   return fetch(
-    `${ANYPOINT_BASE_URI_V2}/assets?search=${searchString}&types=rest-api`,
+    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

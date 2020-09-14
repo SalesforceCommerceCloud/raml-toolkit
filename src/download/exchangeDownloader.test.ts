@@ -144,7 +144,7 @@ describe("getSpecificApi", () => {
   afterEach(nock.cleanAll);
 
   it("should return the response in RestApi type", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
@@ -186,7 +186,7 @@ describe("getSpecificApi", () => {
   });
 
   it("should return null if version is not provided", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
@@ -203,7 +203,7 @@ describe("getSpecificApi", () => {
   });
 
   it("should return null it fails to fetch the asset", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope
       .get("/893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.1")
@@ -224,7 +224,7 @@ describe("getVersionByDeployment", () => {
   afterEach(nock.cleanAll);
 
   it("should return a version if a deployment exists", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
@@ -234,7 +234,7 @@ describe("getVersionByDeployment", () => {
   });
 
   it("should return the base version if the deployment does not exist", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
@@ -244,7 +244,7 @@ describe("getVersionByDeployment", () => {
   });
 
   it("should return undefined if the asset does not exist", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     scope.get("/8888888/test-api").reply(404, "Not Found");
 
@@ -254,7 +254,7 @@ describe("getVersionByDeployment", () => {
   });
 
   it("should return undefined if the asset does not have a version", async () => {
-    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v2/assets");
+    const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     const assetWithoutVersion = _.cloneDeep(getAssetWithoutVersion);
     delete assetWithoutVersion.version;
@@ -269,7 +269,7 @@ describe("getVersionByDeployment", () => {
 
 describe("getAsset", () => {
   it("gets the JSON asset with the specified ID", () => {
-    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+    nock("https://anypoint.mulesoft.com/exchange/api/v1/assets")
       .get("/8888888/test-get-asset")
       .reply(200, { data: "json response" });
 
@@ -279,7 +279,7 @@ describe("getAsset", () => {
   });
 
   it("returns undefined when the response indicates an error", () => {
-    nock("https://anypoint.mulesoft.com/exchange/api/v2/assets")
+    nock("https://anypoint.mulesoft.com/exchange/api/v1/assets")
       .get("/8888888/get-asset-404")
       .reply(404, "Not Found");
 
@@ -290,7 +290,7 @@ describe("getAsset", () => {
 
 describe("search", () => {
   const scope = nock(
-    "https://anypoint.mulesoft.com/exchange/api/v2/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8"
+    "https://anypoint.mulesoft.com/exchange/api/v1/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8"
   );
 
   // Search uses process.env, so we need to set expected values

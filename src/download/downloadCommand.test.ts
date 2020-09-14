@@ -72,7 +72,7 @@ function setup({
       )
       // Intercept search requests
       .nock(
-        "https://anypoint.mulesoft.com/exchange/api/v2/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8",
+        "https://anypoint.mulesoft.com/exchange/api/v1/assets/893f605e-10e2-423a-bdb4-f952f56eb6d8",
         (scope) =>
           scope
             .get("/shop-products-categories-api-v1")
