@@ -111,6 +111,7 @@ function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
  *  * /groupId/assetId/version
  *  * /groupId/assetId
  *  * /groupId
+ *  This function uses V1 API to utilize the environmentName attribute for verifying the deployment tags
  *
  * @export
  * @param {string} accessToken

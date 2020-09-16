@@ -30,6 +30,9 @@ const assetSearchResults = require("../../testResources/download/resources/asset
 const getAssetWithVersion = require("../../testResources/download/resources/getAssetWithVersion");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
+const getAssetWithVersionV2 = require("../../testResources/download/resources/getAssetWithVersionV2");
+
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const getAssetWithoutVersion = require("../../testResources/download/resources/getAsset");
 
 before(() => {
@@ -429,6 +432,50 @@ describe("search", () => {
           createdDate: "2020-02-05T21:26:01.199Z",
           md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
           sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
+          mainFile: "shopper-customers.raml",
+        },
+      },
+    ]);
+  });
+
+  /**
+   * Returns root asset version when production tag is not found
+   * on V2 API response. The actual deployed version is available
+   * under otherVersions attributes, that has no external link to download
+   * and no environmentName attribute to match
+   */
+  it("returns the root asset version without production tag on V2 response", () => {
+    scope
+      .get("/shop-products-categories-api-v1")
+      .reply(200, getAssetWithVersionV2)
+      .get("/shop-products-categories-api-v1/0.5.0")
+      .reply(200, getAssetWithVersionV2);
+
+    return expect(
+      search("searchString", /production/i)
+    ).to.eventually.deep.equal([
+      {
+        id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.5.0",
+        name: "Shopper Customers",
+        description:
+          "Let customers log in and manage their profiles and product lists.",
+        updatedDate: "2020-02-06T17:55:32.375Z",
+        groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+        assetId: "shopper-customers",
+        version: "0.5.0",
+        categories: {
+          "CC API Visibility": ["External"],
+          "CC Version Status": ["Beta"],
+          "CC API Family": ["Customer"],
+          "API layer": ["Process"],
+        },
+        fatRaml: {
+          classifier: "fat-raml",
+          packaging: "zip",
+          externalLink: "https://somewhere/fatraml.zip",
+          createdDate: "2020-01-22T03:25:00.200Z",
+          md5: "3ce41ea699c8be4446909f172cfac317",
+          sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
           mainFile: "shopper-customers.raml",
         },
       },
