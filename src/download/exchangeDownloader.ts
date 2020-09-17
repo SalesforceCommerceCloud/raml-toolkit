@@ -22,9 +22,9 @@ import { ramlToolLogger } from "../common/logger";
 import { extractFile } from "./exchangeDirectoryParser";
 
 const DEFAULT_DOWNLOAD_FOLDER = "download";
-const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange/api/v2";
-const ANYPOINT_BASE_URI_WITHOUT_VERSION =
-  "https://anypoint.mulesoft.com/exchange";
+const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
+const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
+const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
 
 export async function downloadRestApi(
   restApi: RestApi,
@@ -33,7 +33,7 @@ export async function downloadRestApi(
   if (!restApi.id) {
     ramlToolLogger.warn(
       `Failed to download '${restApi.name}' RAML as Fat RAML download information is missing.`,
-      `Please download it manually from ${ANYPOINT_BASE_URI_WITHOUT_VERSION}/${restApi.groupId}/${restApi.assetId} and update the relevant details in apis/api-config.json`
+      `Please download it manually from ${ANYPOINT_BASE_URI}/${restApi.groupId}/${restApi.assetId} and update the relevant details in apis/api-config.json`
     );
     return;
   }
@@ -111,6 +111,7 @@ function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
  *  * /groupId/assetId/version
  *  * /groupId/assetId
  *  * /groupId
+ *  This function uses V1 API to utilize the environmentName attribute for verifying the deployment tags
  *
  * @export
  * @param {string} accessToken
@@ -121,7 +122,7 @@ export async function getAsset(
   accessToken: string,
   assetId: string
 ): Promise<void | RawRestApi> {
-  const res = await fetch(`${ANYPOINT_BASE_URI}/assets/${assetId}`, {
+  const res = await fetch(`${ANYPOINT_API_URI_V1}/assets/${assetId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -129,7 +130,7 @@ export async function getAsset(
   if (!res.ok) {
     ramlToolLogger.warn(
       `Failed to get information about ${assetId} from exchange: ${res.status} - ${res.statusText}`,
-      `Please get it manually from ${ANYPOINT_BASE_URI}/assets/${assetId} and update the relevant details in apis/api-config.json`
+      `Please get it manually from ${ANYPOINT_API_URI_V1}/assets/${assetId} and update the relevant details in apis/api-config.json`
     );
     return;
   }
@@ -149,7 +150,7 @@ export async function searchExchange(
   searchString: string
 ): Promise<RestApi[]> {
   return fetch(
-    `${ANYPOINT_BASE_URI}/assets?search=${searchString}&types=rest-api`,
+    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,

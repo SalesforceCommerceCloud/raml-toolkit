@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.1
+
+* *NEW FEATURE* Added new console formatter for diff command, see the  [README](README.md#raml-toolkit-diff-base-new). 
+* *BUG FIX* RAML files with correct deployment tags are now downloaded
 
 ## 0.5.0
 
