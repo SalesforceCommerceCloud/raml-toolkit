@@ -15,8 +15,8 @@ import { expect } from "chai";
 const SPEC_PROFILE_PATH = path.join(__dirname, "raml/mercury/mercury.raml");
 
 /**
- * Each test starts with loading a known good template and then tweaking it for	 * Stubs `Core.loadValidationProfile` so it caches the result for the mercury
- * the test case. If you make changes to the template, make sure all of the	 * validation profile. (Behavior is unmodified for other profiles.) This is
+ * Each test starts with loading a known good template and then tweaking it for
+ * the test case. If you make changes to the template, make sure all of the
  * tests pass.
  */
 
