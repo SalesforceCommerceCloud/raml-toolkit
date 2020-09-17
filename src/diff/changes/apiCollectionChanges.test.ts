@@ -13,7 +13,6 @@ import {
 } from "./apiCollectionChanges";
 import { CategorizedChange } from "./categorizedChange";
 import { RuleCategory } from "../ruleCategory";
-import sinon from "sinon";
 
 function buildCategorizedChange(c = RuleCategory.BREAKING): CategorizedChange {
   return new CategorizedChange("r1", "title-changed", c, ["old", "new"]);

@@ -9,125 +9,99 @@ import path from "path";
 import { ramlToolLogger } from "../common/logger";
 import { ApiDifferencer } from "./apiDifferencer";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
+import { loadApiDirectory, ApiMetadata, ApiModel } from "../generate";
 
 /**
- * Extracts all the RAML file names from the specified config file.
+ * Find differences between two ApiModel objects and writes them to the passed
+ * ApiCollectionChanges object.
  *
- * @param configPath - Target config file
- *
- * @returns An array of `assetId/fileName` for every api in the input file
+ * @param leftApi - Left ApiModel to be compared
+ * @param rightApi - Right ApiModel to be compared
+ * @param changes - ApiCollectionChanges object to contain all the changes
  */
-export function listRamlsFromConfig(configPath: string): string[] {
-  // path.resolve() is required to ensure configPath is absolute
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const config = require(path.resolve(configPath));
-  const ramls = [];
-  for (const apiFamily of Object.keys(config)) {
-    for (const api of config[apiFamily]) {
-      ramls.push(path.join(api.assetId, api.fatRaml.mainFile));
-    }
-  }
-
-  return ramls;
-}
-
-/**
- * Compares two arrays and returns their intersection and symmetric difference.
- * Expects arrays to have no duplicate elements.
- *
- * @param leftArr - One of the arrays being compared
- * @param rightArr - The other array being compared
- *
- * @returns An array each for all the common, exclusive to left and exclusive to
- * right elements.
- */
-function getCommonAndUniqueElements<T>(
-  leftArr: T[],
-  rightArr: T[]
-): {
-  common: T[];
-  unique: [T[], T[]];
-} {
-  const left = new Set(leftArr);
-  const right = new Set(rightArr);
-  const common = new Set<T>();
-  left.forEach((val) => {
-    if (right.has(val)) {
-      left.delete(val);
-      right.delete(val);
-      common.add(val);
-    }
-  });
-  return {
-    common: [...common],
-    unique: [[...left], [...right]],
-  };
-}
-
-/**
- * Get diffs for all the common RAMLs. If diff operation fails for a RAML, log
- * the error, add a message to the diff object and continue with the rest of the
- * RAML files.
- *
- * @param dir1 - One of the directories with raml files
- * @param dir2 - The other directory with raml files
- * @param commonRamls - List of all the ramls to be compared
- * @param apiCollectionChanges - Instance of ApiCollectionChanges
- * @returns An array of differences
- */
-async function diffCommonRamls(
-  dir1: string,
-  dir2: string,
-  commonRamls: string[],
-  apiCollectionChanges: ApiCollectionChanges
+export async function diffApiModels(
+  leftApi: ApiModel,
+  rightApi: ApiModel,
+  changes: ApiCollectionChanges
 ): Promise<void> {
-  for (const raml of commonRamls) {
-    const leftRaml = path.join(dir1, raml);
-    const rightRaml = path.join(dir2, raml);
+  if (leftApi && rightApi) {
     try {
-      const apiDifferencer = new ApiDifferencer(leftRaml, rightRaml);
-      apiCollectionChanges.changed[
-        raml
-      ] = await apiDifferencer.findAndCategorizeChanges();
+      const leftRaml = path.join(leftApi.path, leftApi.main);
+      const rightRaml = path.join(rightApi.path, rightApi.main);
+      const differencer = new ApiDifferencer(leftRaml, rightRaml);
+      changes.changed[
+        leftApi.main
+      ] = await differencer.findAndCategorizeChanges();
     } catch (error) {
-      ramlToolLogger.error(`Diff operation for '${raml}' failed:`, error);
-      apiCollectionChanges.errored[raml] = error.message;
+      ramlToolLogger.error(
+        `Diff operation for '${leftApi.name}' failed:`,
+        error
+      );
+      changes.errored[leftApi.main] = error.message;
     }
+  } else if (rightApi) {
+    changes.added.push(rightApi.main);
+  } else if (leftApi) {
+    changes.removed.push(leftApi.main);
   }
 }
 
 /**
- * Finds differences between the given directories for all the raml files in the
- * provided config.
+ * Traverses the left and right api tree recursively to get the ApiModel left
+ * nodes and then finds differences between them by running diff operation.
  *
- * @param baseConfigFile - Existing APIs
- * @param newConfigFile - Newly downloaded APIs
+ * @param leftNode - node of the left api tree to be compared
+ * @param rightNode - node of the right api tree to be compared
+ * @param changes - ApiCollectionChanges object to contain all the changes
+ */
+export async function diffApiMetadata(
+  leftNode: ApiMetadata,
+  rightNode: ApiMetadata,
+  changes: ApiCollectionChanges
+): Promise<void> {
+  // If either of the nodes passed is an ApiModel object, then we have
+  // traversed that tree branch entirely and can pass the APIs for diff to
+  // be run upon
+  if (leftNode instanceof ApiModel || rightNode instanceof ApiModel) {
+    return diffApiModels(leftNode as ApiModel, rightNode as ApiModel, changes);
+  }
+
+  const leftChildren = leftNode ? leftNode.children : [];
+  const rightChildren = rightNode ? rightNode.children : [];
+  // Convert the right children array into a map so that we can easily look up
+  // elements in the left array
+  const rightMap = new Map(rightChildren.map((o) => [o.name.original, o]));
+  for (const leftChild of leftChildren) {
+    const rightChild = rightMap.get(leftChild.name.original);
+    await diffApiMetadata(leftChild, rightChild, changes);
+    // Once an element is found in the right map delete it so that in the end
+    // we are only left with the elements unique to the right array
+    rightMap.delete(leftChild.name.original);
+  }
+  // Process the objects only present in the right array
+  for (const rightChild of rightMap.values()) {
+    await diffApiMetadata(undefined, rightChild, changes);
+  }
+}
+
+/**
+ * Finds differences between the given directories for all the raml files.
  *
- * @returns An array of RamlDiff objects containing differences between all the
- * old and new RAML files
+ * @param baseDir - Existing APIs
+ * @param newDir - Newly downloaded APIs
+ *
+ * @returns An ApiCollectionChanges object containing all the changes
  */
 export async function diffRamlDirectories(
-  baseConfigFile: string,
-  newConfigFile: string
+  baseDir: string,
+  newDir: string
 ): Promise<ApiCollectionChanges> {
-  const baseApiDir = path.dirname(baseConfigFile);
-  const newApiDir = path.dirname(newConfigFile);
-  const baseRamls = listRamlsFromConfig(baseConfigFile);
-  const newRamls = listRamlsFromConfig(newConfigFile);
-  const ramls = getCommonAndUniqueElements(baseRamls, newRamls);
+  const baseApis = loadApiDirectory(baseDir);
+  const newApis = loadApiDirectory(newDir);
 
-  const apiCollectionChanges = new ApiCollectionChanges(
-    baseConfigFile,
-    newConfigFile
-  );
-  await diffCommonRamls(
-    baseApiDir,
-    newApiDir,
-    ramls.common,
-    apiCollectionChanges
-  );
-  apiCollectionChanges.removed = ramls.unique[0];
-  apiCollectionChanges.added = ramls.unique[1];
+  const apiCollectionChanges = new ApiCollectionChanges(baseDir, newDir);
+
+  await diffApiMetadata(baseApis, newApis, apiCollectionChanges);
 
   return apiCollectionChanges;
 }
