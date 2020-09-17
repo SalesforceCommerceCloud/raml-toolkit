@@ -50,7 +50,7 @@ validations:
     targetClass: apiContract.Server
     propertyConstraints:
       core.urlTemplate:
-        pattern: ^https:\/\/{shortCode}\.api\.commercecloud\.salesforce\.com\/[a-z][a-z0-9-]*[a-z0-9]+\/[a-z][a-z0-9-]*[a-z0-9]+\/{version}\/?$
+        pattern: ^https:\/\/\{shortCode}\.api\.commercecloud\.salesforce\.com\/[a-z][a-z0-9-]*[a-z0-9]+\/[a-z][a-z0-9-]*[a-z0-9]+\/\{version}\/?$
 
   camelcase-method-displayname:
     message: The API Method must have displayName and the value must be in camelCase
@@ -164,7 +164,7 @@ validations:
     targetClass: apiContract.EndPoint
     propertyConstraints:
       apiContract.path:
-        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/{[^}]+}))+$
+        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
   
   unique-display-name:
     message: displayName must be unique within an API
