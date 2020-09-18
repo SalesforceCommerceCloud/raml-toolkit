@@ -20,8 +20,8 @@ import { loadApiDirectory, ApiMetadata, ApiModel } from "../generate";
  * @param changes - ApiCollectionChanges object to contain all the changes
  */
 export async function diffApiModels(
-  leftApi: ApiModel,
-  rightApi: ApiModel,
+  leftApi: ApiModel | undefined,
+  rightApi: ApiModel | undefined,
   changes: ApiCollectionChanges
 ): Promise<void> {
   if (leftApi && rightApi) {
@@ -55,15 +55,18 @@ export async function diffApiModels(
  * @param changes - ApiCollectionChanges object to contain all the changes
  */
 export async function diffApiMetadata(
-  leftNode: ApiMetadata,
-  rightNode: ApiMetadata,
+  leftNode: ApiMetadata | undefined,
+  rightNode: ApiMetadata | undefined,
   changes: ApiCollectionChanges
 ): Promise<void> {
   // If either of the nodes passed is an ApiModel object, then we have
   // traversed that tree branch entirely and can pass the APIs for diff to
   // be run upon
-  if (leftNode instanceof ApiModel || rightNode instanceof ApiModel) {
-    return diffApiModels(leftNode as ApiModel, rightNode as ApiModel, changes);
+  if (
+    (typeof leftNode === "undefined" || leftNode instanceof ApiModel) &&
+    (typeof rightNode === "undefined" || rightNode instanceof ApiModel)
+  ) {
+    return diffApiModels(leftNode, rightNode, changes);
   }
 
   const leftChildren = leftNode ? leftNode.children : [];

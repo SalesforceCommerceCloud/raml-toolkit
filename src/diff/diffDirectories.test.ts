@@ -130,8 +130,7 @@ describe("diffDirectories", () => {
 
       await diffApiMetadata(leftModel, rightModel, apiCollectionChanges);
 
-      expect(Object.keys(apiCollectionChanges.changed)).to.have.length(1);
-      expect(apiCollectionChanges.changed["api1.raml"]).to.equal(apiChanges);
+      expect(apiCollectionChanges.changed).to.have.all.keys("api1.raml");
       expect(apiDifferencerStub.calledOnce).to.be.true;
     });
 
@@ -168,7 +167,6 @@ describe("diffDirectories", () => {
       );
       await diffApiMetadata(leftTree, rightTree, apiCollectionChanges);
 
-      expect(Object.keys(apiCollectionChanges.changed)).to.have.length(4);
       expect(apiCollectionChanges.changed).to.have.all.keys(
         "api1.raml",
         "api2.raml",
@@ -210,7 +208,6 @@ describe("diffDirectories", () => {
       );
       await diffApiMetadata(leftTree, rightTree, apiCollectionChanges);
 
-      expect(Object.keys(apiCollectionChanges.changed)).to.have.length(2);
       expect(apiCollectionChanges.changed).to.have.all.keys(
         "api1.raml",
         "api2.raml"
@@ -252,7 +249,6 @@ describe("diffDirectories", () => {
       );
       await diffApiMetadata(leftTree, rightTree, apiCollectionChanges);
 
-      expect(Object.keys(apiCollectionChanges.changed)).to.have.length(2);
       expect(apiCollectionChanges.changed).to.have.all.keys(
         "api1.raml",
         "api2.raml"
@@ -274,18 +270,17 @@ describe("diffDirectories", () => {
 
     before(() => {
       loadApiDirectoryStub = sinon.stub(loadApiDirectory, "loadApiDirectory");
+      loadApiDirectoryStub.returns(apiMetadata);
     });
 
     beforeEach(() => {
-      loadApiDirectoryStub.reset();
-      loadApiDirectoryStub.returns(apiMetadata);
+      loadApiDirectoryStub.resetHistory();
     });
 
     it("should return diff on two directories", async () => {
       const apiCollectionChanges = await diffRamlDirectories("dir1", "dir2");
 
-      expect(Object.keys(apiCollectionChanges.changed)).to.have.length(1);
-      expect(apiCollectionChanges.changed["api1.raml"]).to.equal(apiChanges);
+      expect(apiCollectionChanges.changed).to.have.all.keys("api1.raml");
       expect(loadApiDirectoryStub.calledTwice).to.be.true;
     });
   });
