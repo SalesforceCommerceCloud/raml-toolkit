@@ -167,29 +167,27 @@ validations:
         pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
   
   unique-display-name:
-    message: displayName must be unique within an API
-    targetClass: apiContract.Operation
-    # TODO: Convert this to not use functionConstraint
-    functionConstraint:
-      code: |
-        function(ops) {
-          const name = ops['core:name'];
-          // If it doesn't have a name, it passes
-          if(!name) {
-            return true;
-          }
-          const key = `uniqueDisplayName:${name[0].toLowerCase()}`;
-          // `accumulators` is a global helper object we can use arbitrarily
-          if(!accumulators[key]) {
-            // No collision yet, set for next object to be checked
-            accumulators[key] = true;
-            // No collision, passes
-            return true;
-          } else {
-            // Collision found, fails validation
-            return false;
+    message: Operation displayName must be unique within an API
+    targetClass: apiContract.WebAPI
+    query: |
+      SELECT ?this (?operations AS ?value)
+      WHERE {
+        ?this apiContract:endpoint ?endpoints .
+        ?endpoints apiContract:supportedOperation ?operations .
+        {
+          SELECT (COUNT(LCASE(?names1)) as ?total)
+          WHERE {
+            ?operations core:name ?names1
           }
         }
+        {
+          SELECT (COUNT(DISTINCT(LCASE(?names2))) as ?distincts)
+          WHERE {
+            ?operations core:name ?names2
+          }
+        }
+        FILTER(?total != ?distincts)
+      }
 
   version-format:
     message: The version must be formatted as v[Major], for example v2
