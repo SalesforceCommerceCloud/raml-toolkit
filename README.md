@@ -71,7 +71,7 @@ DESCRIPTION
      Directory mode compares all the files in two directories and determines if there are any differences.
 
   In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
-  In directory mode, the arguments must be directories containing the API files.
+  In directory mode, the arguments must be directories containing API specification (RAML) files.
 
   Exit statuses:
      0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
