@@ -35,10 +35,7 @@ nodeChanges.categorizedChanges = [
 ];
 const apiChanges = new ApiChanges("base/file.raml", "new/file.raml");
 apiChanges.nodeChanges = [nodeChanges];
-const apiCollectionChanges = new ApiCollectionChanges(
-  "baseApis",
-  "newApis"
-);
+const apiCollectionChanges = new ApiCollectionChanges("baseApis", "newApis");
 apiCollectionChanges.changed["file.raml"] = apiChanges;
 
 const createTempFile = (content: string): FileResult => {
