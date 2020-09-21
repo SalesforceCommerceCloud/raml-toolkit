@@ -36,8 +36,8 @@ nodeChanges.categorizedChanges = [
 const apiChanges = new ApiChanges("base/file.raml", "new/file.raml");
 apiChanges.nodeChanges = [nodeChanges];
 const apiCollectionChanges = new ApiCollectionChanges(
-  "baseConfig",
-  "newConfig"
+  "baseApis",
+  "newApis"
 );
 apiCollectionChanges.changed["file.raml"] = apiChanges;
 
@@ -276,7 +276,7 @@ describe("raml-toolkit cli diff command", () => {
     .stub(diffDirectories, "diffRamlDirectories", async () => {
       throw new Error("test");
     })
-    .do(() => cmd.run(["baseConfig", "newConfig", "--dir"]))
+    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
     .exit(2)
     .it("exits non-zero when there is error while finding directory changes");
 

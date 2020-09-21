@@ -43,8 +43,8 @@ export class ApiCollectionChanges {
 
   /**
    * Create object to hold changes to two api collections
-   * @param basePath - Base API config file
-   * @param newPath - New API config file
+   * @param basePath - Base API directory
+   * @param newPath - New API directory
    */
   constructor(public basePath: string, public newPath: string) {
     this.changed = {};
