@@ -23,7 +23,7 @@ This command has three modes: ruleset, diff-only, and directory.
   Directory mode compares all the files in two directories and determines if there are any differences.
 
 In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
-In directory mode, the arguments must be API configuration (JSON) files.
+In directory mode, the arguments must be directories that contain APIs.
 
 Exit statuses:
   0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
@@ -69,13 +69,13 @@ Exit statuses:
       name: "base",
       required: true,
       description:
-        "The base API spec file (ruleset / diff-only mode) or configuration (directory mode)",
+        "The base API spec file (ruleset / diff-only mode) or directory",
     },
     {
       name: "new",
       required: true,
       description:
-        "The new API spec file (ruleset / diff-only mode) or configuration (directory mode)",
+        "The new API spec file (ruleset / diff-only mode) or directory",
     },
   ];
 
@@ -112,8 +112,8 @@ Exit statuses:
    * Find the differences between two directories containing API spec files.
    * Only finds differences, does not classify using a ruleset.
    *
-   * @param baseApis - Path to an API config file in the base directory
-   * @param newApis - Path to an API config file in the new directory
+   * @param baseApis - Path to base API directory
+   * @param newApis - Path to new API directory
    * @param flags - Parsed CLI flags passed to the command
    */
   protected async _diffDirs(

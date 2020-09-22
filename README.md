@@ -46,8 +46,8 @@ USAGE
   $ raml-toolkit diff BASE NEW
 
 ARGUMENTS
-  BASE  The base API spec file (ruleset / diff-only mode) or configuration (directory mode)
-  NEW   The new API spec file (ruleset / diff-only mode) or configuration (directory mode)
+  BASE  The base API spec file (ruleset / diff-only mode) or directory
+  NEW   The new API spec file (ruleset / diff-only mode) or directory
 
 OPTIONS
   -f, --format=(json|console)                        Format of the output. Defaults to JSON if --out-file is specified,
@@ -71,7 +71,7 @@ DESCRIPTION
      Directory mode compares all the files in two directories and determines if there are any differences.
 
   In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
-  In directory mode, the arguments must be API configuration (JSON) files.
+  In directory mode, the arguments must be directories containing API specification (RAML) files.
 
   Exit statuses:
      0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
