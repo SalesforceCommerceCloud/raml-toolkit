@@ -33,7 +33,7 @@ function buildApiChanges(categories = [[RuleCategory.BREAKING]]): ApiChanges {
 function buildApiCollectionChanges(
   changed?: ApiCollectionChanges["changed"]
 ): ApiCollectionChanges {
-  const changes = new ApiCollectionChanges("baseApiConfig", "newApiConfig");
+  const changes = new ApiCollectionChanges("baseDir", "newDir");
   changes.changed = changed || {};
   return changes;
 }
@@ -43,8 +43,8 @@ describe("Create an instance of ApiCollectionChanges", () => {
     const apiCollectionChanges = buildApiCollectionChanges();
 
     expect(apiCollectionChanges).to.be.an.instanceof(ApiCollectionChanges);
-    expect(apiCollectionChanges.basePath).to.equal("baseApiConfig");
-    expect(apiCollectionChanges.newPath).to.equal("newApiConfig");
+    expect(apiCollectionChanges.basePath).to.equal("baseDir");
+    expect(apiCollectionChanges.newPath).to.equal("newDir");
   });
 });
 
