@@ -38,8 +38,17 @@ export async function parseRamlFile(
     fatRamlResourceLoader
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
+  let document: model.document.Document;
 
-  return parser.parseFileAsync(fileUri) as Promise<model.document.Document>;
+  try {
+    document = (await parser.parseFileAsync(
+      fileUri
+    )) as model.document.Document;
+  } catch (err) {
+    throw new Error(err.Yw);
+  }
+
+  return document;
 }
 
 function getDataTypesFromDeclare(

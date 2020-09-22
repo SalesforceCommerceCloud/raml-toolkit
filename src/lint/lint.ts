@@ -34,7 +34,13 @@ export async function validateCustom(
     // An unexpected error was generated, throw a clean version of it.
     throw new Error(message);
   }
-  const report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
+  let report: client.validate.ValidationReport;
+  try {
+    report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
+  } catch (err) {
+    throw new Error(err.Yw);
+  }
+
   return report;
 }
 
