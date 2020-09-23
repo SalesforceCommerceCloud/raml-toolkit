@@ -1,7 +1,6 @@
 #%Validation Profile 1.0
 # org: cc-dx-runtime
 # contact: ccsteelarc@salesforce.com
-# slack: https://commercecloud.slack.com/messages/CNDPCJQG3
 
 profile: mercury
 
@@ -37,57 +36,53 @@ validations:
   at-least-one-2xx-or-3xx-response:
     message: Methods must have at least one 2xx or 3xx response
     targetClass: apiContract.Operation
-    functionConstraint:
-      code: |
-        function(method) {
-          const re = /[23][0-9][0-9]/;
-          let returns = (method["apiContract:returns"] || []);
-          for (let i = 0; i < returns.length; i++) {
-            if (re.test(returns[i]["apiContract:statusCode"])) {
-              return true;
-            }
-          }
-          return false;
-        }
+    propertyConstraints:
+      apiContract.returns:
+        atLeast:
+          count: 1
+          validation:
+            propertyConstraints:
+              apiContract.statusCode:
+                pattern: ^[23][0-9][0-9]$
 
   base-uri-matches-pattern:
     message: The baseUri must match the pattern - https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}
     targetClass: apiContract.Server
     propertyConstraints:
       core.urlTemplate:
-        pattern: ^https:\/\/{shortCode}\.api\.commercecloud\.salesforce\.com\/([a-z]([a-z0-9-])*[a-z0-9]+)\/([a-z]([a-z0-9-])*[a-z0-9]+)\/{version}\/?$
+        pattern: ^https:\/\/\{shortCode}\.api\.commercecloud\.salesforce\.com\/[a-z][a-z0-9-]*[a-z0-9]+\/[a-z][a-z0-9-]*[a-z0-9]+\/\{version}\/?$
 
   camelcase-method-displayname:
     message: The API Method must have displayName and the value must be in camelCase
     targetClass: apiContract.Operation
     propertyConstraints: 
       core.name:
-          minCount: 1
-          pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
+        minCount: 1
+        pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
 
   camelcase-query-parameters:
     message: Query parameters names must be in camelCase
     targetClass: apiContract.Parameter
-    functionConstraint:
-      code: |
-        function(parameter) {
-          const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
-
-          // Parameters include query, path and headers so we need to check binding to filter
-          return !(parameter['apiContract:binding'] == 'query' && !re.test(parameter['core:name']));
-        }
+    or:
+      - not:
+          propertyConstraints:
+            apiContract.binding:
+              pattern: ^query$
+      - propertyConstraints:
+          core.name:
+            pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
 
   camelcase-template-parameters:
     message: All template/URI params *MUST* be lowerCamelCase
     targetClass: apiContract.Parameter
-    functionConstraint:
-      code: |
-        function(parameter) {
-          const re = /^[a-z]+([A-Z]?[a-z0-9]+)*$/;
-
-          // Parameters include query, path and headers so we need to check binding to filter
-          return !(parameter['apiContract:binding'] == 'path' && !re.test(parameter['core:name']));
-        }
+    or:
+      - not:
+          propertyConstraints:
+            apiContract.binding:
+              pattern: ^path$
+      - propertyConstraints:
+          core.name:
+            pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
 
   https-required:
     message: Protocol MUST be HTTPS
@@ -107,7 +102,6 @@ validations:
   no-literal-question-marks-in-property-names:
     message: >
       Property names must not contain question marks when 'required' is present. Using both results in property names that include literal question marks.
-
       More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: sh.PropertyShape
     propertyConstraints:
@@ -117,7 +111,6 @@ validations:
   no-literal-question-marks-in-parameters:
     message: >
       Query parameter, path parameter and header names must not contain question marks when 'required' is present. Using both results in names that include literal question marks.
-
       More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
     targetClass: apiContract.Parameter
     propertyConstraints:
@@ -127,26 +120,20 @@ validations:
   no-todo-text-in-description-fields:
     message: Empty string or The word 'TODO' (case insensitive) is not allowed in any description field.
     targetClass: doc.DomainElement
-    functionConstraint:
-      code: |
-        function(resource) {
-          const todoRegex = /\b(todo(_)*)\b|^\s*$/i;
-          //doc.DomainElement may not have a description field, return true
-          if ( resource['core:description']
-            && todoRegex.test(resource['core:description'][0])  ) {
-            return false;
-          }
-          return true;
-        }
+    not:
+      propertyConstraints:
+        core.description:
+          minCount: 1
+          # Regex flags aren't supported, so we can't do /todo/i
+          pattern: \b[tT][oO][dD][oO](?:_|\b)|^\s*$
 
   only-one-base-uri:
     message: There must be exactly one baseUri
     targetClass: apiContract.WebAPI
-    functionConstraint:
-      code: |
-        function(resource) {
-          return resource['apiContract:server'].length === 1;
-        }
+    propertyConstraints:
+      apiContract.server:
+        minCount: 1
+        maxCount: 1
 
   require-method-description:
     message: The API Method description must be set
@@ -177,23 +164,29 @@ validations:
     targetClass: apiContract.EndPoint
     propertyConstraints:
       apiContract.path:
-        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/{[^}]+}))+$
+        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
   
   unique-display-name:
     message: displayName must be unique within an API
     targetClass: apiContract.Operation
+    # TODO: Convert this to not use functionConstraint
     functionConstraint:
       code: |
         function(ops) {
           const name = ops['core:name'];
+          // If it doesn't have a name, it passes
           if(!name) {
             return true;
           }
           const key = `uniqueDisplayName:${name[0].toLowerCase()}`;
+          // `accumulators` is a global helper object we can use arbitrarily
           if(!accumulators[key]) {
+            // No collision yet, set for next object to be checked
             accumulators[key] = true;
+            // No collision, passes
             return true;
           } else {
+            // Collision found, fails validation
             return false;
           }
         }

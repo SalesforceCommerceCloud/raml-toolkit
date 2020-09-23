@@ -13,6 +13,10 @@ export const PROFILE_PATH = path.join(
   "../../resources/lint/profiles"
 );
 
+// AMF throws custom error objects, but does not provide type definitions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AmfError = Record<string, any>;
+
 /**
  * Validate AMF model with the given profile
  * @param amfModel - AMF model
@@ -26,22 +30,28 @@ export async function validateCustom(
   try {
     profileName = await Core.loadValidationProfile(profileFile);
   } catch (err) {
-    // We rethrow to provide a cleaner error message
-    const message: string = err.Yw;
+    // AMF throws a custom object instead of an instance of Error, so we need to
+    // clean it up and re-throw it to make it more useful. AMF does not provide
+    // any helpful way to access the underlying error (e.g. the ENOENT thrown by
+    // fs.readFile), so the easiest way seems to be to convert the AMF error to
+    // a string and then work with that string.
+
+    const message = `${err.message ?? err}`;
     if (message.includes("no such file or directory")) {
       throw new Error(`Custom profile ${profileFile} does not exist`);
+    } else if (err instanceof Error) {
+      // Normal error, don't need to modify to rethrow
+      throw err;
     }
-    // An unexpected error was generated, throw a clean version of it.
-    throw new Error(message);
-  }
-  let report: client.validate.ValidationReport;
-  try {
-    report = await Core.validate(amfModel, profileName, MessageStyles.RAML);
-  } catch (err) {
-    throw new Error(err.Yw);
+    // AMF error, message starts with amf name that we don't care about
+    const cleaned = new Error(message.replace(/^amf\S+? /, "")) as Error & {
+      amfError: AmfError;
+    };
+    cleaned.amfError = err;
+    throw cleaned;
   }
 
-  return report;
+  return Core.validate(amfModel, profileName, MessageStyles.RAML);
 }
 
 /**

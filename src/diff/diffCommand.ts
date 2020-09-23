@@ -194,10 +194,10 @@ Exit statuses:
     const { args, flags } = this.parse(DiffCommand);
     const baseApis = args.base;
     const newApis = args.new;
-    if (!fs.pathExistsSync(baseApis)) {
+    if (!(await fs.pathExists(baseApis))) {
       this.error(`File or directory not found: ${baseApis}`);
     }
-    if (!fs.pathExistsSync(newApis)) {
+    if (!(await fs.pathExists(newApis))) {
       this.error(`File or directory not found: ${newApis}`);
     }
     if (flags.dir) {

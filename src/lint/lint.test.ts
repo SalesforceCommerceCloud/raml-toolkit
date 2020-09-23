@@ -8,13 +8,14 @@
 import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
-import { model, AMF } from "amf-client-js";
+import { model, AMF, Core } from "amf-client-js";
 import { printResults, validateFile, validateCustom } from "./lint";
 import {
   getHappySpec,
   renderSpecAsFile,
   getSingleInvalidFile,
 } from "../../testResources/testUtils";
+import Sinon from "sinon";
 
 const PROFILE = "mercury";
 
@@ -23,7 +24,7 @@ before(() => {
 });
 
 describe("#printResults", () => {
-  let consoleSpy;
+  let consoleSpy: Sinon.SinonSpy;
 
   beforeEach(() => {
     consoleSpy = sinon.spy(console, "log");
@@ -77,7 +78,7 @@ describe("#validateCustom", () => {
     testModel = new model.document.Document();
   });
 
-  it("missing validation profile", () => {
+  it("throws on missing validation profile", () => {
     const customProfile = "file://MISSINGFILE";
     return expect(
       validateCustom(testModel, customProfile)
@@ -85,10 +86,42 @@ describe("#validateCustom", () => {
       `Custom profile ${customProfile} does not exist`
     );
   });
-  it("uses unsupported schema", () => {
+
+  it("throws on unsupported schema", () => {
     const customProfile = "uri://MISSINGFILE";
     return expect(
       validateCustom(testModel, customProfile)
     ).to.be.eventually.rejectedWith(`Unsupported`);
+  });
+
+  it("re-throws AMF errors as actual errors", async () => {
+    const stub = sinon.stub(Core, "loadValidationProfile");
+    const fakeAmfError = {
+      toString(): string {
+        return "amf.fake.error: AMF doesn't like real Errors.";
+      },
+    };
+    stub.rejects(fakeAmfError);
+
+    // Can't do .rejectedWith because we want to check that the error message
+    // matches exactly (not just a substring) and because we need to check the
+    // `amfError` property
+    const promise = validateCustom(testModel, "");
+    await expect(promise).to.be.rejected;
+    const err = await promise.catch((e) => e);
+    expect(err.message).to.equal("AMF doesn't like real Errors.");
+    expect(err.amfError).to.equal(fakeAmfError);
+
+    stub.restore();
+  });
+
+  it("re-throws regular errors unmodified", async () => {
+    const stub = sinon.stub(Core, "loadValidationProfile");
+    const fakeError = new ReferenceError("Beam me up, Scotty!");
+    stub.rejects(fakeError);
+
+    await expect(validateCustom(testModel, "")).to.be.rejectedWith(fakeError);
+
+    stub.restore();
   });
 });

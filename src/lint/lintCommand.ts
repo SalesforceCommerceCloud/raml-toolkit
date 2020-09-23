@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
-import fs from "fs";
+import fs from "fs-extra";
 import { AMF } from "amf-client-js";
 import { Command, flags } from "@oclif/command";
 import { validateFile, printResults, PROFILE_PATH } from "./lint";

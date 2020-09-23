@@ -8,9 +8,10 @@
 
 import path from "path";
 
-import { model } from "amf-client-js";
+import { model, Raml10Parser } from "amf-client-js";
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
 
 import {
   getAllDataTypes,
@@ -39,6 +40,16 @@ describe("Test RAML file", () => {
 
   it("Test valid RAML file", () => {
     return expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty;
+  });
+
+  it("re-throws regular errors unmodified", async () => {
+    const stub = sinon.stub(Raml10Parser.prototype, "parseFileAsync");
+    const fakeError = new ReferenceError("Beam me up, Scotty!");
+    stub.rejects(fakeError);
+
+    await expect(parseRamlFile(invalidRamlFile)).to.be.rejectedWith(fakeError);
+
+    stub.restore();
   });
 });
 

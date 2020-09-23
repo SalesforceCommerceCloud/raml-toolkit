@@ -4,13 +4,16 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-"use strict";
-const assert = require("chai").assert;
+import path from "path";
 import tmp from "tmp";
-import fs from "fs";
+import fs from "fs-extra";
 import yaml from "js-yaml";
 import _ from "lodash";
 import amf from "amf-client-js";
+import { expect } from "chai";
+
+const SPEC_PROFILE_PATH = path.join(__dirname, "raml/mercury/mercury.raml");
+
 /**
  * Each test starts with loading a known good template and then tweaking it for
  * the test case. If you make changes to the template, make sure all of the
@@ -18,52 +21,45 @@ import amf from "amf-client-js";
  */
 
 export function getHappySpec(
-  filename = `${__dirname}/raml/mercury/mercury.raml`
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-): any {
+  filename = SPEC_PROFILE_PATH
+): Record<string, unknown> {
   return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function renderSpecAsFile(doc: any): string {
+export function renderSpecAsFile(doc: unknown): string {
   const tmpFile = tmp.fileSync({ postfix: ".raml" });
   const content = `#%RAML 1.0\n---\n${yaml.safeDump(doc)}`;
   fs.writeFileSync(tmpFile.name, content);
   return tmpFile.name;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function renderSpecAsUrl(doc: any): string {
+export function renderSpecAsUrl(doc: unknown): string {
   return `file://${renderSpecAsFile(doc)}`;
 }
 
 export function conforms(result: amf.client.validate.ValidationReport): void {
-  assert.equal(result.conforms, true, result.toString());
+  expect(result.conforms, `${result}`).to.be.true;
 }
 
 export function breaksOnlyOneRule(
   result: amf.client.validate.ValidationReport,
   rule: string
 ): void {
-  assert.equal(result.conforms, false, result.toString());
-  assert.equal(result.results.length, 1, result.toString());
-  assert.equal(result.results[0].validationId, rule, result.toString());
+  expect(result.conforms, `${result}`).to.be.false;
+  expect(result.results, `${result}`).to.be.an("array").with.lengthOf(1);
+  expect(result.results[0], `${result}`).to.have.property("validationId", rule);
 }
 
 export function breaksTheseRules(
   result: amf.client.validate.ValidationReport,
   rules: string[]
 ): void {
-  assert.equal(result.conforms, false, result.toString());
-  assert.sameMembers(
-    result.results.map((r) => r.validationId),
-    rules,
-    result.toString()
-  );
+  expect(result.conforms, `${result}`).to.be.false;
+  const validationIds = result.results.map((r) => r.validationId);
+  expect(validationIds, `${result}`).to.have.members(rules);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function renameKey(obj: any, oldKey: any, newKey: any): any {
+export function renameKey<T>(obj: T, oldKey: keyof T, newKey: keyof T): T {
   obj[newKey] = _.cloneDeep(obj[oldKey]);
   delete obj[oldKey];
   return obj;
