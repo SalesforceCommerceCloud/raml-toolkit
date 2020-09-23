@@ -8,7 +8,7 @@
 
 import { expect, test } from "@oclif/test";
 import { writeSync } from "fs-extra";
-import { FileResult, fileSync } from "tmp";
+import { FileResult, fileSync, dirSync, DirResult } from "tmp";
 import { Rule } from "json-rules-engine";
 import chai from "chai";
 import chaiFs from "chai-fs";
@@ -111,6 +111,13 @@ const operationRemovedRuleset = createTempFile(
 );
 
 describe("raml-toolkit cli diff command", () => {
+  let baseDir: DirResult;
+  let newDir: DirResult;
+
+  before(() => {
+    baseDir = dirSync();
+    newDir = dirSync();
+  });
   test
     .stdout()
     .do(() => cmd.run(["--version"]))
@@ -273,7 +280,7 @@ describe("raml-toolkit cli diff command", () => {
     .stub(diffDirectories, "diffRamlDirectories", async () => {
       throw new Error("test");
     })
-    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
+    .do(() => cmd.run([baseDir.name, newDir.name, "--dir"]))
     .exit(2)
     .it("exits non-zero when there is error while finding directory changes");
 
@@ -284,7 +291,7 @@ describe("raml-toolkit cli diff command", () => {
       async () => new ApiCollectionChanges("baseApis", "newApis")
     )
     .stdout()
-    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
+    .do(() => cmd.run([baseDir.name, newDir.name, "--dir"]))
     .exit(0)
     .it("finds no changes between directories and exits zero");
 
@@ -295,7 +302,7 @@ describe("raml-toolkit cli diff command", () => {
       async () => apiCollectionChanges
     )
     .stdout()
-    .do(() => cmd.run(["baseApis", "newApis", "--dir"]))
+    .do(() => cmd.run([baseDir.name, newDir.name, "--dir"]))
     .exit(1)
     .it("finds changes between directories and exits non-zero");
 
@@ -307,7 +314,9 @@ describe("raml-toolkit cli diff command", () => {
     )
     .stdout()
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do((ctx) => cmd.run(["baseApis", "newApis", "--dir", "-o", ctx.file.name]))
+    .do((ctx) =>
+      cmd.run([baseDir.name, newDir.name, "--dir", "-o", ctx.file.name])
+    )
     .exit(1)
     .it("stores changes as JSON when file flag is set", (ctx) => {
       expect(ctx.file.name)
@@ -318,7 +327,7 @@ describe("raml-toolkit cli diff command", () => {
   test
     .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
     .stdout()
-    .do(() => cmd.run(["baseApis", "newApis", "--log-level=silent"]))
+    .do(() => cmd.run([ramlOld.name, ramlOld.name, "--log-level=silent"]))
     .exit(1)
     .it("logs changes to console as text when file flag is unset", (ctx) => {
       expect(ctx.stdout).to.equal(
@@ -329,7 +338,9 @@ describe("raml-toolkit cli diff command", () => {
   test
     .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
     .stdout()
-    .do(() => cmd.run(["base", "new", "-f", "json", "--log-level=silent"]))
+    .do(() =>
+      cmd.run([ramlOld.name, ramlOld.name, "-f", "json", "--log-level=silent"])
+    )
     .exit(1)
     .it("logs changes to console as JSON when format flag is set", (ctx) => {
       expect(JSON.parse(ctx.stdout)).to.deep.equal(apiChanges);
@@ -339,7 +350,16 @@ describe("raml-toolkit cli diff command", () => {
     .stub(ApiDifferencer.prototype, "findChanges", async () => apiChanges)
     .stdout()
     .add("file", () => fileSync({ postfix: ".json" }))
-    .do((ctx) => cmd.run(["base", "new", "-f", "console", "-o", ctx.file.name]))
+    .do((ctx) =>
+      cmd.run([
+        ramlOld.name,
+        ramlOld.name,
+        "-f",
+        "console",
+        "-o",
+        ctx.file.name,
+      ])
+    )
     .exit(1)
     .it("stores changes as text when file and format flags are set", (ctx) => {
       expect(ctx.file.name)

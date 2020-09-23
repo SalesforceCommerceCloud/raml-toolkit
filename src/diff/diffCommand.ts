@@ -192,12 +192,20 @@ Exit statuses:
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(DiffCommand);
+    const baseApis = args.base;
+    const newApis = args.new;
+    if (!(await fs.pathExists(baseApis))) {
+      this.error(`File or directory not found: ${baseApis}`);
+    }
+    if (!(await fs.pathExists(newApis))) {
+      this.error(`File or directory not found: ${newApis}`);
+    }
     if (flags.dir) {
-      await this._diffDirs(args.base, args.new, flags);
+      await this._diffDirs(baseApis, newApis, flags);
     } else if (flags["diff-only"]) {
-      await this._diffFiles(args.base, args.new, flags);
+      await this._diffFiles(baseApis, newApis, flags);
     } else {
-      await this._diffFilesUsingRuleset(args.base, args.new, flags);
+      await this._diffFilesUsingRuleset(baseApis, newApis, flags);
     }
     this.exit();
   }

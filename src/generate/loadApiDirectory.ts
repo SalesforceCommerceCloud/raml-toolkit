@@ -20,7 +20,7 @@ import { ApiModel } from "./";
  */
 export function loadApiDirectory(apiPath: string): ApiMetadata {
   if (!fs.pathExistsSync(apiPath)) {
-    throw `${apiPath} Api path does not exist`;
+    throw new Error(`${apiPath} Api path does not exist`);
   }
 
   // If we have an exchange.json we are loading an API

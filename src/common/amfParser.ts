@@ -38,8 +38,33 @@ export async function parseRamlFile(
     fatRamlResourceLoader
   );
   const parser = new amf.Raml10Parser(ccEnvironment);
+  let document: model.document.Document;
 
-  return parser.parseFileAsync(fileUri) as Promise<model.document.Document>;
+  try {
+    document = (await parser.parseFileAsync(
+      fileUri
+    )) as model.document.Document;
+  } catch (err) {
+    // AMF throws a custom object instead of an instance of Error, so we need to
+    // clean it up and re-throw it to make it more useful. AMF does not provide
+    // any helpful way to access the underlying error (e.g. the ENOENT thrown by
+    // fs.readFile), so the easiest way seems to be to convert the AMF error to
+    // a string and then work with that string.
+    if (err instanceof Error) {
+      // Normal error, don't need to modify to rethrow
+      throw err;
+    }
+    const message = `${err.message ?? err}`;
+    // AMF error, message starts with amf name that we don't care about
+    const cleaned = new Error(message.replace(/^amf\S+? /, "")) as Error & {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      amfError: Record<string, any>;
+    };
+    cleaned.amfError = err;
+    throw cleaned;
+  }
+
+  return document;
 }
 
 function getDataTypesFromDeclare(
