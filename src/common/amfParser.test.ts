@@ -42,6 +42,27 @@ describe("Test RAML file", () => {
     return expect(parseRamlFile(validRamlFile)).to.eventually.not.be.empty;
   });
 
+  it("re-throws AMF errors as actual errors", async () => {
+    const stub = sinon.stub(Raml10Parser.prototype, "parseFileAsync");
+    const fakeAmfError = {
+      toString(): string {
+        return "amf.fake.error: AMF doesn't like real Errors.";
+      },
+    };
+    stub.rejects(fakeAmfError);
+
+    // Can't do .rejectedWith because we want to check that the error message
+    // matches exactly (not just a substring) and because we need to check the
+    // `amfError` property
+    const promise = parseRamlFile(invalidRamlFile);
+    await expect(promise).to.be.rejected;
+    const err = await promise.catch((e) => e);
+    expect(err.message).to.equal("AMF doesn't like real Errors.");
+    expect(err.amfError).to.equal(fakeAmfError);
+
+    stub.restore();
+  });
+
   it("re-throws regular errors unmodified", async () => {
     const stub = sinon.stub(Raml10Parser.prototype, "parseFileAsync");
     const fakeError = new ReferenceError("Beam me up, Scotty!");
