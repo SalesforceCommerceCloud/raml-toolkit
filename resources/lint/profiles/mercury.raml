@@ -30,6 +30,7 @@ violation:
   - resource-name-validation
   - unique-display-name
   - version-format
+  - upper-camelcase-datatype
 
 validations:
 
@@ -55,7 +56,7 @@ validations:
   camelcase-method-displayname:
     message: The API Method must have displayName and the value must be in camelCase
     targetClass: apiContract.Operation
-    propertyConstraints: 
+    propertyConstraints:
       core.name:
         minCount: 1
         pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
@@ -165,7 +166,7 @@ validations:
     propertyConstraints:
       apiContract.path:
         pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
-  
+
   unique-display-name:
     message: displayName must be unique within an API
     targetClass: apiContract.Operation
@@ -198,3 +199,12 @@ validations:
       core.version:
         pattern: ^v[0-9]+$
         minCount: 1
+
+  #datatype rules
+  upper-camelcase-datatype:
+    message: Data type definitions should be UpperCamelCase
+    targetClass: doc.Unit
+    propertyConstraints:
+      doc.declares/shacl.name:
+        pattern: ^[A-Z][A-Za-z0-9]*$
+
