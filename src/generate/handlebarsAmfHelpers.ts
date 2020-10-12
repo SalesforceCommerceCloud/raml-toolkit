@@ -13,7 +13,6 @@ import {
   getFilteredProperties,
   getValue,
   DEFAULT_DATA_TYPE,
-  ARRAY_DATA_TYPE,
   OBJECT_DATA_TYPE,
 } from "./utils";
 
@@ -47,7 +46,23 @@ export const getBaseUriFromDocument = (
 export const isTypeDefinition = (
   domainElement: model.domain.DomainElement
 ): boolean => {
-  return domainElement instanceof model.domain.NodeShape;
+  return (
+    domainElement instanceof model.domain.NodeShape ||
+    domainElement instanceof model.domain.ArrayShape
+  );
+};
+
+/**
+ * Check if the specified AMF domain element is an arrayor not.
+ *
+ * @param domainElement - The domain element to be evaluated
+ *
+ * @returns true if the domain element is an array, false if not
+ */
+export const isTypeDefinitionArray = (
+  domainElement: model.domain.DomainElement
+): boolean => {
+  return domainElement instanceof model.domain.ArrayShape;
 };
 
 /**
@@ -118,17 +133,8 @@ export const getTypeFromParameter = (param: model.domain.Parameter): string => {
 export const getPayloadTypeFromRequest = (
   request: model.domain.Request
 ): string => {
-  if (
-    request != null &&
-    request.payloads != null &&
-    request.payloads.length > 0
-  ) {
+  if (request?.payloads?.length > 0) {
     const payloadSchema: model.domain.Shape = request.payloads[0].schema;
-    if (payloadSchema instanceof model.domain.ArrayShape) {
-      return ARRAY_DATA_TYPE.concat("<")
-        .concat(getTypeFromShape(payloadSchema.items))
-        .concat(">");
-    }
     return getTypeFromShape(payloadSchema);
   }
   return OBJECT_DATA_TYPE;
@@ -199,4 +205,4 @@ export const isAdditionalPropertiesAllowed = (
   );
 };
 
-export { getValue };
+export { getValue, getDataType };

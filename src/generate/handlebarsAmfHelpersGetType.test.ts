@@ -260,16 +260,27 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       );
     });
 
-    it("returns array type defined for request payload", () => {
+    it("returns array of defined type when request payload is of type array", () => {
       const typeName = "Type1";
-      const arrItem = new model.domain.NodeShape();
-      arrItem.withName(typeName);
-
-      const shape = new model.domain.ArrayShape();
-      shape.withItems(arrItem);
+      const arrItem = new model.domain.NodeShape().withName(typeName);
+      const shape = new model.domain.ArrayShape()
+        .withName("default")
+        .withItems(arrItem);
 
       expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
         ARRAY_DATA_TYPE.concat("<").concat(typeName).concat(">")
+      );
+    });
+
+    it("returns data type when request payload is a data type definition of type array", () => {
+      const typeName = "Type1";
+      const arrItem = new model.domain.NodeShape().withName("string");
+      const shape = new model.domain.ArrayShape()
+        .withName(typeName)
+        .withItems(arrItem);
+
+      expect(getPayloadTypeFromRequest(getRequestPayloadModel(shape))).to.equal(
+        typeName
       );
     });
   });

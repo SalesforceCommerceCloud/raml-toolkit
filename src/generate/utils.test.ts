@@ -74,13 +74,13 @@ describe("getValue", () => {
   });
 
   it("returns null on undefined value", () => {
-    const property: model.domain.ScalarShape = new model.domain.ScalarShape();
+    const property = new model.domain.ScalarShape();
 
     expect(getValue(property.dataType)).to.be.null;
   });
 
   it("returns 'valid' on valid value", () => {
-    const property: model.domain.ScalarShape = new model.domain.ScalarShape();
+    const property = new model.domain.ScalarShape();
 
     property.withDataType("valid");
 
