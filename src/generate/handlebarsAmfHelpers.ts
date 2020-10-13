@@ -46,10 +46,7 @@ export const getBaseUriFromDocument = (
 export const isTypeDefinition = (
   domainElement: model.domain.DomainElement
 ): boolean => {
-  return (
-    domainElement instanceof model.domain.NodeShape ||
-    domainElement instanceof model.domain.ArrayShape
-  );
+  return domainElement instanceof model.domain.NodeShape;
 };
 
 /**

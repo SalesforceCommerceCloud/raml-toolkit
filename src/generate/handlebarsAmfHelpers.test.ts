@@ -246,10 +246,6 @@ describe("HandlebarsAmfHelpers", () => {
     it("returns false if shape is ScalarShape", () => {
       expect(isTypeDefinition(new model.domain.ScalarShape())).to.be.false;
     });
-
-    it("returns true if shape is ArrayShape", () => {
-      expect(isTypeDefinition(new model.domain.ArrayShape())).to.be.true;
-    });
   });
 
   describe("isTypeDefinitionArray", () => {
