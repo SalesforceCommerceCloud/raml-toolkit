@@ -56,7 +56,7 @@ export const isTypeDefinition = (
  *
  * @returns true if the domain element is an array, false if not
  */
-export const isTypeDefinitionArray = (
+export const isArrayType = (
   domainElement: model.domain.DomainElement
 ): boolean => {
   return domainElement instanceof model.domain.ArrayShape;
