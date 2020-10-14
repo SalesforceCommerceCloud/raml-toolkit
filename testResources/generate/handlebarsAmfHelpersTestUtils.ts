@@ -76,11 +76,7 @@ export const verifyProperties = (
 export const getRequestPayloadModel = (
   shape: model.domain.Shape
 ): model.domain.Request => {
-  const payload = new model.domain.Payload();
-  payload.withSchema(shape);
+  const payload = new model.domain.Payload().withSchema(shape);
 
-  const reqBody = new model.domain.Request();
-  reqBody.withPayloads([payload]);
-
-  return reqBody;
+  return new model.domain.Request().withPayloads([payload]);
 };

@@ -205,8 +205,9 @@ export const getDataType = (
 const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
   let arrItem: model.domain.Shape = arrayShape.items;
   if (arrItem == null) {
-    if (arrayShape.inherits != null && arrayShape.inherits.length > 0)
+    if (arrayShape.inherits != null && arrayShape.inherits.length > 0) {
       arrItem = (arrayShape.inherits[0] as model.domain.ArrayShape).items;
+    }
   }
   return ARRAY_DATA_TYPE.concat("<").concat(getDataType(arrItem)).concat(">");
 };
@@ -216,13 +217,25 @@ const getArrayType = (arrayShape: model.domain.ArrayShape): string => {
  *
  * @param shape - An AMF Shape object
  *
- * @returns 'object' if the name property of the Shape is null or 'schema', the
+ * @returns 'object' if the name property of the Shape is null or 'schema',
+ * Array<T> when request payload is of type array,
  * name itself otherwise
  *
  */
 export const getTypeFromShape = (shape: model.domain.Shape): string => {
   const name = shape.name.value();
-  if (name == null || name === "schema") {
+  // If shape is a simple array, the name of the array will be 'default'.
+  // In such case we want to return Array<T> with T being the type of the array.
+  // If shape is an array but is defined as a data type definition, it will
+  // have the name of the data type definition. In such case we want to return
+  // the name of the type.
+  if (shape instanceof model.domain.ArrayShape && name === "default") {
+    return ARRAY_DATA_TYPE.concat("<")
+      .concat(shape.items.name.value())
+      .concat(">");
+  }
+
+  if (!name || name === "schema") {
     return OBJECT_DATA_TYPE;
   }
 

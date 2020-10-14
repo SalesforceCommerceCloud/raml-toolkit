@@ -18,6 +18,7 @@ const {
   isOptionalProperty,
   isRequiredProperty,
   isTypeDefinition,
+  isArrayType,
 } = handlebarsAmfHelpers;
 
 describe("HandlebarsAmfHelpers", () => {
@@ -238,12 +239,34 @@ describe("HandlebarsAmfHelpers", () => {
       expect(isTypeDefinition(new model.domain.NodeShape())).to.be.true;
     });
 
-    it("returns true if shape is null", () => {
+    it("returns false if shape is null", () => {
       expect(isTypeDefinition(null)).to.be.false;
     });
 
     it("returns false if shape is ScalarShape", () => {
       expect(isTypeDefinition(new model.domain.ScalarShape())).to.be.false;
+    });
+
+    it("returns false if shape is ArrayShape", () => {
+      expect(isTypeDefinition(new model.domain.ArrayShape())).to.be.false;
+    });
+  });
+
+  describe("isArrayType", () => {
+    it("returns false if shape is NodeShape", () => {
+      expect(isArrayType(new model.domain.NodeShape())).to.be.false;
+    });
+
+    it("returns false if shape is null", () => {
+      expect(isArrayType(null)).to.be.false;
+    });
+
+    it("returns false if shape is ScalarShape", () => {
+      expect(isArrayType(new model.domain.ScalarShape())).to.be.false;
+    });
+
+    it("returns true if shape is ArrayShape", () => {
+      expect(isArrayType(new model.domain.ArrayShape())).to.be.true;
     });
   });
 });
