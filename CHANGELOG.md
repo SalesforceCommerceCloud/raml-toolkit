@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 0.5.2
+
+* Upgraded AMF to v4.3.0
+* Minor bug fixes
+
 ## 0.5.1
 
 * *NEW FEATURE* Added new console formatter for diff command, see the  [README](README.md#raml-toolkit-diff-base-new). 
