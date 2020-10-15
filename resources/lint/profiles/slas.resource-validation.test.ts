@@ -14,7 +14,7 @@ import {
   renderSpecAsFile,
 } from "../../../testResources/testUtils";
 
-const PROFILE = "mercury";
+const PROFILE = "slas";
 const NAME_VALIDATION =
   "http://a.ml/vocabularies/data#resource-name-validation";
 
@@ -29,11 +29,11 @@ describe("resource checking tests", () => {
     breaksTheseRules(result, [NAME_VALIDATION, NAME_VALIDATION]);
   });
 
-  it("does not conform when resource starts with a dot", async () => {
+  it("conforms when resource starts with a dot", async () => {
     const doc = getHappySpec();
     renameKey(doc, "/resource", "/.well-known");
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksTheseRules(result, [NAME_VALIDATION, NAME_VALIDATION]);
+    conforms(result);
   });
 
   it("does not conform when resource starts with underscore", async () => {
