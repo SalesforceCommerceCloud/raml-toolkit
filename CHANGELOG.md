@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.3
+
+* Fixed resource-name-validation rule in SLAS profile
+
 ## 0.5.2
 
 * Upgraded AMF to v4.3.0
