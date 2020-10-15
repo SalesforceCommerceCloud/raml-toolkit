@@ -208,5 +208,37 @@
         "category": "Ignored"
       }
     }
+  },
+  {
+    "name": "Operation Added",
+    "conditions": {
+      "all": [
+        {
+          "fact": "diff",
+          "path": "$.type",
+          "operator": "contains",
+          "value": "apiContract:Operation"
+        },
+        {
+          "fact": "diff",
+          "path": "$.added",
+          "operator": "hasProperty",
+          "value": "core:name"
+        },
+        {
+          "fact": "diff",
+          "path": "$.removed",
+          "operator": "hasNoProperty",
+          "value": "core:name"
+        }
+      ]
+    },
+    "event": {
+      "type": "operation-added",
+      "params": {
+        "category": "Non-Breaking",
+        "changedProperty": "core:name"
+      }
+    }
   }
 ]
