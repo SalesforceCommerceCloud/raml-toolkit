@@ -165,7 +165,7 @@ validations:
     targetClass: apiContract.EndPoint
     propertyConstraints:
       apiContract.path:
-        pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
+        pattern: ^((\/[a-z\.][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
 
   unique-display-name:
     message: displayName must be unique within an API

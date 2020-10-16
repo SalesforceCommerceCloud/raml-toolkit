@@ -17,22 +17,27 @@ function loadProfile(profile: string): Record<string, any> {
 }
 
 describe("SLAS profile", () => {
-  it("matches mercury except query parameter case", () => {
+  it("matches mercury except query parameter case and resource name validation", () => {
     const mercury = loadProfile("mercury");
     const slas = loadProfile("slas");
     const camel = "camelcase-query-parameters";
+    const resourceNameValidation = "resource-name-validation";
     const snake = "snakecase-query-parameters";
 
     const mViolations = new Set<string>(mercury.violation);
     mViolations.delete(camel);
+    mViolations.delete(resourceNameValidation);
     const sViolations = new Set<string>(slas.violation);
+    sViolations.delete(resourceNameValidation);
     sViolations.delete(snake);
     expect(sViolations).to.deep.equal(mViolations);
 
     const mValidations = mercury.validations;
     delete mValidations[camel];
+    delete mValidations[resourceNameValidation];
     const sValidations = slas.validations;
     delete sValidations[snake];
+    delete sValidations[resourceNameValidation];
     expect(sValidations).to.deep.equal(mValidations);
   });
 });
