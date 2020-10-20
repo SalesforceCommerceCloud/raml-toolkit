@@ -235,3 +235,19 @@ describe("Description change", () => {
     verifyRule(changes[0], rule);
   });
 });
+
+describe("Operation addition", () => {
+  it("applies operation removed rule", async () => {
+    const nodeChanges = new NodeChanges("#/web-api/end-points/resource/get", [
+      "apiContract:Operation",
+    ]);
+    nodeChanges.added = { "core:name": "newName" };
+    nodeChanges.removed = {};
+    const changes = await applyRules(
+      [nodeChanges],
+      ApiDifferencer.DEFAULT_RULES_PATH
+    );
+    const rule = defaultRules.find((r) => r.event.type === "operation-added");
+    verifyRule(changes[0], rule);
+  });
+});
