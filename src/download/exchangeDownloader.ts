@@ -5,8 +5,9 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
+import _ from "lodash";
+import fetch from "make-fetch-happen";
 import fs from "fs-extra";
-import fetch from "node-fetch";
 import path from "path";
 
 import { getBearer } from "./bearerToken";
@@ -20,11 +21,39 @@ import {
 } from "./exchangeTypes";
 import { ramlToolLogger } from "../common/logger";
 import { extractFile } from "./exchangeDirectoryParser";
+import { retryOptions } from "./config";
 
-const DEFAULT_DOWNLOAD_FOLDER = "download";
+export const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
 const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
 const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
+
+/**
+ * Makes an HTTP call to the url with the options passed. If the calls due to
+ * a 5xx, 408, 420 or 429, it retries the call with the retry options passed
+ * in the options argument. If no retry options are passed, it uses the default
+ * options set in retryOptions of config.ts.
+ *
+ * @param url - Where the request should be made
+ * @param options - options to be passed when the call is made
+ *
+ * @returns a promise with the raw response returned by the server
+ */
+export async function runFetch(
+  url: string,
+  options: { [key: string]: any } = {}
+): Promise<any> {
+  options.retry = _.merge({}, retryOptions, options.retry);
+  options = _.merge(options, {
+    onRetry() {
+      ramlToolLogger.info(
+        "Request failed due to an unexpected error, retrying..."
+      );
+    },
+  });
+
+  return fetch(url, options);
+}
 
 export async function downloadRestApi(
   restApi: RestApi,
@@ -40,16 +69,23 @@ export async function downloadRestApi(
   try {
     await fs.ensureDir(destinationFolder);
     const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
-    const response = await fetch(restApi.fatRaml.externalLink);
+
+    const response = await runFetch(restApi.fatRaml.externalLink);
+    if (!response.ok) {
+      throw new Error(
+        `Unknown Error: (${response.status}) ${response.statusText}`
+      );
+    }
+
     const arrayBuffer = await response.arrayBuffer();
     await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
-    const filepath = await extractFile(zipFilePath);
+    const filePath = await extractFile(zipFilePath);
     delete restApi.fatRaml;
-    await fs.writeJSON(path.join(filepath, ".metadata.json"), restApi, {
+    await fs.writeJSON(path.join(filePath, ".metadata.json"), restApi, {
       spaces: 2,
     });
   } catch (err) {
-    ramlToolLogger.error(err);
+    throw new Error(err.message);
   }
 }
 
@@ -122,7 +158,7 @@ export async function getAsset(
   accessToken: string,
   assetId: string
 ): Promise<void | RawRestApi> {
-  const res = await fetch(`${ANYPOINT_API_URI_V1}/assets/${assetId}`, {
+  const res = await runFetch(`${ANYPOINT_API_URI_V1}/assets/${assetId}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -149,7 +185,7 @@ export async function searchExchange(
   accessToken: string,
   searchString: string
 ): Promise<RestApi[]> {
-  return fetch(
+  return runFetch(
     `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api`,
     {
       headers: {
