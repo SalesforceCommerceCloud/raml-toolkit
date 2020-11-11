@@ -79,6 +79,8 @@ DESCRIPTION
      2 - Evaluation could not be completed
 ```
 
+[More information on rules](docs/diff/rules.md)
+
 #### `raml-toolkit download`
 
 Download API specification files from Anypoint Exchange
