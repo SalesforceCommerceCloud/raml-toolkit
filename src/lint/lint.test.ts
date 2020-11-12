@@ -24,19 +24,20 @@ before(() => {
 });
 
 describe("#printResults", () => {
-  let consoleSpy: Sinon.SinonSpy;
+  let consoleStub: Sinon.SinonSpy;
 
   beforeEach(() => {
-    consoleSpy = sinon.spy(console, "log");
+    sinon.restore();
+    consoleStub = sinon.stub(console, "log");
   });
 
   afterEach(() => {
-    consoleSpy.restore();
+    consoleStub.restore();
   });
 
   it("doesn't console log when no results passed", async () => {
     await printResults(null);
-    return expect(consoleSpy.callCount).to.equal(0);
+    return expect(consoleStub.callCount).to.equal(0);
   });
 
   it("outputs results in first branch when results conform and warnings are false (default)", async () => {
@@ -44,7 +45,7 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result);
-    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+    return expect(consoleStub.getCall(0).args[0]).to.not.have.string(
       "Level: Warning"
     );
   });
@@ -54,7 +55,7 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result);
-    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+    return expect(consoleStub.getCall(0).args[0]).to.not.have.string(
       "Number of hidden warnings: ${result.results.length}"
     );
   });
@@ -64,7 +65,7 @@ describe("#printResults", () => {
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
     await printResults(result, true);
-    return expect(consoleSpy.getCall(0).args[0]).to.not.have.string(
+    return expect(consoleStub.getCall(0).args[0]).to.not.have.string(
       "Number of hidden warnings:"
     );
   });
