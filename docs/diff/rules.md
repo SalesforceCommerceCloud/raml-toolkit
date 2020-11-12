@@ -2,35 +2,37 @@
 
 ## Rules to categorize differences
 
-In rules, a difference can be categorized as Breaking or Non-Breaking.
+The Diff Tool rules categorize differences as Breaking or Non-Breaking.
 
-If no rules are provided a default set of rules will be applied on the differences:
+If rules aren't provided, differences are handled by a default set of rules.
 
-|Rule	|Category	|Description	|
-|---	|---	|---	|
-|version-changed	|Breaking	|Categorizes change in the API version	|
-|display-name-changed	|Breaking	|Categorizes change in the display name of any end point operation	|
-|operation-removed	|Breaking	|Categorizes removal of any end point operation	|
-|parameter-removed	|Breaking	|Categorizes removal of any parameter (path, query, etc. ) in any end point operation	|
-|required-parameter-added	|Breaking	|Categorizes addition of any required parameter (path, query, etc. ) in any end point operation	|
-|example-changed	|Ignored	|Catagorizes any changes to the API spec examples	|
-|operation-added	|Non-Breaking	|Categorizes addition of endpoint operation	|
+### Default Rules
+
+|Rule |Category |Description |
+|--- |--- |--- |
+|version-changed |Breaking |Categorizes change in the API version |
+|display-name-changed |Breaking |Categorizes change in the display name of any endpoint operation |
+|operation-removed |Breaking |Categorizes removal of any endpoint operation |
+|parameter-removed |Breaking |Categorizes removal of any parameter (path, query, etc. ) in any endpoint operation |
+|required-parameter-added |Breaking |Categorizes addition of any required parameter (path, query, etc. ) in any endpoint operation |
+|example-changed |Ignored |Catagorizes any changes to the API spec examples |
+|operation-added |Non-Breaking |Categorizes addition of endpoint operation |
 
 ## Defining your own rules
 
-You can define your own rule set and provide it to the diff command. A rule set is defined as a json array. When you provide your own rule set the default rule set will not be applied.
+You can define your own rule set and provide it as a parameter when calling the diff command. A rule set is defined as a json array. When you provide your own rule set, the default rule set isn't used.
 
 To define rules, you need to understand how differences are generated.
 
-1. Using [AMF](https://www.npmjs.com/package/amf-client-js), a flattened JSON-LD graph is generated for the the given APIs.
+1. Using [AMF](https://www.npmjs.com/package/amf-client-js), a flattened JSON-LD graph is generated for the given APIs.
 2. Differences are calculated for each node in the JSON-LD based on the node ID.
-3. Then rules are applied on each node.
+3. Rules are applied on each node.
 
 ### **Example**
 
-Below are the differences generated for version change and addition of a required parameter.
+Here's an example of the differences when changing the version or adding a required parameter.
 
-```
+```json
 [
   {
     "id": "#/web-api",
@@ -84,9 +86,9 @@ Below are the differences generated for version change and addition of a require
  ]
 ```
 
-Rules to categorize the above differences. Each node difference is a fact which is called as “diff” in the rule.
+Here are the rules that categorize the differences. Each node difference has a fact that is a 'diff' in the rule.
 
-```
+```json
 [
   {
     "name": "Rule to detect version change",
@@ -178,13 +180,13 @@ Rules to categorize the above differences. Each node difference is a fact which 
 ]
 ```
 
- [json-rules-engine](https://www.npmjs.com/package/json-rules-engine) is used to apply the rules. Read the [rules document](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md) to understand more about the rules structure
+ [json-rules-engine](https://www.npmjs.com/package/json-rules-engine) applies the rules. See [rules document](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md) for details on the rules structure.
 
 ### Custom Operators
 
-json-rules-engine allows defining of custom operators to use along with the default ones. Diff tool library has the following custom operators that you can use in your rules.
+json-rules-engine lets you define either custom or default operators.The Diff tool library offers these custom operators that you can use in your rules:
 
-|Operator	|Description	|
-|---	|---	|
-|hasProperty	|fact must have the given property 	|
-|hasNoProperty	|fact must not have the given property	|
+|Operator |Description |
+|--- |--- |
+|hasProperty |The fact must include the given property. |
+|hasNoProperty |The fact can't include the given property. |
