@@ -4,7 +4,7 @@
 
 In rules, a difference can be categorized as Breaking or Non-Breaking.
 
-If no rules are provided a default set of rules will be applied on the differences.
+If no rules are provided a default set of rules will be applied on the differences:
 
 |Rule	|Category	|Description	|
 |---	|---	|---	|
