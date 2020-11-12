@@ -48,7 +48,8 @@ Exit statuses:
       exclusive: ["ruleset", "dir", "format"],
     }),
     dir: flags.boolean({
-      description: "Find the differences for files in two directory trees and applies default ruleset",
+      description:
+        "Find the differences for files in two directory trees and applies default ruleset",
       default: false,
       exclusive: ["ruleset", "diff-only"],
     }),
