@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.5.4
+* Added Non-Breaking rule to detect addition of endpoint operations in Delta Checker
+* Add retry option to fetch
 
 ## 0.5.3
 
