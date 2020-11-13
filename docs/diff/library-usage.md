@@ -51,7 +51,32 @@ const apiChanges = await apiDifferencer.findAndCategorizeChanges(rulesPath);
 
 ## Find Changes Between Two API Directories
 
-To find changes between API specs in two directories and apply the default ruleset, use `diffRamlDirectories`. This compares the files in the directories by using the entrypoints in the `exchange.json` files it finds.
+To find changes between API specs in two directories and apply the default ruleset, use `diffRamlDirectories`. This compares the files in the directories by using the entrypoints in the `exchange.json` files it finds. An example of the structure looks like:
+
+```bash
+$ ls -1 apis/product/catalogs/
+Examples
+Traits
+catalogs-traits-library.raml
+catalogs.raml
+exchange.json
+exchange_modules
+
+$ cat apis/product/catalogs/exchange.json | python -mjson.tool                                                               
+{
+    "apiVersion": "v1",
+    "assetId": "catalogs",
+    "classifier": "raml",
+    "groupId": "893f605e-10e2-423a-bdb4-f952f56eb6d8",
+    "main": "catalogs.raml",
+    "name": "Catalogs",
+    "originalFormatVersion": "1.0",
+    "tags": [],
+    "version": "0.0.14"
+}
+```
+
+This is the code to make the comparison:
 
 ```typescript
 import { diffRamlDirectories } from "@commerce-apps/raml-toolkit/lib/diff";
