@@ -1,8 +1,8 @@
-# Invoking the diff library directly
+# Invoking the Diff Library Directly
 
-## Find Changes
+## Finding Changes
 
-Find changes between two RAML specifications
+To find changes between two RAML specifications:
 
 ```typescript
 import { ApiDifferencer } from "@commerce-apps/raml-toolkit/lib/diff/apiDifferencer";
@@ -18,7 +18,7 @@ const apiChanges = await apiDifferencer.findChanges();
 
 ## Categorize Changes with Default Rules
 
-Find changes and apply the default rules defined in the raml-toolkit. Refer [Rules to categorize differences](rules.md#Rules-to-categorize-differences) section for all the default rules
+Find changes and apply the default rules defined in the raml-toolkit. See [Rules to categorize differences](rules.md#Rules-to-categorize-differences) section for all of the default rules.
 
 ```typescript
 import { ApiDifferencer } from "@commerce-apps/raml-toolkit/lib/diff/apiDifferencer";
@@ -34,7 +34,7 @@ const apiChanges = await apiDifferencer.findAndCategorizeChanges();
 
 ## Categorize Changes with Custom Rules
 
-You can define your own rule set to apply on the changes. Look at [Defining your own rules](rules.md#Defining-your-own-rules) for details on defining custom rules
+You can define your own rule set to apply on the changes. See [Defining your own rules](rules.md#Defining-your-own-rules) for details on defining custom rules.
 
 ```typescript
 import { ApiDifferencer } from "@commerce-apps/raml-toolkit/lib/diff/apiDifferencer";
