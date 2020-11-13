@@ -79,6 +79,8 @@ DESCRIPTION
      2 - Evaluation could not be completed
 ```
 
+[Formatting the diff output](docs/diff/formatters.md)
+
 #### `raml-toolkit download`
 
 Download API specification files from Anypoint Exchange
