@@ -80,6 +80,7 @@ DESCRIPTION
 ```
 
 [More information on rules](docs/diff/rules.md)
+[Formatting the diff output](docs/diff/formatters.md)
 [Using the diff tool as a library](docs/diff/library-usage.md)
 
 #### `raml-toolkit download`
