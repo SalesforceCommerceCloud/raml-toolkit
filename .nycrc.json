@@ -1,0 +1,19 @@
+{
+  "all": true,
+  "branches": 85,
+  "check-coverage": true,
+  "extension": [
+    ".ts"
+  ],
+  "functions": 85,
+  "include": [
+    "src/**/*.ts"
+  ],
+  "lines": 85,
+  "per-file": true,
+  "reporter": [
+    "lcov",
+    "text"
+  ],
+  "statements": -10
+}

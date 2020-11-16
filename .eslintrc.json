@@ -1,0 +1,48 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "header",
+    "@fintechstudios/eslint-plugin-chai-as-promised"
+  ],
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended",
+    "plugin:@fintechstudios/chai-as-promised/recommended"
+  ],
+  "rules": {
+    "max-lines": [
+      "error",
+      {
+        "max": 500
+      }
+    ],
+    "@typescript-eslint/interface-name-prefix": [
+      "error",
+      {
+        "prefixWithI": "always"
+      }
+    ],
+    "header/header": [
+      2,
+      "block",
+      [
+        "",
+        {
+          "pattern": "^ \\* Copyright \\(c\\) \\d{4}, salesforce.com, inc\\.$",
+          "template": " * Copyright (c) 2020, salesforce.com, inc."
+        },
+        " * All rights reserved.",
+        " * SPDX-License-Identifier: BSD-3-Clause",
+        " * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause",
+        " "
+      ]
+    ]
+  },
+  "reportUnusedDisableDirectives": true
+}

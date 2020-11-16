@@ -158,6 +158,7 @@ describe("ApiMetaData render tests", () => {
 
   beforeEach(async () => {
     // Block logging
+    sinon.restore();
     sandbox.stub(ramlToolLogger, "info");
 
     tmpDir = tmp.dirSync();

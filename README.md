@@ -68,7 +68,7 @@ DESCRIPTION
   This command has three modes: ruleset, diff-only, and directory.
      Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
      Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
-     Directory mode compares all the files in two directories and determines if there are any differences.
+     Directory mode finds all exchange.json files in two directories recursively and compares all the spec files described in them. Applies the default ruleset.
 
   In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
   In directory mode, the arguments must be directories containing API specification (RAML) files.
@@ -81,6 +81,7 @@ DESCRIPTION
 
 [More information on rules](docs/diff/rules.md)
 [Formatting the diff output](docs/diff/formatters.md)
+[Using the diff tool as a library](docs/diff/library-usage.md)
 
 #### `raml-toolkit download`
 
