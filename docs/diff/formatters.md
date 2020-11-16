@@ -1,6 +1,6 @@
 # Formatting the Diff Output
 
-The default output format for the diff tool is JSON. For a human-readable format, you can use `toFormattedString`.
+The default output format for the diff tool is JSON. Use `toFormattedString` to view on the user console.
 
 ```typescript
 import { ApiChanges } from "@commerce-apps/raml-toolkit/lib/diff/changes/apiChanges";
@@ -9,14 +9,14 @@ import { ApiDifferencer } from "@commerce-apps/raml-toolkit/lib/diff/apiDifferen
 const apiDifferencer = new ApiDifferencer("diff/left.raml", "diff/right.raml");
 
 apiDifferencer.findAndCategorizeChanges().then((changes: ApiChanges) => {
-    // Default output format is JSON
+    // JSON is default output format
     console.log(changes);
-    // Use human-readable console format
+    // Use to view on the user console
     console.log(changes.toFormattedString("console"));
 });
 ```
 
-The output is formatting using Handlebars templates. To customize the output, copy the template you'd like to customize from `resources/diff/templates`, modify it and apply it as shown here.
+Handlebars templates format the output. To customize the output, copy the template in `resources/diff/templates`, modify it, and apply it as shown here.
 
 ```typescript
 import { ApiChanges } from "@commerce-apps/raml-toolkit/lib/diff/changes/apiChanges";
