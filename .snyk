@@ -5,7 +5,7 @@ ignore:
   SNYK-JS-AJV-584908:
     - amf-client-js > ajv:
         reason: No remediation path available
-        expires: '2020-10-09T19:50:45.075Z'
+        expires: '2020-12-19T15:08:59.497Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   SNYK-JS-LODASH-567746:
