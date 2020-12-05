@@ -64,7 +64,7 @@
     "make-fetch-happen": "^8.0.10",
     "snyk": "^1.428.2",
     "tmp": "^0.2.0",
-    "ts-node": "^8.9.1",
+    "ts-node": "^8.10.2",
     "unzipper": "^0.10.11"
   },
   "devDependencies": {
