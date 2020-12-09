@@ -1,4 +1,8 @@
 # CHANGELOG
+## 0.5.5
+* Added additional documentation for utilizing the Delta Checker
+* Security updates
+
 ## 0.5.4
 * Added Non-Breaking rule to detect addition of endpoint operations in Delta Checker
 * Add retry option to fetch
