@@ -67,7 +67,7 @@ workflows:
       - build-node-14:
           filters:
             tags:
-              only: /^v.*/
+              ignore: /^v.*/
   build-test-and-deploy:
     jobs:
       - build-node-10:
