@@ -57,7 +57,7 @@
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.6",
     "js-yaml": "^3.14.0",
-    "json-rules-engine": "^5.0.4",
+    "json-rules-engine": "^5.2.0",
     "jsondiffpatch": "^0.4.1",
     "lodash": "^4.17.20",
     "loglevel": "^1.7.0",
