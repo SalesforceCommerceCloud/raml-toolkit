@@ -60,7 +60,7 @@
     "json-rules-engine": "^5.0.4",
     "jsondiffpatch": "^0.4.1",
     "lodash": "^4.17.20",
-    "loglevel": "^1.7.0",
+    "loglevel": "^1.7.1",
     "make-fetch-happen": "^8.0.10",
     "snyk": "^1.430.0",
     "tmp": "^0.2.0",
