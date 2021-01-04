@@ -27,7 +27,7 @@ export async function parseRamlFile(
   // We initialize AMF first
   amf.plugins.document.WebApi.register();
   amf.plugins.document.Vocabularies.register();
-  amf.plugins.features.AMFValidation.register();
+  amf.plugins.features.AMFCustomValidation.register();
 
   await amf.Core.init();
 
