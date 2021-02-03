@@ -61,7 +61,7 @@
     "jsondiffpatch": "^0.4.1",
     "lodash": "^4.17.20",
     "loglevel": "^1.7.1",
-    "make-fetch-happen": "^8.0.12",
+    "make-fetch-happen": "^8.0.13",
     "snyk": "^1.433.0",
     "tmp": "^0.2.0",
     "ts-node": "^8.10.2",
