@@ -28,7 +28,7 @@ violation:
   - require-response-description
   - require-json
   - resource-name-validation
-  - unique-display-name
+  - unique-display-names
   - version-format
   # - upper-camelcase-datatype // Disabled as it is not working as expected
 
@@ -167,30 +167,18 @@ validations:
       apiContract.path:
         pattern: ^((\/[a-z][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
 
-  unique-display-name:
-    message: displayName must be unique within an API
+  unique-display-names:
+    message: Operation displayName must be unique within an API
     targetClass: apiContract.Operation
-    # TODO: Convert this to not use functionConstraint
-    functionConstraint:
-      code: |
-        function(ops) {
-          const name = ops['core:name'];
-          // If it doesn't have a name, it passes
-          if(!name) {
-            return true;
-          }
-          const key = `uniqueDisplayName:${name[0].toLowerCase()}`;
-          // `accumulators` is a global helper object we can use arbitrarily
-          if(!accumulators[key]) {
-            // No collision yet, set for next object to be checked
-            accumulators[key] = true;
-            // No collision, passes
-            return true;
-          } else {
-            // Collision found, fails validation
-            return false;
-          }
-        }
+    query: |
+      SELECT ?this ?value
+      WHERE {
+        ?this core:name ?value .
+        ?this rdf:type  apiContract:Operation .
+        ?operation2 core:name ?name2 .
+        ?operation2 rdf:type  apiContract:Operation .
+        FILTER (?this != ?operation2 && lcase(str(?value)) = lcase(str(?name2)))
+      }
 
   version-format:
     message: The version must be formatted as v[Major], for example v2

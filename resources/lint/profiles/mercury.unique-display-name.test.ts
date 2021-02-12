@@ -10,12 +10,13 @@ import {
   renderSpecAsFile,
   breaksOnlyOneRule,
   conforms,
+  breaksTheseRules,
 } from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
 describe("unique display name validation", () => {
   const PROFILE = "mercury";
-  const RULE = "http://a.ml/vocabularies/data#unique-display-name";
+  const RULE = "http://a.ml/vocabularies/data#unique-display-names";
   let doc;
 
   beforeEach(() => {
@@ -34,7 +35,7 @@ describe("unique display name validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, RULE]);
   });
 
   it("should fail on duplicate display name between two different resources", async () => {
@@ -43,7 +44,7 @@ describe("unique display name validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, RULE]);
   });
 
   it("should fail if two display names only differ by case of characters", async () => {
@@ -52,6 +53,6 @@ describe("unique display name validation", () => {
 
     const result = await validateFile(renderSpecAsFile(doc), PROFILE);
 
-    breaksOnlyOneRule(result, RULE);
+    breaksTheseRules(result, [RULE, RULE]);
   });
 });
