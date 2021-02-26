@@ -14,6 +14,37 @@ import { expect } from "chai";
 
 const SPEC_PROFILE_PATH = path.join(__dirname, "raml/mercury/mercury.raml");
 
+const LIBRARY_DIR = `file://${__dirname}/../resources/lint/lib`;
+
+const BASE_CUSTOM_PROFILE = {
+  profile: "test_profile",
+  uses: {
+    "mercury-standards": `${LIBRARY_DIR}/mercury-standards.yaml`,
+    "slas-standards": `${LIBRARY_DIR}/slas-standards.yaml`,
+  },
+  extends: "RAML",
+  disabled: ["amf-parser.WebAPI-mediaType-datatype"],
+};
+
+export function generateValidationRules(lib: string, rules: string[]): {} {
+  const myValidations: { [key: string]: string } = {};
+  rules.forEach((rule) => (myValidations[rule] = `${lib}.${rule}`));
+  return {
+    violation: rules,
+    validations: myValidations,
+  };
+}
+
+export function createCustomProfile(rules: {}): string {
+  const testProfile = tmp.fileSync({ postfix: ".yaml" });
+  fs.writeFileSync(
+    testProfile.name,
+    "#%Validation Profile 1.0\n" +
+      yaml.safeDump(_.merge(BASE_CUSTOM_PROFILE, rules))
+  );
+  return testProfile.name;
+}
+
 /**
  * Each test starts with loading a known good template and then tweaking it for
  * the test case. If you make changes to the template, make sure all of the
