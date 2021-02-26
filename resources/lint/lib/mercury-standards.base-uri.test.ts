@@ -243,9 +243,7 @@ describe("base uri", () => {
 
     before(() => {
       testProfile = createCustomProfile(
-        generateValidationRules("mercury-standards", [
-          "only-one-base-uri",
-        ])
+        generateValidationRules("mercury-standards", ["only-one-base-uri"])
       );
     });
 

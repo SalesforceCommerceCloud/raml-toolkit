@@ -15,13 +15,14 @@ import {
 } from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
-describe("unique display name validation", () => {
-  let doc;
+describe("description field validations", () => {
   let testProfile: string;
 
   before(() => {
     testProfile = createCustomProfile(
-      generateValidationRules("mercury-standards", ["no-todo-text-in-description-fields"])
+      generateValidationRules("mercury-standards", [
+        "no-todo-text-in-description-fields",
+      ])
     );
   });
 
@@ -219,6 +220,28 @@ describe("unique display name validation", () => {
     breaksOnlyOneRule(
       result,
       "http://a.ml/vocabularies/data#no-todo-text-in-description-fields"
+    );
+  });
+});
+
+describe("method description tests", () => {
+  let testProfile: string;
+
+  before(() => {
+    testProfile = createCustomProfile(
+      generateValidationRules("mercury-standards", [
+        "require-method-description",
+      ])
+    );
+  });
+
+  it("does not conform when description is missing from method", async () => {
+    const doc = getHappySpec();
+    delete doc["/resource"]["/{resourceId}"].get.description;
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
+    breaksOnlyOneRule(
+      result,
+      "http://a.ml/vocabularies/data#require-method-description"
     );
   });
 });
