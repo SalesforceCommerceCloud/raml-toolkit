@@ -25,47 +25,6 @@ describe("happy path raml tests", () => {
   });
 });
 
-// Skipping since the rule is currently not working as expected
-describe.skip("data type definition name checking tests", () => {
-  const UPPER_CAMEL_CASE_RULE =
-    "http://a.ml/vocabularies/data#upper-camelcase-datatype";
-  it("does not conform when a data type definition is not in upper camel case", async () => {
-    const doc = getHappySpec();
-    doc.types["camelCaseDataType"] = {};
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(result, UPPER_CAMEL_CASE_RULE);
-  });
-
-  it("does not conform when two data type definitions are not in upper camel case", async () => {
-    const doc = getHappySpec();
-    doc.types["kebab-case"] = {};
-    doc.types["snake_case"] = {};
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksTheseRules(result, [UPPER_CAMEL_CASE_RULE, UPPER_CAMEL_CASE_RULE]);
-  });
-
-  it("does not conform when a data type definition have a space", async () => {
-    const doc = getHappySpec();
-    doc.types["UpperCamel Case"] = {};
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(result, UPPER_CAMEL_CASE_RULE);
-  });
-
-  it("does not conform when a data type definition have more than one space", async () => {
-    const doc = getHappySpec();
-    doc.types["Upper  Camel Case"] = {};
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    breaksOnlyOneRule(result, UPPER_CAMEL_CASE_RULE);
-  });
-
-  it("conforms when another data type definitions is in upper camel case", async () => {
-    const doc = getHappySpec();
-    doc.types["UpperCamelCaseDataType"] = {};
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
-    conforms(result);
-  });
-});
-
 describe("mediaType checking tests", () => {
   it("does not conform when mediaType is missing", async () => {
     const doc = getHappySpec();

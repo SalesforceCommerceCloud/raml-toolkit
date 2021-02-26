@@ -24,7 +24,6 @@ import {
   getSingleInvalidFile,
   createCustomProfile,
   conforms,
-  generateValidationRules,
 } from "../../testResources/testUtils";
 import Sinon from "sinon";
 
