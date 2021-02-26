@@ -1,4 +1,8 @@
 # CHANGELOG
+## 0.5.6
+* Updated profile validation rules to use SPARQL
+* Minor bug fixes
+
 ## 0.5.5
 * Added additional documentation for utilizing the Delta Checker
 * Security updates
