@@ -9,11 +9,22 @@ import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
 import { model, AMF, Core } from "amf-client-js";
-import { printResults, validateFile, validateCustom } from "./lint";
+import {
+  printResults,
+  validateFile,
+  validateCustom,
+  validateModel,
+  PROFILE_PATH,
+} from "./lint";
+
+import path from "path";
 import {
   getHappySpec,
   renderSpecAsFile,
   getSingleInvalidFile,
+  createCustomProfile,
+  conforms,
+  generateValidationRules,
 } from "../../testResources/testUtils";
 import Sinon from "sinon";
 
@@ -84,7 +95,7 @@ describe("#validateCustom", () => {
     return expect(
       validateCustom(testModel, customProfile)
     ).to.be.eventually.rejectedWith(
-      `Custom profile ${customProfile} does not exist`
+      `File Not Found: ENOENT: no such file or directory, open 'MISSINGFILE'`
     );
   });
 
@@ -124,5 +135,33 @@ describe("#validateCustom", () => {
     await expect(validateCustom(testModel, "")).to.be.rejectedWith(fakeError);
 
     stub.restore();
+  });
+});
+
+describe("#validateModel", () => {
+  let testModel: model.document.Document;
+
+  beforeEach(async () => {
+    await AMF.init();
+    testModel = new model.document.Document();
+  });
+
+  it("throws on missing validation profile", () => {
+    const customProfile = "MISSINGFILE";
+    return expect(
+      validateModel(testModel, customProfile)
+    ).to.be.eventually.rejectedWith(
+      `File Not Found: ENOENT: no such file or directory, open '${path.join(
+        PROFILE_PATH,
+        `MISSINGFILE.raml`
+      )}'`
+    );
+  });
+
+  it("can validate with a custom profile", async () => {
+    const doc = getHappySpec();
+    const customProfile = createCustomProfile({});
+    const result = await validateFile(renderSpecAsFile(doc), customProfile);
+    conforms(result);
   });
 });

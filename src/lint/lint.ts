@@ -37,9 +37,11 @@ export async function validateCustom(
     // fs.readFile), so the easiest way seems to be to convert the AMF error to
     // a string and then work with that string.
 
+    if (err instanceof Error) {
+      // Normal error, don't need to modify to rethrow
+      throw err;
+    }
     const message = `${err.message ?? err}`;
-
-    throw err;
 
     // AMF error, message starts with amf name that we don't care about
     const cleaned = new Error(message.replace(/^amf\S+? /, "")) as Error & {
@@ -56,6 +58,9 @@ export async function validateCustom(
  * Validate AMF model with the given profile
  * @param model - AMF model
  * @param profile - Name of the profile
+ *
+ * NOTE: This has been updated for initial support of custom profiles
+ *       Full support will be added by W-8902420
  */
 export async function validateModel(
   model: model.document.BaseUnit,
