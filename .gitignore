@@ -2,7 +2,7 @@ node_modules
 .nyc_output
 /download
 coverage
-lib
+/lib
 .DS_Store
 .vscode
 .env
