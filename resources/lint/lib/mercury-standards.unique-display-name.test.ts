@@ -8,23 +8,30 @@
 import {
   getHappySpec,
   renderSpecAsFile,
-  breaksOnlyOneRule,
   conforms,
   breaksTheseRules,
+  createCustomProfile,
+  generateValidationRules,
 } from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
 describe("unique display name validation", () => {
-  const PROFILE = "mercury";
   const RULE = "http://a.ml/vocabularies/data#unique-display-names";
   let doc;
+  let testProfile: string;
+
+  before(() => {
+    testProfile = createCustomProfile(
+      generateValidationRules("mercury-standards", ["unique-display-names"])
+    );
+  });
 
   beforeEach(() => {
     doc = getHappySpec();
   });
 
   it("should pass if all the display names are unique", async () => {
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
     conforms(result);
   });
@@ -33,7 +40,7 @@ describe("unique display name validation", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
     doc["/resource"]["/{resourceId}"].post.displayName = "notUnique";
 
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
     breaksTheseRules(result, [RULE, RULE]);
   });
@@ -42,7 +49,7 @@ describe("unique display name validation", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
     doc["/resource2"]["/{id}"].get.displayName = "notUnique";
 
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
     breaksTheseRules(result, [RULE, RULE]);
   });
@@ -51,7 +58,7 @@ describe("unique display name validation", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "notUnique";
     doc["/resource"]["/{resourceId}"].post.displayName = "notuNique";
 
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
     breaksTheseRules(result, [RULE, RULE]);
   });

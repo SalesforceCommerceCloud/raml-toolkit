@@ -12,14 +12,23 @@ import {
   conforms,
   breaksOnlyOneRule,
   renderSpecAsFile,
+  createCustomProfile,
+  generateValidationRules,
 } from "../../../testResources/testUtils";
-
-const PROFILE = "mercury";
 
 describe("camelcase query parameters test", () => {
   const CC_RULE = "http://a.ml/vocabularies/data#camelcase-query-parameters";
   let doc;
   let parameters;
+  let testProfile: string;
+
+  before(() => {
+    testProfile = createCustomProfile(
+      generateValidationRules("mercury-standards", [
+        "camelcase-query-parameters",
+      ])
+    );
+  });
 
   beforeEach(function () {
     doc = getHappySpec();
@@ -28,49 +37,49 @@ describe("camelcase query parameters test", () => {
 
   it("conforms when parameter is one lowercase letter", async () => {
     renameKey(parameters, "expand", "c");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("conforms when parameter is camelcase", async () => {
     renameKey(parameters, "expand", "camelCase");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("conforms when parameter is multiple word camelcase", async () => {
     renameKey(parameters, "expand", "camelCaseMultipleWords");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("fails when parameter is kebabcase instead of camelcase", async () => {
     renameKey(parameters, "expand", "kebab-case");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, CC_RULE);
   });
 
   it("fails when parameter is Pascalcase instead of camelcase", async () => {
     renameKey(parameters, "expand", "PascalCase");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, CC_RULE);
   });
 
   it("fails when parameter is snakecase instead of camelcase", async () => {
     renameKey(parameters, "expand", "snake_case");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, CC_RULE);
   });
 
   it("fails when parameter has uppercase acronym", async () => {
     renameKey(parameters, "expand", "notCMLCase");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, CC_RULE);
   });
 
   it("fails when parameter has a space", async () => {
     renameKey(parameters, "expand", "not camel case");
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, CC_RULE);
   });
 });

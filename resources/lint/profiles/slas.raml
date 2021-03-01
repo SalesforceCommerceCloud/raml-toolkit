@@ -4,6 +4,10 @@
 
 profile: slas
 
+uses:
+  mercury-standards: ../lib/mercury-standards.yaml
+  slas-standards: ../lib/slas-standards.yaml
+
 # prefixes:
 #   myvocab: http://myorg.com/vocabularies/myvocab#
 
@@ -33,165 +37,22 @@ violation:
   # - upper-camelcase-datatype // Disabled as it is not working as expected
 
 validations:
+  at-least-one-2xx-or-3xx-response: mercury-standards.at-least-one-2xx-or-3xx-response
+  base-uri-matches-pattern: mercury-standards.base-uri-matches-pattern
+  camelcase-method-displayname: mercury-standards.camelcase-method-displayname
+  camelcase-template-parameters: mercury-standards.camelcase-template-parameters
+  https-required: mercury-standards.https-required
+  require-api-description: mercury-standards.require-api-description
+  no-literal-question-marks-in-property-names: mercury-standards.no-literal-question-marks-in-property-names
+  no-literal-question-marks-in-parameters: mercury-standards.no-literal-question-marks-in-parameters
+  no-todo-text-in-description-fields: mercury-standards.no-todo-text-in-description-fields
+  only-one-base-uri: mercury-standards.only-one-base-uri
+  require-method-description: mercury-standards.require-method-description
+  require-response-description: mercury-standards.require-response-description
+  require-json: mercury-standards.require-json
+  resource-name-validation: slas-standards.resource-name-validation
+  unique-display-names: mercury-standards.unique-display-names
+  version-format: mercury-standards.version-format
+  snakecase-query-parameters: slas-standards.snakecase-query-parameters
+  upper-camelcase-datatype: mercury-standards.upper-camelcase-datatype
 
-  at-least-one-2xx-or-3xx-response:
-    message: Methods must have at least one 2xx or 3xx response
-    targetClass: apiContract.Operation
-    propertyConstraints:
-      apiContract.returns:
-        atLeast:
-          count: 1
-          validation:
-            propertyConstraints:
-              apiContract.statusCode:
-                pattern: ^[23][0-9][0-9]$
-
-  base-uri-matches-pattern:
-    message: The baseUri must match the pattern - https://{shortCode}.api.commercecloud.salesforce.com/<api-family>/<api-name>/{version}
-    targetClass: apiContract.Server
-    propertyConstraints:
-      core.urlTemplate:
-        pattern: ^https:\/\/\{shortCode}\.api\.commercecloud\.salesforce\.com\/[a-z][a-z0-9-]*[a-z0-9]+\/[a-z][a-z0-9-]*[a-z0-9]+\/\{version}\/?$
-
-  camelcase-method-displayname:
-    message: The API Method must have displayName and the value must be in camelCase
-    targetClass: apiContract.Operation
-    propertyConstraints:
-      core.name:
-        minCount: 1
-        pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
-
-  snakecase-query-parameters:
-    message: Query parameters names must be in snake_case
-    targetClass: apiContract.Parameter
-    or:
-      - not:
-          propertyConstraints:
-            apiContract.binding:
-              pattern: ^query$
-      - propertyConstraints:
-          core.name:
-            pattern: ^[a-z0-9]+?(_[a-z0-9]+)*?$
-
-  camelcase-template-parameters:
-    message: All template/URI params *MUST* be lowerCamelCase
-    targetClass: apiContract.Parameter
-    or:
-      - not:
-          propertyConstraints:
-            apiContract.binding:
-              pattern: ^path$
-      - propertyConstraints:
-          core.name:
-            pattern: ^[a-z]+([A-Z]?[a-z0-9]+)*$
-
-  https-required:
-    message: Protocol MUST be HTTPS
-    targetClass: apiContract.WebAPI
-    propertyConstraints:
-      apiContract.scheme:
-        in: [https,HTTPS]
-        minCount: 1
-
-  require-api-description:
-    message: The API Description must be set
-    targetClass: apiContract.WebAPI
-    propertyConstraints:
-      core.description:
-        minCount: 1
-
-  no-literal-question-marks-in-property-names:
-    message: >
-      Property names must not contain question marks when 'required' is present. Using both results in property names that include literal question marks.
-      More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
-    targetClass: sh.PropertyShape
-    propertyConstraints:
-      sh.name:
-        pattern: ^[^?]*$
-
-  no-literal-question-marks-in-parameters:
-    message: >
-      Query parameter, path parameter and header names must not contain question marks when 'required' is present. Using both results in names that include literal question marks.
-      More info: https://github.com/raml-org/raml-spec/blob/master/versions/raml-10/raml-10.md/#property-declarations
-    targetClass: apiContract.Parameter
-    propertyConstraints:
-      core.name:
-        pattern: ^[^?]*$
-
-  no-todo-text-in-description-fields:
-    message: Empty string or The word 'TODO' (case insensitive) is not allowed in any description field.
-    targetClass: doc.DomainElement
-    not:
-      propertyConstraints:
-        core.description:
-          minCount: 1
-          # Regex flags aren't supported, so we can't do /todo/i
-          pattern: \b[tT][oO][dD][oO](?:_|\b)|^\s*$
-
-  only-one-base-uri:
-    message: There must be exactly one baseUri
-    targetClass: apiContract.WebAPI
-    propertyConstraints:
-      apiContract.server:
-        minCount: 1
-        maxCount: 1
-
-  require-method-description:
-    message: The API Method description must be set
-    targetClass: apiContract.Operation
-    propertyConstraints:
-      core.description:
-        minCount: 1
-
-  require-response-description:
-    message: The description for API responses must be set
-    targetClass: apiContract.Response
-    propertyConstraints:
-      core.description:
-        minCount: 1
-
-  require-json:
-    message: Require the API Spec's default mediaType to be application/json
-    targetClass: apiContract.WebAPI
-    propertyConstraints:
-      apiContract.accepts:
-        in: ["application/json"]
-        minCount: 1
-
-  # This doesn't validate the template params, the
-  # camelcase-template-parameters rule does
-  resource-name-validation:
-    message: Resource endpoints must be lowercase
-    targetClass: apiContract.EndPoint
-    propertyConstraints:
-      apiContract.path:
-        pattern: ^((\/[a-z\.][a-z0-9-]*[a-z0-9]+)|(\/\{[^}]+}))+$
-
-  unique-display-names:
-    message: Operation displayName must be unique within an API
-    targetClass: apiContract.Operation
-    query: |
-      SELECT ?this ?value
-      WHERE {
-        ?this core:name ?value .
-        ?this rdf:type  apiContract:Operation .
-        ?operation2 core:name ?name2 .
-        ?operation2 rdf:type  apiContract:Operation .
-        FILTER (?this != ?operation2 && lcase(str(?value)) = lcase(str(?name2)))
-      }
-
-  version-format:
-    message: The version must be formatted as v[Major], for example v2
-    targetClass: apiContract.WebAPI
-    propertyConstraints:
-      core.version:
-        pattern: ^v[0-9]+$
-        minCount: 1
-
-  #datatype rules
-  upper-camelcase-datatype:
-    message: Data type definitions should be UpperCamelCase
-    targetClass: doc.Unit
-    propertyConstraints:
-      doc.declares/shacl.name:
-        pattern: ^[A-Z][A-Za-z0-9]*$

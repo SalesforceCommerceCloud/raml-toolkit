@@ -5,6 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import path from "path";
+import fs from "fs-extra";
 import { client, model, Core, MessageStyles, ProfileName } from "amf-client-js";
 import { parseRamlFile } from "../common/amfParser";
 
@@ -36,13 +37,12 @@ export async function validateCustom(
     // fs.readFile), so the easiest way seems to be to convert the AMF error to
     // a string and then work with that string.
 
-    const message = `${err.message ?? err}`;
-    if (message.includes("no such file or directory")) {
-      throw new Error(`Custom profile ${profileFile} does not exist`);
-    } else if (err instanceof Error) {
+    if (err instanceof Error) {
       // Normal error, don't need to modify to rethrow
       throw err;
     }
+    const message = `${err.message ?? err}`;
+
     // AMF error, message starts with amf name that we don't care about
     const cleaned = new Error(message.replace(/^amf\S+? /, "")) as Error & {
       amfError: AmfError;
@@ -58,15 +58,20 @@ export async function validateCustom(
  * Validate AMF model with the given profile
  * @param model - AMF model
  * @param profile - Name of the profile
+ *
+ * NOTE: This has been updated for initial support of custom profiles
+ *       Full support will be added by W-8902420
  */
 export async function validateModel(
   model: model.document.BaseUnit,
   profile: string
 ): Promise<client.validate.ValidationReport> {
-  const results = await validateCustom(
-    model,
-    `file://${path.join(PROFILE_PATH, `${profile}.raml`)}`
-  );
+  if (!fs.existsSync(profile)) {
+    console.log(`Using built in profile: ${profile}`);
+    profile = path.join(PROFILE_PATH, `${profile}.raml`);
+  }
+
+  const results = await validateCustom(model, `file://${profile}`);
 
   return results;
 }

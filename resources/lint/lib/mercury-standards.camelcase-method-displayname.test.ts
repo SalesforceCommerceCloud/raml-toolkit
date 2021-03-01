@@ -8,12 +8,20 @@
 import * as validator from "../../../src/lint/lint";
 import * as utils from "../../../testResources/testUtils";
 
-const PROFILE = "mercury";
-
 describe("camelcase method displayname tests", () => {
   const QUERY_RULE =
     "http://a.ml/vocabularies/data#camelcase-method-displayname";
   let doc;
+
+  let testProfile: string;
+
+  before(() => {
+    testProfile = utils.createCustomProfile(
+      utils.generateValidationRules("mercury-standards", [
+        "camelcase-method-displayname",
+      ])
+    );
+  });
 
   beforeEach(function () {
     doc = utils.getHappySpec();
@@ -23,7 +31,7 @@ describe("camelcase method displayname tests", () => {
     delete doc["/resource"]["/{resourceId}"].get.displayName;
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
-      PROFILE
+      testProfile
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
@@ -32,7 +40,7 @@ describe("camelcase method displayname tests", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not-camel-case";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
-      PROFILE
+      testProfile
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
@@ -41,7 +49,7 @@ describe("camelcase method displayname tests", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "not_camel_case";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
-      PROFILE
+      testProfile
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });
@@ -50,7 +58,7 @@ describe("camelcase method displayname tests", () => {
     doc["/resource"]["/{resourceId}"].get.displayName = "PascalCase";
     const result = await validator.validateFile(
       utils.renderSpecAsFile(doc),
-      PROFILE
+      testProfile
     );
     utils.breaksOnlyOneRule(result, QUERY_RULE);
   });

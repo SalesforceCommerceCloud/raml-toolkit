@@ -11,11 +11,22 @@ import {
   breaksOnlyOneRule,
   breaksTheseRules,
   conforms,
+  createCustomProfile,
+  generateValidationRules,
 } from "../../../testResources/testUtils";
 import { validateFile } from "../../../src/lint/lint";
 
 describe("base uri", () => {
-  const PROFILE = "mercury";
+  let testProfile: string;
+
+  before(() => {
+    testProfile = createCustomProfile(
+      generateValidationRules("mercury-standards", [
+        "base-uri-matches-pattern",
+        "camelcase-template-parameters",
+      ])
+    );
+  });
 
   describe("pattern validation", () => {
     const BASE_URI_RULE =
@@ -29,7 +40,7 @@ describe("base uri", () => {
     });
 
     it("should pass if the baseUri matches the pattern", async () => {
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       conforms(result);
     });
@@ -38,7 +49,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "http://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -47,7 +58,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -56,7 +67,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.salesforce.commercecloud.com/test-family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -65,7 +76,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-api-family-name/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       conforms(result);
     });
@@ -75,7 +86,7 @@ describe("base uri", () => {
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-dummy-api-name/{version}";
       doc["title"] = "Test Dummy Api Name";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       conforms(result);
     });
@@ -84,7 +95,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com//test-family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -93,7 +104,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family//test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -102,7 +113,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api//{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -111,7 +122,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/testFamily/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -120,7 +131,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/TestFamily/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -129,7 +140,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test_family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -138,7 +149,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/testApi/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -147,7 +158,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/TestApi/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -156,7 +167,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test_api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -165,7 +176,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://api.commercecloud.salesforce.com/test-family/testApi/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -174,7 +185,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -183,7 +194,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, BASE_URI_RULE);
     });
@@ -192,7 +203,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{version}/";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       conforms(result);
     });
@@ -201,7 +212,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{SHORTCODE}.api.commercecloud.salesforce.com/test-family/test-api/{version}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
@@ -210,7 +221,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud.salesforce.com/test-family/test-api/{VERSION}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
@@ -219,7 +230,7 @@ describe("base uri", () => {
       doc["baseUri"] =
         "https://{shortCode}.api.commercecloud,salesforce.com/test-family/test-api/{VERSION}";
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksTheseRules(result, [BASE_URI_RULE, TEMPLATE_RULE]);
     });
@@ -228,6 +239,13 @@ describe("base uri", () => {
   describe("existence validation", () => {
     const ONE_BASE_URI_RULE = "http://a.ml/vocabularies/data#only-one-base-uri";
     let doc;
+    let testProfile: string;
+
+    before(() => {
+      testProfile = createCustomProfile(
+        generateValidationRules("mercury-standards", ["only-one-base-uri"])
+      );
+    });
 
     beforeEach(() => {
       doc = getHappySpec();
@@ -236,7 +254,7 @@ describe("base uri", () => {
     it("should fail if baseUri is missing", async () => {
       delete doc.baseUri;
 
-      const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+      const result = await validateFile(renderSpecAsFile(doc), testProfile);
 
       breaksOnlyOneRule(result, ONE_BASE_URI_RULE);
     });

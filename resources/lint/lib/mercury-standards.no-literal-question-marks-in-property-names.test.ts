@@ -12,9 +12,9 @@ import {
   conforms,
   breaksOnlyOneRule,
   renderSpecAsFile,
+  createCustomProfile,
+  generateValidationRules,
 } from "../../../testResources/testUtils";
-
-const PROFILE = "mercury";
 
 describe("no literal question marks in property name tests", () => {
   const PROPERTY_RULE =
@@ -22,6 +22,16 @@ describe("no literal question marks in property name tests", () => {
   let doc;
   let properties;
   let datatypeProperties;
+
+  let testProfile: string;
+
+  before(() => {
+    testProfile = createCustomProfile(
+      generateValidationRules("mercury-standards", [
+        "no-literal-question-marks-in-property-names",
+      ])
+    );
+  });
 
   beforeEach(function () {
     doc = getHappySpec();
@@ -35,102 +45,102 @@ describe("no literal question marks in property name tests", () => {
   it("conforms when property has a question mark and required field is not present", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies?");
     delete properties["allowed_currencies?"].required;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("fails when property has a question mark and required field is false", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies?");
     properties["allowed_currencies?"].required = false;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has a question mark and required field is true", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies?");
     properties["allowed_currencies?"].required = true;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is not present", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies??");
     delete properties["allowed_currencies??"].required;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is false", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies??");
     properties["allowed_currencies??"].required = false;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when property has 2 question mark and required field is true", async () => {
     renameKey(properties, "allowed_currencies", "allowed_currencies??");
     properties["allowed_currencies??"].required = true;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("conforms when property has no question mark and required field is not present", async () => {
     delete properties.allowed_currencies.required;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("conforms when property has no question mark and required field is false", async () => {
     properties.allowed_currencies.required = false;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("conforms when property has no question mark and required field is true", async () => {
     properties.allowed_currencies.required = true;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("conforms when datatype property has a question mark and required field is not present", async () => {
     renameKey(datatypeProperties, "property1", "property1?");
     delete datatypeProperties["property1?"].required;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
   it("fails when datatype property has a question mark and required field is false", async () => {
     renameKey(datatypeProperties, "property1", "property1?");
     datatypeProperties["property1?"].required = false;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has a question mark and required field is true", async () => {
     renameKey(datatypeProperties, "property1", "property1?");
     datatypeProperties["property1?"].required = true;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is not present", async () => {
     renameKey(datatypeProperties, "property1", "property1??");
     delete datatypeProperties["property1??"].required;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is false", async () => {
     renameKey(datatypeProperties, "property1", "property1??");
     datatypeProperties["property1??"].required = false;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 
   it("fails when datatype property has 2 question mark and required field is true", async () => {
     renameKey(datatypeProperties, "property1", "property1??");
     datatypeProperties["property1??"].required = true;
-    const result = await validateFile(renderSpecAsFile(doc), PROFILE);
+    const result = await validateFile(renderSpecAsFile(doc), testProfile);
     breaksOnlyOneRule(result, PROPERTY_RULE);
   });
 });
