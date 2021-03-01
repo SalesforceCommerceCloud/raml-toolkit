@@ -26,7 +26,13 @@ const BASE_CUSTOM_PROFILE = {
   disabled: ["amf-parser.WebAPI-mediaType-datatype"],
 };
 
-export function generateValidationRules(lib: string, rules: string[]): {} {
+export function generateValidationRules(
+  lib: string,
+  rules: string[]
+): {
+  violation: string[];
+  validations: {};
+} {
   const myValidations: { [key: string]: string } = {};
   rules.forEach((rule) => (myValidations[rule] = `${lib}.${rule}`));
   return {

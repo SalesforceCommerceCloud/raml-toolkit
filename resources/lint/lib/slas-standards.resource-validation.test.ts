@@ -59,14 +59,14 @@ describe("resource checking tests", () => {
     breaksTheseRules(result, [NAME_VALIDATION, NAME_VALIDATION]);
   });
 
-  it("conforms when resource contains numbers 1", async () => {
+  it("conforms when resource contains trailing numbers", async () => {
     const doc = getHappySpec();
     renameKey(doc, "/resource", "/resource2");
     const result = await validateFile(renderSpecAsFile(doc), testProfile);
     conforms(result);
   });
 
-  it("conforms when resource contains numbers 2", async () => {
+  it("conforms when resource contains non-trailing numbers", async () => {
     const doc = getHappySpec();
     renameKey(doc, "/resource", "/res0urce");
     const result = await validateFile(renderSpecAsFile(doc), testProfile);
