@@ -52,7 +52,7 @@
   "dependencies": {
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "amf-client-js": "^4.7.0",
+    "amf-client-js": "^4.7.1",
     "dotenv": "^8.2.0",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.7",
