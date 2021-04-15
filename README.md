@@ -2,7 +2,7 @@
 
 A collection of raml tools for commerce cloud and beyond
 
-  [![CircleCI][circleci-image]][circleci-url] [![Slack][slack-image]][slack-url]
+  [![CircleCI][circleci-image]][circleci-url]
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -235,5 +235,3 @@ Here is an AMF validation example from Mulesoft.  This includes some custom rule
 <!-- Markdown link & img dfn's -->
 [circleci-image]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit.svg?style=svg&circle-token=f0e669168c5d1538fc0b76ad71e13b2e2251ebd4
 [circleci-url]: https://circleci.com/gh/SalesforceCommerceCloud/raml-toolkit
-[slack-image]: https://img.shields.io/badge/slack-sfcc--raml--linter-e01563.svg?logo=slack
-[slack-url]: https://commercecloud.slack.com/messages/CNDPCJQG3
