@@ -18,9 +18,9 @@ export class DiffCommand extends Command {
   // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
   static description = `Compute the difference between two API specifications
 This command has three modes: ruleset, diff-only, and directory.
-  Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
-  Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
-  Directory mode finds all exchange.json files in two directories recursively and compares all the spec files described in them. Applies the default ruleset.
+- Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
+- Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
+- Directory mode finds all exchange.json files in two directories recursively and compares all the spec files described in them. Applies the default ruleset.
 
 In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
 In directory mode, the arguments must be directories that contain exchange.json files.

@@ -50,8 +50,8 @@ ARGUMENTS
   NEW   The new API spec file (ruleset / diff-only mode) or directory
 
 OPTIONS
-  -f, --format=(json|console)                        Format of the output. Defaults to JSON if --out-file is specified,
-                                                  otherwise console text.
+  -f, --format=(json|console)                     Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise text.
 
   -o, --out-file=out-file                         File to store the computed difference
 
@@ -60,30 +60,26 @@ OPTIONS
 
   --diff-only                                     Only show differences without evaluating a ruleset
 
-  --dir                                           Find the differences for all files in two directories
+  --dir                                           Find the differences for files in two directory trees and applies
+                                                  default ruleset
 
   --log-level=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 
 DESCRIPTION
   This command has three modes: ruleset, diff-only, and directory.
-     Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
-     Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
-     Directory mode finds all exchange.json files in two directories recursively and compares all the spec files described in them. Applies the default ruleset.
+  - Ruleset mode (default) compares two files and applies a ruleset to determine if any changes are breaking.
+  - Diff-only mode compares two files to determine if there are any differences, without applying a ruleset.
+  - Directory mode finds all exchange.json files in two directories recursively and compares all the spec files 
+  described in them. Applies the default ruleset.
 
   In ruleset and diff-only mode, the arguments must be API specification (RAML) files.
-  In directory mode, the arguments must be directories containing API specification (RAML) files.
+  In directory mode, the arguments must be directories that contain exchange.json files.
 
   Exit statuses:
      0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
      1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
      2 - Evaluation could not be completed
 ```
-
-More information on
-
-- [Rules](docs/diff/rules.md)
-- [Formatting the diff output](docs/diff/formatters.md)
-- [Using the diff tool as a library](docs/diff/library-usage.md)
 
 #### `raml-toolkit download`
 
@@ -123,6 +119,14 @@ OPTIONS
   --log-level=trace|debug|info|warn|error|silent  [default: info] Set the level of detail in the output
 ```
 <!-- commandsstop -->
+
+### Additional Information
+
+For additional information on the `diff` command, see these resources:
+
+- [Rules](docs/diff/rules.md)
+- [Formatting the diff output](docs/diff/formatters.md)
+- [Using the diff tool as a library](docs/diff/library-usage.md)
 
 ### Jenkins
 
