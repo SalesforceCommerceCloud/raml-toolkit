@@ -120,6 +120,14 @@ OPTIONS
 ```
 <!-- commandsstop -->
 
+### Additional Information
+
+For additional information on the `diff` command, see these resources:
+
+- [Rules](docs/diff/rules.md)
+- [Formatting the diff output](docs/diff/formatters.md)
+- [Using the diff tool as a library](docs/diff/library-usage.md)
+
 ### Jenkins
 
 In your Jenkinsfile, init npm and then it's a simple one line command
