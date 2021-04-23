@@ -18,6 +18,7 @@ const {
   isOptionalProperty,
   isRequiredProperty,
   isTypeDefinition,
+  isTraitDefinition,
   isArrayType,
 } = handlebarsAmfHelpers;
 
@@ -267,6 +268,20 @@ describe("HandlebarsAmfHelpers", () => {
 
     it("returns true if shape is ArrayShape", () => {
       expect(isArrayType(new model.domain.ArrayShape())).to.be.true;
+    });
+  });
+
+  describe("isTraitDefinition", () => {
+    it("returns false if shape is not a Trait", () => {
+      expect(isTraitDefinition(new model.domain.NodeShape())).to.be.false;
+    });
+
+    it("returns false if shape is null", () => {
+      expect(isTraitDefinition(null)).to.be.false;
+    });
+
+    it("returns true if shape is ScalarShape", () => {
+      expect(isTraitDefinition(new model.domain.Trait())).to.be.true;
     });
   });
 });

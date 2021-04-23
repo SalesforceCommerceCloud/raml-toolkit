@@ -45,12 +45,25 @@ export const getBaseUriFromDocument = (
  */
 export const isTypeDefinition = (
   domainElement: model.domain.DomainElement
-): boolean => {
+): domainElement is model.domain.NodeShape => {
   return domainElement instanceof model.domain.NodeShape;
 };
 
 /**
- * Check if the specified AMF domain element is an arrayor not.
+ * Check if the specified AMF domain element is a trait or not.
+ *
+ * @param domainElement - The domain element to be evaluated
+ *
+ * @returns true if the domain element is a trait, false if not
+ */
+export const isTraitDefinition = (
+  domainElement: model.domain.DomainElement
+): domainElement is model.domain.Trait => {
+  return domainElement instanceof model.domain.Trait;
+};
+
+/**
+ * Check if the specified AMF domain element is an array or not.
  *
  * @param domainElement - The domain element to be evaluated
  *
@@ -58,7 +71,7 @@ export const isTypeDefinition = (
  */
 export const isArrayType = (
   domainElement: model.domain.DomainElement
-): boolean => {
+): domainElement is model.domain.ArrayShape => {
   return domainElement instanceof model.domain.ArrayShape;
 };
 

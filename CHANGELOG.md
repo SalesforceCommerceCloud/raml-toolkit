@@ -1,4 +1,11 @@
 # CHANGELOG
+
+## 0.5.7
+* Added `isTraitDefinition` Handlebars helper to test whether an object is an
+AMF model of a RAML trait.
+* Refactored validation profiles to import rules from libraries. The rules are
+unchanged, but they are now available for use in custom validation profiles.
+
 ## 0.5.6
 * Updated profile validation rules to use SPARQL
 * Minor bug fixes
