@@ -6,8 +6,18 @@
  */
 import path from "path";
 import fs from "fs-extra";
-import { client, model, Core, MessageStyles, ProfileName } from "amf-client-js";
+import {
+  client,
+  model,
+  Core,
+  MessageStyles,
+  ProfileName,
+  core,
+  ProfileNames,
+} from "amf-client-js";
 import { parseRamlFile } from "../common/amfParser";
+import { AMF } from "amf-client-js";
+import _ from "lodash";
 
 export const PROFILE_PATH = path.join(
   __dirname,
@@ -17,6 +27,22 @@ export const PROFILE_PATH = path.join(
 // AMF throws custom error objects, but does not provide type definitions
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AmfError = Record<string, any>;
+
+export async function mergeValidationReports(
+  ramlValidationReport: client.validate.ValidationReport,
+  customValidationReport: client.validate.ValidationReport
+): Promise<client.validate.ValidationReport> {
+  return new client.validate.ValidationReport(
+    ramlValidationReport.conforms && customValidationReport.conforms,
+    ramlValidationReport.model,
+    customValidationReport.profile,
+    _.unionBy(
+      ramlValidationReport.results,
+      customValidationReport.results,
+      "source"
+    )
+  );
+}
 
 /**
  * Validate AMF model with the given profile
@@ -51,7 +77,18 @@ export async function validateCustom(
     throw cleaned;
   }
 
-  return Core.validate(amfModel, profileName, MessageStyles.RAML);
+  const ramlValidationReport = await Core.validate(
+    amfModel,
+    ProfileNames.RAML,
+    MessageStyles.RAML
+  );
+  const customValidationReport = await Core.validate(
+    amfModel,
+    profileName,
+    MessageStyles.RAML
+  );
+
+  return mergeValidationReports(ramlValidationReport, customValidationReport);
 }
 
 /**
@@ -106,6 +143,9 @@ export async function validateFile(
   filename: string,
   profile: string
 ): Promise<client.validate.ValidationReport> {
+  // Initialize AMF so that we have a clean environment to work with
+  await AMF.init();
+
   const model = await parseRamlFile(filename);
   if (!model) throw new Error("Error validating file");
   return await validateModel(model, profile);

@@ -8,13 +8,22 @@
 import { expect, default as chai } from "chai";
 import sinon from "sinon";
 import chaiAsPromised from "chai-as-promised";
-import { model, AMF, Core } from "amf-client-js";
+import {
+  model,
+  AMF,
+  Core,
+  client,
+  ProfileNames,
+  core,
+  ProfileName,
+} from "amf-client-js";
 import {
   printResults,
   validateFile,
   validateCustom,
   validateModel,
   PROFILE_PATH,
+  mergeValidationReports,
 } from "./lint";
 
 import path from "path";
@@ -26,6 +35,7 @@ import {
   conforms,
 } from "../../testResources/testUtils";
 import Sinon from "sinon";
+import _ from "lodash";
 
 const PROFILE = "mercury";
 
@@ -162,5 +172,88 @@ describe("#validateModel", () => {
     const customProfile = createCustomProfile({});
     const result = await validateFile(renderSpecAsFile(doc), customProfile);
     conforms(result);
+  });
+});
+
+describe("#mergeValidationReports", () => {
+  const result = new client.validate.ValidationResult(
+    "Test report",
+    "Violation",
+    "test.raml#/web-api",
+    "testProperty",
+    "testId",
+    new core.parser.Range(
+      new core.parser.Position(1, 2),
+      new core.parser.Position(2, 3)
+    ),
+    "test.raml"
+  );
+  const ramlValidationReport = new client.validate.ValidationReport(
+    true,
+    "test.raml",
+    ProfileNames.RAML,
+    [result]
+  );
+  const customValidationReport = new client.validate.ValidationReport(
+    false,
+    "test.raml",
+    new ProfileName("custom"),
+    [result]
+  );
+
+  it("returns a report with conforms set to false if one of the reports has false", async () => {
+    const mergedReport = await mergeValidationReports(
+      ramlValidationReport,
+      customValidationReport
+    );
+    
+    return expect(mergedReport.conforms).to.be.false;
+  });
+
+  it("returns a report with conforms set to true if both the reports have true", async () => {
+    const customValidationReport = new client.validate.ValidationReport(
+      true,
+      "test.raml",
+      new ProfileName("custom"),
+      [result]
+    );
+    const mergedReport = await mergeValidationReports(
+      ramlValidationReport,
+      customValidationReport
+    );
+
+    return expect(mergedReport.conforms).to.be.true;
+  });
+
+  it("returns a report with model from ramlValidationReport", async () => {
+    const mergedReport = await mergeValidationReports(
+      ramlValidationReport,
+      customValidationReport
+    );
+
+    return expect(mergedReport.model).to.equal(ramlValidationReport.model);
+  });
+
+  it("returns a report with profile from customValidationReport", async () => {
+    const mergedReport = await mergeValidationReports(
+      ramlValidationReport,
+      customValidationReport
+    );
+
+    return expect(mergedReport.profile).to.equal(
+      customValidationReport.profile
+    );
+  });
+
+  it("returns a report with only unique results", async () => {
+    const mergedReport = await mergeValidationReports(
+      ramlValidationReport,
+      customValidationReport
+    );
+
+    expect(mergedReport.results.length).to.equal(1);
+    return expect(mergedReport.results).to.have.deep.members([
+      ramlValidationReport.results[0],
+    ]);
   });
 });
