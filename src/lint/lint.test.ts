@@ -35,7 +35,6 @@ import {
   conforms,
 } from "../../testResources/testUtils";
 import Sinon from "sinon";
-import _ from "lodash";
 
 const PROFILE = "mercury";
 
@@ -206,7 +205,7 @@ describe("#mergeValidationReports", () => {
       ramlValidationReport,
       customValidationReport
     );
-    
+
     return expect(mergedReport.conforms).to.be.false;
   });
 

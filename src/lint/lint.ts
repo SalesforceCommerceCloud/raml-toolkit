@@ -12,7 +12,6 @@ import {
   Core,
   MessageStyles,
   ProfileName,
-  core,
   ProfileNames,
 } from "amf-client-js";
 import { parseRamlFile } from "../common/amfParser";
