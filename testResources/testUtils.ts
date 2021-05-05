@@ -22,7 +22,6 @@ const BASE_CUSTOM_PROFILE = {
     "mercury-standards": `${LIBRARY_DIR}/mercury-standards.yaml`,
     "slas-standards": `${LIBRARY_DIR}/slas-standards.yaml`,
   },
-  extends: "RAML",
   disabled: ["amf-parser.WebAPI-mediaType-datatype"],
 };
 
