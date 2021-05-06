@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.8
+* Fixed the issue due to which raml-toolkit lint command was consuming too much memory and taking too much time to complete.
+* Minor bug fixes
+
 ## 0.5.7
 * Added `isTraitDefinition` Handlebars helper to test whether an object is an
 AMF model of a RAML trait.
