@@ -63,7 +63,7 @@
     "loglevel": "1.7.1",
     "make-fetch-happen": "8.0.14",
     "snyk": "1.521.0",
-    "tmp": "0.2.0",
+    "tmp": "0.2.1",
     "ts-node": "8.10.2",
     "unzipper": "0.10.11"
   },
