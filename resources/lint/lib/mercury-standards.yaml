@@ -148,19 +148,18 @@ validations:
         pattern: ^v[0-9]+$
         minCount: 1
 
-  # Disabled as it causes serious performance degradation
-  # unique-display-names: 
-  #   message: Operation displayName must be unique within an API
-  #   targetClass: apiContract.Operation
-  #   query: |
-  #     SELECT ?this ?value
-  #     WHERE {
-  #       ?this core:name ?value .
-  #       ?this rdf:type  apiContract:Operation .
-  #       ?operation2 core:name ?name2 .
-  #       ?operation2 rdf:type  apiContract:Operation .
-  #       FILTER (?this != ?operation2 && lcase(str(?value)) = lcase(str(?name2)))
-  #     }
+  unique-display-names: 
+    message: Operation displayName must be unique within an API
+    targetClass: apiContract.Operation
+    query: |
+      SELECT ?this ?value
+      WHERE {
+        ?this core:name ?value .
+        ?this rdf:type  apiContract:Operation .
+        ?operation2 core:name ?name2 .
+        ?operation2 rdf:type  apiContract:Operation .
+        FILTER (?this != ?operation2 && lcase(str(?value)) = lcase(str(?name2)))
+      }
 
   #datatype rules
   upper-camelcase-datatype:
