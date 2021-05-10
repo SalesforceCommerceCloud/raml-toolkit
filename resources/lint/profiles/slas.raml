@@ -30,7 +30,7 @@ violation:
   - require-response-description
   - require-json
   - resource-name-validation
-  - unique-display-names
+  # - unique-display-names // Disabled as it causes serious performance degradation
   - version-format
   # - upper-camelcase-datatype // Disabled as it is not working as expected
 
@@ -49,7 +49,7 @@ validations:
   require-response-description: mercury-standards.require-response-description
   require-json: mercury-standards.require-json
   resource-name-validation: slas-standards.resource-name-validation
-  unique-display-names: mercury-standards.unique-display-names
+  # unique-display-names: mercury-standards.unique-display-names
   version-format: mercury-standards.version-format
   snakecase-query-parameters: slas-standards.snakecase-query-parameters
   upper-camelcase-datatype: mercury-standards.upper-camelcase-datatype
