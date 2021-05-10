@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.5.9
+* Disabled the linting rule which checked for presence of duplicate display names in RAMLs because it caused serious performance degradation
+
 ## 0.5.8
 * Fixed the issue due to which raml-toolkit lint command was consuming too much memory and taking too much time to complete.
 * Minor bug fixes
