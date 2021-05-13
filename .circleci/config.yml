@@ -17,13 +17,16 @@ commands:
 executors:
   node-10:
     docker:
-      - image: circleci/node:10.20.1
+      - image: cimg/node:10.24.1
   node-12:
     docker:
-      - image: circleci/node:12.16.3
+      - image: cimg/node:12.22.1
   node-14:
     docker:
-      - image: circleci/node:14.2.0
+      - image: cimg/node:14.17.0
+  node-16:
+    docker:
+      - image: cimg/node:16.1.0
 
 # JOBS
 jobs:
@@ -39,6 +42,11 @@ jobs:
       - test
   build-node-14:
     executor: node-14
+    steps:
+      - build
+      - test
+  build-node-16:
+    executor: node-16
     steps:
       - build
       - test
@@ -68,6 +76,10 @@ workflows:
           filters:
             tags:
               ignore: /^v.*/
+      - build-node-16:
+          filters:
+            tags:
+              ignore: /^v.*/
   build-test-and-deploy:
     jobs:
       - build-node-10:
@@ -88,6 +100,12 @@ workflows:
               only: /^v.*/
             branches:
               ignore: /.*/
+      - build-node-16:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
       - confirm-publish-if-tagged:
           filters:
             tags:
@@ -99,6 +117,7 @@ workflows:
             - build-node-10
             - build-node-12
             - build-node-14
+            - build-node-16
       - publish:
           filters:
             tags:
