@@ -62,7 +62,7 @@
     "lodash": "4.17.21",
     "loglevel": "1.7.1",
     "make-fetch-happen": "8.0.14",
-    "snyk": "1.521.0",
+    "snyk": "1.635.0",
     "tmp": "0.2.0",
     "ts-node": "8.10.2",
     "unzipper": "0.10.11"
