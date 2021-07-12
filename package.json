@@ -52,7 +52,7 @@
   "dependencies": {
     "@oclif/command": "1.8.0",
     "@oclif/config": "1.17.0",
-    "amf-client-js": "4.7.0",
+    "amf-client-js": "4.7.1",
     "dotenv": "8.6.0",
     "fs-extra": "8.1.0",
     "handlebars": "4.7.7",
@@ -62,8 +62,8 @@
     "lodash": "4.17.21",
     "loglevel": "1.7.1",
     "make-fetch-happen": "8.0.14",
-    "snyk": "1.521.0",
-    "tmp": "0.2.0",
+    "snyk": "1.522.0",
+    "tmp": "0.2.1",
     "ts-node": "8.10.2",
     "unzipper": "0.10.11"
   },
