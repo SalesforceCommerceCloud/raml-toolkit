@@ -20,6 +20,7 @@ import { HandlebarsWithAmfHelpers as Handlebars } from "./";
 export class ApiMetadata {
   name: Name;
   metadata: { [key: string]: unknown } = {};
+  parent: ApiMetadata = null;
 
   templates: {
     handlebarTemplate: TemplateDelegate;
@@ -47,6 +48,9 @@ export class ApiMetadata {
         );
       }
     }
+    children.forEach((child) => {
+      child.parent = this;
+    });
   }
 
   /**

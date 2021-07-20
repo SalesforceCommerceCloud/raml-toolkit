@@ -6,6 +6,7 @@
  */
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import chaiFs from "chai-fs";
 
 import { Name } from "../common/structures/name";
 import { ApiMetadata } from "./";
@@ -24,6 +25,7 @@ const handlebarTemplate = path.join(
 
 before(() => {
   chai.use(chaiAsPromised);
+  chai.use(chaiFs);
 });
 
 describe("ApiMetadata", () => {
@@ -140,6 +142,17 @@ describe("ApiMetadata", () => {
 
     expect(testTree.metadata).to.be.deep.equal({});
     expect(testTree.name).to.be.deep.equal(new Name("apis"));
+  });
+
+  it("is created with no parent", () => {
+    const testTree = new ApiMetadata("foo");
+    expect(testTree.parent).to.be.null;
+  });
+
+  it("adds itself as parent to its children", () => {
+    const child = new ApiMetadata("child");
+    const parent = new ApiMetadata("parent", null, [child]);
+    expect(child.parent).to.equal(parent);
   });
 
   it("adds a template that doesn't exist", async () => {
