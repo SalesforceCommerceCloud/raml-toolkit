@@ -29,9 +29,8 @@ export async function diffApiModels(
       const leftRaml = path.join(leftApi.path, leftApi.main);
       const rightRaml = path.join(rightApi.path, rightApi.main);
       const differencer = new ApiDifferencer(leftRaml, rightRaml);
-      changes.changed[
-        leftApi.main
-      ] = await differencer.findAndCategorizeChanges();
+      changes.changed[leftApi.main] =
+        await differencer.findAndCategorizeChanges();
     } catch (error) {
       ramlToolLogger.error(
         `Diff operation for '${leftApi.name}' failed:`,
