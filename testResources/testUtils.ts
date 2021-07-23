@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -59,7 +59,10 @@ export function createCustomProfile(rules: {}): string {
 export function getHappySpec(
   filename = SPEC_PROFILE_PATH
 ): Record<string, unknown> {
-  return yaml.safeLoad(fs.readFileSync(filename, "utf8"));
+  return yaml.safeLoad(fs.readFileSync(filename, "utf8")) as unknown as Record<
+    string,
+    unknown
+  >;
 }
 
 export function renderSpecAsFile(doc: unknown): string {
