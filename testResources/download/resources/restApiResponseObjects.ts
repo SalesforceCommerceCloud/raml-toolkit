@@ -8,8 +8,7 @@ import { download } from "../../../src/";
 
 export const searchAssetApiResultObject: download.RestApi[] = [
   {
-    id:
-      "893f605e-10e2-423a-bdb4-f952f56eb6d8/shop-products-categories-api-v1/0.0.1",
+    id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shop-products-categories-api-v1/0.0.1",
     name: "Shopper Products",
     groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
     assetId: "shop-products-categories-api-v1",

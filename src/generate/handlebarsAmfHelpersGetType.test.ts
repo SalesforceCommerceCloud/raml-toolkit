@@ -42,7 +42,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
     });
 
     it("returns 'boolean' on boolean data type", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(
         getScalarType("http://www.w3.org/2001/XMLSchema#boolean")
       );
@@ -51,7 +52,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
     });
 
     it("returns 'number' on float data type", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(
         getScalarType("http://www.w3.org/2001/XMLSchema#float")
       );
@@ -60,7 +62,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
     });
 
     it("returns 'boolean' on boolean linked data type", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(
         getLinkedScalarType("http://www.w3.org/2001/XMLSchema#boolean")
       );
@@ -69,7 +72,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
     });
 
     it("returns 'any' on undefined data type", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(getScalarType(undefined));
 
       expect(getTypeFromProperty(property)).to.equal("any");
@@ -107,7 +111,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const range: model.domain.ArrayShape = new model.domain.ArrayShape();
       range.withItems(getScalarType("http://www.w3.org/2001/XMLSchema#string"));
 
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(range);
 
       expect(getTypeFromProperty(property)).to.equal("Array<string>");
@@ -117,7 +122,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
       const range: model.domain.ArrayShape = new model.domain.ArrayShape();
       range.withItems(getLinkedType("defined_type"));
 
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(range);
 
       expect(getTypeFromProperty(property)).to.equal("Array<defined_type>");
@@ -129,7 +135,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
         getLinkedScalarType("http://www.w3.org/2001/XMLSchema#string")
       );
 
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(range);
 
       expect(getTypeFromProperty(property)).to.equal("Array<string>");
@@ -141,7 +148,8 @@ describe("HandlebarsAmfHelpers get type helper functions", () => {
 
       const arrType = new model.domain.ArrayShape();
       arrType.withInherits([inheritedType]);
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withRange(arrType);
 
       expect(getTypeFromProperty(property)).to.equal("Array<defined_type>");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -41,7 +41,9 @@ const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
  */
 export async function runFetch(
   url: string,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   options: { [key: string]: any } = {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> {
   options.retry = _.merge({}, retryOptions, options.retry);
   options = _.merge(options, {

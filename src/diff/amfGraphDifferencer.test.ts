@@ -313,9 +313,8 @@ describe("Changes to the reference node ID with in a node", () => {
     const oldReferenceValue = {
       [AmfGraphTypes.KEY_NODE_ID]: "#/declarations/securitySchemes/test",
     };
-    baseGraph[AmfGraphTypes.KEY_GRAPH][1][
-      "security:scheme"
-    ] = oldReferenceValue;
+    baseGraph[AmfGraphTypes.KEY_GRAPH][1]["security:scheme"] =
+      oldReferenceValue;
 
     const newGraph = buildValidGraph();
     const newReferenceValue = {

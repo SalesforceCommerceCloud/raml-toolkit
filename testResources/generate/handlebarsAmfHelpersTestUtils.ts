@@ -44,7 +44,8 @@ export const getInheritedType = (typeName: string): model.domain.AnyShape => {
 };
 
 export const getObjectType = (): model.domain.NodeShape => {
-  const objProperty: model.domain.PropertyShape = new model.domain.PropertyShape();
+  const objProperty: model.domain.PropertyShape =
+    new model.domain.PropertyShape();
   objProperty.withName("test");
 
   const objType = new model.domain.NodeShape();

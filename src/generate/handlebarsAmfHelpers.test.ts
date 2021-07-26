@@ -56,13 +56,15 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns false on valid optional properties", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withMinCount(0);
       expect(isRequiredProperty(property)).to.be.false;
     });
 
     it("returns true on valid required class", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withMinCount(1);
       expect(isRequiredProperty(property)).to.be.true;
     });
@@ -78,13 +80,15 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns false on valid required property", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withMinCount(1);
       expect(isOptionalProperty(property)).to.be.false;
     });
 
     it("returns true on valid optional property", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withMinCount(0);
       expect(isOptionalProperty(property)).to.be.true;
     });
@@ -100,7 +104,8 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns empty array on model containing only additional property", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withName("//");
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
@@ -109,7 +114,8 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns empty array on model containing only one additional property with regex", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withName("/.*/");
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
@@ -118,7 +124,8 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns empty array on model containing only one additional property with specific regex", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withName("/^c_.+$/?");
       property.withMinCount(1);
       const typeDto = new model.domain.NodeShape();
@@ -128,7 +135,8 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns empty array on model containing only one additional property with prefix regex", () => {
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property.withName("^c_.+$");
       property.withMinCount(1);
       const typeDto = new model.domain.NodeShape();
@@ -142,10 +150,14 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns an array of required and optional parameters on model with required, optional and additional parameters", () => {
-      const property1: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property2: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property3: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property4: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property1: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property2: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property3: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property4: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property1.withName("required");
       property1.withMinCount(1);
       property2.withName("optional");
@@ -159,8 +171,10 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns an array with inherited parameters", () => {
-      const inheritedProp: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const inheritedProp: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       inheritedProp.withName("p1");
       inheritedProp.withMinCount(1);
       property.withName("p2");
@@ -175,8 +189,10 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns an array with linked parameters", () => {
-      const property1: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property2: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property1: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property2: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property1.withName("p1");
       property1.withMinCount(1);
       property2.withName("p2");
@@ -190,10 +206,14 @@ describe("HandlebarsAmfHelpers", () => {
     });
 
     it("returns an array excluding duplicate properties", () => {
-      const property1: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property2: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property3: model.domain.PropertyShape = new model.domain.PropertyShape();
-      const property4: model.domain.PropertyShape = new model.domain.PropertyShape();
+      const property1: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property2: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property3: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
+      const property4: model.domain.PropertyShape =
+        new model.domain.PropertyShape();
       property1.withName("p1");
       property1.withMinCount(1);
       property2.withName("duplicate");
