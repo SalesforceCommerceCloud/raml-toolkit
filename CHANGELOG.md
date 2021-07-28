@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.10
+* Added new `parent` property to `ApiMetadata`. When a new instance is created with
+children, the new instance is set as the parent of each child instance.
+
 ## 0.5.9
 * Disabled the linting rule which checked for presence of duplicate display names in RAMLs because it caused serious performance degradation
 
