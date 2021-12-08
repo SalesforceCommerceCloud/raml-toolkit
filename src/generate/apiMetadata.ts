@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -90,11 +90,10 @@ export class ApiMetadata {
     try {
       await this.renderThis();
     } catch (err) {
-      ramlToolLogger.error(err);
+      ramlToolLogger.error(`Failed to render ${this.name}:`, err);
     }
-    return this.children.forEach(async (child) => {
-      await child.render();
-    });
+    // Render children in parallel
+    this.children.forEach(async (child) => await child.render());
   }
 
   /**
