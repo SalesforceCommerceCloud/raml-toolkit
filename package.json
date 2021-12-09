@@ -49,6 +49,10 @@
       "git add"
     ]
   },
+  "resolutions": {
+    "**/@oclif/command": "<=1.8.3",
+    "**/yargs": "<17"
+  },
   "dependencies": {
     "@oclif/command": "1.8.0",
     "@oclif/config": "1.17.0",
@@ -108,10 +112,6 @@
   "oclif": {
     "bin": "raml-toolkit",
     "commands": "./lib/commands"
-  },
-  "resolutions": {
-    "**/@oclif/command": "<=1.8.3",
-    "**/yargs": "<17"
   },
   "snyk": true
 }
