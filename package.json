@@ -50,8 +50,8 @@
     ]
   },
   "dependencies": {
-    "@oclif/command": "1.8.3",
-    "@oclif/config": "1.18.2",
+    "@oclif/command": "1.8.0",
+    "@oclif/config": "1.17.0",
     "amf-client-js": "4.7.2",
     "dotenv": "8.6.0",
     "fs-extra": "8.1.0",
@@ -69,8 +69,8 @@
   },
   "devDependencies": {
     "@fintechstudios/eslint-plugin-chai-as-promised": "^3.1.0",
-    "@oclif/dev-cli": "^1.26.8",
-    "@oclif/parser": "^3.8.6",
+    "@oclif/dev-cli": "^1.26.0",
+    "@oclif/parser": "^3.8.5",
     "@oclif/test": "^1.2.8",
     "@types/chai-as-promised": "^7.1.4",
     "@types/chai-fs": "^2.0.2",
@@ -78,7 +78,7 @@
     "@types/js-yaml": "^3.12.7",
     "@types/jszip": "^3.4.1",
     "@types/mocha": "^8.2.3",
-    "@types/node": "^14.18.0",
+    "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
     "@types/tmp": "^0.2.2",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
