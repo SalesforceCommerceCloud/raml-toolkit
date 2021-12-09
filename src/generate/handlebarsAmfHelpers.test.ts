@@ -325,5 +325,9 @@ describe("HandlebarsAmfHelpers", () => {
       const request = new model.domain.Request();
       expect(helpers.isRequestWithPayload(request)).to.be.false;
     });
+
+    it("returns false when request is not given", () => {
+      expect(helpers.isRequestWithPayload(undefined)).to.be.false;
+    });
   });
 });

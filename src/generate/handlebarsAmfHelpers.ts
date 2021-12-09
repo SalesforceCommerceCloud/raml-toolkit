@@ -222,7 +222,7 @@ export const getMediaTypeFromRequest = (
  * @param request - An AMF request
  * @returns Whether a request has a payload
  */
-export const isRequestWithPayload = (request: model.domain.Request): boolean =>
-  request.payloads[0] != null;
+export const isRequestWithPayload = (request?: model.domain.Request): boolean =>
+  request?.payloads[0] != null;
 
 export { getValue, getDataType };
