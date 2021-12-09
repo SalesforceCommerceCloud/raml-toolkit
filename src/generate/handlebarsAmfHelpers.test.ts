@@ -302,7 +302,7 @@ describe("HandlebarsAmfHelpers", () => {
     });
   });
 
-  describe("Media type helper", () => {
+  describe("getMediaTypeFromRequesthelper", () => {
     it("returns the correct media type for a request", () => {
       const payload = new model.domain.Payload().withMediaType(
         "application/json"
@@ -311,6 +311,19 @@ describe("HandlebarsAmfHelpers", () => {
       expect(helpers.getMediaTypeFromRequest(request)).to.equal(
         "application/json"
       );
+    });
+  });
+
+  describe("isRequestWithPayload", () => {
+    it("returns true for a request with a payload", () => {
+      const request = new model.domain.Request();
+      request.withPayload("application/json");
+      expect(helpers.isRequestWithPayload(request)).to.be.true;
+    });
+
+    it("returns false for a request without a payload", () => {
+      const request = new model.domain.Request();
+      expect(helpers.isRequestWithPayload(request)).to.be.false;
     });
   });
 });
