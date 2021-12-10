@@ -193,17 +193,17 @@ describe("ApiMetaData render tests", () => {
   });
 
   it("does nothing without templates for the entire tree", async () => {
-    const ensureDirSyncSpy = sandbox.spy(fs, "ensureDirSync");
-    const writeFileSyncSpy = sandbox.spy(fs, "writeFileSync");
+    const ensureDirSpy = sandbox.spy(fs, "ensureDir");
+    const writeFileSpy = sandbox.spy(fs, "writeFile");
     await apiMetadata.render();
 
-    expect(ensureDirSyncSpy.notCalled).to.be.true;
-    expect(writeFileSyncSpy.notCalled).to.be.true;
+    expect(ensureDirSpy.notCalled).to.be.true;
+    expect(writeFileSpy.notCalled).to.be.true;
   });
 
   it("renders root template only", async () => {
-    const ensureDirSyncSpy = sandbox.spy(fs, "ensureDirSync");
-    const writeFileSyncSpy = sandbox.spy(fs, "writeFileSync");
+    const ensureDirSpy = sandbox.spy(fs, "ensureDir");
+    const writeFileSpy = sandbox.spy(fs, "writeFile");
     apiMetadata.addTemplate(
       handlebarTemplate,
       path.join(tmpDir.name, "apis.txt")
@@ -211,8 +211,8 @@ describe("ApiMetaData render tests", () => {
 
     await apiMetadata.render();
 
-    expect(ensureDirSyncSpy.calledOnce).to.be.true;
-    expect(writeFileSyncSpy.calledOnce).to.be.true;
+    expect(ensureDirSpy.calledOnce).to.be.true;
+    expect(writeFileSpy.calledOnce).to.be.true;
 
     expect(path.join(tmpDir.name, "apis.txt"))
       .to.be.a.file()
@@ -220,8 +220,8 @@ describe("ApiMetaData render tests", () => {
   });
 
   it("renders child templates only", async () => {
-    const ensureDirSyncSpy = sandbox.spy(fs, "ensureDirSync");
-    const writeFileSyncSpy = sandbox.spy(fs, "writeFileSync");
+    const ensureDirSpy = sandbox.spy(fs, "ensureDir");
+    const writeFileSpy = sandbox.spy(fs, "writeFile");
 
     apiMetadata.children[0].addTemplate(
       handlebarTemplate,
@@ -235,8 +235,8 @@ describe("ApiMetaData render tests", () => {
 
     await apiMetadata.render();
 
-    expect(ensureDirSyncSpy.calledTwice).to.be.true;
-    expect(writeFileSyncSpy.calledTwice).to.be.true;
+    expect(ensureDirSpy.calledTwice).to.be.true;
+    expect(writeFileSpy.calledTwice).to.be.true;
 
     expect(path.join(tmpDir.name, "child1.txt"))
       .to.be.a.file()
@@ -248,8 +248,8 @@ describe("ApiMetaData render tests", () => {
   });
 
   it("renders all templates", async () => {
-    const ensureDirSyncSpy = sandbox.spy(fs, "ensureDirSync");
-    const writeFileSyncSpy = sandbox.spy(fs, "writeFileSync");
+    const ensureDirSpy = sandbox.spy(fs, "ensureDir");
+    const writeFileSpy = sandbox.spy(fs, "writeFile");
 
     apiMetadata.addTemplate(
       handlebarTemplate,
@@ -268,8 +268,8 @@ describe("ApiMetaData render tests", () => {
 
     await apiMetadata.render();
 
-    expect(ensureDirSyncSpy.calledThrice).to.be.true;
-    expect(writeFileSyncSpy.calledThrice).to.be.true;
+    expect(ensureDirSpy.calledThrice).to.be.true;
+    expect(writeFileSpy.calledThrice).to.be.true;
 
     expect(path.join(tmpDir.name, "apis.txt"))
       .to.be.a.file()

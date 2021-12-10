@@ -75,10 +75,25 @@ export class ApiMetadata {
    */
   public async renderThis(): Promise<void> {
     ramlToolLogger.info(`Rendering templates for ${this.name.original}`);
-    this.templates.forEach((template) => {
-      fs.ensureDirSync(path.dirname(template.outputFile));
-      fs.writeFileSync(template.outputFile, template.handlebarTemplate(this));
+    // Render templates in parallel
+    const promises = this.templates.map(async (template) => {
+      try {
+        await fs.ensureDir(path.dirname(template.outputFile));
+        await fs.writeFile(
+          template.outputFile,
+          template.handlebarTemplate(this, {
+            allowProtoPropertiesByDefault: true,
+            allowProtoMethodsByDefault: true,
+          })
+        );
+      } catch (err) {
+        ramlToolLogger.error(
+          `Error while rendering ${template.outputFile}:`,
+          err
+        );
+      }
     });
+    await Promise.all(promises);
   }
 
   /**
@@ -92,8 +107,10 @@ export class ApiMetadata {
     } catch (err) {
       ramlToolLogger.error(`Failed to render ${this.name}:`, err);
     }
+
     // Render children in parallel
-    this.children.forEach(async (child) => await child.render());
+    const promises = this.children.map(async (child) => await child.render());
+    await Promise.all(promises);
   }
 
   /**

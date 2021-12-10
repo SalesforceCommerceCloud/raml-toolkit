@@ -84,6 +84,7 @@ export class ApiModel extends ApiMetadata {
    * @memberof ApiModel
    */
   public async loadModel(updateName = true): Promise<void> {
+    ramlToolLogger.info(`Loading model for ${this.name.original}`);
     const tmpModel = await parseRamlFile(path.join(this.path, this.main));
 
     // The model needs to be cloned because resolveApiModel messes with the dataTypes.
@@ -120,15 +121,24 @@ export class ApiModel extends ApiMetadata {
     }
 
     ramlToolLogger.info(`Rendering templates for ${this.name.original}`);
-    this.templates.forEach((template) => {
-      fs.ensureDirSync(path.dirname(template.outputFile));
-      fs.writeFileSync(
-        template.outputFile,
-        template.handlebarTemplate(this, {
-          allowProtoPropertiesByDefault: true,
-          allowProtoMethodsByDefault: true,
-        })
-      );
+    // Render templates in parallel
+    const promises = this.templates.map(async (template) => {
+      try {
+        await fs.ensureDir(path.dirname(template.outputFile));
+        await fs.writeFile(
+          template.outputFile,
+          template.handlebarTemplate(this, {
+            allowProtoPropertiesByDefault: true,
+            allowProtoMethodsByDefault: true,
+          })
+        );
+      } catch (err) {
+        ramlToolLogger.error(
+          `Error while rendering ${template.outputFile}:`,
+          err
+        );
+      }
     });
+    await Promise.all(promises);
   }
 }
