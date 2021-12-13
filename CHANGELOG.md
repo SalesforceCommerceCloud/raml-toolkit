@@ -1,31 +1,44 @@
 # CHANGELOG
 
+## 0.5.11
+
+* Added new template helpers `getMediaTypeFromRequest` and `isRequestWithPayload`.
+* Improved logging while rendering templates.
+* TypeScript test files in `/resources` will no longer be published.
+
 ## 0.5.10
+
 * Added new `parent` property to `ApiMetadata`. When a new instance is created with
 children, the new instance is set as the parent of each child instance.
 
 ## 0.5.9
+
 * Disabled the linting rule which checked for presence of duplicate display names in RAMLs because it caused serious performance degradation
 
 ## 0.5.8
+
 * Fixed the issue due to which raml-toolkit lint command was consuming too much memory and taking too much time to complete.
 * Minor bug fixes
 
 ## 0.5.7
+
 * Added `isTraitDefinition` Handlebars helper to test whether an object is an
 AMF model of a RAML trait.
 * Refactored validation profiles to import rules from libraries. The rules are
 unchanged, but they are now available for use in custom validation profiles.
 
 ## 0.5.6
+
 * Updated profile validation rules to use SPARQL
 * Minor bug fixes
 
 ## 0.5.5
+
 * Added additional documentation for utilizing the Delta Checker
 * Security updates
 
 ## 0.5.4
+
 * Added Non-Breaking rule to detect addition of endpoint operations in Delta Checker
 * Add retry option to fetch
 
@@ -40,13 +53,13 @@ unchanged, but they are now available for use in custom validation profiles.
 
 ## 0.5.1
 
-* *NEW FEATURE* Added new console formatter for diff command, see the  [README](README.md#raml-toolkit-diff-base-new). 
+* *NEW FEATURE* Added new console formatter for diff command, see the  [README](README.md#raml-toolkit-diff-base-new).
 * *BUG FIX* RAML files with correct deployment tags are now downloaded
 
 ## 0.5.0
 
 * *NEW FEATURE* Added CLI commands to download raml files directly from exchange
-* *NEW FEATURE* Added ability to render templates from an API model 
+* *NEW FEATURE* Added ability to render templates from an API model
 * Exports have been reorganized to match associated CLI commands
 * Added additional ignore rules and other enhancements to the difftool to ensure a better signal to noise ratio.
 
