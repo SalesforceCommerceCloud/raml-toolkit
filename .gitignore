@@ -8,3 +8,4 @@ coverage
 .env
 reports
 .idea
+*.tgz

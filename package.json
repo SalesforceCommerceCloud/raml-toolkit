@@ -49,6 +49,10 @@
       "git add"
     ]
   },
+  "resolutions": {
+    "**/@oclif/command": "<=1.8.3",
+    "**/yargs": "<17"
+  },
   "dependencies": {
     "@oclif/command": "1.8.0",
     "@oclif/config": "1.17.1",
@@ -62,7 +66,7 @@
     "lodash": "4.17.21",
     "loglevel": "1.8.0",
     "make-fetch-happen": "8.0.14",
-    "snyk": "1.685.0",
+    "snyk": "1.787.0",
     "tmp": "0.2.1",
     "ts-node": "8.10.2",
     "unzipper": "0.10.11"
@@ -78,9 +82,9 @@
     "@types/js-yaml": "^3.12.7",
     "@types/jszip": "^3.4.1",
     "@types/mocha": "^8.2.3",
-    "@types/node": "^14.14.6",
+    "@types/node": "^10.17.60",
     "@types/sinon": "^9.0.11",
-    "@types/tmp": "^0.2.1",
+    "@types/tmp": "^0.2.2",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "chai": "^4.3.4",
@@ -89,16 +93,16 @@
     "depcheck": "^0.9.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.15.0",
-    "eslint-plugin-header": "^3.0.0",
-    "eslint-plugin-prettier": "^3.4.0",
-    "jszip": "^3.6.0",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-prettier": "^3.4.1",
+    "jszip": "^3.7.1",
     "lint-staged": "^8.2.1",
     "mocha": "^8.4.0",
     "nock": "^12.0.3",
     "nyc": "^15.1.0",
-    "prettier": "^2.3.2",
+    "prettier": "^2.5.1",
     "sinon": "^9.2.4",
-    "sort-package-json": "^1.50.0",
+    "sort-package-json": "^1.53.1",
     "tslib": "^1.14.1",
     "typescript": "^3.9.7"
   },

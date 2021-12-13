@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -206,13 +206,23 @@ export const isOptionalProperty = (
  */
 export const isAdditionalPropertiesAllowed = (
   node: model.domain.NodeShape
-): boolean => {
-  return (
-    node !== undefined &&
-    node.closed !== undefined &&
-    node.closed.value !== undefined &&
-    !node.closed.value()
-  );
-};
+): boolean => typeof node?.closed?.value === "function" && !node.closed.value();
+
+/**
+ * Get the media type of the request
+ * @param request - An AMF request
+ * @returns media type string
+ */
+export const getMediaTypeFromRequest = (
+  request: model.domain.Request
+): string => request.payloads[0].mediaType.value();
+
+/**
+ * Determine whether a request has a payload
+ * @param request - An AMF request
+ * @returns Whether a request has a payload
+ */
+export const isRequestWithPayload = (request?: model.domain.Request): boolean =>
+  request?.payloads[0] != null;
 
 export { getValue, getDataType };

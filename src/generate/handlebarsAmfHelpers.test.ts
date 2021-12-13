@@ -1,26 +1,15 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { handlebarsAmfHelpers } from "./";
+import { handlebarsAmfHelpers as helpers } from "./";
 
 import { verifyProperties } from "../../testResources/generate/handlebarsAmfHelpersTestUtils";
 
 import { model, AMF } from "amf-client-js";
 import { expect } from "chai";
-
-const {
-  getBaseUriFromDocument,
-  getProperties,
-  isAdditionalPropertiesAllowed,
-  isOptionalProperty,
-  isRequiredProperty,
-  isTypeDefinition,
-  isTraitDefinition,
-  isArrayType,
-} = handlebarsAmfHelpers;
 
 describe("HandlebarsAmfHelpers", () => {
   before(() => {
@@ -29,78 +18,80 @@ describe("HandlebarsAmfHelpers", () => {
 
   describe("getBaseUriFromDocument", () => {
     it("returns an empty string for null input", () => {
-      expect(getBaseUriFromDocument(null)).to.equal("");
+      expect(helpers.getBaseUriFromDocument(null)).to.equal("");
     });
 
     it("returns an empty string for empty model", () => {
-      expect(getBaseUriFromDocument(new model.document.Document())).to.equal(
-        ""
-      );
+      expect(
+        helpers.getBaseUriFromDocument(new model.document.Document())
+      ).to.equal("");
     });
 
     it("returns correct base uri", async () => {
       const api: model.domain.WebApi = new model.domain.WebApi();
       api.withServer("test-url-value");
       const testModel = new model.document.Document().withEncodes(api);
-      expect(getBaseUriFromDocument(testModel)).to.equal("test-url-value");
+      expect(helpers.getBaseUriFromDocument(testModel)).to.equal(
+        "test-url-value"
+      );
     });
   });
 
   describe("isRequiredProperty", () => {
     it("returns false on undefined property", () => {
-      expect(isRequiredProperty(undefined)).to.be.false;
+      expect(helpers.isRequiredProperty(undefined)).to.be.false;
     });
 
     it("returns false on null property", () => {
-      expect(isRequiredProperty(null)).to.be.false;
+      expect(helpers.isRequiredProperty(null)).to.be.false;
     });
 
     it("returns false on valid optional properties", () => {
       const property: model.domain.PropertyShape =
         new model.domain.PropertyShape();
       property.withMinCount(0);
-      expect(isRequiredProperty(property)).to.be.false;
+      expect(helpers.isRequiredProperty(property)).to.be.false;
     });
 
     it("returns true on valid required class", () => {
       const property: model.domain.PropertyShape =
         new model.domain.PropertyShape();
       property.withMinCount(1);
-      expect(isRequiredProperty(property)).to.be.true;
+      expect(helpers.isRequiredProperty(property)).to.be.true;
     });
   });
 
   describe("isOptionalProperty", () => {
     it("returns false on undefined class", () => {
-      expect(isOptionalProperty(undefined)).to.be.false;
+      expect(helpers.isOptionalProperty(undefined)).to.be.false;
     });
 
     it("returns false on null class", () => {
-      expect(isOptionalProperty(undefined)).to.be.false;
+      expect(helpers.isOptionalProperty(undefined)).to.be.false;
     });
 
     it("returns false on valid required property", () => {
       const property: model.domain.PropertyShape =
         new model.domain.PropertyShape();
       property.withMinCount(1);
-      expect(isOptionalProperty(property)).to.be.false;
+      expect(helpers.isOptionalProperty(property)).to.be.false;
     });
 
     it("returns true on valid optional property", () => {
       const property: model.domain.PropertyShape =
         new model.domain.PropertyShape();
       property.withMinCount(0);
-      expect(isOptionalProperty(property)).to.be.true;
+      expect(helpers.isOptionalProperty(property)).to.be.true;
     });
   });
 
   describe("getProperties", () => {
     it("returns empty array on undefined model", () => {
-      expect(getProperties(undefined)).to.be.empty;
+      expect(helpers.getProperties(undefined)).to.be.empty;
     });
 
     it("returns empty array on null model", () => {
-      expect(getProperties(null)).to.be.empty;
+      expect(helpers.getProperties(null)).to.be.empty;
     });
 
     it("returns empty array on model containing only additional property", () => {
@@ -110,7 +101,7 @@ describe("HandlebarsAmfHelpers", () => {
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
 
-      expect(getProperties(typeDto)).to.be.empty;
+      expect(helpers.getProperties(typeDto)).to.be.empty;
     });
 
     it("returns empty array on model containing only one additional property with regex", () => {
@@ -120,7 +111,7 @@ describe("HandlebarsAmfHelpers", () => {
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
 
-      expect(getProperties(typeDto)).to.be.empty;
+      expect(helpers.getProperties(typeDto)).to.be.empty;
     });
 
     it("returns empty array on model containing only one additional property with specific regex", () => {
@@ -131,7 +122,7 @@ describe("HandlebarsAmfHelpers", () => {
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
 
-      expect(getProperties(typeDto)).to.be.empty;
+      expect(helpers.getProperties(typeDto)).to.be.empty;
     });
 
     it("returns empty array on model containing only one additional property with prefix regex", () => {
@@ -141,12 +132,12 @@ describe("HandlebarsAmfHelpers", () => {
       property.withMinCount(1);
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property]);
-      expect(getProperties(typeDto)).to.be.empty;
+      expect(helpers.getProperties(typeDto)).to.be.empty;
     });
 
     it("returns empty array on model that contains no direct properties and no linked properties", () => {
       const typeDto = new model.domain.NodeShape();
-      expect(getProperties(typeDto)).to.be.empty;
+      expect(helpers.getProperties(typeDto)).to.be.empty;
     });
 
     it("returns an array of required and optional parameters on model with required, optional and additional parameters", () => {
@@ -167,7 +158,7 @@ describe("HandlebarsAmfHelpers", () => {
       const typeDto = new model.domain.NodeShape();
       typeDto.withProperties([property1, property2, property3, property4]);
 
-      verifyProperties([property1, property2], getProperties(typeDto));
+      verifyProperties([property1, property2], helpers.getProperties(typeDto));
     });
 
     it("returns an array with inherited parameters", () => {
@@ -185,7 +176,10 @@ describe("HandlebarsAmfHelpers", () => {
       typeDto.withProperties([property]);
       typeDto.withInherits([inheritedDto]);
 
-      verifyProperties([inheritedProp, property], getProperties(typeDto));
+      verifyProperties(
+        [inheritedProp, property],
+        helpers.getProperties(typeDto)
+      );
     });
 
     it("returns an array with linked parameters", () => {
@@ -202,7 +196,7 @@ describe("HandlebarsAmfHelpers", () => {
       const typeDto = new model.domain.NodeShape();
       typeDto.withLinkTarget(linkedDto);
 
-      verifyProperties([property1, property2], getProperties(typeDto));
+      verifyProperties([property1, property2], helpers.getProperties(typeDto));
     });
 
     it("returns an array excluding duplicate properties", () => {
@@ -230,78 +224,110 @@ describe("HandlebarsAmfHelpers", () => {
 
       verifyProperties(
         [property3, property4, property1],
-        getProperties(typeDto)
+        helpers.getProperties(typeDto)
       );
     });
   });
 
   describe("isAdditionalPropertiesAllowed", () => {
     it("returns false on undefined RAML type", () => {
-      expect(isAdditionalPropertiesAllowed(undefined)).to.be.false;
+      expect(helpers.isAdditionalPropertiesAllowed(undefined)).to.be.false;
     });
 
     it("returns false when additional properties are not allowed", () => {
       const typeDto = new model.domain.NodeShape();
       // Closed ensures no Additional properties are allowed for this type
       typeDto.withClosed(true);
-      expect(isAdditionalPropertiesAllowed(typeDto)).to.be.false;
+      expect(helpers.isAdditionalPropertiesAllowed(typeDto)).to.be.false;
     });
 
     it("returns true when additional properties are allowed", () => {
       const typeDto = new model.domain.NodeShape();
       // Closed ensures no Additional properties are allowed for this type
       typeDto.withClosed(false);
-      expect(isAdditionalPropertiesAllowed(typeDto)).to.be.true;
+      expect(helpers.isAdditionalPropertiesAllowed(typeDto)).to.be.true;
     });
   });
 
   describe("isTypeDefinition", () => {
     it("returns true if shape is NodeShape", () => {
-      expect(isTypeDefinition(new model.domain.NodeShape())).to.be.true;
+      expect(helpers.isTypeDefinition(new model.domain.NodeShape())).to.be.true;
     });
 
     it("returns false if shape is null", () => {
-      expect(isTypeDefinition(null)).to.be.false;
+      expect(helpers.isTypeDefinition(null)).to.be.false;
     });
 
     it("returns false if shape is ScalarShape", () => {
-      expect(isTypeDefinition(new model.domain.ScalarShape())).to.be.false;
+      expect(helpers.isTypeDefinition(new model.domain.ScalarShape())).to.be
+        .false;
     });
 
     it("returns false if shape is ArrayShape", () => {
-      expect(isTypeDefinition(new model.domain.ArrayShape())).to.be.false;
+      expect(helpers.isTypeDefinition(new model.domain.ArrayShape())).to.be
+        .false;
     });
   });
 
   describe("isArrayType", () => {
     it("returns false if shape is NodeShape", () => {
-      expect(isArrayType(new model.domain.NodeShape())).to.be.false;
+      expect(helpers.isArrayType(new model.domain.NodeShape())).to.be.false;
     });
 
     it("returns false if shape is null", () => {
-      expect(isArrayType(null)).to.be.false;
+      expect(helpers.isArrayType(null)).to.be.false;
     });
 
     it("returns false if shape is ScalarShape", () => {
-      expect(isArrayType(new model.domain.ScalarShape())).to.be.false;
+      expect(helpers.isArrayType(new model.domain.ScalarShape())).to.be.false;
     });
 
     it("returns true if shape is ArrayShape", () => {
-      expect(isArrayType(new model.domain.ArrayShape())).to.be.true;
+      expect(helpers.isArrayType(new model.domain.ArrayShape())).to.be.true;
     });
   });
 
   describe("isTraitDefinition", () => {
     it("returns false if shape is not a Trait", () => {
-      expect(isTraitDefinition(new model.domain.NodeShape())).to.be.false;
+      expect(helpers.isTraitDefinition(new model.domain.NodeShape())).to.be
+        .false;
     });
 
     it("returns false if shape is null", () => {
-      expect(isTraitDefinition(null)).to.be.false;
+      expect(helpers.isTraitDefinition(null)).to.be.false;
     });
 
     it("returns true if shape is ScalarShape", () => {
-      expect(isTraitDefinition(new model.domain.Trait())).to.be.true;
+      expect(helpers.isTraitDefinition(new model.domain.Trait())).to.be.true;
+    });
+  });
+
+  describe("getMediaTypeFromRequesthelper", () => {
+    it("returns the correct media type for a request", () => {
+      const payload = new model.domain.Payload().withMediaType(
+        "application/json"
+      );
+      const request = new model.domain.Request().withPayloads([payload]);
+      expect(helpers.getMediaTypeFromRequest(request)).to.equal(
+        "application/json"
+      );
+    });
+  });
+
+  describe("isRequestWithPayload", () => {
+    it("returns true for a request with a payload", () => {
+      const request = new model.domain.Request();
+      request.withPayload("application/json");
+      expect(helpers.isRequestWithPayload(request)).to.be.true;
+    });
+
+    it("returns false for a request without a payload", () => {
+      const request = new model.domain.Request();
+      expect(helpers.isRequestWithPayload(request)).to.be.false;
+    });
+
+    it("returns false when request is not given", () => {
+      expect(helpers.isRequestWithPayload(undefined)).to.be.false;
     });
   });
 });

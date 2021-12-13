@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2021, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -75,10 +75,25 @@ export class ApiMetadata {
    */
   public async renderThis(): Promise<void> {
     ramlToolLogger.info(`Rendering templates for ${this.name.original}`);
-    this.templates.forEach((template) => {
-      fs.ensureDirSync(path.dirname(template.outputFile));
-      fs.writeFileSync(template.outputFile, template.handlebarTemplate(this));
+    // Render templates in parallel
+    const promises = this.templates.map(async (template) => {
+      try {
+        await fs.ensureDir(path.dirname(template.outputFile));
+        await fs.writeFile(
+          template.outputFile,
+          template.handlebarTemplate(this, {
+            allowProtoPropertiesByDefault: true,
+            allowProtoMethodsByDefault: true,
+          })
+        );
+      } catch (err) {
+        ramlToolLogger.error(
+          `Error while rendering ${template.outputFile}:`,
+          err
+        );
+      }
     });
+    await Promise.all(promises);
   }
 
   /**
@@ -90,11 +105,12 @@ export class ApiMetadata {
     try {
       await this.renderThis();
     } catch (err) {
-      ramlToolLogger.error(err);
+      ramlToolLogger.error(`Failed to render ${this.name}:`, err);
     }
-    return this.children.forEach(async (child) => {
-      await child.render();
-    });
+
+    // Render children in parallel
+    const promises = this.children.map(async (child) => await child.render());
+    await Promise.all(promises);
   }
 
   /**
