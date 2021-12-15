@@ -54,7 +54,7 @@
     "**/yargs": "<17"
   },
   "dependencies": {
-    "@oclif/command": "1.8.0",
+    "@oclif/command": "1.8.4",
     "@oclif/config": "1.17.1",
     "amf-client-js": "4.7.2",
     "dotenv": "8.6.0",
