@@ -797,7 +797,7 @@
         {
           "classifier": "raml",
           "packaging": "zip",
-          "externalLink": "https://short.url/test1",
+          "externalLink": "https://short.url/test",
           "md5": "d316fae8b5c8900c0e33a4e0b048036f",
           "sha1": "11135918c973bb7288cc5f7ec6f96c61af0690c1",
           "createdDate": "2020-07-14T07:57:08.318Z",
