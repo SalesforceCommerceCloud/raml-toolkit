@@ -74,8 +74,7 @@ const shopperCustomersAsset = {
   fatRaml: {
     classifier: "fat-raml",
     packaging: "zip",
-    externalLink:
-      "https://exchange2-asset-manager-kprod.s3.amazonaws.com/893f605e-10e2-423a-bdb4-f952f56eb6d8/bfff7ae2c59dd68e81adee900b56f8fd0d8ab00bc42206d0af3e96fa1025e9c3.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJTBQMSKYL2HXJA4A%2F20200206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200206T191341Z&X-Amz-Expires=86400&X-Amz-Signature=32c30dbb73e3031ef95da76382e52acb14ad734535e108864a506a34f8e21f3f&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3Dshopper-customers-0.0.1-raml.zip",
+    externalLink: "https://short.url/test",
     createdDate: "2020-01-22T03:25:00.200Z",
     md5: "3ce41ea699c8be4446909f172cfac317",
     sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
