@@ -6,27 +6,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  slack-job:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: slackapi/slack-github-action@v1.23.0
-      with:
-        # For posting a rich message using Block Kit
-        payload: |
-          {
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "Test GH actions slack job"
-                }
-              }
-            ]
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
   linux-unit-tests:
     strategy:
       matrix:
