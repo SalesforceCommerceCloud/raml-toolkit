@@ -33,15 +33,15 @@ The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can 
 **Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
 
 <!-- commands -->
-- [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
-- [`raml-toolkit download`](#raml-toolkit-download)
-- [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
+* [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
+* [`raml-toolkit download`](#raml-toolkit-download)
+* [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)
 
-#### `raml-toolkit diff BASE NEW`
+## `raml-toolkit diff BASE NEW`
 
 Compute the difference between two API specifications
 
-```txt
+```
 USAGE
   $ raml-toolkit diff BASE NEW
 
@@ -76,16 +76,16 @@ DESCRIPTION
   In directory mode, the arguments must be directories that contain exchange.json files.
 
   Exit statuses:
-     0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
-     1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
-     2 - Evaluation could not be completed
+    0 - No breaking changes (ruleset mode) or no differences (diff-only / directory)
+    1 - Breaking changes (ruleset mode) or differences found (diff only / directory)
+    2 - Evaluation could not be completed
 ```
 
-#### `raml-toolkit download`
+## `raml-toolkit download`
 
 Download API specification files from Anypoint Exchange
 
-```txt
+```
 USAGE
   $ raml-toolkit download
 
@@ -102,11 +102,11 @@ OPTIONS
   --log-level=trace|debug|info|warn|error|silent   [default: info] Set the level of detail in the output
 ```
 
-#### `raml-toolkit lint [FILENAME]`
+## `raml-toolkit lint [FILENAME]`
 
 A linting tool for raml for Commerce Cloud and beyond
 
-```txt
+```
 USAGE
   $ raml-toolkit lint [FILENAME]
 

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.5.12
+
+* Replaced anypoint exchange URLs with mock URLs in tests
+
 ## 0.5.11
 
 * Added new template helpers `getMediaTypeFromRequest` and `isRequestWithPayload`.
