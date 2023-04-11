@@ -16,7 +16,6 @@ import { NodeChanges } from "./changes/nodeChanges";
 import { ramlToolLogger } from "../common/logger";
 import customOperators from "./customOperators";
 import { RuleSet } from "./ruleSet";
-/* eslint-disable @typescript-eslint/no-use-before-define */
 
 //ID for the diff node/fact that is passed to the rule engine
 export const DIFF_FACT_ID = "diff";

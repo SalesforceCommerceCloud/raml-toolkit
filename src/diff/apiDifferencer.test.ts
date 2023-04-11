@@ -27,7 +27,7 @@ describe("Test RAML differencing", () => {
     const baseRaml = path.join(basePath, "left.raml");
     const newRaml = path.join(basePath, "right.raml");
     //create rules file
-    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+
     const rule = buildRule();
     const tmpFile = tmp.fileSync({ postfix: ".json" });
     fs.writeFileSync(tmpFile.name, `[${rule.toJSON()}]`);

@@ -61,7 +61,6 @@ function setup({
       .nock("https://anypoint.mulesoft.com", (scope) =>
         scope
           .post("/accounts/login", { username: "user", password: "pass" })
-          // eslint-disable-next-line @typescript-eslint/camelcase
           .reply(200, { access_token: "AUTH_TOKEN" })
       )
       // Intercept searchExchange request

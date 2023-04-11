@@ -30,7 +30,7 @@ export function generateValidationRules(
   rules: string[]
 ): {
   violation: string[];
-  validations: {};
+  validations: { [key: string]: string };
 } {
   const myValidations: { [key: string]: string } = {};
   rules.forEach((rule) => (myValidations[rule] = `${lib}.${rule}`));
@@ -40,7 +40,7 @@ export function generateValidationRules(
   };
 }
 
-export function createCustomProfile(rules: {}): string {
+export function createCustomProfile(rules: object): string {
   const testProfile = tmp.fileSync({ postfix: ".yaml" });
   fs.writeFileSync(
     testProfile.name,

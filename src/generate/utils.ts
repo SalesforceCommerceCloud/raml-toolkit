@@ -168,7 +168,6 @@ export const getObjectType = (anyShape: model.domain.AnyShape): string => {
   return dataType;
 };
 
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /**
  * Get data type of an element from AMF model.
  *

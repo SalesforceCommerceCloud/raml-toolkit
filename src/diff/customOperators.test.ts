@@ -12,7 +12,6 @@ import { Rule, TopLevelCondition } from "json-rules-engine";
 import { expect } from "chai";
 import { RuleCategory } from "./ruleCategory";
 
-/* eslint-disable @typescript-eslint/no-use-before-define */
 /**
  * Verify that rule is applied on node changes
  * @param nodeChanges - Node changes
