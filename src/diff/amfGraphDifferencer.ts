@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import _ from "lodash";
 import { Delta, DiffPatcher } from "jsondiffpatch";
 import { ramlToolLogger } from "../common/logger";

@@ -15,6 +15,7 @@ import { ramlToolLogger as logger } from "./logger";
  * Deletes the `parse` function from a flag so that deep equality checks pass.
  * @param flag - The flag to modify
  */
+// eslint-disable-next-line @typescript-eslint/ban-types
 function stripParse<T extends { parse: Function }>(flag: T): void {
   delete flag.parse;
 }
