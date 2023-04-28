@@ -13,7 +13,7 @@ import chaiFs from "chai-fs";
 import fs from "fs-extra";
 
 import { ApiModel } from "./";
-import { Name } from "../common/structures/name";
+import { Name, CUSTOM_NAME_FIELD } from "../common/structures/name";
 import tmp from "tmp";
 import sinon from "sinon";
 
@@ -27,6 +27,16 @@ const validRamlFile = path.join(
 const invalidRamlFile = path.join(
   __dirname,
   "../../testResources/raml/invalid/search-invalid.raml"
+);
+
+const customFieldRamlFile = path.join(
+  __dirname,
+  "../../testResources/raml/custom-field/custom-field.raml"
+);
+
+const customFieldInvalidRamlFile = path.join(
+  __dirname,
+  "../../testResources/raml/custom-field-invalid/custom-field-invalid.raml"
 );
 
 const handlebarTemplate = path.join(
@@ -101,6 +111,43 @@ describe("ApiModel tests", () => {
     expect(() => api.updateName()).to.throw(
       "Cannot update the name before the model is loaded"
     );
+  });
+
+  it("uses title for class name if custom field is not set", async () => {
+    const api = new ApiModel("VALID", path.dirname(validRamlFile));
+    await api.init();
+    expect(api.name).to.deep.equal(new Name("Shop API"));
+  });
+
+  it("uses custom field for class name if set", async () => {
+    const api = new ApiModel("CUSTOM", path.dirname(customFieldRamlFile));
+    await api.init();
+    expect(api.name).to.deep.equal(new Name("Custom Shop API Name"));
+  });
+
+  it("uses first instance of custom field for class name if multiple are set", async () => {
+    const api = new ApiModel("CUSTOM", path.dirname(customFieldRamlFile));
+    await api.init();
+    expect(api.model.encodes.customDomainProperties.length).to.be.equal(2);
+    // x-salesforce-sdk-name: Custom Shop API Name
+    expect(
+      api.model.encodes.customDomainProperties[0].name.toString()
+    ).to.be.equal(CUSTOM_NAME_FIELD);
+    // x-salesforce-sdk-name: Custom Shop API Name 2 (not used)
+    expect(
+      api.model.encodes.customDomainProperties[1].name.toString()
+    ).to.be.equal(CUSTOM_NAME_FIELD);
+    expect(api.name).to.deep.equal(new Name("Custom Shop API Name"));
+  });
+
+  it("uses title if custom field is incorrectly set", async () => {
+    const api = new ApiModel(
+      "CUSTOM_INVALID",
+      path.dirname(customFieldInvalidRamlFile)
+    );
+    await api.init();
+    expect(api.name).to.deep.equal(new Name("Shop API from title"));
+    expect(true);
   });
 });
 

@@ -12,7 +12,7 @@ import {
   getAllDataTypes,
 } from "../common/amfParser";
 
-import { Name } from "../common/structures/name";
+import { Name, CUSTOM_NAME_FIELD } from "../common/structures/name";
 import { RestApi } from "../download/exchangeTypes";
 import path from "path";
 import fs from "fs-extra";
@@ -78,13 +78,14 @@ export class ApiModel extends ApiMetadata {
 
     // If user defines custom class name under `x-salesforce-sdk-name`, use that instead
     const customClassNameArr = this.model.encodes.customDomainProperties.filter(
-      (customProperty) => {
-        customProperty.name.toString() === "salesforce-sdk-name";
-      }
+      (customProperty) => customProperty.name.toString() === CUSTOM_NAME_FIELD
     );
     if (customClassNameArr.length > 0) {
       // NOTE: there can be multiple instances of `x-salesforce-sdk-name` defined, we take the value of the first one
-      className = customClassNameArr[0].extension.toString().split("=")[1];
+      const customClassName = customClassNameArr[0].extension
+        .toString()
+        .split("=")[1];
+      className = customClassName ? customClassName : className;
     }
 
     this.name = new Name(className);
