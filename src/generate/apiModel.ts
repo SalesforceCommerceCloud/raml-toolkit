@@ -76,12 +76,12 @@ export class ApiModel extends ApiMetadata {
     // class name is defaulted to title
     let className = (this.model.encodes as model.domain.WebApi)?.name.value();
 
-    // If user defines custom class name under `x-salesforce-sdk-name`, use that instead
+    // If user defines custom class name under `x-salesforce-sdk-class-name`, use that instead
     const customClassNameArr = this.model.encodes.customDomainProperties.filter(
       (customProperty) => customProperty.name.toString() === CUSTOM_NAME_FIELD
     );
     if (customClassNameArr.length > 0) {
-      // NOTE: there can be multiple instances of `x-salesforce-sdk-name` defined, we take the value of the first one
+      // NOTE: there can be multiple instances of `x-salesforce-sdk-class-name` defined, we take the value of the first one
       const customClassName = customClassNameArr[0].extension
         .toString()
         .split("=")[1];
