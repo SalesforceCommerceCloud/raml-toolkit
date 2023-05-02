@@ -6,7 +6,7 @@
  */
 import _ from "lodash";
 
-// x-salesforce-sdk-name: custom field to set name in RAML
+// x-salesforce-sdk-class-name: custom field to set name in RAML
 export const CUSTOM_NAME_FIELD = "salesforce-sdk-class-name";
 
 /**

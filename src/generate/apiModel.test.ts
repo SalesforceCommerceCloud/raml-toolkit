@@ -129,11 +129,11 @@ describe("ApiModel tests", () => {
     const api = new ApiModel("CUSTOM", path.dirname(customFieldRamlFile));
     await api.init();
     expect(api.model.encodes.customDomainProperties.length).to.be.equal(2);
-    // x-salesforce-sdk-name: Custom Shop API Name
+    // x-salesforce-sdk-class-name: Custom Shop API Name
     expect(
       api.model.encodes.customDomainProperties[0].name.toString()
     ).to.be.equal(CUSTOM_NAME_FIELD);
-    // x-salesforce-sdk-name: Custom Shop API Name 2 (not used)
+    // x-salesforce-sdk-class-name: Custom Shop API Name 2 (not used)
     expect(
       api.model.encodes.customDomainProperties[1].name.toString()
     ).to.be.equal(CUSTOM_NAME_FIELD);
