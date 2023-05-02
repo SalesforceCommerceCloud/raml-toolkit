@@ -146,6 +146,9 @@ describe("ApiModel tests", () => {
       path.dirname(customFieldInvalidRamlFile)
     );
     await api.init();
+    expect(
+      api.model.encodes.customDomainProperties[0].name.toString()
+    ).to.be.equal(CUSTOM_NAME_FIELD); // custom field exists but not used
     expect(api.name).to.deep.equal(new Name("Shop API from title"));
     expect(true);
   });

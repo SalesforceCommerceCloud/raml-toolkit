@@ -7,7 +7,7 @@
 import _ from "lodash";
 
 // x-salesforce-sdk-name: custom field to set name in RAML
-export const CUSTOM_NAME_FIELD = "salesforce-sdk-name";
+export const CUSTOM_NAME_FIELD = "salesforce-sdk-class-name";
 
 /**
  * Stores a name with common transformations cached for use in templates and file paths.
