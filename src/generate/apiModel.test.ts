@@ -12,8 +12,8 @@ import chaiFs from "chai-fs";
 
 import fs from "fs-extra";
 
-import { ApiModel } from "./";
-import { Name, CUSTOM_NAME_FIELD } from "../common/structures/name";
+import { ApiModel, SDK_ANNOTATION } from "./";
+import { Name } from "../common/structures/name";
 import tmp from "tmp";
 import sinon from "sinon";
 
@@ -129,14 +129,14 @@ describe("ApiModel tests", () => {
     const api = new ApiModel("CUSTOM", path.dirname(customFieldRamlFile));
     await api.init();
     expect(api.model.encodes.customDomainProperties.length).to.be.equal(2);
-    // x-salesforce-sdk-class-name: Custom Shop API Name
+    // class-name: Custom Shop API Name
     expect(
       api.model.encodes.customDomainProperties[0].name.toString()
-    ).to.be.equal(CUSTOM_NAME_FIELD);
-    // x-salesforce-sdk-class-name: Custom Shop API Name 2 (not used)
+    ).to.be.equal(SDK_ANNOTATION);
+    // class-name: Custom Shop API Name 2 (not used)
     expect(
       api.model.encodes.customDomainProperties[1].name.toString()
-    ).to.be.equal(CUSTOM_NAME_FIELD);
+    ).to.be.equal(SDK_ANNOTATION);
     expect(api.name).to.deep.equal(new Name("Custom Shop API Name"));
   });
 
@@ -148,9 +148,8 @@ describe("ApiModel tests", () => {
     await api.init();
     expect(
       api.model.encodes.customDomainProperties[0].name.toString()
-    ).to.be.equal(CUSTOM_NAME_FIELD); // custom field exists but not used
+    ).to.be.equal(SDK_ANNOTATION); // custom field exists but not used
     expect(api.name).to.deep.equal(new Name("Shop API from title"));
-    expect(true);
   });
 });
 

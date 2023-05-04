@@ -11,5 +11,9 @@ export * as handlebarsAmfHelpers from "./handlebarsAmfHelpers";
 export { HandlebarsWithAmfHelpers, registerPartial } from "./handlebarsConfig";
 
 export { ApiMetadata } from "./apiMetadata";
-export { ApiModel } from "./apiModel";
+export {
+  ApiModel,
+  SDK_ANNOTATION,
+  CUSTOM_CLASS_NAME_PROPERTY,
+} from "./apiModel";
 export { loadApiDirectory } from "./loadApiDirectory";

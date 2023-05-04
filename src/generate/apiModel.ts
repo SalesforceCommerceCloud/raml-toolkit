@@ -12,13 +12,17 @@ import {
   getAllDataTypes,
 } from "../common/amfParser";
 
-import { Name, CUSTOM_NAME_FIELD } from "../common/structures/name";
+import { Name } from "../common/structures/name";
 import { RestApi } from "../download/exchangeTypes";
 import path from "path";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
 import _ from "lodash";
 import { ApiMetadata } from "./";
+
+// export for testing
+export const SDK_ANNOTATION = "commerce-sdk";
+export const CUSTOM_CLASS_NAME_PROPERTY = "class-name";
 
 /**
  * An API represented as an AMF model. Includes the extracted data types
@@ -64,6 +68,30 @@ export class ApiModel extends ApiMetadata {
       );
     }
   }
+
+  /**
+   * @description - Retrieves custom class name if defined in RAML
+   * @returns {string | undefined} - returns string if custom class name is defined in RAML, undefined otherwise
+   * @memberof ApiModel
+   */
+  private getCustomClassName(): string | undefined {
+    let customClassName: string | undefined;
+
+    const customSdkProperties =
+      this.model.encodes.customDomainProperties.filter(
+        (customProperty) => customProperty.name.toString() === SDK_ANNOTATION
+      );
+
+    if (customSdkProperties.length > 0) {
+      // NOTE: there can be multiple instances of `(commerce-sdk)` defined in RAML, we take the first one
+      customClassName =
+        customSdkProperties[0].extension["properties"]?.[
+          CUSTOM_CLASS_NAME_PROPERTY
+        ]?.value.toString(); // If class-name cannot be found, expression will result in undefined
+    }
+    return customClassName;
+  }
+
   /**
    * @description - Updates the name identifier of the class if it differs from the one initially provided
    * @memberof ApiModel
@@ -75,19 +103,8 @@ export class ApiModel extends ApiMetadata {
 
     // class name is defaulted to title
     let className = (this.model.encodes as model.domain.WebApi)?.name.value();
-
-    // If user defines custom class name under `x-salesforce-sdk-class-name`, use that instead
-    const customClassNameArr = this.model.encodes.customDomainProperties.filter(
-      (customProperty) => customProperty.name.toString() === CUSTOM_NAME_FIELD
-    );
-    if (customClassNameArr.length > 0) {
-      // NOTE: there can be multiple instances of `x-salesforce-sdk-class-name` defined, we take the value of the first one
-      const customClassName = customClassNameArr[0].extension
-        .toString()
-        .split("=")[1];
-      className = customClassName ? customClassName : className;
-    }
-
+    const customClassName = this.getCustomClassName();
+    if (customClassName) className = customClassName;
     this.name = new Name(className);
   }
 
