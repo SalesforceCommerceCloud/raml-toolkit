@@ -25,11 +25,19 @@
     "@typescript-eslint/naming-convention": [
       "error",
       {
+        "selector": ["variable"],
+        "format": ["camelCase", "UPPER_CASE"]
+      },
+      {
+        "selector": ["function"],
+        "format": ["camelCase"]
+      },
+      {
         "selector": "interface",
         "format": ["PascalCase"],
         "custom": {
           "regex": "^I[A-Z]",
-          "match": false
+          "match": true
         }
       }
     ],

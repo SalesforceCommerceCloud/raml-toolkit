@@ -9,6 +9,7 @@ import * as helpers from "./handlebarsAmfHelpers";
 import Handlebars from "handlebars";
 import fs from "fs-extra";
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const HandlebarsWithAmfHelpers = Handlebars.create();
 for (const helper of Object.keys(helpers)) {
   HandlebarsWithAmfHelpers.registerHelper(helper, helpers[helper]);
