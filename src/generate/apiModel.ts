@@ -20,6 +20,10 @@ import { ramlToolLogger } from "../common/logger";
 import _ from "lodash";
 import { ApiMetadata } from "./";
 
+// export for testing
+export const SDK_ANNOTATION = "commerce-sdk";
+export const CUSTOM_CLASS_NAME_PROPERTY = "class-name";
+
 /**
  * An API represented as an AMF model. Includes the extracted data types
  * defined in the spec. Common transformations of the name are cached for
@@ -64,6 +68,30 @@ export class ApiModel extends ApiMetadata {
       );
     }
   }
+
+  /**
+   * @description - Retrieves custom class name if defined in RAML
+   * @returns {string | undefined} - returns string if custom class name is defined in RAML, undefined otherwise
+   * @memberof ApiModel
+   */
+  private getCustomClassName(): string | undefined {
+    let customClassName: string | undefined;
+
+    const customSdkProperties =
+      this.model.encodes.customDomainProperties.filter(
+        (customProperty) => customProperty.name.toString() === SDK_ANNOTATION
+      );
+
+    if (customSdkProperties.length > 0) {
+      // NOTE: there can be multiple instances of `(commerce-sdk)` defined in RAML, we take the first one
+      customClassName =
+        customSdkProperties[0].extension["properties"]?.[
+          CUSTOM_CLASS_NAME_PROPERTY
+        ]?.value.toString(); // If class-name cannot be found, expression will result in undefined
+    }
+    return customClassName;
+  }
+
   /**
    * @description - Updates the name identifier of the class if it differs from the one initially provided
    * @memberof ApiModel
@@ -72,9 +100,12 @@ export class ApiModel extends ApiMetadata {
     if (!this.model) {
       throw new Error("Cannot update the name before the model is loaded");
     }
-    this.name = new Name(
-      (this.model.encodes as model.domain.WebApi)?.name.value()
-    );
+
+    // class name is defaulted to title
+    let className = (this.model.encodes as model.domain.WebApi)?.name.value();
+    const customClassName = this.getCustomClassName();
+    if (customClassName) className = customClassName;
+    this.name = new Name(className);
   }
 
   /**
