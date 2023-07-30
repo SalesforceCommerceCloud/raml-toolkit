@@ -34,7 +34,6 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepare": "npm run snyk-protect",
     "snyk-protect": "snyk protect",
-    "snyk:auth": "snyk auth",
     "pretest": "npm run lint && npm run compile && npm run depcheck",
     "test": "npm run cover:unit && npm run test:resource",
     "pretest:ci": "npm run lint:ci && npm run compile && npm run depcheck",
