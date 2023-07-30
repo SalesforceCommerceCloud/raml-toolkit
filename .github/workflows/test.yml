@@ -26,6 +26,8 @@ jobs:
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - run: npm install snyk
+      - run: npm run snyk:auth ${{ secrets.SNYK_TOKEN }}
       - run: npm ci
         if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
       - run: npm run compile
