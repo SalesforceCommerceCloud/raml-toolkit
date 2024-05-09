@@ -214,6 +214,7 @@ export async function searchExchange(
  * @param {RegExp} deployment
  * @returns {Promise<string>} Returned the version string that matches the regex passed.  Will return first found result
  */
+// Updated this function to return this latest version
 export async function getVersionByDeployment(
   accessToken: string,
   restApi: RestApi,
@@ -238,7 +239,7 @@ export async function getVersionByDeployment(
   });
   // If no instance matched the intended deployment get the version info
   // from the fetched asset.
-  return version || asset.version;
+  return asset.version;
 }
 
 /**
