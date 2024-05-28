@@ -206,39 +206,45 @@ export async function searchExchange(
 }
 
 /**
- * @description Looks at all versions of an api in exchange for an instance that matched the deployment regex
+ * @description Returns the version of an api in exchange from the instance fetched asset
  *
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
- * @param {RegExp} deployment
- * @returns {Promise<string>} Returned the version string that matches the regex passed.  Will return first found result
+ * @returns {Promise<string>} Returned the version string from the instance fetched asset
  */
-export async function getVersionByDeployment(
+export async function getVersion(
   accessToken: string,
-  restApi: RestApi,
-  deployment: RegExp
+  restApi: RestApi
 ): Promise<void | string> {
-  const asset = await getAsset(
-    accessToken,
-    `${restApi.groupId}/${restApi.assetId}`
-  );
-  if (!asset) {
+  const logPrefix = "[exchangeDownloader][getVersion]";
+
+  let asset;
+  try {
+    asset = await getAsset(
+      accessToken,
+      `${restApi.groupId}/${restApi.assetId}`
+    );
+    // console.log(`${logPrefix} 📦 Fetched asset:`, asset);
+  } catch (error) {
+    console.error(`${logPrefix} Error fetching asset:`, error);
     return;
   }
-  let version = null;
-  asset.instances.forEach((instance) => {
-    if (
-      instance.environmentName &&
-      deployment.test(instance.environmentName) &&
-      !version
-    ) {
-      version = instance.version;
-    }
-  });
-  // If no instance matched the intended deployment get the version info
-  // from the fetched asset.
-  return version || asset.version;
+
+  if (!asset) {
+    console.log(`${logPrefix} No asset found, returning`);
+    return;
+  }
+
+  if (!asset.version) {
+    console.error(`${logPrefix} asset.version is missing`);
+    return;
+  }
+
+  const finalVersion = asset.version;
+  console.log(`${logPrefix} Returning version:`, finalVersion);
+
+  return finalVersion;
 }
 
 /**
@@ -272,17 +278,14 @@ export async function getSpecificApi(
  *
  * @returns Information about the APIs found.
  */
-export async function search(
-  query: string,
-  deployment: RegExp
-): Promise<RestApi[]> {
+export async function search(query: string): Promise<RestApi[]> {
   const token = await getBearer(
     process.env.ANYPOINT_USERNAME,
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
   const promises = apis.map(async (api) => {
-    const version = await getVersionByDeployment(token, api, deployment);
+    const version = await getVersion(token, api);
     return version
       ? getSpecificApi(token, api.groupId, api.assetId, version)
       : removeVersionSpecificInformation(api);

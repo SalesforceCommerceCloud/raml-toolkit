@@ -47,10 +47,7 @@ export class DownloadCommand extends Command {
     }
     const { flags } = this.parse(DownloadCommand);
 
-    const apis = await download.search(
-      flags.search,
-      new RegExp(flags.deployment, flags["deployment-regex-flags"])
-    );
+    const apis = await download.search(flags.search);
     await download.downloadRestApis(apis, flags.dest);
   }
 }

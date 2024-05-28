@@ -8,7 +8,7 @@ import {
   downloadRestApi,
   downloadRestApis,
   searchExchange,
-  getVersionByDeployment,
+  getVersion,
   getSpecificApi,
   getAsset,
   runFetch,
@@ -233,31 +233,31 @@ describe("exchangeDownloader", () => {
     });
   });
 
-  describe("getVersionByDeployment", () => {
+  describe("getVersion", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     it("should return a version if a deployment exists", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
-      ).to.eventually.equal("0.0.1");
+      //TODO: Remove unnecessary getVersion tests now that we are removing `deployment` arg
+      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.equal(
+        "0.0.1"
+      );
     });
 
     it("should return the base version if the deployment does not exist", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.equal(getAssetWithoutVersion.version);
+      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.equal(
+        getAssetWithoutVersion.version
+      );
     });
 
     it("should return undefined if the asset does not exist", async () => {
       scope.get("/8888888/test-api").reply(404, "Not Found");
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.be.undefined;
+      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.be
+        .undefined;
     });
 
     it("should return undefined if the asset does not have a version", async () => {
@@ -266,9 +266,8 @@ describe("exchangeDownloader", () => {
 
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.be.undefined;
+      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.be
+        .undefined;
     });
   });
 
@@ -337,17 +336,15 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.0.1")
         .reply(200, getAssetWithVersion);
 
-      return expect(
-        search("searchString", /production/i)
-      ).to.eventually.deep.equal([shopperCustomersAsset]);
+      return expect(search("searchString")).to.eventually.deep.equal([
+        shopperCustomersAsset,
+      ]);
     });
 
     it("works when an asset does not exist", () => {
       scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
 
-      return expect(
-        search("searchString", /unused regex/)
-      ).to.eventually.deep.equal([
+      return expect(search("searchString")).to.eventually.deep.equal([
         {
           id: null,
           name: "Shopper Products",
@@ -395,9 +392,7 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.0.7")
         .reply(200, getAssetWithoutVersion);
 
-      return expect(
-        search("searchString", /nothing should match/)
-      ).to.eventually.deep.equal([asset]);
+      return expect(search("searchString")).to.eventually.deep.equal([asset]);
     });
 
     /**
@@ -417,9 +412,7 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.5.0")
         .reply(200, getAssetWithVersionV2);
 
-      return expect(
-        search("searchString", /production/i)
-      ).to.eventually.deep.equal([asset]);
+      return expect(search("searchString")).to.eventually.deep.equal([asset]);
     });
   });
 
