@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 1.0.0
+
+* Removed `deployment` argument from exchange downloader `search` command.
+* Replace `getVersionByDeployment` with `getVersion` removing the `deployment` argument.
+
 ## 0.5.11
 
 * Added new template helpers `getMediaTypeFromRequest` and `isRequestWithPayload`.

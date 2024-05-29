@@ -239,9 +239,8 @@ describe("exchangeDownloader", () => {
     it("should return a version if a deployment exists", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
-      //TODO: Remove unnecessary getVersion tests now that we are removing `deployment` arg
       return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.equal(
-        "0.0.1"
+        "0.0.7"
       );
     });
 

@@ -206,12 +206,12 @@ export async function searchExchange(
 }
 
 /**
- * @description Returns the version of an api in exchange from the instance fetched asset
+ * @description Returns the version of an api in exchange from the instance fetched asset.version value
  *
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
- * @returns {Promise<string>} Returned the version string from the instance fetched asset
+ * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
  */
 export async function getVersion(
   accessToken: string,
@@ -225,7 +225,6 @@ export async function getVersion(
       accessToken,
       `${restApi.groupId}/${restApi.assetId}`
     );
-    // console.log(`${logPrefix} 📦 Fetched asset:`, asset);
   } catch (error) {
     console.error(`${logPrefix} Error fetching asset:`, error);
     return;
@@ -242,7 +241,6 @@ export async function getVersion(
   }
 
   const finalVersion = asset.version;
-  console.log(`${logPrefix} Returning version:`, finalVersion);
 
   return finalVersion;
 }
@@ -269,12 +267,11 @@ export async function getSpecificApi(
 
 /**
  * Gets information about all the APIs from exchange that match the given search
- * string for the version deployed in the given environment.
+ * string.
  * If it fails to get information about the deployed version of an API, it
  * removes all the version specific information from the returned object.
  *
  * @param query - Exchange search query
- * @param deployment - RegExp matching the desired deployment targets
  *
  * @returns Information about the APIs found.
  */
