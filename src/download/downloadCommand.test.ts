@@ -120,8 +120,23 @@ describe("Download Command", () => {
     .it("accepts a configurable search query");
 
   setup({ version: "0.0.7" })
+    .stderr()
     .do(() => DownloadCommand.run(["--deployment=test"]))
-    .it("accepts a configurable deployment status");
+    .it("emits a warning when deprecated options are used", (ctx) => {
+      expect(ctx.stderr).to.include(
+        "The options 'deployment' and 'deployment-regex-flags' are deprecated"
+      );
+    });
+
+  setup()
+    .stderr()
+    .do(() => DownloadCommand.run([]))
+    .it(
+      "does not emit a warning when deprecated options are not used",
+      (ctx) => {
+        expect(ctx.stderr).to.be.empty;
+      }
+    );
 
   setup()
     .do(() => DownloadCommand.run(["--dest=test"]))
@@ -155,27 +170,4 @@ describe("Download Command", () => {
     .do(() => DownloadCommand.run())
     .exit(2)
     .it("requires ANYPOINT_USERNAME and ANYPOINT_PASSWORD env variables");
-
-  setup({ version: "0.0.7" })
-    .stderr()
-    .do(() => DownloadCommand.run(["--deployment=test"]))
-    .it("emits a warning when deprecated deployment option is used", (ctx) => {
-      expect(ctx.stderr).to.include(
-        "The options 'deployment' and 'deployment-regex-flags' are deprecated"
-      );
-    });
-
-  setup({ version: "0.0.7" })
-    .stderr()
-    .do(() =>
-      DownloadCommand.run(["--deployment-regex-flags=deployment-regex-flags"])
-    )
-    .it(
-      "emits a warning when deprecated deployment-regex-flags option is used",
-      (ctx) => {
-        expect(ctx.stderr).to.include(
-          "The options 'deployment' and 'deployment-regex-flags' are deprecated"
-        );
-      }
-    );
 });
