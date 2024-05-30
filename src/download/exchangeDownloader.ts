@@ -211,12 +211,19 @@ export async function searchExchange(
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
+ * @param {RegExp} [deployment]
  * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
  */
-export async function getVersion(
+export async function getVersionByDeployment(
   accessToken: string,
-  restApi: RestApi
+  restApi: RestApi,
+  deployment?: RegExp
 ): Promise<void | string> {
+  if (deployment) {
+    ramlToolLogger.warn(
+      "Warning: The 'deployment' argument is deprecated and will be ignored due to changes in the RAML spec. This argument will be removed in the next major version."
+    );
+  }
   const logPrefix = "[exchangeDownloader][getVersion]";
 
   let asset;
@@ -226,17 +233,17 @@ export async function getVersion(
       `${restApi.groupId}/${restApi.assetId}`
     );
   } catch (error) {
-    console.error(`${logPrefix} Error fetching asset:`, error);
+    ramlToolLogger.error(`${logPrefix} Error fetching asset:`, error);
     return;
   }
 
   if (!asset) {
-    console.log(`${logPrefix} No asset found, returning`);
+    ramlToolLogger.log(`${logPrefix} No asset found, returning`);
     return;
   }
 
   if (!asset.version) {
-    console.error(`${logPrefix} asset.version is missing`);
+    ramlToolLogger.error(`${logPrefix} asset.version is missing`);
     return;
   }
 
@@ -272,17 +279,27 @@ export async function getSpecificApi(
  * removes all the version specific information from the returned object.
  *
  * @param query - Exchange search query
+ * @param [deployment] - RegExp matching the desired deployment targets
  *
  * @returns Information about the APIs found.
  */
-export async function search(query: string): Promise<RestApi[]> {
+export async function search(
+  query: string,
+  deployment?: RegExp
+): Promise<RestApi[]> {
+  if (deployment) {
+    ramlToolLogger.warn(
+      "Warning: The 'deployment' argument is deprecated and will be ignored due to changes in the RAML spec. This argument will be removed in the next major version."
+    );
+  }
+
   const token = await getBearer(
     process.env.ANYPOINT_USERNAME,
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
   const promises = apis.map(async (api) => {
-    const version = await getVersion(token, api);
+    const version = await getVersionByDeployment(token, api, deployment);
     return version
       ? getSpecificApi(token, api.groupId, api.assetId, version)
       : removeVersionSpecificInformation(api);

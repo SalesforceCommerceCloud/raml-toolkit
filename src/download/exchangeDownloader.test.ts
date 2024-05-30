@@ -8,7 +8,7 @@ import {
   downloadRestApi,
   downloadRestApis,
   searchExchange,
-  getVersion,
+  getVersionByDeployment,
   getSpecificApi,
   getAsset,
   runFetch,
@@ -233,30 +233,39 @@ describe("exchangeDownloader", () => {
     });
   });
 
-  describe("getVersion", () => {
+  describe("getVersionByDeployment", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
+
+    it("should return a version if no deployment is specified", async () => {
+      scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
+
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API)
+      ).to.eventually.equal("0.0.7");
+    });
 
     it("should return a version if a deployment exists", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
-      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.equal(
-        "0.0.7"
-      );
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
+      ).to.eventually.equal("0.0.7");
     });
 
     it("should return the base version if the deployment does not exist", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
-      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.equal(
-        getAssetWithoutVersion.version
-      );
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
+      ).to.eventually.equal(getAssetWithoutVersion.version);
     });
 
     it("should return undefined if the asset does not exist", async () => {
       scope.get("/8888888/test-api").reply(404, "Not Found");
 
-      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.be
-        .undefined;
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
+      ).to.eventually.be.undefined;
     });
 
     it("should return undefined if the asset does not have a version", async () => {
@@ -265,8 +274,9 @@ describe("exchangeDownloader", () => {
 
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
-      return expect(getVersion("AUTH_TOKEN", REST_API)).to.eventually.be
-        .undefined;
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
+      ).to.eventually.be.undefined;
     });
   });
 

@@ -47,6 +47,15 @@ export class DownloadCommand extends Command {
     }
     const { flags } = this.parse(DownloadCommand);
 
+    const deploymentWarning =
+      "The deployment flag is deprecated and currently non-functional due to changes in the RAML spec. This option will be removed in the next major version.";
+
+    if (flags.deployment || flags["deployment-regex-flags"]) {
+      this.warn(deploymentWarning);
+      delete flags.deployment;
+      delete flags["deployment-regex-flags"];
+    }
+
     const apis = await download.search(flags.search);
     await download.downloadRestApis(apis, flags.dest);
   }
