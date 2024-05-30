@@ -52,6 +52,8 @@ const API_CONFIG_JSON = JSON.stringify(API_CONFIG, null, 2);
 function setup({
   search = "",
   version = "0.0.7",
+  deployment = ".",
+  deploymentRegexFlags = ".",
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } = {}): any {
   return (
@@ -119,7 +121,7 @@ describe("Download Command", () => {
     .do(() => DownloadCommand.run(["--search=test"]))
     .it("accepts a configurable search query");
 
-  setup({ version: "0.0.7" })
+  setup({ version: "0.0.7", deployment: "test" })
     .stderr()
     .do(() => DownloadCommand.run(["--deployment=test"]))
     .it("emits a warning when deprecated options are used", (ctx) => {
@@ -128,7 +130,7 @@ describe("Download Command", () => {
       );
     });
 
-  setup()
+  setup({ version: "0.0.7", deployment: ".", deploymentRegexFlags: "." })
     .stderr()
     .do(() => DownloadCommand.run([]))
     .it(
