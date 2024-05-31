@@ -243,7 +243,9 @@ export async function getVersionByDeployment(
   }
 
   if (!asset.version) {
-    ramlToolLogger.error(`${logPrefix} asset.version is missing`);
+    ramlToolLogger.error(
+      `${logPrefix} asset.version is missing in asset.assetId: ${asset.assetId}`
+    );
     return;
   }
 
