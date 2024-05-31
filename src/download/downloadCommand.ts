@@ -10,7 +10,9 @@ import { allCommonFlags } from "../common/flags";
 
 export class DownloadCommand extends Command {
   static description =
-    "Download API specification files from Anypoint Exchange";
+    "Download API specification files from Anypoint Exchange.\n\n" +
+    "Note: The options 'deployment' and 'deployment-regex-flags' are deprecated starting from version 0.5.12.";
+
   static flags = {
     ...allCommonFlags(),
     search: flags.string({
@@ -21,13 +23,17 @@ export class DownloadCommand extends Command {
     }),
     deployment: flags.string({
       char: "D",
-      description: "Deployment status to filter results from Anypoint Exchange",
+      description:
+        "(deprecated) Deployment status to filter results from Anypoint Exchange",
       env: "ANYPOINT_DEPLOYMENT",
       default: ".", // RegExp to match any non-empty string
+      hidden: true, // Hide the flag from help output to discourage its use
     }),
     "deployment-regex-flags": flags.string({
-      description: "RegExp flags to specify for advanced deployment matching",
+      description:
+        "(deprecated) RegExp flags to specify for advanced deployment matching",
       dependsOn: ["deployment"],
+      hidden: true, // Hide the flag from help output to discourage its use
     }),
     dest: flags.string({
       char: "d",
