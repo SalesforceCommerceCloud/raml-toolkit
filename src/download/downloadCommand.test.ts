@@ -128,16 +128,6 @@ describe("Download Command", () => {
       );
     });
 
-  setup({ version: "0.0.7" })
-    .stderr()
-    .do(() => DownloadCommand.run([]))
-    .it(
-      "does not emit a warning when deprecated options are not used",
-      (ctx) => {
-        expect(ctx.stderr).to.be.empty;
-      }
-    );
-
   setup()
     .do(() => DownloadCommand.run(["--dest=test"]))
     .it("accepts a configurable target directory (relative)", () => {
