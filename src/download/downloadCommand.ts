@@ -23,7 +23,6 @@ export class DownloadCommand extends Command {
       char: "D",
       description: "Deployment status to filter results from Anypoint Exchange",
       env: "ANYPOINT_DEPLOYMENT",
-      default: ".", // RegExp to match any non-empty string
     }),
     "deployment-regex-flags": flags.string({
       description: "RegExp flags to specify for advanced deployment matching",
@@ -47,7 +46,7 @@ export class DownloadCommand extends Command {
     }
     const { flags } = this.parse(DownloadCommand);
 
-    if (flags.deployment !== ".") {
+    if (flags.deployment || flags["deployment-regex-flags"]) {
       this.warn(
         "The options 'deployment' and 'deployment-regex-flags' are deprecated and currently non-functional due to changes in the RAML spec. These options will be removed in the next major version."
       );
