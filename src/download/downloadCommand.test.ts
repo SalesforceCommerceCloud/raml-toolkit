@@ -120,8 +120,23 @@ describe("Download Command", () => {
     .it("accepts a configurable search query");
 
   setup({ version: "0.0.7" })
+    .stderr()
     .do(() => DownloadCommand.run(["--deployment=test"]))
-    .it("accepts a configurable deployment status");
+    .it("emits a warning when deprecated options are used", (ctx) => {
+      expect(ctx.stderr).to.include(
+        "The options 'deployment' and 'deployment-regex-flags' are deprecated"
+      );
+    });
+
+  setup({ version: "0.0.7" })
+    .stderr()
+    .do(() => DownloadCommand.run([]))
+    .it(
+      "does not emit a warning when deprecated options are not used",
+      (ctx) => {
+        expect(ctx.stderr).to.be.empty;
+      }
+    );
 
   setup()
     .do(() => DownloadCommand.run(["--dest=test"]))
