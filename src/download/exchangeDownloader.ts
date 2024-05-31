@@ -27,6 +27,8 @@ export const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
 const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
 const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
+const DEPLOYMENT_DEPRECATION_WARNING =
+  "The 'deployment' argument is deprecated. The latest RAML specification that is published to Anypoint Exchange will be downloaded always.";
 
 /**
  * Makes an HTTP call to the url with the options passed. If the calls due to
@@ -220,9 +222,7 @@ export async function getVersionByDeployment(
   deployment?: RegExp
 ): Promise<void | string> {
   if (deployment) {
-    ramlToolLogger.warn(
-      "Warning: The 'deployment' argument is deprecated and will be ignored due to changes in the RAML spec. This argument will be removed in the next major version."
-    );
+    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
   }
   const logPrefix = "[exchangeDownloader][getVersion]";
 
@@ -292,9 +292,7 @@ export async function search(
   deployment?: RegExp
 ): Promise<RestApi[]> {
   if (deployment) {
-    ramlToolLogger.warn(
-      "Warning: The 'deployment' argument is deprecated and will be ignored due to changes in the RAML spec. This argument will be removed in the next major version."
-    );
+    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
   }
 
   const token = await getBearer(
