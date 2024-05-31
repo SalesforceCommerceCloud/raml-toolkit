@@ -238,13 +238,15 @@ export async function getVersionByDeployment(
   }
 
   if (!asset) {
-    ramlToolLogger.log(`${logPrefix} No asset found, returning`);
+    ramlToolLogger.log(
+      `${logPrefix} No asset found for ${restApi.assetId}, returning`
+    );
     return;
   }
 
   if (!asset.version) {
     ramlToolLogger.error(
-      `${logPrefix} asset.version is missing in asset.assetId: ${asset.assetId}`
+      `${logPrefix} The rest API ${restApi.assetId} is missing the asset.version`
     );
     return;
   }
