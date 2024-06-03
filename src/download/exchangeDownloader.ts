@@ -251,9 +251,8 @@ export async function getVersionByDeployment(
     return;
   }
 
-  const finalVersion = asset.version;
-
-  return finalVersion;
+  // return the most recent version of an asset from the rest API
+  return asset.version;
 }
 
 /**
