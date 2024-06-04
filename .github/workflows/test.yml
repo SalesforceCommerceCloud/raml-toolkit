@@ -28,5 +28,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm ci
         if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - run: npm run compile
       - run: npm run test:ci
