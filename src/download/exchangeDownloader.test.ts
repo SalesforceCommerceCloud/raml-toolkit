@@ -236,12 +236,20 @@ describe("exchangeDownloader", () => {
   describe("getVersionByDeployment", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
+    it("should return a version if no deployment is specified", async () => {
+      scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
+
+      return expect(
+        getVersionByDeployment("AUTH_TOKEN", REST_API)
+      ).to.eventually.equal("0.0.7");
+    });
+
     it("should return a version if a deployment exists", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
         getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
-      ).to.eventually.equal("0.0.1");
+      ).to.eventually.equal("0.0.7");
     });
 
     it("should return the base version if the deployment does not exist", async () => {
@@ -337,17 +345,15 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.0.1")
         .reply(200, getAssetWithVersion);
 
-      return expect(
-        search("searchString", /production/i)
-      ).to.eventually.deep.equal([shopperCustomersAsset]);
+      return expect(search("searchString")).to.eventually.deep.equal([
+        shopperCustomersAsset,
+      ]);
     });
 
     it("works when an asset does not exist", () => {
       scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
 
-      return expect(
-        search("searchString", /unused regex/)
-      ).to.eventually.deep.equal([
+      return expect(search("searchString")).to.eventually.deep.equal([
         {
           id: null,
           name: "Shopper Products",
@@ -395,9 +401,7 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.0.7")
         .reply(200, getAssetWithoutVersion);
 
-      return expect(
-        search("searchString", /nothing should match/)
-      ).to.eventually.deep.equal([asset]);
+      return expect(search("searchString")).to.eventually.deep.equal([asset]);
     });
 
     /**
@@ -417,9 +421,7 @@ describe("exchangeDownloader", () => {
         .get("/shop-products-categories-api-v1/0.5.0")
         .reply(200, getAssetWithVersionV2);
 
-      return expect(
-        search("searchString", /production/i)
-      ).to.eventually.deep.equal([asset]);
+      return expect(search("searchString")).to.eventually.deep.equal([asset]);
     });
   });
 

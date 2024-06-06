@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.5.12
+
+* Fix bug by deprecating `deployment` argument from exchange downloader `search` command the argument is now optional and ignored.
+* Fix bug by deprecating `deployment` argument from `getVersionByDeployment` the argument is now optional and ignored.
+* Fix bug by deprecating download command flags `-D, --deployment, --deployment-regex-flags` the options are now ignored.
+* Added custom field for class name if defined in RAML.
+
 ## 0.5.11
 
 * Added new template helpers `getMediaTypeFromRequest` and `isRequestWithPayload`.

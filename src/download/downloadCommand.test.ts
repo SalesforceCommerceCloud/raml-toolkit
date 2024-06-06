@@ -51,7 +51,7 @@ const API_CONFIG_JSON = JSON.stringify(API_CONFIG, null, 2);
  */
 function setup({
   search = "",
-  version = "0.0.1",
+  version = "0.0.7",
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } = {}): any {
   return (

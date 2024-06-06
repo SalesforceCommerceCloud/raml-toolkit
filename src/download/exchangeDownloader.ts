@@ -27,6 +27,8 @@ export const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
 const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
 const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
+const DEPLOYMENT_DEPRECATION_WARNING =
+  "The 'deployment' argument is deprecated. The latest RAML specification that is published to Anypoint Exchange will be downloaded always.";
 
 /**
  * Makes an HTTP call to the url with the options passed. If the calls due to
@@ -206,39 +208,51 @@ export async function searchExchange(
 }
 
 /**
- * @description Looks at all versions of an api in exchange for an instance that matched the deployment regex
+ * @description Returns the version of an api in exchange from the instance fetched asset.version value
  *
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
- * @param {RegExp} deployment
- * @returns {Promise<string>} Returned the version string that matches the regex passed.  Will return first found result
+ * @param {RegExp} [deployment]
+ * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
  */
 export async function getVersionByDeployment(
   accessToken: string,
   restApi: RestApi,
-  deployment: RegExp
+  deployment?: RegExp
 ): Promise<void | string> {
-  const asset = await getAsset(
-    accessToken,
-    `${restApi.groupId}/${restApi.assetId}`
-  );
-  if (!asset) {
+  if (deployment) {
+    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
+  }
+  const logPrefix = "[exchangeDownloader][getVersion]";
+
+  let asset;
+  try {
+    asset = await getAsset(
+      accessToken,
+      `${restApi.groupId}/${restApi.assetId}`
+    );
+  } catch (error) {
+    ramlToolLogger.error(`${logPrefix} Error fetching asset:`, error);
     return;
   }
-  let version = null;
-  asset.instances.forEach((instance) => {
-    if (
-      instance.environmentName &&
-      deployment.test(instance.environmentName) &&
-      !version
-    ) {
-      version = instance.version;
-    }
-  });
-  // If no instance matched the intended deployment get the version info
-  // from the fetched asset.
-  return version || asset.version;
+
+  if (!asset) {
+    ramlToolLogger.log(
+      `${logPrefix} No asset found for ${restApi.assetId}, returning`
+    );
+    return;
+  }
+
+  if (!asset.version) {
+    ramlToolLogger.error(
+      `${logPrefix} The rest API ${restApi.assetId} is missing the asset.version`
+    );
+    return;
+  }
+
+  // return the most recent version of an asset from the rest API
+  return asset.version;
 }
 
 /**
@@ -263,19 +277,23 @@ export async function getSpecificApi(
 
 /**
  * Gets information about all the APIs from exchange that match the given search
- * string for the version deployed in the given environment.
+ * string.
  * If it fails to get information about the deployed version of an API, it
  * removes all the version specific information from the returned object.
  *
  * @param query - Exchange search query
- * @param deployment - RegExp matching the desired deployment targets
+ * @param [deployment] - RegExp matching the desired deployment targets
  *
  * @returns Information about the APIs found.
  */
 export async function search(
   query: string,
-  deployment: RegExp
+  deployment?: RegExp
 ): Promise<RestApi[]> {
+  if (deployment) {
+    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
+  }
+
   const token = await getBearer(
     process.env.ANYPOINT_USERNAME,
     process.env.ANYPOINT_PASSWORD

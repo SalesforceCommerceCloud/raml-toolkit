@@ -90,14 +90,9 @@ USAGE
   $ raml-toolkit download
 
 OPTIONS
-  -D, --deployment=deployment                      [default: .] Deployment status to filter results from Anypoint
-                                                   Exchange
-
   -d, --dest=dest                                  [default: apis] Directory to download APIs into
 
   -s, --search=search                              Search query to filter results from Anypoint Exchange
-
-  --deployment-regex-flags=deployment-regex-flags  RegExp flags to specify for advanced deployment matching
 
   --log-level=trace|debug|info|warn|error|silent   [default: info] Set the level of detail in the output
 ```
