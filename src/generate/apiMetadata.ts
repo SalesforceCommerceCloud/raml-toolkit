@@ -101,6 +101,7 @@ export class ApiMetadata {
    * @returns {Promise<void>} - A child could have a promise to we return a promise here.
    * @memberof ApiMetadata
    */
+  // api.render() is here
   public async render(): Promise<void> {
     try {
       await this.renderThis();

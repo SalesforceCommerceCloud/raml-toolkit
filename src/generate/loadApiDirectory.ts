@@ -18,6 +18,7 @@ import { ApiModel } from "./";
  * @param {string} apiPath - The path to the root of the apis.
  * @returns {ApiMetadata} - The created node for the tree
  */
+// generate.ts from isomorphic SDK calls this
 export function loadApiDirectory(apiPath: string): ApiMetadata {
   if (!fs.pathExistsSync(apiPath)) {
     throw new Error(`${apiPath} Api path does not exist`);
@@ -25,6 +26,8 @@ export function loadApiDirectory(apiPath: string): ApiMetadata {
 
   // If we have an exchange.json we are loading an API
   if (fs.existsSync(path.join(apiPath, "exchange.json"))) {
+    console.log('API PATH HERE: ', apiPath)
+    // create a new API model based on the apiPath
     return new ApiModel(path.basename(apiPath), apiPath);
   }
 

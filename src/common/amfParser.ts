@@ -6,6 +6,7 @@
  */
 
 import { model, Raml10Resolver } from "amf-client-js";
+import { ramlToolLogger } from "../common/logger";
 import amf from "amf-client-js";
 import path from "path";
 import _ from "lodash";
@@ -65,6 +66,80 @@ export async function parseRamlFile(
   }
 
   return document;
+}
+
+/**
+ * Parses a OAS file to an AMF model.
+ *
+ * @param filename The path to the RAML file to load
+ *
+ * @returns an AMF model of the OAS
+ */
+export async function parseOasFile(
+  filename: string
+  // @ts-ignore
+): Promise<model.document.Document> {
+  // try {
+    ramlToolLogger.info(`##### STARTING PARSING OAS FILE ######`)
+
+    const fileUri = `file://${path.resolve(filename)}`;
+
+    ramlToolLogger.info(` file path: ${fileUri}`)
+
+
+    // We initialize AMF first
+    amf.plugins.document.WebApi.register();
+    amf.plugins.document.Vocabularies.register();
+    amf.plugins.features.AMFCustomValidation.register();
+
+    await amf.Core.init();
+
+    const fatRamlResourceLoader = new FatRamlResourceLoader(
+      path.dirname(fileUri)
+    );
+    const ccEnvironment = amf.client.DefaultEnvironment.apply().addClientLoader(
+      fatRamlResourceLoader
+    );
+
+    let parser;
+
+    try {
+      parser = new amf.Oas30Parser(ccEnvironment);
+    } catch(error) {
+      ramlToolLogger.info(` errored trying to create new Oas30Parser object: ${error.toString()}`)
+    }
+
+    let document: model.document.Document;
+
+    try {
+      document = (await parser.parseFileAsync(
+        fileUri
+      )) as model.document.Document;
+    } catch (err) {
+      // AMF throws a custom object instead of an instance of Error, so we need to
+      // clean it up and re-throw it to make it more useful. AMF does not provide
+      // any helpful way to access the underlying error (e.g. the ENOENT thrown by
+      // fs.readFile), so the easiest way seems to be to convert the AMF error to
+      // a string and then work with that string.
+      if (err instanceof Error) {
+        // Normal error, don't need to modify to rethrow
+        throw err;
+      }
+      const message = `${err.message ?? err}`;
+      // AMF error, message starts with amf name that we don't care about
+      const cleaned = new Error(message.replace(/^amf\S+? /, "")) as Error & {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        amfError: Record<string, any>;
+      };
+      cleaned.amfError = err;
+      throw cleaned;
+    }
+    ramlToolLogger.info(`##### ENDING PARSING OAS FILE ######`)
+
+    return document;
+  // } catch(error) {
+  //   ramlToolLogger.info(`### Something went wrong with parsing OAS file ${error.toString()}`);
+  // }
 }
 
 function getDataTypesFromDeclare(
@@ -128,6 +203,8 @@ export function getAllDataTypes(
 ): model.domain.CustomDomainProperty[] {
   let ret: model.domain.CustomDomainProperty[] = [];
   const dataTypes = new Set<string>();
+  
+  // seems like we're erroring out here with api.declares where api is undefined
   const temp: model.domain.CustomDomainProperty[] = getDataTypesFromDeclare(
     api.declares,
     dataTypes

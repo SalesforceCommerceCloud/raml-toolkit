@@ -9,6 +9,7 @@ import { model } from "amf-client-js";
 import {
   resolveApiModel,
   parseRamlFile,
+  parseOasFile,
   getAllDataTypes,
 } from "../common/amfParser";
 
@@ -46,16 +47,21 @@ export class ApiModel extends ApiMetadata {
    */
   constructor(name: string, filepath: string, children: ApiMetadata[] = []) {
     super(name, filepath, children);
+    ramlToolLogger.info(`Constructing API model for ${name}`);
     if (
       path.extname(filepath) === ".raml" ||
-      path.extname(filepath) === ".rml"
+      path.extname(filepath) === ".rml"  ||
+      path.extname(filepath) === ".yaml"
     ) {
+      // ramlToolLogger.info(`Constructing API model for ${name}`);
+
       this.main = filepath;
       this.path = path.basename(filepath);
     } else if (
       fs.lstatSync(filepath).isDirectory() &&
       fs.existsSync(path.join(filepath, "exchange.json"))
     ) {
+      ramlToolLogger.info(`Exchange branch for ${name}`);
       const exchangeConfig = fs.readJSONSync(
         path.join(filepath, "exchange.json")
       );
@@ -115,10 +121,24 @@ export class ApiModel extends ApiMetadata {
    * @memberof ApiModel
    */
   public async loadModel(updateName = true): Promise<void> {
-    ramlToolLogger.info(`Loading model for ${this.name.original}`);
-    const tmpModel = await parseRamlFile(path.join(this.path, this.main));
+    ramlToolLogger.info(`Loading model for ${this?.name?.original}`);
+
+    // TODO: update to parse OAS file
+    let tmpModel
+
+    try {
+      if (!this.main.includes('.yaml')) {
+        tmpModel = await parseRamlFile(path.join(this.path, this.main));
+      } else {
+        tmpModel = await parseOasFile(path.join(this.path, this.main))
+        let s = 1 + 1
+      }
+    } catch(error) {
+      ramlToolLogger.info(`ERROR @@@ parseRamlFile for ${this?.name?.original}: ${error.toString()}`);
+    }
 
     // The model needs to be cloned because resolveApiModel messes with the dataTypes.
+    // We fail here
     this.dataTypes = getAllDataTypes(_.cloneDeep(tmpModel));
     this.model = resolveApiModel(tmpModel, "editing");
 
@@ -134,7 +154,14 @@ export class ApiModel extends ApiMetadata {
    * @memberof ApiModel
    */
   public async init(updateName = true): Promise<void> {
-    await this.loadModel(updateName);
+    ramlToolLogger.info(`In init Loading model for ${this?.name?.original}`);
+    try {
+
+      await this.loadModel(updateName);
+    } catch(error) {
+      ramlToolLogger.info(`Error Loading model for ${this?.name?.original} :`);
+      ramlToolLogger.info(error.toString());
+    }
     await super.init();
   }
 
@@ -147,7 +174,10 @@ export class ApiModel extends ApiMetadata {
    * @memberof ApiModel
    */
   public async renderThis(): Promise<void> {
+
+    // I think this happens here
     if (!this.model) {
+      ramlToolLogger.info(`In renderThis Loading model for ${this?.name?.original}`);
       await this.loadModel();
     }
 

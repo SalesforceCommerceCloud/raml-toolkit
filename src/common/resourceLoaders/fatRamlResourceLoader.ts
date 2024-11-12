@@ -33,6 +33,7 @@ export class FatRamlResourceLoader implements amf.resource.ResourceLoader {
   }
 
   accepts(resource: string): boolean {
+    return true
     return resource?.indexOf(EXCHANGE_MODULES) >= 0;
   }
 
