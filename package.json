@@ -28,6 +28,7 @@
     "cover:unit:ci": "nyc npm run test:unit:ci",
     "depcheck": "depcheck",
     "docs": "npm run clean && npm run compile && oclif-dev readme",
+    "generate:templates": "openapi-generator-cli author template -g typescript-fetch -o ./mustaches",
     "lint": "sort-package-json && eslint . --ext .ts --fix",
     "lint:ci": "eslint . --ext .ts --quiet",
     "prepack": "npm run clean && npm run compile && oclif-dev manifest && oclif-dev readme",
@@ -56,6 +57,7 @@
   "dependencies": {
     "@oclif/command": "1.8.4",
     "@oclif/config": "1.18.1",
+    "@openapitools/openapi-generator-cli": "^2.20.0",
     "amf-client-js": "4.7.2",
     "dotenv": "8.6.0",
     "fs-extra": "8.1.0",
