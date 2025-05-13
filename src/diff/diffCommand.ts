@@ -6,13 +6,16 @@
  */
 import { Command, flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser";
-import fs from "fs-extra";
 
 import { ApiDifferencer } from "./apiDifferencer";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
 import { allCommonFlags } from "../common/flags";
+import { execSync } from "child_process";
+import fs from 'fs-extra'
+
+import { oasDiffChangelog } from "./oasDiff";
 
 export class DiffCommand extends Command {
   // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
@@ -62,6 +65,12 @@ Exit statuses:
       description:
         "Format of the output. Defaults to JSON if --out-file is specified, otherwise text.",
       options: ["json", "console"],
+    }),
+    spec: flags.enum({
+      char: "s",
+      description:
+        "Specifies the API spec of the files being compared. Defaults to RAML. Options are RAML or OAS",
+      options: ["raml", "oas"],
     }),
   };
 
@@ -195,18 +204,40 @@ Exit statuses:
     const { args, flags } = this.parse(DiffCommand);
     const baseApis = args.base;
     const newApis = args.new;
+
     if (!(await fs.pathExists(baseApis))) {
       this.error(`File or directory not found: ${baseApis}`);
     }
     if (!(await fs.pathExists(newApis))) {
       this.error(`File or directory not found: ${newApis}`);
     }
-    if (flags.dir) {
-      await this._diffDirs(baseApis, newApis, flags);
-    } else if (flags["diff-only"]) {
-      await this._diffFiles(baseApis, newApis, flags);
+
+    if (flags.spec === "oas") {
+      // check if oasdiff is installed
+      try {
+        execSync(`oasdiff --version`);
+      } catch (err) {
+        this.error("oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation");
+      }
+
+      if (flags.dir) {
+        const baseApisYamlGlob = '"' + baseApis + "/**/*.yaml" + '"';
+        const newApisYamlGlob = '"' + newApis + "/**/*.yaml" + '"';
+        await oasDiffChangelog(baseApisYamlGlob, newApisYamlGlob, flags);
+      } else {
+        // Diff two files (we do not have a custom ruleset defined for OAS
+        // By default, checks are all 'diff-only' 
+        await oasDiffChangelog(baseApis, newApis, flags);
+        // await oasDiffChangelog("~/Git/oas-spike/diff-oas-test/specs/petstore.yaml", "~/Git/oas-spike/diff-oas-test/specs/petstore1.yaml", flags);
+      }
     } else {
-      await this._diffFilesUsingRuleset(baseApis, newApis, flags);
+      if (flags.dir) {
+        await this._diffDirs(baseApis, newApis, flags);
+      } else if (flags["diff-only"]) {
+        await this._diffFiles(baseApis, newApis, flags);
+      } else {
+        await this._diffFilesUsingRuleset(baseApis, newApis, flags);
+      }
     }
     this.exit();
   }
