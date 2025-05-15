@@ -9,5 +9,6 @@ export * as amfParser from "./common/amfParser";
 export * as diff from "./diff";
 export * as download from "./download";
 export * as generate from "./generate";
+export * as generateFromOas from "./generate-from-oas";
 export * as lint from "./lint";
 export { ramlToolLogger } from "./common/logger";

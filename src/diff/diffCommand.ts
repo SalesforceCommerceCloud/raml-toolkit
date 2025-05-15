@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -228,7 +228,6 @@ Exit statuses:
         // Diff two files (we do not have a custom ruleset defined for OAS
         // By default, checks are all 'diff-only' 
         await oasDiffChangelog(baseApis, newApis, flags);
-        // await oasDiffChangelog("~/Git/oas-spike/diff-oas-test/specs/petstore.yaml", "~/Git/oas-spike/diff-oas-test/specs/petstore1.yaml", flags);
       }
     } else {
       if (flags.dir) {
