@@ -13,7 +13,7 @@ import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
 import { allCommonFlags } from "../common/flags";
 import { execSync } from "child_process";
-import fs from 'fs-extra'
+import fs from "fs-extra";
 
 import { oasDiffChangelog } from "./oasDiff";
 
@@ -217,7 +217,9 @@ Exit statuses:
       try {
         execSync(`oasdiff --version`);
       } catch (err) {
-        this.error("oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation");
+        this.error(
+          "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
+        );
       }
 
       if (flags.dir) {
@@ -226,7 +228,7 @@ Exit statuses:
         await oasDiffChangelog(baseApisYamlGlob, newApisYamlGlob, flags);
       } else {
         // Diff two files (we do not have a custom ruleset defined for OAS
-        // By default, checks are all 'diff-only' 
+        // By default, checks are all 'diff-only'
         await oasDiffChangelog(baseApis, newApis, flags);
       }
     } else {

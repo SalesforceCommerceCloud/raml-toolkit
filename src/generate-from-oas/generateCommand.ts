@@ -7,53 +7,56 @@
 
 import { Command, flags } from "@oclif/command";
 import { allCommonFlags } from "../common/flags";
-import { generateFromOas, DEFAULT_CONFIG_PACKAGE_PATH, DEFAULT_CONFIG_PATH } from "./generateFromOas";
+import {
+  generateFromOas,
+  DEFAULT_CONFIG_PACKAGE_PATH,
+  DEFAULT_CONFIG_PATH,
+} from "./generateFromOas";
 
 export class GenerateCommand extends Command {
-
   static description = "Generate from OAS";
 
   static flags = {
     ...allCommonFlags(),
     inputSpec: flags.string({
       char: "i",
-      description: 'Input OAS specification file',
+      description: "Input OAS specification file",
       required: true,
     }),
     outputDir: flags.string({
       char: "o",
-      description: 'Output directory for generated code',
-      required: true,   
+      description: "Output directory for generated code",
+      required: true,
     }),
     templateDir: flags.string({
       char: "t",
-      description: 'Template directory',
+      description: "Template directory",
       required: true,
     }),
     configFile: flags.string({
-        char: "c",
-        description: `[default:${DEFAULT_CONFIG_PACKAGE_PATH}] Configuration file with additional generator properties`
+      char: "c",
+      description: `[default:${DEFAULT_CONFIG_PACKAGE_PATH}] Configuration file with additional generator properties`,
     }),
     generator: flags.string({
       char: "g",
-      description: '[default:typescript-fetch] Generator to use',
+      description: "[default:typescript-fetch] Generator to use",
     }),
     skipValidateSpec: flags.boolean({
-      description: 'Skip validation of the OAS specification',
+      description: "Skip validation of the OAS specification",
     }),
   };
 
   async run(): Promise<void> {
-    console.log('Running generator')
+    console.log("Running generator");
     const { flags } = this.parse(GenerateCommand);
-    console.log(flags)
+    console.log(flags);
     generateFromOas({
       inputSpec: flags.inputSpec,
       outputDir: flags.outputDir,
       templateDir: flags.templateDir,
       configFile: flags.configFile,
       generator: flags.generator,
-      skipValidateSpec: flags.skipValidateSpec
+      skipValidateSpec: flags.skipValidateSpec,
     });
   }
 }

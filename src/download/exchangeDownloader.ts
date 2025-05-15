@@ -62,7 +62,7 @@ export async function runFetch(
 export async function downloadRestApi(
   restApi: RestApi,
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER,
-  isOas: boolean = false
+  isOas = false
 ): Promise<void> {
   if (!restApi.id) {
     ramlToolLogger.warn(
@@ -108,7 +108,7 @@ export async function downloadRestApi(
 export async function downloadRestApis(
   restApi: RestApi[],
   destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER,
-  isOas: boolean = false
+  isOas = false
 ): Promise<string> {
   const downloads = restApi.map((api) =>
     downloadRestApi(api, destinationFolder, isOas)
@@ -131,7 +131,7 @@ function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
   // Not all API files in anypoint exchange have an associated fat-as classifier. so
   // we return null here for those cases
   if (!found) {
-    return null
+    return null;
   }
   // There are extra properties we don't want (downloadURL, isGenerated), so we
   // create a new object that excludes them
