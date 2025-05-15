@@ -31,6 +31,7 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "9133f1f4bf53664c0329b64a0b2010abfef18346",
       mainFile: "shop-products-categories-api-v1.raml",
     },
+    fatOas: null,
   },
   {
     id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/data-catalogs-api-v1/0.0.1",
@@ -56,6 +57,7 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "549d6e977697ab7a35a815683a524faf889a7591",
       mainFile: "data-catalogs-api-v1.raml",
     },
+    fatOas: null,
   },
   {
     id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-search-api/1.0.0",
@@ -81,6 +83,7 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "e51f567ce47d35dee152edf8c3a9405fa53736d6",
       mainFile: "shopper-search-api.raml",
     },
+    fatOas: null,
   },
   {
     id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/data-products-api-v1/0.0.1",
@@ -106,6 +109,7 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "ab6cdadbae40b0aa5b8308dd94919ff2b2433ca0",
       mainFile: "data-products-api-v1.raml",
     },
+    fatOas: null,
   },
   {
     id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/source-code-groups/1.0.0",
@@ -132,6 +136,7 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "172267d55d2d85d9f093206e2f12328130eb6481",
       mainFile: "source-code-groups.raml",
     },
+    fatOas: null,
   },
   {
     id: "893f605e-10e2-423a-bdb4-f952f56eb6d8/shop-customers-api-v1/0.0.1",
@@ -157,5 +162,6 @@ export const searchAssetApiResultObject: download.RestApi[] = [
       sha1: "e7fba62b4cdec87e6cbcf32cd4b232c030dc766b",
       mainFile: "shop-customers-api-v1.raml",
     },
+    fatOas: null,
   },
 ];

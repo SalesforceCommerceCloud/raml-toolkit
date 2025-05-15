@@ -15,7 +15,7 @@ export type RestApi = {
   version?: string;
   categories?: Categories;
   fatRaml?: FileInfo;
-  fatOas?: FileInfo;
+  fatOas?: FileInfo | null;
 };
 
 export type FileInfo = {
