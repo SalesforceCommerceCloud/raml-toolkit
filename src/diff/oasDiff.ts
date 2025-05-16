@@ -4,29 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
-import { flags } from "@oclif/command";
-import { OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 import { execSync } from "child_process";
-
-/**
- * Find the differences between two directories containing API spec files.
- * Only finds differences, does not classify using a ruleset.
- *
- * @param baseApis - Path to base API directory
- * @param newApis - Path to new API directory
- * @param flags - Parsed CLI flags passed to the command
- */
-async function oasDiffDirs(
-  baseApis: string,
-  newApis: string,
-  flags
-): Promise<void> {
-  try {
-  } catch (err) {
-    console.error(err.message, { exit: 2 });
-  }
-}
 
 /**
  * If a file is given, saves the changes to the file, as JSON by default.
@@ -51,10 +30,17 @@ async function _saveOrLogOas(changes: string, flags): Promise<void> {
   }
 }
 
+/**
+ * Wrapper for oasdiff changelog command.
+ *
+ * @param baseApi - The base API file
+ * @param newApi - The new API file
+ * @param flags - Parsed CLI flags passed to the command
+ * @returns 0 if no changes are reported, 1 if changes are reported, and 2 if an error occurs
+ */
 export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   try {
     console.log("Starting oasdiff");
-
     const jsonMode = flags.format === "json" ? "-f json" : "";
     const directoryMode = flags.dir ? "--composed" : "";
 
@@ -69,10 +55,13 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
 
     if (oasdiffOutput.trim().length === 0) {
       console.log("No API changes reported by oasdiff");
+      return 0;
     } else {
       await _saveOrLogOas(oasdiffOutput, flags);
+      return 1;
     }
   } catch (err) {
     console.error(err);
+    return 2;
   }
 }
