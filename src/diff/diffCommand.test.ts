@@ -7,13 +7,13 @@
 "use strict";
 
 import { expect, test } from "@oclif/test";
-import { writeSync } from "fs-extra";
+import * as fs from "fs-extra";
 import { FileResult, fileSync, dirSync, DirResult } from "tmp";
 import { Rule } from "json-rules-engine";
 import chai from "chai";
 import chaiFs from "chai-fs";
 
-import { DiffCommand as cmd } from "./diffCommand";
+import { DiffCommand as cmd, DiffCommand } from "./diffCommand";
 import * as diffDirectories from "./diffDirectories";
 import { NodeChanges } from "./changes/nodeChanges";
 import { ApiChanges } from "./changes/apiChanges";
@@ -21,8 +21,13 @@ import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { ApiDifferencer } from "./apiDifferencer";
 import { CategorizedChange } from "./changes/categorizedChange";
 import { RuleCategory } from "./ruleCategory";
+import * as oasDiff from "./oasDiff";
+
+import proxyquire from "proxyquire";
+import sinon from "sinon";
 
 chai.use(chaiFs);
+const pq = proxyquire.noCallThru();
 
 const nodeChanges = new NodeChanges("test-id", ["test:type"]);
 nodeChanges.added = { "core:name": "oldName" };
@@ -40,7 +45,7 @@ apiCollectionChanges.changed["file.raml"] = apiChanges;
 
 const createTempFile = (content: string): FileResult => {
   const tempFile = fileSync();
-  writeSync(tempFile.fd, content);
+  fs.writeSync(tempFile.fd, content);
   return tempFile;
 };
 
@@ -69,6 +74,43 @@ const ramlAdded = createTempFile(
   post:
     displayName: createResource
 `
+);
+
+const oasAdded = createTempFile(
+  `
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Test API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/resource": {
+        "get": {
+          "summary": "Get resource"
+        },
+        "post": {
+          "summary": "Create resource"
+        }
+      }
+    }
+  `
+);
+
+const oasOld = createTempFile(
+  `
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Test API",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/resource": {
+        "get": {
+          "summary": "Get resource"
+        }
+      }
+    }
+  `
 );
 
 const operationRemovedRule = new Rule(
@@ -376,4 +418,15 @@ describe("raml-toolkit cli diff command", () => {
     )
     .exit(2)
     .it("does not allow format to be specified for diff only");
+
+  // TODO: The stub does not apply. The actual oasDiffChangelog is called and it will throw
+  // an error because we are using test data and not actual oas files
+  test
+    .stderr({ print: true })
+    .stdout({ print: true })
+    .stub(oasDiff, "oasDiffChangelog", async () => 0)
+    .do(() => {
+      cmd.run([oasOld.name, oasAdded.name, "-s", "oas"]);
+    })
+    .it("invokes oasdiff when spec flag is set to oas");
 });

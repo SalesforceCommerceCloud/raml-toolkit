@@ -11,11 +11,10 @@ import { ApiDifferencer } from "./apiDifferencer";
 import { ApiChanges } from "./changes/apiChanges";
 import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
+import { oasDiffChangelog } from "./oasDiff";
 import { allCommonFlags } from "../common/flags";
 import { execSync } from "child_process";
 import fs from "fs-extra";
-
-import { oasDiffChangelog } from "./oasDiff";
 
 export class DiffCommand extends Command {
   // `raml-toolkit --help` only uses the first line, `raml-toolkit diff --help` skips it
@@ -200,37 +199,40 @@ Exit statuses:
     }
   }
 
+  /**
+   * Find the differences between two OAS files.
+   *
+   * Requires oasDiff to be installed to work. Will return an error if oasDiff is not installed
+   *
+   * Otherwise, returns the exit code of oasDiff.oasDiffChangelog
+   *
+   * @param baseApis - Path to a base OAS file
+   * @param newApis - Path to a new OAS file
+   * @param flags - Parsed CLI flags passed to the command
+   */
+  protected async _diffOasFiles(
+    baseApis: string,
+    newApis: string,
+    flags: OutputFlags<typeof DiffCommand.flags>
+  ): Promise<number> {
+    // Diff two files (we do not have a custom ruleset defined for OAS
+    // By default, checks are all 'diff-only'
+    return await oasDiffChangelog(baseApis, newApis, flags);
+  }
+
   async run(): Promise<void> {
     const { args, flags } = this.parse(DiffCommand);
     const baseApis = args.base;
     const newApis = args.new;
-
+    let exitCode = 0;
     if (!(await fs.pathExists(baseApis))) {
-      this.error(`File or directory not found: ${baseApis}`);
+      this.error(`File or directory not found: ${baseApis}`, { exit: 2 });
     }
     if (!(await fs.pathExists(newApis))) {
-      this.error(`File or directory not found: ${newApis}`);
+      this.error(`File or directory not found: ${newApis}`, { exit: 2 });
     }
-
     if (flags.spec === "oas") {
-      // check if oasdiff is installed
-      try {
-        execSync(`oasdiff --version`);
-      } catch (err) {
-        this.error(
-          "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
-        );
-      }
-
-      if (flags.dir) {
-        const baseApisYamlGlob = '"' + baseApis + "/**/*.yaml" + '"';
-        const newApisYamlGlob = '"' + newApis + "/**/*.yaml" + '"';
-        await oasDiffChangelog(baseApisYamlGlob, newApisYamlGlob, flags);
-      } else {
-        // Diff two files (we do not have a custom ruleset defined for OAS
-        // By default, checks are all 'diff-only'
-        await oasDiffChangelog(baseApis, newApis, flags);
-      }
+      exitCode = await this._diffOasFiles(baseApis, newApis, flags);
     } else {
       if (flags.dir) {
         await this._diffDirs(baseApis, newApis, flags);
@@ -240,6 +242,6 @@ Exit statuses:
         await this._diffFilesUsingRuleset(baseApis, newApis, flags);
       }
     }
-    this.exit();
+    this.exit(exitCode);
   }
 }

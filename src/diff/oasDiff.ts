@@ -33,16 +33,26 @@ async function _saveOrLogOas(changes: string, flags): Promise<void> {
 /**
  * Wrapper for oasdiff changelog command.
  *
- * @param baseApi - The base API file
+ * @param baseApi - The base API file or directory
  * @param newApi - The new API file
  * @param flags - Parsed CLI flags passed to the command
  * @returns 0 if no changes are reported, 1 if changes are reported, and 2 if an error occurs
  */
 export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   try {
+    checkOasDiffIsInstalled();
     console.log("Starting oasdiff");
+
     const jsonMode = flags.format === "json" ? "-f json" : "";
     const directoryMode = flags.dir ? "--composed" : "";
+
+    // If the user is diffing directories, we need to pass the glob pattern to oasdiff
+    let baseApiTarget = baseApi;
+    let newApiTarget = newApi;
+    if (flags.dir) {
+      baseApiTarget = '"' + baseApi + "/**/*.yaml" + '"';
+      newApiTarget = '"' + newApi + "/**/*.yaml" + '"';
+    }
 
     // TODO: Do we want to support the other output formats?
     // See https://github.com/oasdiff/oasdiff/blob/main/docs/BREAKING-CHANGES.md#output-formats
@@ -50,7 +60,7 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
     // TODO: Do we want to support customizing severity levels?
     // This would be akin to the raml rulesets
     const oasdiffOutput = execSync(
-      `oasdiff changelog ${jsonMode} ${directoryMode} ${baseApi} ${newApi}`
+      `oasdiff changelog ${jsonMode} ${directoryMode} ${baseApiTarget} ${newApiTarget}`
     ).toString();
 
     if (oasdiffOutput.trim().length === 0) {
@@ -63,5 +73,15 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   } catch (err) {
     console.error(err);
     return 2;
+  }
+}
+
+export function checkOasDiffIsInstalled() {
+  try {
+    execSync(`oasdiff --version`).toString();
+  } catch (err) {
+    throw new Error(
+      "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
+    );
   }
 }
