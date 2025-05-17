@@ -34,8 +34,31 @@ Npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be u
 
 ### Commands for OAS
 
+- [`raml-toolkit generate`](#raml-toolkit-generate)
 - [`raml-toolkit diff BASE NEW -s oas`](#raml-toolkit-diff-base-new-s-oas)
 - [`raml-toolkit download`](#raml-toolkit-download)
+
+#### `raml-toolkit generate`
+
+A wrapper command for `openapi-generator-cli generate`
+
+USAGE
+  $ raml-toolkit generate -i OAS_spec_file -o output_dir -t templates_dir
+
+OPTIONS
+  -i, --inputSpec=OAS_spec_file                   Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise text.
+
+  -o, --outputDir=output_dir                      The directory to place the generated API
+
+  -t, --templateDir=template_dir                  The directory with the mustache templates for generating the API
+
+  -c, --configFile=config_file                    A yaml file containing configurations for openapi-generator-cli. A default configuration will be used if this is not provided.
+
+  -g, --generator                                 The generator. Defaults to `typescript-fetch`
+
+  --skipValidateSpec                               Generate API without validating the spec. Defaults to false.
+
 
 #### `raml-toolkit diff BASE NEW -s oas`
 
