@@ -17,7 +17,7 @@ import { execSync } from "child_process";
 async function _saveOrLogOas(changes: string, flags): Promise<void> {
   const file = flags["out-file"];
   if (file) {
-    console.log("Saving results to file");
+    console.log(`API Changes found! Saving results to file ${file}`);
     if (flags.format === "json") {
       console.log("Using json format");
       await fs.writeJson(file, JSON.parse(changes));
