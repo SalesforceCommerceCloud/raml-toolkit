@@ -128,7 +128,7 @@ function mapCategories(categories: RawCategories[]): Categories {
 function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
   const found = files.find((file) => file.classifier === classifier);
 
-  // Not all API files in anypoint exchange have an associated fat-as classifier. so
+  // Not all API files in anypoint exchange have an associated fat-raml or fat-oas classifier. so
   // we return null here for those cases
   if (!found) {
     return null;

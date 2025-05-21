@@ -13,7 +13,6 @@ import { ApiCollectionChanges } from "./changes/apiCollectionChanges";
 import { diffRamlDirectories } from "./diffDirectories";
 import { oasDiffChangelog } from "./oasDiff";
 import { allCommonFlags } from "../common/flags";
-import { execSync } from "child_process";
 import fs from "fs-extra";
 
 export class DiffCommand extends Command {
@@ -206,8 +205,8 @@ Exit statuses:
    *
    * Otherwise, returns the exit code of oasDiff.oasDiffChangelog
    *
-   * @param baseApis - Path to a base OAS file
-   * @param newApis - Path to a new OAS file
+   * @param baseApis - Path to a base OAS file or directory containing OAS files
+   * @param newApis - Path to a new OAS file or directory containing OAS files
    * @param flags - Parsed CLI flags passed to the command
    */
   protected async _diffOasFiles(
