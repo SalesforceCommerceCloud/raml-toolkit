@@ -1,6 +1,8 @@
 # Raml Toolkit  <!-- omit in toc -->
 
-A collection of raml an OAS tools for commerce cloud and beyond
+A collection of RAML and OAS tools for commerce cloud and beyond
+
+**Note:** Running some OAS commands requires that oasdiff is installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation
 
   [![CircleCI][circleci-image]][circleci-url]
 
@@ -42,6 +44,7 @@ Npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be u
 
 A wrapper command for `openapi-generator-cli generate`
 
+```txt
 USAGE
   $ raml-toolkit generate -i OAS_spec_file -o output_dir -t templates_dir
 
@@ -58,12 +61,13 @@ OPTIONS
   -g, --generator                                 The generator. Defaults to `typescript-fetch`
 
   --skipValidateSpec                               Generate API without validating the spec. Defaults to false.
-
+```
 
 #### `raml-toolkit diff BASE NEW -s oas`
 
-**Note:** This command requires that oasdiff is. installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation
+**Note:** This command requires that oasdiff is installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation
 
+```txt
 USAGE
   $ raml-toolkit diff BASE NEW -s oas
 
@@ -80,7 +84,7 @@ OPTIONS
   --dir                                           Find the differences for files in two directory trees
 
   -s, --spec                                      Toggles OAS mode. Set this to `oas`. Otherwise, the command will run the RAML version
-
+```
 
 ### Commands for RAML
 
