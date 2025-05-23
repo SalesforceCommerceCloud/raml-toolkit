@@ -61,11 +61,12 @@ export async function runFetch(
 
 export async function downloadRestApi(
   restApi: RestApi,
-  destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
+  destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER,
+  isOas = false
 ): Promise<void> {
   if (!restApi.id) {
     ramlToolLogger.warn(
-      `Failed to download '${restApi.name}' RAML as Fat RAML download information is missing.`,
+      `Failed to download '${restApi.name}' RAML / OAS as download information is missing.`,
       `Please download it manually from ${ANYPOINT_BASE_URI}/${restApi.groupId}/${restApi.assetId} and update the relevant details in apis/api-config.json`
     );
     return;
@@ -74,7 +75,12 @@ export async function downloadRestApi(
     await fs.ensureDir(destinationFolder);
     const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
 
-    const response = await runFetch(restApi.fatRaml.externalLink);
+    const fatRaml = restApi.fatRaml;
+    const fatOas = restApi.fatOas;
+
+    const externalLink = isOas ? fatOas.externalLink : fatRaml.externalLink;
+
+    const response = await runFetch(externalLink);
     if (!response.ok) {
       throw new Error(
         `Unknown Error: (${response.status}) ${response.statusText}`
@@ -85,6 +91,7 @@ export async function downloadRestApi(
     await fs.writeFile(zipFilePath, Buffer.from(arrayBuffer));
     const filePath = await extractFile(zipFilePath);
     delete restApi.fatRaml;
+    delete restApi.fatOas;
     await fs.writeJSON(path.join(filePath, ".metadata.json"), restApi, {
       spaces: 2,
     });
@@ -100,10 +107,11 @@ export async function downloadRestApi(
  */
 export async function downloadRestApis(
   restApi: RestApi[],
-  destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER
+  destinationFolder: string = DEFAULT_DOWNLOAD_FOLDER,
+  isOas = false
 ): Promise<string> {
   const downloads = restApi.map((api) =>
-    downloadRestApi(api, destinationFolder)
+    downloadRestApi(api, destinationFolder, isOas)
   );
   await Promise.all(downloads);
   return destinationFolder;
@@ -119,6 +127,12 @@ function mapCategories(categories: RawCategories[]): Categories {
 
 function getFileByClassifier(files: FileInfo[], classifier: string): FileInfo {
   const found = files.find((file) => file.classifier === classifier);
+
+  // Not all API files in anypoint exchange have an associated fat-raml or fat-oas classifier. so
+  // we return null here for those cases
+  if (!found) {
+    return null;
+  }
   // There are extra properties we don't want (downloadURL, isGenerated), so we
   // create a new object that excludes them
   return {
@@ -143,6 +157,7 @@ function convertResponseToRestApi(apiResponse: RawRestApi): RestApi {
     version: apiResponse.version,
     categories: mapCategories(apiResponse.categories),
     fatRaml: getFileByClassifier(apiResponse.files, "fat-raml"),
+    fatOas: getFileByClassifier(apiResponse.files, "fat-oas"),
   };
 }
 

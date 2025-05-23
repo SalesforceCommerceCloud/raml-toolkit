@@ -1,6 +1,8 @@
 # Raml Toolkit  <!-- omit in toc -->
 
-A collection of raml tools for commerce cloud and beyond
+A collection of RAML and OAS tools for commerce cloud and beyond
+
+**Note:** Running some OAS commands requires that oasdiff is installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation
 
   [![CircleCI][circleci-image]][circleci-url]
 
@@ -26,13 +28,67 @@ npm install -g @commerce-apps/raml-toolkit
 
 ## Usage
 
-The npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
+Npm installs the binaries as both `raml-toolkit` and `ramlint` and they can be used interchangeably.  You can always run with `--help` to get available options, currently the options are as follows.
 
-### Commands
+## Commands
 
 **Note:** Some commands require environment variables to be set. This can be done using a [.env file](https://www.npmjs.com/package/dotenv#rules) in your working directory (the directory from which you run `raml-toolkit`).
 
-<!-- commands -->
+### Commands for OAS
+
+- [`raml-toolkit generate`](#raml-toolkit-generate)
+- [`raml-toolkit diff BASE NEW -s oas`](#raml-toolkit-diff-base-new-s-oas)
+- [`raml-toolkit download`](#raml-toolkit-download)
+
+#### `raml-toolkit generate`
+
+A wrapper command for `openapi-generator-cli generate`
+
+```txt
+USAGE
+  $ raml-toolkit generate -i OAS_spec_file -o output_dir -t templates_dir
+
+OPTIONS
+  -i, --inputSpec=OAS_spec_file                   Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise text.
+
+  -o, --outputDir=output_dir                      The directory to place the generated API
+
+  -t, --templateDir=template_dir                  The directory with the mustache templates for generating the API
+
+  -c, --configFile=config_file                    A yaml file containing configurations for openapi-generator-cli. A default configuration will be used if this is not provided.
+
+  -g, --generator                                 The generator. Defaults to `typescript-fetch`
+
+  --skipValidateSpec                               Generate API without validating the spec. Defaults to false.
+```
+
+#### `raml-toolkit diff BASE NEW -s oas`
+
+**Note:** This command requires that oasdiff is installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation
+
+```txt
+USAGE
+  $ raml-toolkit diff BASE NEW -s oas
+
+ARGUMENTS
+  BASE  The base API spec file or directory
+  NEW   The new API spec file or directory
+
+OPTIONS
+  -f, --format=(json|console)                     Format of the output. Defaults to JSON if --out-file is specified,
+                                                  otherwise text.
+
+  -o, --out-file=out-file                         File to store the computed difference
+
+  --dir                                           Find the differences for files in two directory trees
+
+  -s, --spec                                      Toggles OAS mode. Set this to `oas`. Otherwise, the command will run the RAML version
+```
+
+### Commands for RAML
+
+<!-- commands for RAML -->
 - [`raml-toolkit diff BASE NEW`](#raml-toolkit-diff-base-new)
 - [`raml-toolkit download`](#raml-toolkit-download)
 - [`raml-toolkit lint [FILENAME]`](#raml-toolkit-lint-filename)

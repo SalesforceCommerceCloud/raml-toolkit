@@ -80,6 +80,7 @@ const shopperCustomersAsset = {
     sha1: "10331d32527f78bf76e0b48ab2d05945d8d141c1",
     mainFile: "shopper-customers.raml",
   },
+  fatOas: null,
 };
 
 describe("exchangeDownloader", () => {
@@ -377,6 +378,7 @@ describe("exchangeDownloader", () => {
             sha1: null,
             mainFile: "shop-products-categories-api-v1.raml",
           },
+          fatOas: null,
         },
       ]);
     });
