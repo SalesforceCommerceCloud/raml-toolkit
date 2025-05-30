@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 0.6.0
+
+* Added support for OAS files:
+  * Generate command: `raml-toolkit generate`
+  * Diff command: `raml-toolkit diff <BASE> <NEW> -s oas`
+  * Download command: `raml-toolkit-download`
+
 ## 0.5.12
 
 * Fix bug by deprecating `deployment` argument from exchange downloader `search` command the argument is now optional and ignored.
