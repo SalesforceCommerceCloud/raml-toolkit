@@ -13,7 +13,7 @@ import {
 } from "../common/amfParser";
 
 import { Name } from "../common/structures/name";
-import { RestApi } from "../download/exchangeTypes";
+import { ExchangeConfig, RestApi } from "../download/exchangeTypes";
 import path from "path";
 import fs from "fs-extra";
 import { ramlToolLogger } from "../common/logger";
@@ -56,7 +56,7 @@ export class ApiModel extends ApiMetadata {
       fs.lstatSync(filepath).isDirectory() &&
       fs.existsSync(path.join(filepath, "exchange.json"))
     ) {
-      const exchangeConfig = fs.readJSONSync(
+      const exchangeConfig: ExchangeConfig = fs.readJSONSync(
         path.join(filepath, "exchange.json")
       );
 
