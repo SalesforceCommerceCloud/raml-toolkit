@@ -9,4 +9,4 @@ export { extractFiles } from "./exchangeDirectoryParser";
 export { groupByCategory, removeRamlLinks } from "./exchangeTools";
 export { DownloadCommand } from "./downloadCommand";
 export { getBearer } from "./bearerToken";
-export { RestApi } from "./exchangeTypes";
+export { RestApi, ExchangeConfig } from "./exchangeTypes";

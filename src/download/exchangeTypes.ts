@@ -45,3 +45,22 @@ export type RawRestApi = Omit<RestApi, "categories" | "fatRaml"> & {
     version: string;
   }[];
 };
+
+export type ExchangeConfig = {
+  dependencies?: {
+    version: string;
+    assetId: string;
+    groupId: string;
+  }[];
+  version: string;
+  originalFormatVersion: string;
+  apiVersion: string;
+  descriptorVersion: string;
+  classifier: string;
+  main: string;
+  assetId: string;
+  groupId: string;
+  organizationId: string;
+  name: string;
+  tags: string[];
+};
