@@ -237,28 +237,28 @@ describe("exchangeDownloader", () => {
   describe("getVersionByDeployment", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
-    it("should return a version if no deployment is specified", async () => {
+    it("should return the latest version if no deployment is specified", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
         getVersionByDeployment("AUTH_TOKEN", REST_API)
-      ).to.eventually.equal("0.0.7");
+      ).to.eventually.equal("0.0.42");
     });
 
-    it("should return a version if a deployment exists", async () => {
+    it("should return the latest version if a deployment exists", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
         getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
-      ).to.eventually.equal("0.0.7");
+      ).to.eventually.equal("0.0.42");
     });
 
-    it("should return the base version if the deployment does not exist", async () => {
+    it("should return the latest version if the deployment does not exist", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
         getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.equal(getAssetWithoutVersion.version);
+      ).to.eventually.equal("0.0.42");
     });
 
     it("should return undefined if the asset does not exist", async () => {
@@ -343,7 +343,7 @@ describe("exchangeDownloader", () => {
       scope
         .get("/shop-products-categories-api-v1")
         .reply(200, getAssetWithVersion)
-        .get("/shop-products-categories-api-v1/0.0.1")
+        .get("/shop-products-categories-api-v1/0.0.42")
         .reply(200, getAssetWithVersion);
 
       return expect(search("searchString")).to.eventually.deep.equal([
@@ -390,7 +390,7 @@ describe("exchangeDownloader", () => {
       asset.fatRaml = {
         classifier: "fat-raml",
         packaging: "zip",
-        externalLink: "https://short.url/raml.zip",
+        externalLink: "https://short.url/test",
         createdDate: "2020-02-05T21:26:01.199Z",
         md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
         sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
@@ -400,7 +400,7 @@ describe("exchangeDownloader", () => {
       scope
         .get("/shop-products-categories-api-v1")
         .reply(200, getAssetWithoutVersion)
-        .get("/shop-products-categories-api-v1/0.0.7")
+        .get("/shop-products-categories-api-v1/0.0.42")
         .reply(200, getAssetWithoutVersion);
 
       return expect(search("searchString")).to.eventually.deep.equal([asset]);

@@ -29,7 +29,8 @@ const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
 const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
 const DEPLOYMENT_DEPRECATION_WARNING =
   "The 'deployment' argument is deprecated. The latest RAML specification that is published to Anypoint Exchange will be downloaded always.";
-
+// Only allows MAJOR.MINOR.PATCH (no suffixes). see https://semver.org/
+const releaseSemverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 /**
  * Makes an HTTP call to the url with the options passed. If the calls due to
  * a 5xx, 408, 420 or 429, it retries the call with the retry options passed
@@ -266,8 +267,31 @@ export async function getVersionByDeployment(
     return;
   }
 
-  // return the most recent version of an asset from the rest API
-  return asset.version;
+  if (!asset.instances) {
+    ramlToolLogger.error(
+      `${logPrefix} The rest API ${restApi.assetId} is missing asset.instances`
+    );
+    return;
+  }
+
+  const releaseAssetVersions = asset.instances.filter((instance) => {
+    return instance.version && releaseSemverRegex.test(instance.version);
+  });
+
+  if (releaseAssetVersions.length === 0) {
+    // If there is no release version, just return the asset version
+    // TBD: should we skip downloading the asset?
+    return asset.version;
+  }
+  // Sort versions and get the latest
+  return releaseAssetVersions.sort((instanceA, instanceB) => {
+    const [aMajor, aMinor, aPatch] = instanceA.version.split(".").map(Number);
+    const [bMajor, bMinor, bPatch] = instanceB.version.split(".").map(Number);
+
+    if (aMajor !== bMajor) return bMajor - aMajor;
+    if (aMinor !== bMinor) return bMinor - aMinor;
+    return bPatch - aPatch;
+  })[0].version;
 }
 
 /**
