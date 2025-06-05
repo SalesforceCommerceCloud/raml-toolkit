@@ -33,6 +33,7 @@ export const generateFromOas = (args: {
   configFile?: string;
   generator?: string;
   skipValidateSpec?: boolean;
+  flags?: string;
 }) => {
   const {
     inputSpec,
@@ -41,12 +42,13 @@ export const generateFromOas = (args: {
     configFile,
     generator,
     skipValidateSpec,
+    flags,
   } = args;
   const skipValidateSpecFlag = skipValidateSpec ? "--skip-validate-spec" : "";
   const _configFile = configFile ? configFile : DEFAULT_CONFIG_PATH;
   const _generator = generator ? generator : "typescript-fetch";
 
   execSync(
-    `openapi-generator-cli generate -i ${inputSpec} -o ${outputDir} -t ${templateDir} -g ${_generator} -c ${_configFile} ${skipValidateSpecFlag}`
+    `openapi-generator-cli generate -i ${inputSpec} -o ${outputDir} -t ${templateDir} -g ${_generator} -c ${_configFile} ${skipValidateSpecFlag} ${flags}`
   );
 };
