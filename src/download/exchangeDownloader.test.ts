@@ -8,7 +8,7 @@ import {
   downloadRestApi,
   downloadRestApis,
   searchExchange,
-  getVersionByDeployment,
+  getApiVersions,
   getSpecificApi,
   getAsset,
   runFetch,
@@ -32,9 +32,6 @@ const assetSearchResults = require("../../testResources/download/resources/asset
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getAssetWithVersion = require("../../testResources/download/resources/getAssetWithVersion");
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const getAssetWithVersionV2 = require("../../testResources/download/resources/getAssetWithVersionV2");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getAssetWithoutVersion = require("../../testResources/download/resources/getAsset");
@@ -234,39 +231,22 @@ describe("exchangeDownloader", () => {
     });
   });
 
-  describe("getVersionByDeployment", () => {
+  describe("getApiVersions", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
-    it("should return the latest version if no deployment is specified", async () => {
+    it("should return the latest version", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API)
-      ).to.eventually.equal("0.0.42");
-    });
-
-    it("should return the latest version if a deployment exists", async () => {
-      scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
-
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /production/i)
-      ).to.eventually.equal("0.0.42");
-    });
-
-    it("should return the latest version if the deployment does not exist", async () => {
-      scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
-
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.equal("0.0.42");
+        getApiVersions("AUTH_TOKEN", REST_API)
+      ).to.eventually.deep.equal(["0.1.1"]);
     });
 
     it("should return undefined if the asset does not exist", async () => {
       scope.get("/8888888/test-api").reply(404, "Not Found");
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.be.undefined;
+      return expect(getApiVersions("AUTH_TOKEN", REST_API)).to.eventually.be
+        .undefined;
     });
 
     it("should return undefined if the asset does not have a version", async () => {
@@ -275,9 +255,8 @@ describe("exchangeDownloader", () => {
 
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
-      return expect(
-        getVersionByDeployment("AUTH_TOKEN", REST_API, /NOT AVAILABLE/i)
-      ).to.eventually.be.undefined;
+      return expect(getApiVersions("AUTH_TOKEN", REST_API)).to.eventually.be
+        .undefined;
     });
   });
 
@@ -343,7 +322,7 @@ describe("exchangeDownloader", () => {
       scope
         .get("/shop-products-categories-api-v1")
         .reply(200, getAssetWithVersion)
-        .get("/shop-products-categories-api-v1/0.0.42")
+        .get("/shop-products-categories-api-v1/0.1.1")
         .reply(200, getAssetWithVersion);
 
       return expect(search("searchString")).to.eventually.deep.equal([
@@ -354,76 +333,7 @@ describe("exchangeDownloader", () => {
     it("works when an asset does not exist", () => {
       scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
 
-      return expect(search("searchString")).to.eventually.deep.equal([
-        {
-          id: null,
-          name: "Shopper Products",
-          description:
-            "Enable developers to add functionality that shows product details in shopping apps.",
-          updatedDate: null,
-          groupId: "893f605e-10e2-423a-bdb4-f952f56eb6d8",
-          assetId: "shop-products-categories-api-v1",
-          version: null,
-          categories: {
-            "API layer": ["Process"],
-            "CC API Family": ["Product"],
-            "CC Version Status": ["Beta"],
-            "CC API Visibility": ["External"],
-          },
-          fatRaml: {
-            classifier: "fat-raml",
-            packaging: "zip",
-            createdDate: null,
-            md5: null,
-            sha1: null,
-            mainFile: "shop-products-categories-api-v1.raml",
-          },
-          fatOas: null,
-        },
-      ]);
-    });
-
-    it("works when there are no matches for the specified deployment", () => {
-      const asset = _.cloneDeep(shopperCustomersAsset);
-      asset.id = "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.0.7";
-      asset.version = "0.0.7";
-      asset.fatRaml = {
-        classifier: "fat-raml",
-        packaging: "zip",
-        externalLink: "https://short.url/test",
-        createdDate: "2020-02-05T21:26:01.199Z",
-        md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
-        sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
-        mainFile: "shopper-customers.raml",
-      };
-
-      scope
-        .get("/shop-products-categories-api-v1")
-        .reply(200, getAssetWithoutVersion)
-        .get("/shop-products-categories-api-v1/0.0.42")
-        .reply(200, getAssetWithoutVersion);
-
-      return expect(search("searchString")).to.eventually.deep.equal([asset]);
-    });
-
-    /**
-     * Returns root asset version when production tag is not found
-     * on V2 API response. The actual deployed version is available
-     * under otherVersions attributes, that has no external link to download
-     * and no environmentName attribute to match
-     */
-    it("returns the root asset version without production tag on V2 response", () => {
-      const asset = _.cloneDeep(shopperCustomersAsset);
-      asset.id = "893f605e-10e2-423a-bdb4-f952f56eb6d8/shopper-customers/0.5.0";
-      asset.version = "0.5.0";
-      asset.fatRaml.externalLink = "https://somewhere/fatraml.zip";
-      scope
-        .get("/shop-products-categories-api-v1")
-        .reply(200, getAssetWithVersionV2)
-        .get("/shop-products-categories-api-v1/0.5.0")
-        .reply(200, getAssetWithVersionV2);
-
-      return expect(search("searchString")).to.eventually.deep.equal([asset]);
+      return expect(search("searchString")).to.eventually.deep.equal([]);
     });
   });
 
