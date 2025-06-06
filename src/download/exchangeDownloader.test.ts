@@ -36,6 +36,9 @@ const getAssetWithVersion = require("../../testResources/download/resources/getA
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getAssetWithoutVersion = require("../../testResources/download/resources/getAsset");
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const getAssetWithMultipleVersionGroups = require("../../testResources/download/resources/getAssetWithMultipleVersionGroups.json");
+
 const REST_API: RestApi = {
   id: "8888888/test-api/1.0.0",
   name: "Test API",
@@ -249,14 +252,38 @@ describe("exchangeDownloader", () => {
         .undefined;
     });
 
-    it("should return undefined if the asset does not have a version", async () => {
+    it("should return undefined if the asset does not have a version groups", async () => {
       const assetWithoutVersion = _.cloneDeep(getAssetWithoutVersion);
-      delete assetWithoutVersion.version;
+      delete assetWithoutVersion.versionGroups;
 
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
       return expect(getApiVersions("AUTH_TOKEN", REST_API)).to.eventually.be
         .undefined;
+    });
+
+    it("should return latest versions from all the version groups", async () => {
+      scope
+        .get("/8888888/test-api")
+        .reply(200, getAssetWithMultipleVersionGroups);
+
+      return expect(
+        getApiVersions("AUTH_TOKEN", REST_API)
+      ).to.eventually.deep.equal(["2.0.10", "1.8.19"]);
+    });
+
+    it("should return undefined if the version groups does not have a version", async () => {
+      const assetWithoutVersion = _.cloneDeep(
+        getAssetWithMultipleVersionGroups
+      );
+      delete assetWithoutVersion.versionGroups[0].versions;
+      delete assetWithoutVersion.versionGroups[1].versions;
+
+      scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
+
+      return expect(
+        getApiVersions("AUTH_TOKEN", REST_API)
+      ).to.eventually.deep.equal([]);
     });
   });
 
@@ -318,7 +345,7 @@ describe("exchangeDownloader", () => {
         .reply(200, [assetSearchResults[0]]);
     });
 
-    it("searches Exchange and filters by deployment", () => {
+    it("searches Exchange and filters by latest version", () => {
       scope
         .get("/shop-products-categories-api-v1")
         .reply(200, getAssetWithVersion)
@@ -327,6 +354,7 @@ describe("exchangeDownloader", () => {
 
       return expect(search("searchString")).to.eventually.deep.equal([
         shopperCustomersAsset,
+        shopperCustomersAsset,
       ]);
     });
 
@@ -334,6 +362,21 @@ describe("exchangeDownloader", () => {
       scope.get("/shop-products-categories-api-v1").reply(404, "Not Found");
 
       return expect(search("searchString")).to.eventually.deep.equal([]);
+    });
+
+    it("searches Exchange and returns multiple version groupd", () => {
+      scope
+        .get("/shop-products-categories-api-v1")
+        .reply(200, getAssetWithMultipleVersionGroups)
+        .get("/shop-products-categories-api-v1/1.8.19")
+        .reply(200, getAssetWithVersion)
+        .get("/shop-products-categories-api-v1/2.0.10")
+        .reply(200, getAssetWithVersion);
+
+      return expect(search("searchString")).to.eventually.deep.equal([
+        shopperCustomersAsset,
+        shopperCustomersAsset,
+      ]);
     });
   });
 

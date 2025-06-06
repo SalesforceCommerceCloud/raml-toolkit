@@ -256,13 +256,6 @@ export async function getApiVersions(
     return;
   }
 
-  if (!asset.version) {
-    ramlToolLogger.error(
-      `${logPrefix} The rest API ${restApi.assetId} is missing the asset.version`
-    );
-    return;
-  }
-
   if (!asset.versionGroups) {
     ramlToolLogger.error(
       `${logPrefix} The rest API ${restApi.assetId} is missing asset.versionGroups`
@@ -282,7 +275,7 @@ export async function getApiVersions(
 function getLatestReleaseVersion(versionGroup: {
   versions: Array<{ version: string }>;
 }): void | string {
-  if (!versionGroup.versions) {
+  if (!versionGroup.versions || versionGroup.versions.length === 0) {
     return;
   }
   const releaseAssetVersions = versionGroup.versions.filter((version) => {
@@ -335,18 +328,18 @@ export async function search(query: string): Promise<RestApi[]> {
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
+
   const promises = apis.map(async (api) => {
     const versions = await getApiVersions(token, api);
     if (!versions || versions.length === 0) {
       return [];
     }
     const versionPromises = versions.map((version) => {
-      console.log("api=", api.name, ",version=", version);
       return getSpecificApi(token, api.groupId, api.assetId, version);
     });
-
     return Promise.all(versionPromises);
   });
+
   return Promise.all(promises).then((results) =>
     results.reduce((acc, val) => acc.concat(val), [])
   );
