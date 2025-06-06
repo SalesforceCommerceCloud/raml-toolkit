@@ -11,7 +11,6 @@ import fs from "fs-extra";
 import path from "path";
 
 import { getBearer } from "./bearerToken";
-import { removeVersionSpecificInformation } from "./exchangeTools";
 import {
   RawRestApi,
   RestApi,
@@ -27,9 +26,8 @@ export const DEFAULT_DOWNLOAD_FOLDER = "download";
 const ANYPOINT_BASE_URI = "https://anypoint.mulesoft.com/exchange";
 const ANYPOINT_API_URI_V1 = `${ANYPOINT_BASE_URI}/api/v1`;
 const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
-const DEPLOYMENT_DEPRECATION_WARNING =
-  "The 'deployment' argument is deprecated. The latest RAML specification that is published to Anypoint Exchange will be downloaded always.";
-
+// Only allows MAJOR.MINOR.PATCH (no suffixes). see https://semver.org/
+const releaseSemverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 /**
  * Makes an HTTP call to the url with the options passed. If the calls due to
  * a 5xx, 408, 420 or 429, it retries the call with the retry options passed
@@ -73,7 +71,10 @@ export async function downloadRestApi(
   }
   try {
     await fs.ensureDir(destinationFolder);
-    const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
+    const zipFilePath = path.join(
+      destinationFolder,
+      `${restApi.assetId}-${restApi.version}.zip`
+    );
 
     const fatRaml = restApi.fatRaml;
     const fatOas = restApi.fatOas;
@@ -104,6 +105,7 @@ export async function downloadRestApi(
  * Download the API specifications
  * @param restApi - Metadata of the API
  * @param destinationFolder - Destination directory for the download
+ * @param isOas - True for Open Api Specification
  */
 export async function downloadRestApis(
   restApi: RestApi[],
@@ -228,20 +230,15 @@ export async function searchExchange(
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
- * @param {RegExp} [deployment]
  * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
  */
-export async function getVersionByDeployment(
+export async function getApiVersions(
   accessToken: string,
-  restApi: RestApi,
-  deployment?: RegExp
-): Promise<void | string> {
-  if (deployment) {
-    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
-  }
-  const logPrefix = "[exchangeDownloader][getVersion]";
+  restApi: RestApi
+): Promise<void | string[]> {
+  const logPrefix = "[exchangeDownloader][getVersions]";
 
-  let asset;
+  let asset: void | RawRestApi;
   try {
     asset = await getAsset(
       accessToken,
@@ -259,15 +256,40 @@ export async function getVersionByDeployment(
     return;
   }
 
-  if (!asset.version) {
+  if (!asset.versionGroups) {
     ramlToolLogger.error(
-      `${logPrefix} The rest API ${restApi.assetId} is missing the asset.version`
+      `${logPrefix} The rest API ${restApi.assetId} is missing asset.versionGroups`
     );
     return;
   }
+  const versions: string[] = [];
+  asset.versionGroups.forEach((versionGroup) => {
+    const version = getLatestReleaseVersion(versionGroup);
+    if (version) {
+      versions.push(version);
+    }
+  });
+  return versions;
+}
 
-  // return the most recent version of an asset from the rest API
-  return asset.version;
+function getLatestReleaseVersion(versionGroup: {
+  versions: Array<{ version: string }>;
+}): void | string {
+  if (!versionGroup.versions || versionGroup.versions.length === 0) {
+    return;
+  }
+  const releaseAssetVersions = versionGroup.versions.filter((version) => {
+    return releaseSemverRegex.test(version.version);
+  });
+  // Sort versions and get the latest
+  return releaseAssetVersions.sort((instanceA, instanceB) => {
+    const [aMajor, aMinor, aPatch] = instanceA.version.split(".").map(Number);
+    const [bMajor, bMinor, bPatch] = instanceB.version.split(".").map(Number);
+
+    if (aMajor !== bMajor) return bMajor - aMajor;
+    if (aMinor !== bMinor) return bMinor - aMinor;
+    return bPatch - aPatch;
+  })[0].version;
 }
 
 /**
@@ -297,28 +319,28 @@ export async function getSpecificApi(
  * removes all the version specific information from the returned object.
  *
  * @param query - Exchange search query
- * @param [deployment] - RegExp matching the desired deployment targets
  *
  * @returns Information about the APIs found.
  */
-export async function search(
-  query: string,
-  deployment?: RegExp
-): Promise<RestApi[]> {
-  if (deployment) {
-    ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
-  }
-
+export async function search(query: string): Promise<RestApi[]> {
   const token = await getBearer(
     process.env.ANYPOINT_USERNAME,
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
+
   const promises = apis.map(async (api) => {
-    const version = await getVersionByDeployment(token, api, deployment);
-    return version
-      ? getSpecificApi(token, api.groupId, api.assetId, version)
-      : removeVersionSpecificInformation(api);
+    const versions = await getApiVersions(token, api);
+    if (!versions || versions.length === 0) {
+      return [];
+    }
+    const versionPromises = versions.map((version) => {
+      return getSpecificApi(token, api.groupId, api.assetId, version);
+    });
+    return Promise.all(versionPromises);
   });
-  return Promise.all(promises);
+
+  return Promise.all(promises).then((results) =>
+    results.reduce((acc, val) => acc.concat(val), [])
+  );
 }
