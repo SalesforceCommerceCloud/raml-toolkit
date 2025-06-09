@@ -8,7 +8,7 @@ import {
   downloadRestApi,
   downloadRestApis,
   searchExchange,
-  getApiVersions,
+  getLatestCleanApiVersions,
   getSpecificApi,
   getAsset,
   runFetch,
@@ -176,7 +176,7 @@ describe("exchangeDownloader", () => {
   describe("searchExchange", () => {
     it("can download multiple files", async () => {
       nock("https://anypoint.mulesoft.com/exchange/api/v2")
-        .get("/assets?search=searchString&types=rest-api")
+        .get("/assets?search=searchString&types=rest-api&limit=50&offset=0")
         .reply(200, assetSearchResults);
 
       return searchExchange("AUTH_TOKEN", "searchString").then((res) => {
@@ -234,22 +234,22 @@ describe("exchangeDownloader", () => {
     });
   });
 
-  describe("getApiVersions", () => {
+  describe("getLatestCleanApiVersions", () => {
     const scope = nock("https://anypoint.mulesoft.com/exchange/api/v1/assets");
 
     it("should return the latest version", async () => {
       scope.get("/8888888/test-api").reply(200, getAssetWithoutVersion);
 
       return expect(
-        getApiVersions("AUTH_TOKEN", REST_API)
+        getLatestCleanApiVersions("AUTH_TOKEN", REST_API)
       ).to.eventually.deep.equal(["0.1.1"]);
     });
 
     it("should return undefined if the asset does not exist", async () => {
       scope.get("/8888888/test-api").reply(404, "Not Found");
 
-      return expect(getApiVersions("AUTH_TOKEN", REST_API)).to.eventually.be
-        .undefined;
+      return expect(getLatestCleanApiVersions("AUTH_TOKEN", REST_API)).to
+        .eventually.be.undefined;
     });
 
     it("should return undefined if the asset does not have a version groups", async () => {
@@ -258,8 +258,8 @@ describe("exchangeDownloader", () => {
 
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
-      return expect(getApiVersions("AUTH_TOKEN", REST_API)).to.eventually.be
-        .undefined;
+      return expect(getLatestCleanApiVersions("AUTH_TOKEN", REST_API)).to
+        .eventually.be.undefined;
     });
 
     it("should return latest versions from all the version groups", async () => {
@@ -268,7 +268,7 @@ describe("exchangeDownloader", () => {
         .reply(200, getAssetWithMultipleVersionGroups);
 
       return expect(
-        getApiVersions("AUTH_TOKEN", REST_API)
+        getLatestCleanApiVersions("AUTH_TOKEN", REST_API)
       ).to.eventually.deep.equal(["2.0.10", "1.8.19"]);
     });
 
@@ -282,7 +282,7 @@ describe("exchangeDownloader", () => {
       scope.get("/8888888/test-api").reply(200, assetWithoutVersion);
 
       return expect(
-        getApiVersions("AUTH_TOKEN", REST_API)
+        getLatestCleanApiVersions("AUTH_TOKEN", REST_API)
       ).to.eventually.deep.equal([]);
     });
   });
@@ -341,7 +341,7 @@ describe("exchangeDownloader", () => {
           Authorization: "Bearer AUTH_TOKEN",
         },
       })
-        .get("/assets?search=searchString&types=rest-api")
+        .get("/assets?search=searchString&types=rest-api&limit=50&offset=0")
         .reply(200, [assetSearchResults[0]]);
     });
 
@@ -354,7 +354,6 @@ describe("exchangeDownloader", () => {
 
       return expect(search("searchString")).to.eventually.deep.equal([
         shopperCustomersAsset,
-        shopperCustomersAsset,
       ]);
     });
 
@@ -364,7 +363,7 @@ describe("exchangeDownloader", () => {
       return expect(search("searchString")).to.eventually.deep.equal([]);
     });
 
-    it("searches Exchange and returns multiple version groupd", () => {
+    it("searches Exchange and returns multiple version groups", () => {
       scope
         .get("/shop-products-categories-api-v1")
         .reply(200, getAssetWithMultipleVersionGroups)

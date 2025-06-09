@@ -206,8 +206,9 @@ export async function searchExchange(
   accessToken: string,
   searchString: string
 ): Promise<RestApi[]> {
+  //TODO: We may have to handle pagination in the future if the number of APIs returned is more than 50
   return runFetch(
-    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api`,
+    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api&limit=50&offset=0`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -225,14 +226,14 @@ export async function searchExchange(
 }
 
 /**
- * @description Returns the version of an api in exchange from the instance fetched asset.version value
+ * @description Returns the latest clean (MAJOR.MINOR.PATCH) API versions from multiple version groups (V1, V2..) of an API
  *
  * @export
  * @param {string} accessToken
  * @param {RestApi} restApi
  * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
  */
-export async function getApiVersions(
+export async function getLatestCleanApiVersions(
   accessToken: string,
   restApi: RestApi
 ): Promise<void | string[]> {
@@ -329,18 +330,22 @@ export async function search(query: string): Promise<RestApi[]> {
   );
   const apis = await searchExchange(token, query);
 
-  const promises = apis.map(async (api) => {
-    const versions = await getApiVersions(token, api);
+  // Get all API versions in parallel
+  const apiVersionPromises = apis.map(async (api) => {
+    const versions = await getLatestCleanApiVersions(token, api);
     if (!versions || versions.length === 0) {
-      return [];
+      return { api, versions: [] };
     }
-    const versionPromises = versions.map((version) => {
-      return getSpecificApi(token, api.groupId, api.assetId, version);
-    });
-    return Promise.all(versionPromises);
+    return { api, versions };
   });
 
-  return Promise.all(promises).then((results) =>
-    results.reduce((acc, val) => acc.concat(val), [])
-  );
+  const allApiVersions = await Promise.all(apiVersionPromises);
+  // Create promises for all API versions and process them in parallel
+  const promises = [];
+  for (const { api, versions } of allApiVersions) {
+    for (const version of versions) {
+      promises.push(getSpecificApi(token, api.groupId, api.assetId, version));
+    }
+  }
+  return Promise.all(promises);
 }
