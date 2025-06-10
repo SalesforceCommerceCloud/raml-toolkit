@@ -5,7 +5,7 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 
-import { extractFiles } from "./exchangeDirectoryParser";
+import { extractFiles, extractFile } from "./exchangeDirectoryParser";
 
 import { expect, default as chai } from "chai";
 import chaiAsPromised from "chai-as-promised";
@@ -31,6 +31,33 @@ async function createZipFile(
 
 before(() => {
   chai.use(chaiAsPromised);
+});
+
+describe("extractFile", () => {
+  it("should reject with an error message when trying to extract an invalid zip file", async () => {
+    const directory = tmp.dirSync();
+    const invalidZipPath = path.join(directory.name, "invalid.zip");
+
+    // Create a file that looks like a zip but isn't valid
+    fs.writeFileSync(invalidZipPath, "This is not a valid zip file");
+
+    await expect(extractFile(invalidZipPath)).to.be.rejectedWith(
+      `Failed to extract ${invalidZipPath}, probably not a zip file`
+    );
+  });
+
+  it("should successfully extract a valid zip file", async () => {
+    const directory = tmp.dirSync();
+    const zipPath = path.join(directory.name, "api1.zip");
+
+    // Create a valid zip file
+    await createZipFile(directory, "api1.zip");
+
+    const extractedPath = await extractFile(zipPath);
+
+    expect(fs.existsSync(extractedPath)).to.be.true;
+    expect(fs.existsSync(path.join(extractedPath, "exchange.json"))).to.be.true;
+  });
 });
 
 describe("extractFiles", () => {

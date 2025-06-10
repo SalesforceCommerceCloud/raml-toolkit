@@ -40,6 +40,10 @@ export type RawCategories = {
 export type RawRestApi = Omit<RestApi, "categories" | "fatRaml"> & {
   categories: RawCategories[];
   files: FileInfo[];
+  instances: {
+    environmentName: string;
+    version: string;
+  }[];
   versionGroups: {
     versions: {
       version: string;
