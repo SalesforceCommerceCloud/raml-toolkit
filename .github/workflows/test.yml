@@ -28,21 +28,8 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install oasdiff
         run: |
-          # Use the official install script
+          # Use the official install script - it installs directly to /usr/local/bin/
           curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
-          # Check where oasdiff was actually installed
-          which oasdiff || echo "oasdiff not in PATH, checking local directories..."
-          ls -la ./
-          ls -la bin/ 2>/dev/null || echo "No bin/ directory"
-          ls -la ./bin/ 2>/dev/null || echo "No ./bin/ directory"
-          # Try to find where the binary actually is
-          find . -name "oasdiff" -type f 2>/dev/null || echo "Binary not found in current directory"
-          # If it's not already in PATH, try to find and move it
-          if ! which oasdiff; then
-            if [ -f "./oasdiff" ]; then
-              sudo mv ./oasdiff /usr/local/bin/
-            fi
-          fi
           # Verify installation
           oasdiff --version
       - run: npm ci
