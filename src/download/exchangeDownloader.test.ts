@@ -339,6 +339,11 @@ describe("exchangeDownloader", () => {
         .reply(200, [assetSearchResults[0]]);
     });
 
+    afterEach(() => {
+      // Clean up any remaining nock interceptors for this describe block
+      nock.cleanAll();
+    });
+
     it("searches Exchange and filters by deployment", () => {
       scope
         .get("/shop-products-categories-api-v1")
