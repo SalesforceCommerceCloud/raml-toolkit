@@ -28,9 +28,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install oasdiff
         run: |
-          # Use the official install script - it installs directly to /usr/local/bin/
           curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
-          # Verify installation
           oasdiff --version
       - run: npm ci
         if: ${{ steps.cache-nodemodules.outputs.cache-hit != 'true' }}
