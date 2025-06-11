@@ -28,8 +28,9 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
       - name: Install oasdiff
         run: |
-          # Download the latest oasdiff binary for Linux
-          curl -fsSL -o oasdiff "https://github.com/oasdiff/oasdiff/releases/latest/download/oasdiff_linux_amd64"
+          # Download and extract the latest oasdiff binary for Linux
+          curl -fsSL -o oasdiff.tar.gz "https://github.com/oasdiff/oasdiff/releases/latest/download/oasdiff_linux_amd64.tar.gz"
+          tar -xzf oasdiff.tar.gz
           chmod +x oasdiff
           sudo mv oasdiff /usr/local/bin/
           # Verify installation
