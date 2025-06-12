@@ -10,6 +10,7 @@ import tmp from "tmp";
 import chai from "chai";
 import chaiFs from "chai-fs";
 import { DownloadCommand } from "./downloadCommand";
+import _ from "lodash";
 
 chai.use(chaiFs);
 
@@ -17,7 +18,9 @@ chai.use(chaiFs);
 const assetSearchResults = require("../../testResources/download/resources/assetSearch.json");
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const asset = require("../../testResources/download/resources/getAsset");
+const assetResource = require("../../testResources/download/resources/getAsset");
+// Create a local copy to avoid mutating shared test resources that other tests depend on
+const asset = _.cloneDeep(assetResource);
 // Use a shorter URL for better readability
 asset.files.find((file) => file.classifier === "fat-raml").externalLink =
   "https://short.url/raml.zip";
@@ -66,7 +69,11 @@ function setup({
       // Intercept searchExchange request
       .nock("https://anypoint.mulesoft.com/exchange/api/v2", (scope) =>
         scope
-          .get(`/assets?search=${encodeURIComponent(search)}&types=rest-api`)
+          .get(
+            `/assets?search=${encodeURIComponent(
+              search
+            )}&types=rest-api&limit=50&offset=0`
+          )
           .reply(200, [assetSearchResults[0]])
       )
       // Intercept search requests

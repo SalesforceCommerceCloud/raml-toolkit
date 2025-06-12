@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, salesforce.com, inc.
+ * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -30,6 +30,8 @@ const ANYPOINT_API_URI_V2 = `${ANYPOINT_BASE_URI}/api/v2`;
 const DEPLOYMENT_DEPRECATION_WARNING =
   "The 'deployment' argument is deprecated. The latest RAML specification that is published to Anypoint Exchange will be downloaded always.";
 
+// Only allows MAJOR.MINOR.PATCH (no suffixes). see https://semver.org/
+const releaseSemverRegex = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 /**
  * Makes an HTTP call to the url with the options passed. If the calls due to
  * a 5xx, 408, 420 or 429, it retries the call with the retry options passed
@@ -73,7 +75,15 @@ export async function downloadRestApi(
   }
   try {
     await fs.ensureDir(destinationFolder);
-    const zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
+    let zipFilePath = path.join(destinationFolder, `${restApi.assetId}.zip`);
+
+    if (isOas) {
+      //For OAS, download clean latest versions from multiple version groups
+      zipFilePath = path.join(
+        destinationFolder,
+        `${restApi.assetId}-${restApi.version}.zip`
+      );
+    }
 
     const fatRaml = restApi.fatRaml;
     const fatOas = restApi.fatOas;
@@ -104,6 +114,7 @@ export async function downloadRestApi(
  * Download the API specifications
  * @param restApi - Metadata of the API
  * @param destinationFolder - Destination directory for the download
+ * @param isOas - True for Open Api Specification
  */
 export async function downloadRestApis(
   restApi: RestApi[],
@@ -204,8 +215,9 @@ export async function searchExchange(
   accessToken: string,
   searchString: string
 ): Promise<RestApi[]> {
+  //TODO: We may have to handle pagination in the future if the number of APIs returned is more than 50
   return runFetch(
-    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api`,
+    `${ANYPOINT_API_URI_V2}/assets?search=${searchString}&types=rest-api&limit=50&offset=0`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -299,11 +311,13 @@ export async function getSpecificApi(
  * @param query - Exchange search query
  * @param [deployment] - RegExp matching the desired deployment targets
  *
+ * @param isOas - True to get Open API Specifications, false for RAML
  * @returns Information about the APIs found.
  */
 export async function search(
   query: string,
-  deployment?: RegExp
+  deployment?: RegExp,
+  isOas = false
 ): Promise<RestApi[]> {
   if (deployment) {
     ramlToolLogger.warn(DEPLOYMENT_DEPRECATION_WARNING);
@@ -314,6 +328,9 @@ export async function search(
     process.env.ANYPOINT_PASSWORD
   );
   const apis = await searchExchange(token, query);
+  if (isOas) {
+    return getLatestCleanApis(apis, token);
+  }
   const promises = apis.map(async (api) => {
     const version = await getVersionByDeployment(token, api, deployment);
     return version
@@ -321,4 +338,109 @@ export async function search(
       : removeVersionSpecificInformation(api);
   });
   return Promise.all(promises);
+}
+
+/**
+ * Gets information about all the APIs from exchange that match the given search
+ * string.
+ * If it fails to get information about the deployed version of an API, it
+ * removes all the version specific information from the returned object.
+ *
+ * @param apis - Array of apis to get the latest versions
+ * @param {string} accessToken
+ *
+ * @returns Information about the APIs found.
+ */
+export async function getLatestCleanApis(
+  apis: RestApi[],
+  accessToken: string
+): Promise<RestApi[]> {
+  // Get all API versions in parallel
+  const apiVersionPromises = apis.map(async (api) => {
+    const versions = await getLatestCleanApiVersions(accessToken, api);
+    if (!versions || versions.length === 0) {
+      return { api, versions: [] };
+    }
+    return { api, versions };
+  });
+
+  const allApiVersions = await Promise.all(apiVersionPromises);
+  // Create promises for all API versions and process them in parallel
+  const promises = [];
+  for (const { api, versions } of allApiVersions) {
+    for (const version of versions) {
+      promises.push(
+        getSpecificApi(accessToken, api.groupId, api.assetId, version)
+      );
+    }
+  }
+  return Promise.all(promises);
+}
+
+/**
+ * @description Returns the latest clean (MAJOR.MINOR.PATCH) API versions from multiple version groups (V1, V2..) of an API
+ *
+ * @export
+ * @param {string} accessToken
+ * @param {RestApi} restApi
+ * @returns {Promise<string>} Returned the version string from the instance fetched asset.version value
+ */
+export async function getLatestCleanApiVersions(
+  accessToken: string,
+  restApi: RestApi
+): Promise<void | string[]> {
+  const logPrefix = "[exchangeDownloader][getLatestCleanApiVersions]";
+
+  let asset: void | RawRestApi;
+  try {
+    asset = await getAsset(
+      accessToken,
+      `${restApi.groupId}/${restApi.assetId}`
+    );
+  } catch (error) {
+    ramlToolLogger.error(`${logPrefix} Error fetching asset:`, error);
+    return;
+  }
+
+  if (!asset) {
+    ramlToolLogger.log(
+      `${logPrefix} No asset found for ${restApi.assetId}, returning`
+    );
+    return;
+  }
+
+  if (!asset.versionGroups) {
+    ramlToolLogger.error(
+      `${logPrefix} The rest API ${restApi.assetId} is missing asset.versionGroups`
+    );
+    return;
+  }
+  const versions: string[] = [];
+  asset.versionGroups.forEach((versionGroup) => {
+    const version = getLatestReleaseVersion(versionGroup);
+    if (version) {
+      versions.push(version);
+    }
+  });
+  return versions;
+}
+
+function getLatestReleaseVersion(versionGroup: {
+  versions: Array<{ version: string }>;
+}): void | string {
+  if (!versionGroup.versions || versionGroup.versions.length === 0) {
+    return;
+  }
+  const releaseAssetVersions = versionGroup.versions.filter((version) => {
+    return releaseSemverRegex.test(version.version);
+  });
+  // Sort versions and get the latest
+  return releaseAssetVersions.sort((instanceA, instanceB) => {
+    const [aMajor, aMinor, aPatch] = instanceA.version.split(".").map(Number);
+    const [bMajor, bMinor, bPatch] = instanceB.version.split(".").map(Number);
+
+    if (aMajor !== bMajor) return bMajor - aMajor;
+    if (aMinor !== bMinor) return bMinor - aMinor;
+    return bPatch - aPatch;
+  })[0].version;
 }

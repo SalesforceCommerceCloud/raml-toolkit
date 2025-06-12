@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, salesforce.com, inc.
+ * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -176,7 +176,7 @@ describe("exchangeDownloader", () => {
   describe("searchExchange", () => {
     it("can download multiple files", async () => {
       nock("https://anypoint.mulesoft.com/exchange/api/v2")
-        .get("/assets?search=searchString&types=rest-api")
+        .get("/assets?search=searchString&types=rest-api&limit=50&offset=0")
         .reply(200, assetSearchResults);
 
       return searchExchange("AUTH_TOKEN", "searchString").then((res) => {
@@ -335,8 +335,13 @@ describe("exchangeDownloader", () => {
           Authorization: "Bearer AUTH_TOKEN",
         },
       })
-        .get("/assets?search=searchString&types=rest-api")
+        .get("/assets?search=searchString&types=rest-api&limit=50&offset=0")
         .reply(200, [assetSearchResults[0]]);
+    });
+
+    afterEach(() => {
+      // Clean up any remaining nock interceptors for this describe block
+      nock.cleanAll();
     });
 
     it("searches Exchange and filters by deployment", () => {
@@ -390,7 +395,7 @@ describe("exchangeDownloader", () => {
       asset.fatRaml = {
         classifier: "fat-raml",
         packaging: "zip",
-        externalLink: "https://short.url/raml.zip",
+        externalLink: "https://short.url/test",
         createdDate: "2020-02-05T21:26:01.199Z",
         md5: "87b3ad2b2aa17639b52f0cc83c5a8d40",
         sha1: "f2b9b2de50b7250616e2eea8843735b57235c22b",
