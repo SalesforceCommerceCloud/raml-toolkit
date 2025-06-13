@@ -34,42 +34,108 @@ async function _saveOrLogOas(changes: string, flags): Promise<void> {
  * Wrapper for oasdiff changelog command.
  *
  * @param baseApi - The base API file or directory
- * @param newApi - The new API file
+ * @param newApi - The new API file or directory
  * @param flags - Parsed CLI flags passed to the command
  * @returns 0 if no changes are reported, 1 if changes are reported, and 2 if an error occurs
  */
 export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   try {
     checkOasDiffIsInstalled();
-    console.log("Starting oasdiff");
+    console.log("......Starting oasdiff......");
 
     const jsonMode = flags.format === "json" ? "-f json" : "";
     const directoryMode = flags.dir ? "--composed" : "";
 
-    // If the user is diffing directories, we need to pass the glob pattern to oasdiff
-    let baseApiTarget = baseApi;
-    let newApiTarget = newApi;
+    let hasChanges = false;
+    let hasErrors = false;
+    const allResults = [];
+
+    // Handle directory mode
     if (flags.dir) {
-      baseApiTarget = '"' + baseApi + "/**/*.yaml" + '"';
-      newApiTarget = '"' + newApi + "/**/*.yaml" + '"';
-    }
+      // Get the list of directories in both base and new API paths
+      const baseDirectories = await fs.readdir(baseApi);
+      const newDirectories = await fs.readdir(newApi);
 
-    // TODO: Do we want to support the other output formats?
-    // See https://github.com/oasdiff/oasdiff/blob/main/docs/BREAKING-CHANGES.md#output-formats
+      // Loop through base directories and find matching ones in new
+      for (const baseDir of baseDirectories) {
+        const baseDirPath = `${baseApi}/${baseDir}`;
+        const newDirPath = `${newApi}/${baseDir}`;
 
-    // TODO: Do we want to support customizing severity levels?
-    // This would be akin to the raml rulesets
-    const oasdiffOutput = execSync(
-      `oasdiff changelog ${jsonMode} ${directoryMode} ${baseApiTarget} ${newApiTarget}`
-    ).toString();
+        // Skip if not a directory or if matching directory doesn't exist in new
+        if (
+          !(await fs.stat(baseDirPath)).isDirectory() ||
+          !newDirectories.includes(baseDir)
+        ) {
+          continue;
+        }
 
-    if (oasdiffOutput.trim().length === 0) {
-      console.log("No API changes reported by oasdiff");
-      return 0;
+        console.log(`Processing directory pair: ${baseDir}`);
+
+        try {
+          const baseYamlPath = `"${baseDirPath}/**/*.yaml"`;
+          const newYamlPath = `"${newDirPath}/**/*.yaml"`;
+
+          const oasdiffOutput = execSync(
+            `oasdiff changelog ${jsonMode} ${directoryMode} ${baseYamlPath} ${newYamlPath}`
+          ).toString();
+
+          if (oasdiffOutput.trim().length > 0) {
+            console.log(`Changes found in ${baseDir}`);
+            if (flags.format === "json") {
+              // For JSON format, parse the output and add to array
+              const outputJson = JSON.parse(oasdiffOutput);
+              outputJson.directory = baseDir;
+              allResults.push(outputJson);
+            } else {
+              allResults.push(oasdiffOutput);
+            }
+            hasChanges = true;
+          } else {
+            console.log(`No changes found in ${baseDir}`);
+          }
+        } catch (err) {
+          console.error(`Error processing ${baseDir}:`, err);
+          hasErrors = true;
+        }
+      }
     } else {
-      await _saveOrLogOas(oasdiffOutput, flags);
-      return 1;
+      // Handle single file mode
+      try {
+        const oasdiffOutput = execSync(
+          `oasdiff changelog ${jsonMode} "${baseApi}" "${newApi}"`
+        ).toString();
+
+        if (oasdiffOutput.trim().length > 0) {
+          console.log("Changes found");
+          if (flags.format === "json") {
+            // For JSON format, parse the output
+            const outputJson = JSON.parse(oasdiffOutput);
+            allResults.push(outputJson);
+          } else {
+            allResults.push(oasdiffOutput);
+          }
+          hasChanges = true;
+        } else {
+          console.log("No changes found");
+        }
+      } catch (err) {
+        console.error("Error processing files:", err);
+        hasErrors = true;
+      }
     }
+
+    if (hasChanges) {
+      if (flags.format === "json") {
+        await _saveOrLogOas(JSON.stringify(allResults, null, 2), flags);
+      } else {
+        await _saveOrLogOas(allResults.join("\n"), flags);
+      }
+    }
+
+    if (hasErrors) {
+      return 2;
+    }
+    return hasChanges ? 1 : 0;
   } catch (err) {
     console.error(err);
     return 2;
