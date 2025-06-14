@@ -17,12 +17,12 @@ import { execSync } from "child_process";
 async function _saveOrLogOas(changes: string, flags): Promise<void> {
   const file = flags["out-file"];
   if (file) {
-    console.log(`API Changes found! Saving results to file ${file}`);
+    console.log(`API Changes found! Saving results to file ${file}:`);
     if (flags.format === "json") {
-      console.log("Using json format");
+      console.log(`    using json format`);
       await fs.writeJson(file, JSON.parse(changes));
     } else {
-      console.log("Using console format");
+      console.log(`    using console format`);
       await fs.writeFile(file, changes);
     }
   } else {
@@ -82,12 +82,13 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
           if (oasdiffOutput.trim().length > 0) {
             console.log(`Changes found in ${baseDir}`);
             if (flags.format === "json") {
-              // For JSON format, parse the output and add to array
               const outputJson = JSON.parse(oasdiffOutput);
               outputJson.directory = baseDir;
               allResults.push(outputJson);
             } else {
-              allResults.push(oasdiffOutput);
+              // For text format, add section headers
+              const formattedOutput = `=== Changes in ${baseDir} ===\n${oasdiffOutput}`;
+              allResults.push(formattedOutput);
             }
             hasChanges = true;
           } else {

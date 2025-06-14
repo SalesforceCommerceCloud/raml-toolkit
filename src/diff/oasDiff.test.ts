@@ -35,7 +35,9 @@ describe("oasDiffChangelog", () => {
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
     expect(execSyncStub.called).to.be.true;
-    expect(execSyncStub.args[1][0]).to.equal('oasdiff changelog  "base.yaml" "new.yaml"');
+    expect(execSyncStub.args[1][0]).to.equal(
+      'oasdiff changelog  "base.yaml" "new.yaml"'
+    );
     expect(result).to.equal(0);
   });
 
@@ -122,7 +124,7 @@ describe("oasDiffChangelog", () => {
   it("should run oasdiff in directory mode when the --dir flag is provided", async () => {
     const execSyncStub = sinon.stub();
     execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("a change");
+    execSyncStub.onCall(1).returns("a minor change");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -172,6 +174,7 @@ describe("oasDiffChangelog", () => {
     const newApi = "new";
     const flags = {
       "out-file": "output.txt",
+      dir: true,
     };
 
     await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
@@ -208,6 +211,7 @@ describe("oasDiffChangelog", () => {
     const flags = {
       "out-file": "output.json",
       format: "json",
+      dir: true,
     };
 
     await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
