@@ -5,7 +5,10 @@
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
 import fs from "fs-extra";
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 /**
  * If a file is given, saves the changes to the file, as JSON by default.
@@ -31,6 +34,27 @@ async function _saveOrLogOas(changes: string, flags): Promise<void> {
 }
 
 /**
+ * Execute oasdiff changelog command
+ *
+ * @param baseSpec - The base spec path
+ * @param newSpec - The new spec path
+ * @param jsonMode - JSON format flag
+ * @param directoryMode - Directory mode flag
+ * @returns The stdout output from oasdiff
+ */
+async function executeOasDiff(
+  baseSpec: string,
+  newSpec: string,
+  jsonMode: string,
+  directoryMode = ""
+): Promise<string> {
+  const { stdout } = await execAsync(
+    `oasdiff changelog ${jsonMode} ${directoryMode} "${baseSpec}" "${newSpec}"`
+  );
+  return stdout;
+}
+
+/**
  * Wrapper for oasdiff changelog command.
  *
  * @param baseApi - The base API file or directory
@@ -40,7 +64,7 @@ async function _saveOrLogOas(changes: string, flags): Promise<void> {
  */
 export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   try {
-    checkOasDiffIsInstalled();
+    await checkOasDiffIsInstalled();
     console.log("......Starting oasdiff......");
 
     const jsonMode = flags.format === "json" ? "-f json" : "";
@@ -61,23 +85,31 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
         const baseDirPath = `${baseApi}/${baseDir}`;
         const newDirPath = `${newApi}/${baseDir}`;
 
-        // Skip if not a directory or if matching directory doesn't exist in new
-        if (
-          !(await fs.stat(baseDirPath)).isDirectory() ||
-          !newDirectories.includes(baseDir)
-        ) {
+        // Skip if not a directory
+        if (!(await fs.stat(baseDirPath)).isDirectory()) {
+          continue;
+        }
+
+        // Check if matching directory doesn't exist in new
+        if (!newDirectories.includes(baseDir)) {
+          console.log(`${baseDir} API is deleted`);
+          allResults.push(`======${baseDir} API is deleted======`);
+          hasChanges = true;
           continue;
         }
 
         console.log(`Processing directory pair: ${baseDir}`);
 
         try {
-          const baseYamlPath = `"${baseDirPath}/**/*.yaml"`;
-          const newYamlPath = `"${newDirPath}/**/*.yaml"`;
+          const baseYamlPath = `${baseDirPath}/**/*.yaml`;
+          const newYamlPath = `${newDirPath}/**/*.yaml`;
 
-          const oasdiffOutput = execSync(
-            `oasdiff changelog ${jsonMode} ${directoryMode} ${baseYamlPath} ${newYamlPath}`
-          ).toString();
+          const oasdiffOutput = await executeOasDiff(
+            baseYamlPath,
+            newYamlPath,
+            jsonMode,
+            directoryMode
+          );
 
           if (oasdiffOutput.trim().length > 0) {
             console.log(`Changes found in ${baseDir}`);
@@ -99,12 +131,26 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
           hasErrors = true;
         }
       }
+
+      // Check for newly added APIs (directories in new but not in base)
+      for (const newDir of newDirectories) {
+        const newDirPath = `${newApi}/${newDir}`;
+
+        // Skip if not a directory
+        if (!(await fs.stat(newDirPath)).isDirectory()) {
+          continue;
+        }
+
+        // Check if this directory doesn't exist in base (added API)
+        if (!baseDirectories.includes(newDir)) {
+          console.log(`${newDir} API is added`);
+          allResults.push(`======${newDir} API is added======`);
+          hasChanges = true;
+        }
+      }
     } else {
-      // Handle single file mode
       try {
-        const oasdiffOutput = execSync(
-          `oasdiff changelog ${jsonMode} "${baseApi}" "${newApi}"`
-        ).toString();
+        const oasdiffOutput = await executeOasDiff(baseApi, newApi, jsonMode);
 
         if (oasdiffOutput.trim().length > 0) {
           console.log("Changes found");
@@ -143,9 +189,9 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
   }
 }
 
-export function checkOasDiffIsInstalled() {
+export async function checkOasDiffIsInstalled() {
   try {
-    execSync(`oasdiff --version`).toString();
+    await execAsync(`oasdiff --version`);
   } catch (err) {
     throw new Error(
       "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"

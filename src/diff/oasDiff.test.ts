@@ -261,6 +261,176 @@ describe("oasDiffChangelog", () => {
     expect(execSyncStub.callCount).to.equal(2);
   });
 
+  it("should report deleted APIs when directories exist in base but not in new", async () => {
+    const execSyncStub = sinon.stub();
+    execSyncStub.onCall(0).returns("version 1.0.0");
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeFile: sinon.stub(),
+    };
+
+    // Base has api-v1 and api-v2, new only has api-v1
+    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
+    fsStub.readdir.onCall(1).returns(["api-v2"]); // new directories
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        execSync: execSyncStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.txt",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeFile.called).to.be.true;
+    const writtenContent = fsStub.writeFile.args[0][1];
+    expect(writtenContent).to.include("======api-v1 API is deleted======");
+  });
+
+  it("should report added APIs when directories exist in new but not in base", async () => {
+    const execSyncStub = sinon.stub();
+    execSyncStub.onCall(0).returns("version 1.0.0");
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeFile: sinon.stub(),
+    };
+
+    // Base has only api-v1, new has api-v1 and api-v2
+    fsStub.readdir.onCall(0).returns(["api-v1"]); // base directories
+    fsStub.readdir.onCall(1).returns(["api-v1", "api-v2"]); // new directories
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        execSync: execSyncStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.txt",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeFile.called).to.be.true;
+    const writtenContent = fsStub.writeFile.args[0][1];
+    expect(writtenContent).to.include("======api-v2 API is added======");
+  });
+
+  it("should report both added and deleted APIs in the same comparison", async () => {
+    const execSyncStub = sinon.stub();
+    execSyncStub.onCall(0).returns("version 1.0.0");
+    execSyncStub.onCall(1).returns("changes in api-v1");
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeFile: sinon.stub(),
+    };
+
+    // Base has api-v1 and api-v2, new has api-v1 and api-v3
+    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
+    fsStub.readdir.onCall(1).returns(["api-v2", "api-v3"]); // new directories
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        execSync: execSyncStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.txt",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeFile.called).to.be.true;
+    const writtenContent = fsStub.writeFile.args[0][1];
+    expect(writtenContent).to.include("======api-v1 API is deleted======");
+    expect(writtenContent).to.include("======api-v3 API is added======");
+    expect(writtenContent).to.include("=== Changes in api-v2 ===");
+  });
+
+  it("should handle mixed scenarios with changes, additions, and deletions", async () => {
+    const execSyncStub = sinon.stub();
+    execSyncStub.onCall(0).returns("version 1.0.0");
+    execSyncStub.onCall(1).returns("changes in common-api");
+    execSyncStub.onCall(2).returns(""); // no changes in stable-api
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeFile: sinon.stub(),
+    };
+
+    // Base: common-api, stable-api, old-api
+    // New: common-api, stable-api, new-api
+    fsStub.readdir.onCall(0).returns(["common-api", "stable-api", "old-api"]); // base
+    fsStub.readdir.onCall(1).returns(["common-api", "stable-api", "new-api"]); // new
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        execSync: execSyncStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.txt",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeFile.called).to.be.true;
+    const writtenContent = fsStub.writeFile.args[0][1];
+
+    // Should show deleted API
+    expect(writtenContent).to.include("======old-api API is deleted======");
+
+    // Should show added API
+    expect(writtenContent).to.include("======new-api API is added======");
+
+    // Should show changes in common-api
+    expect(writtenContent).to.include("=== Changes in common-api ===");
+    expect(writtenContent).to.include("changes in common-api");
+
+    // Should NOT show stable-api since it has no changes
+    expect(writtenContent).to.not.include("=== Changes in stable-api ===");
+  });
+
   it("should throw an error if oasdiff is not installed", () => {
     const oasDiff = pq("./oasDiff", {
       child_process: {
