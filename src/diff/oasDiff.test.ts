@@ -12,9 +12,10 @@ const pq = proxyquire.noCallThru();
 
 describe("oasDiffChangelog", () => {
   it("should execute oasdiff command with correct parameters for single file mode", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0"); // version check
-    execSyncStub.onCall(1).returns(""); // diff result
+    const execStub = sinon.stub();
+    // Mock the callback-style exec function
+    execStub.callsArgWith(1, null, "", ""); // version check
+    execStub.onSecondCall().callsArgWith(1, null, "", ""); // diff result
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -23,7 +24,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -34,17 +35,17 @@ describe("oasDiffChangelog", () => {
     const flags = {};
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    expect(execSyncStub.called).to.be.true;
-    expect(execSyncStub.args[1][0]).to.equal(
-      'oasdiff changelog  "base.yaml" "new.yaml"'
+    expect(execStub.called).to.be.true;
+    expect(execStub.args[1][0]).to.equal(
+      'oasdiff changelog "base.yaml" "new.yaml"'
     );
     expect(result).to.equal(0);
   });
 
   it("should execute oasdiff command with correct parameters for directory mode", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0"); // version check
-    execSyncStub.onCall(1).returns(""); // diff result
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", ""); // version check
+    execStub.onSecondCall().callsArgWith(1, null, "", ""); // diff result
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -53,7 +54,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -64,15 +65,15 @@ describe("oasDiffChangelog", () => {
     const flags = { dir: true };
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    expect(execSyncStub.called).to.be.true;
-    expect(execSyncStub.args[1][0]).to.include('"base/api-v1/**/*.yaml"');
+    expect(execStub.called).to.be.true;
+    expect(execStub.args[1][0]).to.include("base/api-v1/**/*.yaml");
     expect(result).to.equal(0);
   });
 
   it("should return 1 when oasdiff returns a non-empty string", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("mock oasdiff change");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "mock oasdiff change", "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -81,7 +82,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -91,14 +92,14 @@ describe("oasDiffChangelog", () => {
     const flags = {};
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    expect(execSyncStub.called).to.be.true;
+    expect(execStub.called).to.be.true;
     expect(result).to.equal(1);
   });
 
   it("should return 2 when oasdiff throws an error", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).throws(new Error("mock oasdiff error"));
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, new Error("mock oasdiff error"));
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -107,7 +108,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -117,14 +118,14 @@ describe("oasDiffChangelog", () => {
     const flags = {};
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    expect(execSyncStub.called).to.be.true;
+    expect(execStub.called).to.be.true;
     expect(result).to.equal(2);
   });
 
   it("should run oasdiff in directory mode when the --dir flag is provided", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("a minor change");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "a minor change", "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1"]),
@@ -133,7 +134,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -145,17 +146,17 @@ describe("oasDiffChangelog", () => {
     };
     await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    expect(execSyncStub.called).to.be.true;
-    expect(execSyncStub.args[1][0]).to.equal(
-      'oasdiff changelog  --composed "base/api-v1/**/*.yaml" "new/api-v1/**/*.yaml"'
+    expect(execStub.called).to.be.true;
+    expect(execStub.args[1][0]).to.equal(
+      'oasdiff changelog --composed "base/api-v1/**/*.yaml" "new/api-v1/**/*.yaml"'
     );
   });
 
   it("should concatenate results from multiple directories in text format", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("changes in api-v1");
-    execSyncStub.onCall(2).returns("changes in api-v2");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
+    execStub.onThirdCall().callsArgWith(1, null, "changes in api-v2", "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1", "api-v2"]),
@@ -165,7 +166,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -188,10 +189,14 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should concatenate results from multiple directories in JSON format", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns('{"changes": "in api-v1"}');
-    execSyncStub.onCall(2).returns('{"changes": "in api-v2"}');
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub
+      .onSecondCall()
+      .callsArgWith(1, null, '{"changes": "in api-v1"}', "");
+    execStub
+      .onThirdCall()
+      .callsArgWith(1, null, '{"changes": "in api-v2"}', "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1", "api-v2"]),
@@ -201,7 +206,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -230,9 +235,9 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should skip non-directory entries", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("changes in api-v1");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1", "not-a-dir.txt"]),
@@ -246,7 +251,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -257,13 +262,13 @@ describe("oasDiffChangelog", () => {
 
     await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
-    // Should only call execSync twice (once for version check, once for api-v1)
-    expect(execSyncStub.callCount).to.equal(2);
+    // Should only call exec twice (once for version check, once for api-v1)
+    expect(execStub.callCount).to.equal(2);
   });
 
   it("should report deleted APIs when directories exist in base but not in new", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
 
     const fsStub = {
       readdir: sinon.stub(),
@@ -271,7 +276,7 @@ describe("oasDiffChangelog", () => {
       writeFile: sinon.stub(),
     };
 
-    // Base has api-v1 and api-v2, new only has api-v1
+    // Base has api-v1 and api-v2, new only has api-v2
     fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
     fsStub.readdir.onCall(1).returns(["api-v2"]); // new directories
 
@@ -280,7 +285,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -300,8 +305,8 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report added APIs when directories exist in new but not in base", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
 
     const fsStub = {
       readdir: sinon.stub(),
@@ -318,7 +323,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -338,9 +343,9 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report both added and deleted APIs in the same comparison", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("changes in api-v1");
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
 
     const fsStub = {
       readdir: sinon.stub(),
@@ -348,7 +353,7 @@ describe("oasDiffChangelog", () => {
       writeFile: sinon.stub(),
     };
 
-    // Base has api-v1 and api-v2, new has api-v1 and api-v3
+    // Base has api-v1 and api-v2, new has api-v2 and api-v3
     fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
     fsStub.readdir.onCall(1).returns(["api-v2", "api-v3"]); // new directories
 
@@ -357,7 +362,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -379,10 +384,10 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should handle mixed scenarios with changes, additions, and deletions", async () => {
-    const execSyncStub = sinon.stub();
-    execSyncStub.onCall(0).returns("version 1.0.0");
-    execSyncStub.onCall(1).returns("changes in common-api");
-    execSyncStub.onCall(2).returns(""); // no changes in stable-api
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub.onSecondCall().callsArgWith(1, null, "changes in common-api", "");
+    execStub.onThirdCall().callsArgWith(1, null, "", ""); // no changes in stable-api
 
     const fsStub = {
       readdir: sinon.stub(),
@@ -400,7 +405,7 @@ describe("oasDiffChangelog", () => {
 
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: execSyncStub,
+        exec: execStub,
       },
       "fs-extra": fsStub,
     });
@@ -431,15 +436,23 @@ describe("oasDiffChangelog", () => {
     expect(writtenContent).to.not.include("=== Changes in stable-api ===");
   });
 
-  it("should throw an error if oasdiff is not installed", () => {
+  it("should throw an error if oasdiff is not installed", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, new Error("oasdiff not installed"));
+
     const oasDiff = pq("./oasDiff", {
       child_process: {
-        execSync: sinon.stub().throws(new Error("oasdiff not installed")),
+        exec: execStub,
       },
     });
 
-    expect(() => oasDiff.checkOasDiffIsInstalled()).to.throw(
-      "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
-    );
+    try {
+      await oasDiff.checkOasDiffIsInstalled();
+      expect.fail("Expected function to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal(
+        "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
+      );
+    }
   });
 });

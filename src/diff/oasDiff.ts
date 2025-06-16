@@ -6,9 +6,6 @@
  */
 import fs from "fs-extra";
 import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
 
 /**
  * If a file is given, saves the changes to the file, as JSON by default.
@@ -48,10 +45,23 @@ async function executeOasDiff(
   jsonMode: string,
   directoryMode = ""
 ): Promise<string> {
-  const { stdout } = await execAsync(
-    `oasdiff changelog ${jsonMode} ${directoryMode} "${baseSpec}" "${newSpec}"`
-  );
-  return stdout;
+  return new Promise((resolve, reject) => {
+    const flags = [jsonMode, directoryMode]
+      .filter((flag) => flag.trim() !== "")
+      .join(" ");
+    const flagsString = flags ? ` ${flags}` : "";
+    // intentionally not leaving space for flagsString
+    exec(
+      `oasdiff changelog${flagsString} "${baseSpec}" "${newSpec}"`,
+      (error, stdout) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(stdout);
+        }
+      }
+    );
+  });
 }
 
 /**
@@ -191,7 +201,15 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
 
 export async function checkOasDiffIsInstalled() {
   try {
-    await execAsync(`oasdiff --version`);
+    await new Promise<void>((resolve, reject) => {
+      exec(`oasdiff --version`, (error, stdout, stderr) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
+      });
+    });
   } catch (err) {
     throw new Error(
       "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
