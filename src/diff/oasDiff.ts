@@ -133,18 +133,19 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
             console.log(`Changes found in ${baseDir}`);
             if (flags.format === "json") {
               const outputJson = JSON.parse(oasdiffOutput);
-              if (outputJson.length) {
+              if (outputJson?.length > 0) {
                 allResults.push({
                   directory: baseDir,
                   changes: outputJson,
                 });
+                hasChanges = true;
               }
             } else {
               // For text format, add section headers
               const formattedOutput = `=== Changes in ${baseDir} ===\n${oasdiffOutput}`;
               allResults.push(formattedOutput);
+              hasChanges = true;
             }
-            hasChanges = true;
           } else {
             console.log(`No changes found in ${baseDir}`);
           }
@@ -187,11 +188,14 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
           if (flags.format === "json") {
             // For JSON format, parse the output
             const outputJson = JSON.parse(oasdiffOutput);
-            allResults.push(outputJson);
+            if (outputJson?.length > 0) {
+              allResults.push(outputJson);
+              hasChanges = true;
+            }
           } else {
             allResults.push(oasdiffOutput);
+            hasChanges = true;
           }
-          hasChanges = true;
         } else {
           console.log("No changes found");
         }

@@ -193,10 +193,10 @@ describe("oasDiffChangelog", () => {
     execStub.callsArgWith(1, null, "version 1.0.0", "");
     execStub
       .onSecondCall()
-      .callsArgWith(1, null, '{"changes": "in api-v1"}', "");
+      .callsArgWith(1, null, '[{"changes": "in api-v1"}]', "");
     execStub
       .onThirdCall()
-      .callsArgWith(1, null, '{"changes": "in api-v2"}', "");
+      .callsArgWith(1, null, '[{"changes": "in api-v2"}]', "");
 
     const fsStub = {
       readdir: sinon.stub().returns(["api-v1", "api-v2"]),
@@ -226,13 +226,11 @@ describe("oasDiffChangelog", () => {
     expect(writtenContent).to.be.an("array").with.lengthOf(2);
     expect(writtenContent[0]).to.deep.equal({
       directory: "api-v1",
-      status: "modified",
-      changes: { changes: "in api-v1" },
+      changes: [{ changes: "in api-v1" }],
     });
     expect(writtenContent[1]).to.deep.equal({
       directory: "api-v2",
-      status: "modified",
-      changes: { changes: "in api-v2" },
+      changes: [{ changes: "in api-v2" }],
     });
   });
 
@@ -524,6 +522,102 @@ describe("oasDiffChangelog", () => {
       status: "added",
       message: "api-v2 API is added",
     });
+  });
+
+  it("should not include directories with empty changes in JSON format", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    execStub
+      .onSecondCall()
+      .callsArgWith(1, null, '[{"changes": "in api-v1"}]', "");
+    execStub.onThirdCall().callsArgWith(1, null, "[]", ""); // empty array
+
+    const fsStub = {
+      readdir: sinon.stub().returns(["api-v1", "api-v2"]),
+      stat: sinon.stub().returns({ isDirectory: () => true }),
+      writeJson: sinon.stub(),
+    };
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.json",
+      format: "json",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeJson.called).to.be.true;
+    const writtenContent = fsStub.writeJson.args[0][1];
+    expect(writtenContent).to.be.an("array").with.lengthOf(1);
+    expect(writtenContent[0]).to.deep.equal({
+      directory: "api-v1",
+      changes: [{ changes: "in api-v1" }],
+    });
+  });
+
+  it("should not include empty results in single file JSON mode", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "", ""); // version check
+    execStub.onSecondCall().callsArgWith(1, null, "[]", ""); // empty array result
+
+    const fsStub = {
+      readdir: sinon.stub().returns(["api-v1"]),
+      stat: sinon.stub().returns({ isDirectory: () => true }),
+    };
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    // Arrange
+    const baseApi = "base.yaml";
+    const newApi = "new.yaml";
+    const flags = { format: "json" };
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(execStub.called).to.be.true;
+    expect(result).to.equal(0); // No changes should be reported
+  });
+
+  it("should include non-empty results in single file JSON mode", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "", ""); // version check
+    execStub
+      .onSecondCall()
+      .callsArgWith(1, null, '[{"change": "something"}]', ""); // non-empty array result
+
+    const fsStub = {
+      readdir: sinon.stub().returns(["api-v1"]),
+      stat: sinon.stub().returns({ isDirectory: () => true }),
+    };
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    // Arrange
+    const baseApi = "base.yaml";
+    const newApi = "new.yaml";
+    const flags = { format: "json" };
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(execStub.called).to.be.true;
+    expect(result).to.equal(1); // Changes should be reported
   });
 
   it("should throw an error if oasdiff is not installed", async () => {

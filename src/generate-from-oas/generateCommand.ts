@@ -10,7 +10,6 @@ import { allCommonFlags } from "../common/flags";
 import {
   generateFromOas,
   DEFAULT_CONFIG_PACKAGE_PATH,
-  DEFAULT_CONFIG_PATH,
 } from "./generateFromOas";
 
 export class GenerateCommand extends Command {

@@ -7,7 +7,6 @@
 
 import path from "path";
 import { execSync } from "child_process";
-import { string, boolean } from "@oclif/parser/lib/flags";
 
 // Path relative to project root
 export const DEFAULT_CONFIG_BASE_PATH =
