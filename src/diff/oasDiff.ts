@@ -103,7 +103,15 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
         // Check if matching directory doesn't exist in new
         if (!newDirectories.includes(baseDir)) {
           console.log(`${baseDir} API is deleted`);
-          allResults.push(`======${baseDir} API is deleted======`);
+          if (flags.format === "json") {
+            allResults.push({
+              directory: baseDir,
+              status: "deleted",
+              message: `${baseDir} API is deleted`,
+            });
+          } else {
+            allResults.push(`======${baseDir} API is deleted======`);
+          }
           hasChanges = true;
           continue;
         }
@@ -125,8 +133,12 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
             console.log(`Changes found in ${baseDir}`);
             if (flags.format === "json") {
               const outputJson = JSON.parse(oasdiffOutput);
-              outputJson.directory = baseDir;
-              allResults.push(outputJson);
+              if (outputJson.length) {
+                allResults.push({
+                  directory: baseDir,
+                  changes: outputJson,
+                });
+              }
             } else {
               // For text format, add section headers
               const formattedOutput = `=== Changes in ${baseDir} ===\n${oasdiffOutput}`;
@@ -154,7 +166,15 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
         // Check if this directory doesn't exist in base (added API)
         if (!baseDirectories.includes(newDir)) {
           console.log(`${newDir} API is added`);
-          allResults.push(`======${newDir} API is added======`);
+          if (flags.format === "json") {
+            allResults.push({
+              directory: newDir,
+              status: "added",
+              message: `${newDir} API is added`,
+            });
+          } else {
+            allResults.push(`======${newDir} API is added======`);
+          }
           hasChanges = true;
         }
       }
@@ -202,7 +222,7 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
 export async function checkOasDiffIsInstalled() {
   try {
     await new Promise<void>((resolve, reject) => {
-      exec(`oasdiff --version`, (error, stdout, stderr) => {
+      exec(`oasdiff --version`, (error) => {
         if (error) {
           reject(error);
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, salesforce.com, inc.
+ * Copyright (c) 2025, salesforce.com, inc.
  * All rights reserved.
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
@@ -224,13 +224,15 @@ describe("oasDiffChangelog", () => {
     expect(fsStub.writeJson.called).to.be.true;
     const writtenContent = fsStub.writeJson.args[0][1];
     expect(writtenContent).to.be.an("array").with.lengthOf(2);
-    expect(writtenContent[0]).to.deep.include({
-      changes: "in api-v1",
+    expect(writtenContent[0]).to.deep.equal({
       directory: "api-v1",
+      status: "modified",
+      changes: { changes: "in api-v1" },
     });
-    expect(writtenContent[1]).to.deep.include({
-      changes: "in api-v2",
+    expect(writtenContent[1]).to.deep.equal({
       directory: "api-v2",
+      status: "modified",
+      changes: { changes: "in api-v2" },
     });
   });
 
@@ -434,6 +436,94 @@ describe("oasDiffChangelog", () => {
 
     // Should NOT show stable-api since it has no changes
     expect(writtenContent).to.not.include("=== Changes in stable-api ===");
+  });
+
+  it("should report deleted APIs in JSON format", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeJson: sinon.stub(),
+    };
+
+    // Base has api-v1 and api-v2, new only has api-v2
+    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
+    fsStub.readdir.onCall(1).returns(["api-v2"]); // new directories
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.json",
+      format: "json",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeJson.called).to.be.true;
+    const writtenContent = fsStub.writeJson.args[0][1];
+    expect(writtenContent).to.be.an("array").with.lengthOf(1);
+    expect(writtenContent[0]).to.deep.equal({
+      directory: "api-v1",
+      status: "deleted",
+      message: "api-v1 API is deleted",
+    });
+  });
+
+  it("should report added APIs in JSON format", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, null, "version 1.0.0", "");
+
+    const fsStub = {
+      readdir: sinon.stub(),
+      stat: sinon.stub(),
+      writeJson: sinon.stub(),
+    };
+
+    // Base has only api-v1, new has api-v1 and api-v2
+    fsStub.readdir.onCall(0).returns(["api-v1"]); // base directories
+    fsStub.readdir.onCall(1).returns(["api-v1", "api-v2"]); // new directories
+
+    // All stat calls return isDirectory true
+    fsStub.stat.returns({ isDirectory: () => true });
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+      "fs-extra": fsStub,
+    });
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.json",
+      format: "json",
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeJson.called).to.be.true;
+    const writtenContent = fsStub.writeJson.args[0][1];
+    expect(writtenContent).to.be.an("array").with.lengthOf(1);
+    expect(writtenContent[0]).to.deep.equal({
+      directory: "api-v2",
+      status: "added",
+      message: "api-v2 API is added",
+    });
   });
 
   it("should throw an error if oasdiff is not installed", async () => {
