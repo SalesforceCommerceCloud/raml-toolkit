@@ -11,6 +11,26 @@ import sinon from "sinon";
 const pq = proxyquire.noCallThru();
 
 describe("oasDiffChangelog", () => {
+  it("should throw an error if oasdiff is not installed", async () => {
+    const execStub = sinon.stub();
+    execStub.callsArgWith(1, new Error("oasdiff not installed"));
+
+    const oasDiff = pq("./oasDiff", {
+      child_process: {
+        exec: execStub,
+      },
+    });
+
+    try {
+      await oasDiff.checkOasDiffIsInstalled();
+      expect.fail("Expected function to throw an error");
+    } catch (error) {
+      expect(error.message).to.equal(
+        "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
+      );
+    }
+  });
+
   it("should execute oasdiff command with correct parameters for single file mode", async () => {
     const execStub = sinon.stub();
     // Mock the callback-style exec function
@@ -618,25 +638,5 @@ describe("oasDiffChangelog", () => {
 
     expect(execStub.called).to.be.true;
     expect(result).to.equal(1); // Changes should be reported
-  });
-
-  it("should throw an error if oasdiff is not installed", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, new Error("oasdiff not installed"));
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-    });
-
-    try {
-      await oasDiff.checkOasDiffIsInstalled();
-      expect.fail("Expected function to throw an error");
-    } catch (error) {
-      expect(error.message).to.equal(
-        "oasdiff is not installed. Install oasdiff according to https://github.com/oasdiff/oasdiff#installation"
-      );
-    }
   });
 });
