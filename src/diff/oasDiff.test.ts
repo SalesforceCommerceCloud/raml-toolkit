@@ -75,19 +75,26 @@ function setupDirectoryStructure(
   },
   structure: Array<{ path: string; contents: string[] }>
 ): void {
-  let callIndex = 0;
-
   for (const dir of structure) {
-    fsStub.readdir.onCall(callIndex++).returns(dir.contents);
+    fsStub.readdir.withArgs(dir.path).resolves(dir.contents);
 
     for (const item of dir.contents) {
       const itemPath = `${dir.path}/${item}`;
-      const isFile = item.endsWith(".json") || item.endsWith(".yaml");
-      fsStub.stat.withArgs(itemPath).returns({ isDirectory: () => !isFile });
+      const isFile =
+        item.endsWith(".json") ||
+        item.endsWith(".yaml") ||
+        item.endsWith(".yml");
+      fsStub.stat.withArgs(itemPath).resolves({
+        isDirectory: () => !isFile,
+        isFile: () => isFile,
+      });
     }
   }
 
-  fsStub.stat.returns({ isDirectory: () => true });
+  fsStub.stat.resolves({
+    isDirectory: () => true,
+    isFile: () => false,
+  });
 }
 
 function createOasDiffProxy(
@@ -264,7 +271,9 @@ describe("oasDiffChangelog", () => {
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
     expect(execStub.called).to.be.true;
-    expect(execStub.args[1][0]).to.include("base/api-v1/**/*.yaml");
+    expect(execStub.args[1][0]).to.equal(
+      'oasdiff changelog "base/api-v1/spec.yaml" "new/api-v1/spec.yaml"'
+    );
     expect(result).to.equal(0);
   });
 
@@ -307,7 +316,7 @@ describe("oasDiffChangelog", () => {
 
     expect(execStub.called).to.be.true;
     expect(execStub.args[1][0]).to.equal(
-      'oasdiff changelog --composed "base/api-v1/**/*.yaml" "new/api-v1/**/*.yaml"'
+      'oasdiff changelog "base/api-v1/spec.yaml" "new/api-v1/spec.yaml"'
     );
   });
 
@@ -319,11 +328,11 @@ describe("oasDiffChangelog", () => {
     const fsStub = createMockFs();
     setupDirectoryStructure(fsStub, [
       { path: "base", contents: ["api-v1", "api-v2"] },
-      { path: "base/api-v1", contents: ["exchange.json"] },
-      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-v2", contents: ["exchange.json", "spec.yaml"] },
       { path: "new", contents: ["api-v1", "api-v2"] },
-      { path: "new/api-v1", contents: ["exchange.json"] },
-      { path: "new/api-v2", contents: ["exchange.json"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-v2", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -357,11 +366,11 @@ describe("oasDiffChangelog", () => {
     const fsStub = createMockFs();
     setupDirectoryStructure(fsStub, [
       { path: "base", contents: ["api-v1", "api-v2"] },
-      { path: "base/api-v1", contents: ["exchange.json"] },
-      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-v2", contents: ["exchange.json", "spec.yaml"] },
       { path: "new", contents: ["api-v1", "api-v2"] },
-      { path: "new/api-v1", contents: ["exchange.json"] },
-      { path: "new/api-v2", contents: ["exchange.json"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-v2", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -452,11 +461,11 @@ describe("oasDiffChangelog", () => {
     const fsStub = createMockFs();
     setupDirectoryStructure(fsStub, [
       { path: "base", contents: ["api-v1", "api-v2"] },
-      { path: "base/api-v1", contents: ["exchange.json"] },
-      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-v2", contents: ["exchange.json", "spec.yaml"] },
       { path: "new", contents: ["api-v2", "api-v3"] },
-      { path: "new/api-v2", contents: ["exchange.json"] },
-      { path: "new/api-v3", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-v3", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -485,13 +494,13 @@ describe("oasDiffChangelog", () => {
     const fsStub = createMockFs();
     setupDirectoryStructure(fsStub, [
       { path: "base", contents: ["common-api", "stable-api", "old-api"] },
-      { path: "base/common-api", contents: ["exchange.json"] },
-      { path: "base/stable-api", contents: ["exchange.json"] },
-      { path: "base/old-api", contents: ["exchange.json"] },
+      { path: "base/common-api", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/stable-api", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/old-api", contents: ["exchange.json", "spec.yaml"] },
       { path: "new", contents: ["common-api", "stable-api", "new-api"] },
-      { path: "new/common-api", contents: ["exchange.json"] },
-      { path: "new/stable-api", contents: ["exchange.json"] },
-      { path: "new/new-api", contents: ["exchange.json"] },
+      { path: "new/common-api", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/stable-api", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/new-api", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -599,16 +608,16 @@ describe("oasDiffChangelog", () => {
     execStub
       .onSecondCall()
       .callsArgWith(1, null, '[{"changes": "in api-v1"}]', "");
-    execStub.onThirdCall().callsArgWith(1, null, "[]", ""); // empty array
+    execStub.onThirdCall().callsArgWith(1, null, "[]", "");
 
     const fsStub = createMockFs();
     setupDirectoryStructure(fsStub, [
       { path: "base", contents: ["api-v1", "api-v2"] },
-      { path: "base/api-v1", contents: ["exchange.json"] },
-      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-v2", contents: ["exchange.json", "spec.yaml"] },
       { path: "new", contents: ["api-v1", "api-v2"] },
-      { path: "new/api-v1", contents: ["exchange.json"] },
-      { path: "new/api-v2", contents: ["exchange.json"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-v2", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -634,19 +643,18 @@ describe("oasDiffChangelog", () => {
 
   it("should not include empty results in single file JSON mode", async () => {
     const execStub = createMockExec();
-    execStub.onSecondCall().callsArgWith(1, null, "[]", ""); // empty array result
+    execStub.onSecondCall().callsArgWith(1, null, "[]", "");
 
     const fsStub = createMockFs();
     const oasDiff = createOasDiffProxy(execStub, fsStub);
 
-    // Arrange
     const baseApi = "base.yaml";
     const newApi = "new.yaml";
     const flags = { format: "json" };
     const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
 
     expect(execStub.called).to.be.true;
-    expect(result).to.equal(0); // No changes should be reported
+    expect(result).to.equal(0);
   });
 
   it("should include non-empty results in single file JSON mode", async () => {

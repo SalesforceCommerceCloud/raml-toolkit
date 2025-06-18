@@ -54,8 +54,6 @@ async function findExchangeDirectories(
           subdirectories.push(entryPath);
         }
       }
-      console.log("subdirectories", subdirectories);
-      console.log("hasExchangeJson", hasExchangeJson);
       // If this is a leaf directory and we haven't found exchange.json, that's an error
       if (subdirectories.length === 0 && !hasExchangeJson) {
         throw new Error(
@@ -93,6 +91,36 @@ async function findExchangeDirectories(
   }
 
   return result;
+}
+
+/**
+ * Find YAML files in a directory
+ *
+ * @param dirPath - The directory path to search
+ * @returns Array of YAML file paths
+ */
+async function findYamlFiles(dirPath: string): Promise<string[]> {
+  try {
+    const entries = await fs.readdir(dirPath);
+    const yamlFiles = [];
+
+    for (const entry of entries) {
+      const entryPath = path.join(dirPath, entry);
+      const stat = await fs.stat(entryPath);
+
+      if (
+        stat.isFile() &&
+        (entry.endsWith(".yaml") || entry.endsWith(".yml"))
+      ) {
+        yamlFiles.push(entryPath);
+      }
+    }
+
+    return yamlFiles;
+  } catch (err) {
+    console.warn(`Warning: Could not read directory ${dirPath}:`, err.message);
+    return [];
+  }
 }
 
 /**
@@ -166,7 +194,6 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
     console.log("......Starting oasdiff......");
 
     const jsonMode = flags.format === "json" ? "-f json" : "";
-    const directoryMode = flags.dir ? "--composed" : "";
 
     let hasChanges = false;
     let hasErrors = false;
@@ -221,36 +248,99 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
 
         // Both directories exist, compare them
         if (baseDir && newDir) {
+          console.log("===================================");
           console.log(`Processing directory pair: ${dirName}`);
 
           try {
-            const baseYamlPath = `${baseDir.path}/**/*.yaml`;
-            const newYamlPath = `${newDir.path}/**/*.yaml`;
+            const baseYamlFiles = await findYamlFiles(baseDir.path);
+            const newYamlFiles = await findYamlFiles(newDir.path);
 
-            const oasdiffOutput = await executeOasDiff(
-              baseYamlPath,
-              newYamlPath,
-              jsonMode,
-              directoryMode
-            );
+            const directoryChanges = [];
+            const directoryChangesText = [];
 
-            if (oasdiffOutput.trim().length > 0) {
-              console.log(`Changes found in ${dirName}`);
-              if (flags.format === "json") {
-                const outputJson = JSON.parse(oasdiffOutput);
-                if (outputJson?.length > 0) {
-                  allResults.push({
-                    directory: dirName,
-                    changes: outputJson,
-                  });
-                  hasChanges = true;
+            // Process each YAML file pair
+            for (const baseYamlFile of baseYamlFiles) {
+              const baseFileName = path.basename(baseYamlFile);
+              const newYamlFile = newYamlFiles.find(
+                (f) => path.basename(f) === baseFileName
+              );
+
+              if (newYamlFile) {
+                console.log(`Comparing ${baseFileName} in ${dirName}`);
+                const oasdiffOutput = await executeOasDiff(
+                  baseYamlFile,
+                  newYamlFile,
+                  jsonMode
+                );
+
+                if (oasdiffOutput.trim().length > 0) {
+                  if (flags.format === "json") {
+                    const outputJson = JSON.parse(oasdiffOutput);
+                    if (outputJson?.length > 0) {
+                      directoryChanges.push(...outputJson);
+                    }
+                  } else {
+                    directoryChangesText.push(
+                      `--- Changes in ${baseFileName} ---\n${oasdiffOutput}`
+                    );
+                  }
                 }
               } else {
-                // For text format, add section headers
-                const formattedOutput = `=== Changes in ${dirName} ===\n${oasdiffOutput}`;
-                allResults.push(formattedOutput);
-                hasChanges = true;
+                console.log(`File ${baseFileName} was deleted in ${dirName}`);
+                if (flags.format === "json") {
+                  directoryChanges.push({
+                    file: baseFileName,
+                    status: "deleted",
+                    message: `File ${baseFileName} was deleted`,
+                  });
+                } else {
+                  directoryChangesText.push(
+                    `--- File ${baseFileName} was deleted ---`
+                  );
+                }
               }
+            }
+
+            // Check for added files
+            for (const newYamlFile of newYamlFiles) {
+              const newFileName = path.basename(newYamlFile);
+              const baseYamlFile = baseYamlFiles.find(
+                (f) => path.basename(f) === newFileName
+              );
+
+              if (!baseYamlFile) {
+                console.log(`File ${newFileName} was added in ${dirName}`);
+                if (flags.format === "json") {
+                  directoryChanges.push({
+                    file: newFileName,
+                    status: "added",
+                    message: `File ${newFileName} was added`,
+                  });
+                } else {
+                  directoryChangesText.push(
+                    `--- File ${newFileName} was added ---`
+                  );
+                }
+              }
+            }
+
+            if (
+              directoryChanges.length > 0 ||
+              directoryChangesText.length > 0
+            ) {
+              console.log(`Changes found in ${dirName}`);
+              if (flags.format === "json") {
+                allResults.push({
+                  directory: dirName,
+                  changes: directoryChanges,
+                });
+              } else {
+                const formattedOutput = `=== Changes in ${dirName} ===\n${directoryChangesText.join(
+                  "\n"
+                )}`;
+                allResults.push(formattedOutput);
+              }
+              hasChanges = true;
             } else {
               console.log(`No changes found in ${dirName}`);
             }
