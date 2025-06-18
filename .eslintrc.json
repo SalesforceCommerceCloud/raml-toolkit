@@ -19,7 +19,7 @@
     "max-lines": [
       "error",
       {
-        "max": 700
+        "max": 500
       }
     ],
     "@typescript-eslint/naming-convention": [

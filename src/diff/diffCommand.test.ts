@@ -23,8 +23,6 @@ import { CategorizedChange } from "./changes/categorizedChange";
 import { RuleCategory } from "./ruleCategory";
 import * as oasDiff from "./oasDiff";
 
-import proxyquire from "proxyquire";
-
 chai.use(chaiFs);
 
 const nodeChanges = new NodeChanges("test-id", ["test:type"]);

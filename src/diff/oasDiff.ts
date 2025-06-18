@@ -6,6 +6,94 @@
  */
 import fs from "fs-extra";
 import { exec } from "child_process";
+import path from "path";
+
+/**
+ * Recursively find directories containing exchange.json files
+ *
+ * @param rootPath - The root path to search from
+ * @returns Array of objects with directory name and full path
+ */
+async function findExchangeDirectories(
+  rootPath: string
+): Promise<Array<{ name: string; path: string }>> {
+  const result = [];
+  // assume the directory depth is 3, we don't want to go too deep
+  const maxDepth = 3;
+  let foundAnyExchangeJson = false;
+
+  async function searchDirectory(currentPath: string, depth = 0) {
+    if (depth > maxDepth) {
+      throw new Error(
+        `Maximum directory depth (${maxDepth}) exceeded while searching for exchange.json files in: ${currentPath}`
+      );
+    }
+
+    try {
+      const entries = await fs.readdir(currentPath);
+
+      // Check if current directory contains exchange.json
+      const hasExchangeJson = entries.includes("exchange.json");
+
+      if (hasExchangeJson) {
+        foundAnyExchangeJson = true;
+        const dirName = path.basename(currentPath);
+        result.push({
+          name: dirName,
+          path: currentPath,
+        });
+        return;
+      }
+
+      // Check if this is a leaf directory (no subdirectories)
+      const subdirectories = [];
+      for (const entry of entries) {
+        const entryPath = path.join(currentPath, entry);
+        const stat = await fs.stat(entryPath);
+        if (stat.isDirectory()) {
+          subdirectories.push(entryPath);
+        }
+      }
+      console.log("subdirectories", subdirectories);
+      console.log("hasExchangeJson", hasExchangeJson);
+      // If this is a leaf directory and we haven't found exchange.json, that's an error
+      if (subdirectories.length === 0 && !hasExchangeJson) {
+        throw new Error(
+          `No exchange.json file found in leaf directory: ${currentPath}. Each API directory must contain an exchange.json file.`
+        );
+      }
+
+      // Search subdirectories
+      for (const subPath of subdirectories) {
+        await searchDirectory(subPath, depth + 1);
+      }
+    } catch (err) {
+      // Re-throw our custom errors
+      if (
+        err.message.includes("exchange.json") ||
+        err.message.includes("Maximum directory depth")
+      ) {
+        throw err;
+      }
+      // Ignore other errors for individual directories (permissions, etc.)
+      console.warn(
+        `Warning: Could not read directory ${currentPath}:`,
+        err.message
+      );
+    }
+  }
+
+  await searchDirectory(rootPath);
+
+  // Final check: if we didn't find any exchange.json files at all
+  if (!foundAnyExchangeJson) {
+    throw new Error(
+      `No exchange.json files found in any directory under: ${rootPath}. Each API directory must contain an exchange.json file.`
+    );
+  }
+
+  return result;
+}
 
 /**
  * If a file is given, saves the changes to the file, as JSON by default.
@@ -86,97 +174,90 @@ export async function oasDiffChangelog(baseApi: string, newApi: string, flags) {
 
     // Handle directory mode
     if (flags.dir) {
-      // Get the list of directories in both base and new API paths
-      const baseDirectories = await fs.readdir(baseApi);
-      const newDirectories = await fs.readdir(newApi);
+      // Find all exchange.json files and their parent directories
+      const baseExchangeDirs = await findExchangeDirectories(baseApi);
+      const newExchangeDirs = await findExchangeDirectories(newApi);
 
-      // Loop through base directories and find matching ones in new
-      for (const baseDir of baseDirectories) {
-        const baseDirPath = `${baseApi}/${baseDir}`;
-        const newDirPath = `${newApi}/${baseDir}`;
+      const allDirNames = new Set([
+        ...baseExchangeDirs.map((dir) => dir.name),
+        ...newExchangeDirs.map((dir) => dir.name),
+      ]);
 
-        // Skip if not a directory
-        if (!(await fs.stat(baseDirPath)).isDirectory()) {
-          continue;
-        }
+      for (const dirName of allDirNames) {
+        const baseDir = baseExchangeDirs.find((dir) => dir.name === dirName);
+        const newDir = newExchangeDirs.find((dir) => dir.name === dirName);
 
-        // Check if matching directory doesn't exist in new
-        if (!newDirectories.includes(baseDir)) {
-          console.log(`${baseDir} API is deleted`);
+        // Check if directory was deleted
+        if (baseDir && !newDir) {
+          console.log(`${dirName} API is deleted`);
           if (flags.format === "json") {
             allResults.push({
-              directory: baseDir,
+              directory: dirName,
               status: "deleted",
-              message: `${baseDir} API is deleted`,
+              message: `${dirName} API is deleted`,
             });
           } else {
-            allResults.push(`======${baseDir} API is deleted======`);
+            allResults.push(`======${dirName} API is deleted======`);
           }
           hasChanges = true;
           continue;
         }
 
-        console.log(`Processing directory pair: ${baseDir}`);
+        // Check if directory was added
+        if (!baseDir && newDir) {
+          console.log(`${dirName} API is added`);
+          if (flags.format === "json") {
+            allResults.push({
+              directory: dirName,
+              status: "added",
+              message: `${dirName} API is added`,
+            });
+          } else {
+            allResults.push(`======${dirName} API is added======`);
+          }
+          hasChanges = true;
+          continue;
+        }
 
-        try {
-          const baseYamlPath = `${baseDirPath}/**/*.yaml`;
-          const newYamlPath = `${newDirPath}/**/*.yaml`;
+        // Both directories exist, compare them
+        if (baseDir && newDir) {
+          console.log(`Processing directory pair: ${dirName}`);
 
-          const oasdiffOutput = await executeOasDiff(
-            baseYamlPath,
-            newYamlPath,
-            jsonMode,
-            directoryMode
-          );
+          try {
+            const baseYamlPath = `${baseDir.path}/**/*.yaml`;
+            const newYamlPath = `${newDir.path}/**/*.yaml`;
 
-          if (oasdiffOutput.trim().length > 0) {
-            console.log(`Changes found in ${baseDir}`);
-            if (flags.format === "json") {
-              const outputJson = JSON.parse(oasdiffOutput);
-              if (outputJson?.length > 0) {
-                allResults.push({
-                  directory: baseDir,
-                  changes: outputJson,
-                });
+            const oasdiffOutput = await executeOasDiff(
+              baseYamlPath,
+              newYamlPath,
+              jsonMode,
+              directoryMode
+            );
+
+            if (oasdiffOutput.trim().length > 0) {
+              console.log(`Changes found in ${dirName}`);
+              if (flags.format === "json") {
+                const outputJson = JSON.parse(oasdiffOutput);
+                if (outputJson?.length > 0) {
+                  allResults.push({
+                    directory: dirName,
+                    changes: outputJson,
+                  });
+                  hasChanges = true;
+                }
+              } else {
+                // For text format, add section headers
+                const formattedOutput = `=== Changes in ${dirName} ===\n${oasdiffOutput}`;
+                allResults.push(formattedOutput);
                 hasChanges = true;
               }
             } else {
-              // For text format, add section headers
-              const formattedOutput = `=== Changes in ${baseDir} ===\n${oasdiffOutput}`;
-              allResults.push(formattedOutput);
-              hasChanges = true;
+              console.log(`No changes found in ${dirName}`);
             }
-          } else {
-            console.log(`No changes found in ${baseDir}`);
+          } catch (err) {
+            console.error(`Error processing ${dirName}:`, err);
+            hasErrors = true;
           }
-        } catch (err) {
-          console.error(`Error processing ${baseDir}:`, err);
-          hasErrors = true;
-        }
-      }
-
-      // Check for newly added APIs (directories in new but not in base)
-      for (const newDir of newDirectories) {
-        const newDirPath = `${newApi}/${newDir}`;
-
-        // Skip if not a directory
-        if (!(await fs.stat(newDirPath)).isDirectory()) {
-          continue;
-        }
-
-        // Check if this directory doesn't exist in base (added API)
-        if (!baseDirectories.includes(newDir)) {
-          console.log(`${newDir} API is added`);
-          if (flags.format === "json") {
-            allResults.push({
-              directory: newDir,
-              status: "added",
-              message: `${newDir} API is added`,
-            });
-          } else {
-            allResults.push(`======${newDir} API is added======`);
-          }
-          hasChanges = true;
         }
       }
     } else {

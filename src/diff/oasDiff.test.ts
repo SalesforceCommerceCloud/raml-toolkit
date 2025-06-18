@@ -4,13 +4,191 @@
  * SPDX-License-Identifier: BSD-3-Clause
  * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
  */
+/* eslint header/header: "off", max-lines:"off" */
+
 import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
 
 const pq = proxyquire.noCallThru();
 
+// Helper functions for test setup
+function createMockFs(): {
+  readdir: sinon.SinonStub;
+  stat: sinon.SinonStub;
+  writeFile: sinon.SinonStub;
+  writeJson: sinon.SinonStub;
+} {
+  return {
+    readdir: sinon.stub(),
+    stat: sinon.stub(),
+    writeFile: sinon.stub(),
+    writeJson: sinon.stub(),
+  };
+}
+
+function createMockExec(): sinon.SinonStub {
+  const execStub = sinon.stub();
+  execStub.callsArgWith(1, null, "version 1.0.0", ""); // Default version check
+  return execStub;
+}
+
+/**
+ * Sets up mock directory structure for fs operations in tests.
+ *
+ * This helper function configures sinon stubs for fs.readdir and fs.stat to simulate
+ * a directory tree structure. Files are automatically detected by .json and .yaml extensions.
+ *
+ * @param fsStub - The mocked fs object with stubbed readdir and stat methods
+ * @param structure - Array of directory objects
+ *
+ * @example
+ * // Simple API directory structure
+ * setupDirectoryStructure(fsStub, [
+ *   { path: "base", contents: ["api-v1"] },
+ *   { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] }
+ * ]);
+ *
+ * @example
+ * // Multiple APIs
+ * setupDirectoryStructure(fsStub, [
+ *   { path: "base", contents: ["api-v1", "api-v2"] },
+ *   { path: "base/api-v1", contents: ["exchange.json"] },
+ *   { path: "base/api-v2", contents: ["exchange.json"] }
+ * ]);
+ * this function equivalant to
+ * // Manual readdir setup (sequential calls)
+* fsStub.readdir.onCall(0).returns(["api-v1"]);           // First call: base directory
+* fsStub.readdir.onCall(1).returns(["exchange.json", "spec.yaml"]); // Second call: base/api-v1 directory
+
+* // Manual stat setup for each item
+* fsStub.stat.withArgs("base/api-v1").returns({ isDirectory: () => true });  // api-v1 is a directory
+* fsStub.stat.withArgs("base/api-v1/exchange.json").returns({ isDirectory: () => false }); // .json is a file
+* fsStub.stat.withArgs("base/api-v1/spec.yaml").returns({ isDirectory: () => false });     // .yaml is a file
+* // Default behavior - everything else is a directory
+* fsStub.stat.returns({ isDirectory: () => true });
+ */
+function setupDirectoryStructure(
+  fsStub: {
+    readdir: sinon.SinonStub;
+    stat: sinon.SinonStub;
+  },
+  structure: Array<{ path: string; contents: string[] }>
+): void {
+  let callIndex = 0;
+
+  for (const dir of structure) {
+    fsStub.readdir.onCall(callIndex++).returns(dir.contents);
+
+    for (const item of dir.contents) {
+      const itemPath = `${dir.path}/${item}`;
+      const isFile = item.endsWith(".json") || item.endsWith(".yaml");
+      fsStub.stat.withArgs(itemPath).returns({ isDirectory: () => !isFile });
+    }
+  }
+
+  fsStub.stat.returns({ isDirectory: () => true });
+}
+
+function createOasDiffProxy(
+  execStub: sinon.SinonStub,
+  fsStub: {
+    readdir: sinon.SinonStub;
+    stat: sinon.SinonStub;
+    writeFile: sinon.SinonStub;
+    writeJson: sinon.SinonStub;
+  }
+) {
+  return pq("./oasDiff", {
+    child_process: {
+      exec: execStub,
+    },
+    "fs-extra": fsStub,
+  });
+}
+
 describe("oasDiffChangelog", () => {
+  let consoleErrorSpy;
+  beforeEach(() => {
+    consoleErrorSpy = sinon.spy(console, "error");
+  });
+  afterEach(() => {
+    consoleErrorSpy.restore();
+  });
+  it("should return error code 2 when no exchange.json files are found", async () => {
+    const execStub = createMockExec();
+    const fsStub = createMockFs();
+
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["spec.yaml"] },
+    ]);
+
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = { dir: true };
+
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(result).to.equal(2);
+    expect(consoleErrorSpy.called).to.be.true;
+    expect(consoleErrorSpy.args[0][0].message).to.include(
+      "No exchange.json file found in leaf directory: base/api-v1"
+    );
+  });
+
+  it("should return error code 2 when no exchange.json files are found in entire directory tree", async () => {
+    const execStub = createMockExec();
+    const fsStub = createMockFs();
+
+    setupDirectoryStructure(fsStub, [{ path: "base", contents: [] }]);
+
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = { dir: true };
+
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(result).to.equal(2);
+    expect(consoleErrorSpy.called).to.be.true;
+    expect(consoleErrorSpy.args[0][0].message).to.include(
+      "No exchange.json file found in leaf directory: base. Each API directory must contain an exchange.json file."
+    );
+  });
+
+  it("should return error code 2 when maximum directory depth is exceeded", async () => {
+    const execStub = createMockExec();
+    const fsStub = createMockFs();
+
+    // Create very deep directory structure (4 levels deep, exceeding limit of 3)
+    const deepStructure: Array<{ path: string; contents: string[] }> = [];
+    let currentPath = "base";
+    for (let i = 0; i <= 4; i++) {
+      deepStructure.push({ path: currentPath, contents: ["nested"] });
+      currentPath += "/nested";
+    }
+
+    setupDirectoryStructure(fsStub, deepStructure);
+
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = { dir: true };
+
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(result).to.equal(2);
+    expect(consoleErrorSpy.called).to.be.true;
+    expect(consoleErrorSpy.args[0][0].message).to.include(
+      "Maximum directory depth (3) exceeded while searching for exchange.json files in: base/nested/nested/nested/nested"
+    );
+  });
+
   it("should throw an error if oasdiff is not installed", async () => {
     const execStub = sinon.stub();
     execStub.callsArgWith(1, new Error("oasdiff not installed"));
@@ -31,25 +209,29 @@ describe("oasDiffChangelog", () => {
     }
   });
 
+  it("should return 2 when oasdiff throws an error", async () => {
+    const execStub = createMockExec();
+    execStub.onSecondCall().callsArgWith(1, new Error("mock oasdiff error"));
+
+    const fsStub = createMockFs();
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {};
+    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(execStub.called).to.be.true;
+    expect(result).to.equal(2);
+  });
+
   it("should execute oasdiff command with correct parameters for single file mode", async () => {
-    const execStub = sinon.stub();
-    // Mock the callback-style exec function
-    execStub.callsArgWith(1, null, "", ""); // version check
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "", ""); // diff result
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
+    const fsStub = createMockFs();
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
-
-    // Arrange
     const baseApi = "base.yaml";
     const newApi = "new.yaml";
     const flags = {};
@@ -63,23 +245,19 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should execute oasdiff command with correct parameters for directory mode", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", ""); // version check
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "", ""); // diff result
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new", contents: ["api-v1"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+    ]);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
-    // Arrange
     const baseApi = "base";
     const newApi = "new";
     const flags = { dir: true };
@@ -91,21 +269,11 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should return 1 when oasdiff returns a non-empty string", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "mock oasdiff change", "");
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const fsStub = createMockFs();
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -116,48 +284,19 @@ describe("oasDiffChangelog", () => {
     expect(result).to.equal(1);
   });
 
-  it("should return 2 when oasdiff throws an error", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
-    execStub.onSecondCall().callsArgWith(1, new Error("mock oasdiff error"));
-
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
-
-    const baseApi = "base";
-    const newApi = "new";
-    const flags = {};
-    const result = await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
-
-    expect(execStub.called).to.be.true;
-    expect(result).to.equal(2);
-  });
-
   it("should run oasdiff in directory mode when the --dir flag is provided", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "a minor change", "");
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new", contents: ["api-v1"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+    ]);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -173,23 +312,21 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should concatenate results from multiple directories in text format", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
     execStub.onThirdCall().callsArgWith(1, null, "changes in api-v2", "");
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1", "api-v2"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-      writeFile: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v1", "api-v2"] },
+      { path: "new/api-v1", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -209,8 +346,7 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should concatenate results from multiple directories in JSON format", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub
       .onSecondCall()
       .callsArgWith(1, null, '[{"changes": "in api-v1"}]', "");
@@ -218,18 +354,17 @@ describe("oasDiffChangelog", () => {
       .onThirdCall()
       .callsArgWith(1, null, '[{"changes": "in api-v2"}]', "");
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1", "api-v2"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-      writeJson: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v1", "api-v2"] },
+      { path: "new/api-v1", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -254,61 +389,19 @@ describe("oasDiffChangelog", () => {
     });
   });
 
-  it("should skip non-directory entries", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
-    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
-
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1", "not-a-dir.txt"]),
-      stat: sinon.stub(),
-      writeFile: sinon.stub(),
-    };
-    // First call for api-v1 returns isDirectory true
-    fsStub.stat.onCall(0).returns({ isDirectory: () => true });
-    // Second call for not-a-dir.txt returns isDirectory false
-    fsStub.stat.onCall(1).returns({ isDirectory: () => false });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
-
-    const baseApi = "base";
-    const newApi = "new";
-    const flags = {};
-
-    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
-
-    // Should only call exec twice (once for version check, once for api-v1)
-    expect(execStub.callCount).to.equal(2);
-  });
-
   it("should report deleted APIs when directories exist in base but not in new", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeFile: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v2"] }, // only api-v2
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    // Base has api-v1 and api-v2, new only has api-v2
-    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
-    fsStub.readdir.onCall(1).returns(["api-v2"]); // new directories
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -325,28 +418,18 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report added APIs when directories exist in new but not in base", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeFile: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v1", "api-v2"] },
+      { path: "new/api-v1", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    // Base has only api-v1, new has api-v1 and api-v2
-    fsStub.readdir.onCall(0).returns(["api-v1"]); // base directories
-    fsStub.readdir.onCall(1).returns(["api-v1", "api-v2"]); // new directories
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -363,29 +446,20 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report both added and deleted APIs in the same comparison", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
-    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
+    const execStub = createMockExec();
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v2", "");
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeFile: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v2", "api-v3"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+      { path: "new/api-v3", contents: ["exchange.json"] },
+    ]);
 
-    // Base has api-v1 and api-v2, new has api-v2 and api-v3
-    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
-    fsStub.readdir.onCall(1).returns(["api-v2", "api-v3"]); // new directories
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -404,31 +478,23 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should handle mixed scenarios with changes, additions, and deletions", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "changes in common-api", "");
     execStub.onThirdCall().callsArgWith(1, null, "", ""); // no changes in stable-api
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeFile: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["common-api", "stable-api", "old-api"] },
+      { path: "base/common-api", contents: ["exchange.json"] },
+      { path: "base/stable-api", contents: ["exchange.json"] },
+      { path: "base/old-api", contents: ["exchange.json"] },
+      { path: "new", contents: ["common-api", "stable-api", "new-api"] },
+      { path: "new/common-api", contents: ["exchange.json"] },
+      { path: "new/stable-api", contents: ["exchange.json"] },
+      { path: "new/new-api", contents: ["exchange.json"] },
+    ]);
 
-    // Base: common-api, stable-api, old-api
-    // New: common-api, stable-api, new-api
-    fsStub.readdir.onCall(0).returns(["common-api", "stable-api", "old-api"]); // base
-    fsStub.readdir.onCall(1).returns(["common-api", "stable-api", "new-api"]); // new
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -457,28 +523,20 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report deleted APIs in JSON format", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
+    // Empty JSON array (no changes in api-v2)
+    execStub.onSecondCall().callsArgWith(1, null, "[]", "");
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeJson: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v2"] }, // only api-v2
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    // Base has api-v1 and api-v2, new only has api-v2
-    fsStub.readdir.onCall(0).returns(["api-v1", "api-v2"]); // base directories
-    fsStub.readdir.onCall(1).returns(["api-v2"]); // new directories
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -501,28 +559,20 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should report added APIs in JSON format", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
+    // Empty JSON array (no changes in api-v1)
+    execStub.onSecondCall().callsArgWith(1, null, "[]", "");
 
-    const fsStub = {
-      readdir: sinon.stub(),
-      stat: sinon.stub(),
-      writeJson: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v1", "api-v2"] },
+      { path: "new/api-v1", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    // Base has only api-v1, new has api-v1 and api-v2
-    fsStub.readdir.onCall(0).returns(["api-v1"]); // base directories
-    fsStub.readdir.onCall(1).returns(["api-v1", "api-v2"]); // new directories
-
-    // All stat calls return isDirectory true
-    fsStub.stat.returns({ isDirectory: () => true });
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -545,25 +595,23 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should not include directories with empty changes in JSON format", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "version 1.0.0", "");
+    const execStub = createMockExec();
     execStub
       .onSecondCall()
       .callsArgWith(1, null, '[{"changes": "in api-v1"}]', "");
     execStub.onThirdCall().callsArgWith(1, null, "[]", ""); // empty array
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1", "api-v2"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-      writeJson: sinon.stub(),
-    };
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1", "api-v2"] },
+      { path: "base/api-v1", contents: ["exchange.json"] },
+      { path: "base/api-v2", contents: ["exchange.json"] },
+      { path: "new", contents: ["api-v1", "api-v2"] },
+      { path: "new/api-v1", contents: ["exchange.json"] },
+      { path: "new/api-v2", contents: ["exchange.json"] },
+    ]);
 
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     const baseApi = "base";
     const newApi = "new";
@@ -585,21 +633,11 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should not include empty results in single file JSON mode", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "", ""); // version check
+    const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "[]", ""); // empty array result
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const fsStub = createMockFs();
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     // Arrange
     const baseApi = "base.yaml";
@@ -612,23 +650,13 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should include non-empty results in single file JSON mode", async () => {
-    const execStub = sinon.stub();
-    execStub.callsArgWith(1, null, "", ""); // version check
+    const execStub = createMockExec();
     execStub
       .onSecondCall()
       .callsArgWith(1, null, '[{"change": "something"}]', ""); // non-empty array result
 
-    const fsStub = {
-      readdir: sinon.stub().returns(["api-v1"]),
-      stat: sinon.stub().returns({ isDirectory: () => true }),
-    };
-
-    const oasDiff = pq("./oasDiff", {
-      child_process: {
-        exec: execStub,
-      },
-      "fs-extra": fsStub,
-    });
+    const fsStub = createMockFs();
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
 
     // Arrange
     const baseApi = "base.yaml";
