@@ -13,7 +13,7 @@ import { Rule } from "json-rules-engine";
 import chai from "chai";
 import chaiFs from "chai-fs";
 
-import { DiffCommand as cmd, DiffCommand } from "./diffCommand";
+import { DiffCommand as cmd } from "./diffCommand";
 import * as diffDirectories from "./diffDirectories";
 import { NodeChanges } from "./changes/nodeChanges";
 import { ApiChanges } from "./changes/apiChanges";
@@ -23,11 +23,7 @@ import { CategorizedChange } from "./changes/categorizedChange";
 import { RuleCategory } from "./ruleCategory";
 import * as oasDiff from "./oasDiff";
 
-import proxyquire from "proxyquire";
-import sinon from "sinon";
-
 chai.use(chaiFs);
-const pq = proxyquire.noCallThru();
 
 const nodeChanges = new NodeChanges("test-id", ["test:type"]);
 nodeChanges.added = { "core:name": "oldName" };
