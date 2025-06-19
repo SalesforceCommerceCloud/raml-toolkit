@@ -115,7 +115,7 @@ async function findExchangeDirectories(
       }
       // If this is a leaf directory and we haven't found exchange.json, that's an error
       if (subdirectories.length === 0 && !hasExchangeJson) {
-        throw new Error(
+        console.warn(
           `No exchange.json file found in leaf directory: ${currentPath}. Each API directory must contain an exchange.json file.`
         );
       }

@@ -123,6 +123,7 @@ describe("oasDiffChangelog", () => {
     consoleErrorSpy.restore();
   });
   it("should return error code 2 when no exchange.json files are found", async () => {
+    const consoleWarnSpy = sinon.spy(console, "warn");
     const execStub = createMockExec();
     const fsStub = createMockFs();
 
@@ -142,8 +143,10 @@ describe("oasDiffChangelog", () => {
     expect(result).to.equal(2);
     expect(consoleErrorSpy.called).to.be.true;
     expect(consoleErrorSpy.args[0][0].message).to.include(
-      "No exchange.json file found in leaf directory: base/api-v1"
+      "No exchange.json files found in any directory under: base"
     );
+
+    consoleWarnSpy.restore();
   });
 
   it("should return error code 2 when no exchange.json files are found in entire directory tree", async () => {
@@ -163,7 +166,7 @@ describe("oasDiffChangelog", () => {
     expect(result).to.equal(2);
     expect(consoleErrorSpy.called).to.be.true;
     expect(consoleErrorSpy.args[0][0].message).to.include(
-      "No exchange.json file found in leaf directory: base. Each API directory must contain an exchange.json file."
+      "No exchange.json files found in any directory under: base. Each API directory must contain an exchange.json file."
     );
   });
 
