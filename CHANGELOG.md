@@ -3,7 +3,7 @@
 ## 0.7.0
 
 * Add `ExchangeConfig` type [#230](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/230)
-* Update `search` function to pull latest versions of APIs and multiple versions of APIs [#231](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/231)
+* Update `search` function to pull latest versions of APIs from multiple versions groups [#231](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/231)
 * Add `flags` argument to `generateFromOas` function [#232](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/232)
 * Update `diff` command to work with multiple versions of the same API [#233](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/233)
 
