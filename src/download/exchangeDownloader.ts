@@ -444,5 +444,5 @@ function getLatestReleaseVersion(versionGroup: {
     if (aMajor !== bMajor) return bMajor - aMajor;
     if (aMinor !== bMinor) return bMinor - aMinor;
     return bPatch - aPatch;
-  })[0].version;
+  })[0]?.version;
 }
