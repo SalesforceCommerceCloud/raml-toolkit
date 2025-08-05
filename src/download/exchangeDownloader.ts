@@ -435,7 +435,6 @@ function getLatestReleaseVersion(versionGroup: {
     return releaseSemverRegex.test(version.version);
   });
 
-  console.log('RELEASE ASSET VERSIONS: ', releaseAssetVersions)
   // Sort versions and get the latest
   return releaseAssetVersions.sort((instanceA, instanceB) => {
     const [aMajor, aMinor, aPatch] = instanceA.version.split(".").map(Number);

@@ -242,7 +242,7 @@ async function executeOasDiff(
   });
 }
 
-function removeApiVersionFromDirNames(dirs: { name: string, path: string }[]) {
+function removeApiVersionFromDirNames(dirs: { name: string; path: string }[]) {
   dirs.forEach((dir) => {
     // Remove minor and patch versions, keep only major version
     // Example: 'shopper-stores-oas-1.0.16' -> 'shopper-stores-oas-1'
@@ -278,18 +278,13 @@ async function handleDirectoryMode(
   const newExchangeDirs = await findExchangeDirectories(newApi);
 
   // TODO: hide this under a flag
-  removeApiVersionFromDirNames(baseExchangeDirs)
-  removeApiVersionFromDirNames(newExchangeDirs)
-
-  console.log('BASE EXCHANGE DIRS: ', baseExchangeDirs)
-  console.log('NEW EXCHANGE DIRS: ', newExchangeDirs)
+  removeApiVersionFromDirNames(baseExchangeDirs);
+  removeApiVersionFromDirNames(newExchangeDirs);
 
   const allDirNames = new Set([
     ...baseExchangeDirs.map((dir) => dir.name),
     ...newExchangeDirs.map((dir) => dir.name),
   ]);
-
-  console.log('ALL DIR NAMES: ', allDirNames)
 
   for (const dirName of allDirNames) {
     const baseDir = baseExchangeDirs.find((dir) => dir.name === dirName);
