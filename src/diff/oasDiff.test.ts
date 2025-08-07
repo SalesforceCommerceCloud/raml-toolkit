@@ -9,7 +9,6 @@
 import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
-import { consoleStub } from "../../testResources/setup";
 
 const pq = proxyquire.noCallThru();
 
@@ -681,6 +680,7 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should normalize directory names when normalize-directory-names flag is passed", async () => {
+    const consoleStub = sinon.stub(console, "log");
     const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "changes in api-1", "");
 
@@ -727,6 +727,7 @@ describe("oasDiffChangelog", () => {
       (args) => args[0] === "Processing directory pair: api-2"
     );
     expect(processingMessage2).to.not.be.undefined;
+    consoleStub.restore();
   });
 
   it("should handle fs.readdir error in findYamlFiles function", async () => {
