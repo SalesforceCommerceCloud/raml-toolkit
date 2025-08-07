@@ -17,6 +17,7 @@ interface OasDiffFlags {
   format?: "json" | "console";
   dir?: boolean;
   "out-file"?: string;
+  "normalize-directory-names"?: boolean;
 }
 
 /**
@@ -242,16 +243,24 @@ async function executeOasDiff(
   });
 }
 
-function removeApiVersionFromDirNames(dirs: { name: string; path: string }[]) {
-  dirs.forEach((dir) => {
-    // Remove minor and patch versions, keep only major version
-    // Example: 'shopper-stores-oas-1.0.16' -> 'shopper-stores-oas-1'
-    dir.name = dir.name.replace(/-\d+\.\d+\.\d+$/, (match) => {
-      // Extract the major version number from the match
+/**
+ * Remove minor and patch versions from directory names and keep only major version
+ * Example: 'shopper-stores-oas-1.0.16' -> 'shopper-stores-oas-1'
+ * We want to keep the major version for multiple versions of the same API, ie: Shopper Baskets
+ *
+ * @param dirs - Array of directory objects with name and path properties
+ * @returns Copy of passed array with updated name property
+ */
+function normalizeDirectoryNames(dirs: { name: string; path: string }[]): { name: string; path: string }[] {
+  return dirs.map((dir) => ({
+    ...dir,
+    // matches the pattern of the version number in the directory name, ie: -1.0.16
+    // extracts the major version number if available, otherwise the original match if no major version is found
+    name: dir.name.replace(/-\d+\.\d+\.\d+$/, (match) => {
       const majorVersion = match.match(/^-\d+/)?.[0];
       return majorVersion || match;
-    });
-  });
+    })
+  }));
 }
 
 /**
@@ -274,12 +283,13 @@ async function handleDirectoryMode(
   let hasErrors = false;
 
   // Find all exchange.json files and their parent directories
-  const baseExchangeDirs = await findExchangeDirectories(baseApi);
-  const newExchangeDirs = await findExchangeDirectories(newApi);
+  let baseExchangeDirs = await findExchangeDirectories(baseApi);
+  let newExchangeDirs = await findExchangeDirectories(newApi);
 
-  // TODO: hide this under a flag
-  removeApiVersionFromDirNames(baseExchangeDirs);
-  removeApiVersionFromDirNames(newExchangeDirs);
+  if (flags["normalize-directory-names"]) {
+    baseExchangeDirs = normalizeDirectoryNames(baseExchangeDirs);
+    newExchangeDirs = normalizeDirectoryNames(newExchangeDirs);
+  }
 
   const allDirNames = new Set([
     ...baseExchangeDirs.map((dir) => dir.name),

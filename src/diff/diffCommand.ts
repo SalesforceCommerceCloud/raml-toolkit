@@ -70,6 +70,11 @@ Exit statuses:
         "Specifies the API spec of the files being compared. Defaults to RAML. Options are RAML or OAS",
       options: ["raml", "oas"],
     }),
+    "normalize-directory-names": flags.boolean({
+      description:
+        "Normalize directory names by removing minor and patch versions. Example: 'api-1.0.16' -> 'api-1'",
+      default: false,
+    }),
   };
 
   static args = [
