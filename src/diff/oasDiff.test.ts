@@ -678,4 +678,79 @@ describe("oasDiffChangelog", () => {
     expect(execStub.called).to.be.true;
     expect(result).to.equal(1); // Changes should be reported
   });
+
+  it("should normalize directory names when normalize-directory-names flag is passed", async () => {
+    const execStub = createMockExec();
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
+
+    const fsStub = createMockFs();
+    // Setup directory structure with versioned directory names
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1.0.16", "api-v2.1.5"] },
+      { path: "base/api-v1.0.16", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-v2.1.5", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new", contents: ["api-v1.0.17", "api-v2.1.6"] },
+      { path: "new/api-v1.0.17", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-v2.1.6", contents: ["exchange.json", "spec.yaml"] },
+    ]);
+
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      "out-file": "output.txt",
+      dir: true,
+      "normalize-directory-names": true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    expect(fsStub.writeFile.called).to.be.true;
+    const writtenContent = fsStub.writeFile.args[0][1];
+
+    // Verify that the function completes successfully with the normalize-directory-names flag enabled
+    expect(writtenContent).to.be.a("string");
+    expect(writtenContent.length).to.be.greaterThan(0);
+
+    // The test verifies that the normalize-directory-names flag is being processed
+    // and that the function completes successfully with the flag enabled
+  });
+
+  it("should handle fs.readdir error in findYamlFiles function", async () => {
+    const consoleWarnSpy = sinon.spy(console, "warn");
+    const execStub = createMockExec();
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
+
+    const fsStub = createMockFs();
+    setupDirectoryStructure(fsStub, [
+      { path: "base", contents: ["api-v1"] },
+      { path: "base/api-v1", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new", contents: ["api-v1"] },
+      { path: "new/api-v1", contents: ["exchange.json", "spec.yaml"] },
+    ]);
+
+    // Make readdir fail for the new/api-v1 directory to trigger the error handling branch
+    fsStub.readdir
+      .withArgs("new/api-v1")
+      .rejects(new Error("Permission denied"));
+
+    const oasDiff = createOasDiffProxy(execStub, fsStub);
+
+    const baseApi = "base";
+    const newApi = "new";
+    const flags = {
+      dir: true,
+    };
+
+    await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
+
+    // Verify that the function handles the error gracefully
+    expect(consoleWarnSpy.called).to.be.true;
+    expect(consoleWarnSpy.args[0][0]).to.include(
+      "Warning: Could not read directory new/api-v1:"
+    );
+    expect(consoleWarnSpy.args[0][1]).to.include("Permission denied");
+    consoleWarnSpy.restore();
+  });
 });

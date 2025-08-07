@@ -251,7 +251,9 @@ async function executeOasDiff(
  * @param dirs - Array of directory objects with name and path properties
  * @returns Copy of passed array with updated name property
  */
-function normalizeDirectoryNames(dirs: { name: string; path: string }[]): { name: string; path: string }[] {
+function normalizeDirectoryNames(
+  dirs: Array<{ name: string; path: string }>
+): Array<{ name: string; path: string }> {
   return dirs.map((dir) => ({
     ...dir,
     // matches the pattern of the version number in the directory name, ie: -1.0.16
@@ -259,7 +261,7 @@ function normalizeDirectoryNames(dirs: { name: string; path: string }[]): { name
     name: dir.name.replace(/-\d+\.\d+\.\d+$/, (match) => {
       const majorVersion = match.match(/^-\d+/)?.[0];
       return majorVersion || match;
-    })
+    }),
   }));
 }
 
