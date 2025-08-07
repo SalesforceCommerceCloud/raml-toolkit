@@ -72,7 +72,7 @@ Exit statuses:
     }),
     "normalize-directory-names": flags.boolean({
       description:
-        "Normalize directory names by removing minor and patch versions. Example: 'api-1.0.16' -> 'api-1'",
+        "Normalize directory names by removing minor and patch versions. Example: 'shopper-stores-oas-1.0.16' -> 'shopper-stores-oas-1",
       default: false,
     }),
   };
