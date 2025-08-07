@@ -9,6 +9,7 @@
 import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
+import { consoleStub } from "../../testResources/setup";
 
 const pq = proxyquire.noCallThru();
 
@@ -681,17 +682,17 @@ describe("oasDiffChangelog", () => {
 
   it("should normalize directory names when normalize-directory-names flag is passed", async () => {
     const execStub = createMockExec();
-    execStub.onSecondCall().callsArgWith(1, null, "changes in api-v1", "");
+    execStub.onSecondCall().callsArgWith(1, null, "changes in api-1", "");
 
     const fsStub = createMockFs();
     // Setup directory structure with versioned directory names
     setupDirectoryStructure(fsStub, [
-      { path: "base", contents: ["api-v1.0.16", "api-v2.1.5"] },
-      { path: "base/api-v1.0.16", contents: ["exchange.json", "spec.yaml"] },
-      { path: "base/api-v2.1.5", contents: ["exchange.json", "spec.yaml"] },
-      { path: "new", contents: ["api-v1.0.17", "api-v2.1.6"] },
-      { path: "new/api-v1.0.17", contents: ["exchange.json", "spec.yaml"] },
-      { path: "new/api-v2.1.6", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base", contents: ["api-1.0.16", "api-2.1.5"] },
+      { path: "base/api-1.0.16", contents: ["exchange.json", "spec.yaml"] },
+      { path: "base/api-2.1.5", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new", contents: ["api-1.0.17", "api-2.1.6"] },
+      { path: "new/api-1.0.17", contents: ["exchange.json", "spec.yaml"] },
+      { path: "new/api-2.1.6", contents: ["exchange.json", "spec.yaml"] },
     ]);
 
     const oasDiff = createOasDiffProxy(execStub, fsStub);
@@ -713,8 +714,19 @@ describe("oasDiffChangelog", () => {
     expect(writtenContent).to.be.a("string");
     expect(writtenContent.length).to.be.greaterThan(0);
 
-    // The test verifies that the normalize-directory-names flag is being processed
-    // and that the function completes successfully with the flag enabled
+    // Verify that the console.log stub captured the "Processing directory pair" message
+    expect(consoleStub.called).to.be.true;
+    const processingMessage = consoleStub.args.find(
+      // verify that the message contains the normalized directory name
+      (args) => args[0] === "Processing directory pair: api-1"
+    );
+    expect(processingMessage).to.not.be.undefined;
+
+    // Also verify that api-2 is being processed
+    const processingMessage2 = consoleStub.args.find(
+      (args) => args[0] === "Processing directory pair: api-2"
+    );
+    expect(processingMessage2).to.not.be.undefined;
   });
 
   it("should handle fs.readdir error in findYamlFiles function", async () => {

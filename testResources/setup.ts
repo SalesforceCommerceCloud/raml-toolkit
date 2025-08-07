@@ -8,7 +8,7 @@ import sinon from "sinon";
 import { ramlToolLogger } from "../src/common/logger";
 
 let ramlToolLoggerStub: sinon.SinonStub;
-let consoleStub: sinon.SinonStub;
+export let consoleStub: sinon.SinonStub;
 
 beforeEach(() => {
   ramlToolLoggerStub = sinon.stub(ramlToolLogger, "info");
