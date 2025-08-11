@@ -17,7 +17,7 @@ interface OasDiffFlags {
   format?: "json" | "console";
   dir?: boolean;
   "out-file"?: string;
-  "normalize-directory-names"?: boolean;
+  "disable-normalize-directory-names"?: boolean;
 }
 
 /**
@@ -288,7 +288,7 @@ async function handleDirectoryMode(
   let baseExchangeDirs = await findExchangeDirectories(baseApi);
   let newExchangeDirs = await findExchangeDirectories(newApi);
 
-  if (flags["normalize-directory-names"]) {
+  if (!flags["disable-normalize-directory-names"]) {
     baseExchangeDirs = normalizeDirectoryNames(baseExchangeDirs);
     newExchangeDirs = normalizeDirectoryNames(newExchangeDirs);
   }

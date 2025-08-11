@@ -70,9 +70,9 @@ Exit statuses:
         "Specifies the API spec of the files being compared. Defaults to RAML. Options are RAML or OAS",
       options: ["raml", "oas"],
     }),
-    "normalize-directory-names": flags.boolean({
+    "disable-normalize-directory-names": flags.boolean({
       description:
-        "Normalize directory names by removing minor and patch versions. Example: 'shopper-stores-oas-1.0.16' -> 'shopper-stores-oas-1",
+        "Disable normalization of directory names. When enabled, directory names will keep their full version numbers (e.g., 'shopper-stores-oas-1.0.16' instead of 'shopper-stores-oas-1')",
       default: false,
     }),
   };

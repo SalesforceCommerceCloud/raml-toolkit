@@ -679,7 +679,7 @@ describe("oasDiffChangelog", () => {
     expect(result).to.equal(1); // Changes should be reported
   });
 
-  it("should normalize directory names when normalize-directory-names flag is passed", async () => {
+  it("should normalize directory names when disable-normalize-directory-names flag is false", async () => {
     const consoleStub = sinon.stub(console, "log");
     const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "changes in api-1", "");
@@ -702,7 +702,7 @@ describe("oasDiffChangelog", () => {
     const flags = {
       "out-file": "output.txt",
       dir: true,
-      "normalize-directory-names": true,
+      "disable-normalize-directory-names": false,
     };
 
     await oasDiff.oasDiffChangelog(baseApi, newApi, flags);
