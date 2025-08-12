@@ -9,6 +9,7 @@
 import { expect } from "chai";
 import proxyquire from "proxyquire";
 import sinon from "sinon";
+import { consoleStub } from "../../testResources/setup";
 
 const pq = proxyquire.noCallThru();
 
@@ -680,7 +681,6 @@ describe("oasDiffChangelog", () => {
   });
 
   it("should normalize directory names when disable-normalize-directory-names flag is false", async () => {
-    const consoleStub = sinon.stub(console, "log");
     const execStub = createMockExec();
     execStub.onSecondCall().callsArgWith(1, null, "changes in api-1", "");
 
@@ -714,19 +714,12 @@ describe("oasDiffChangelog", () => {
     expect(writtenContent).to.be.a("string");
     expect(writtenContent.length).to.be.greaterThan(0);
 
-    // Verify that the console.log stub captured the "Processing directory pair" message
+    // Verify that the console.log stub captured the "Processing directory pair" messages
     expect(consoleStub.called).to.be.true;
-    const processingMessage = consoleStub.args.find(
-      // verify that the message contains the normalized directory name
-      (args) => args[0] === "Processing directory pair: api-1"
-    );
-    expect(processingMessage).to.not.be.undefined;
-
-    // Also verify that api-2 is being processed
-    const processingMessage2 = consoleStub.args.find(
-      (args) => args[0] === "Processing directory pair: api-2"
-    );
-    expect(processingMessage2).to.not.be.undefined;
+    // flattens the array of arrays into a single array of strings
+    const allMessages = consoleStub.args.map((args) => args[0]);
+    expect(allMessages).to.include("Processing directory pair: api-1");
+    expect(allMessages).to.include("Processing directory pair: api-2");
     consoleStub.restore();
   });
 
