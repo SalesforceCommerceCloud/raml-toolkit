@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 0.8.0
+
+* Add `--disable-normalize-directory-names` flag to `diff` command. By default directory names will be normalized by major version, e.g: `shopper-stores-oas-1.0.16` --> `shopper-stores-oas-1` [#235](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/235/)
+
 ## 0.7.0
 
 * Add `ExchangeConfig` type [#230](https://github.com/SalesforceCommerceCloud/raml-toolkit/pull/230)

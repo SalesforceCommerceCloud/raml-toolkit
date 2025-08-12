@@ -434,6 +434,7 @@ function getLatestReleaseVersion(versionGroup: {
   const releaseAssetVersions = versionGroup.versions.filter((version) => {
     return releaseSemverRegex.test(version.version);
   });
+
   // Sort versions and get the latest
   return releaseAssetVersions.sort((instanceA, instanceB) => {
     const [aMajor, aMinor, aPatch] = instanceA.version.split(".").map(Number);
@@ -442,5 +443,5 @@ function getLatestReleaseVersion(versionGroup: {
     if (aMajor !== bMajor) return bMajor - aMajor;
     if (aMinor !== bMinor) return bMinor - aMinor;
     return bPatch - aPatch;
-  })[0].version;
+  })[0]?.version;
 }
